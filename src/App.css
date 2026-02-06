@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Modern CSS Reset + 다크모드 지원
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
+}
+
+/* Pretendard 폰트 */
+@import url('https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css');
+
+/* Scroll Snap */
+.snap-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.snap-container::-webkit-scrollbar {
+  width: 6px;
+}
+.snap-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+.snap-container::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+}
+
+/* 이미지 등 */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 다크모드 변수 (root에 클래스 .dark 붙이면 적용) */
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: 1px solid rgba(226, 232, 240, 0.6);
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --accent: #14b8a6;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --scrollbar-thumb: #64748b;
+}
+
+.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: 1px solid rgba(148, 163, 184, 0.2);
+  --primary: #38bdf8;
+  --primary-dark: #0ea5e9;
+  --accent: #2dd4bf;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --scrollbar-thumb: #94a3b8;
+}
+
+html,
+body,
+#root {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.snap-container::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+}
