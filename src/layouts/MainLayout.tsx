@@ -13,7 +13,7 @@ export default function MainLayout() {
         component="main"
         sx={{
           pt: { xs: 8, sm: 9 }, // AppBar 높이 (64px + 여유)
-          px: { xs: 2, sm: 3, md: 4, lg: 5 },
+          px: { xs: 2, sm: 3, md: 4 },
           pb: 6,
         }}
       >

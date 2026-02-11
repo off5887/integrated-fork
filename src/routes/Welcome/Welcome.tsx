@@ -10,9 +10,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-
 import { useThemeMode } from '../../context/ThemeContext'
-
 import GomEvolutionSection from './GomEvolutionSection'
 import IntroSection from './IntroSection'
 
@@ -20,7 +18,6 @@ export default function Welcome() {
   const navigate = useNavigate()
   const theme = useTheme() // MUI 테마 직접 사용
   const { isDarkMode, toggleTheme } = useThemeMode()
-
   const fishCount = 3200 // 임시값
 
   return (
