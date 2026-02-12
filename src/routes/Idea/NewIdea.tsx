@@ -1,26 +1,15 @@
-// src/routes/idea/newIdea.tsx
+// src/routes/idea/NewIdea.tsx
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import CloseIcon from '@mui/icons-material/Close'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import SendIcon from '@mui/icons-material/Send'
 import {
   Box,
   Button,
   Card,
   CardContent,
-  Chip,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Grid,
   IconButton,
-  InputAdornment,
   Paper,
-  Radio,
-  RadioGroup,
   TextField,
   Typography,
   useTheme,
@@ -28,6 +17,10 @@ import {
 import { ChangeEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '../../context/ThemeContext'
+
+import BasicInfoSection from './BasicInfoSection'
+import ParticipantsSection from './ParticipantsSection'
+import ScheduleAndVisibilitySection from './ScheduleAndVisibilitySection'
 
 export default function NewIdea() {
   const theme = useTheme()
@@ -37,11 +30,11 @@ export default function NewIdea() {
   const [title, setTitle] = useState('')
   const [problem, setProblem] = useState('')
   const [solution, setSolution] = useState('')
-  const [security, setSecurity] = useState<'public' | 'private'>('public')
   const [reviewer, setReviewer] = useState<string[]>([])
   const [coProposers, setCoProposers] = useState<string[]>([])
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [security, setSecurity] = useState<'public' | 'private'>('public')
   const [plan, setPlan] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<string[]>([])
@@ -77,7 +70,6 @@ export default function NewIdea() {
     }
 
     setLoading(true)
-    // 실제 API 호출은 여기에 구현
     setTimeout(() => {
       alert('제안이 등록되었습니다!')
       setLoading(false)
@@ -87,449 +79,214 @@ export default function NewIdea() {
 
   const handleBack = () => navigate(-1)
 
+  const inputSx = {
+    bgcolor: isDarkMode ? 'rgba(30,41,59,0.88)' : 'rgba(255,255,255,0.97)',
+    borderRadius: 3,
+    color: isDarkMode ? '#f1f5f9' : '#0f172a',
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: isDarkMode
+        ? 'rgba(148,163,184,0.6)'
+        : 'rgba(148,163,184,0.6)',
+    },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: isDarkMode ? '#94a3b8' : '#64748b',
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: isDarkMode ? '#60a5fa' : '#3b82f6',
+      borderWidth: 2,
+    },
+  }
+
+  const labelSx = {
+    color: isDarkMode ? '#94a3b8' : '#475569',
+    fontWeight: 500,
+    '&.Mui-focused': {
+      color: isDarkMode ? '#60a5fa' : '#3b82f6',
+    },
+  }
+
   return (
     <Box
       sx={{
         minHeight: '100vh',
         bgcolor: isDarkMode ? '#0f172a' : '#f8fafc',
         pt: { xs: 10, md: 12 },
-        pb: 12,
-        px: { xs: 2, sm: 4, md: 6, lg: 8 },
-        transition: 'background-color 0.3s',
+        pb: 16,
+        px: { xs: 2, sm: 4 },
+        transition: 'background-color 0.4s ease',
       }}
     >
       <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
-        {/* 타이틀 + 뒤로가기 */}
+        {/* 헤더 */}
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
             gap: 2,
-            mb: { xs: 4, md: 6 },
+            mb: { xs: 5, md: 7 },
           }}
         >
           <IconButton
             onClick={handleBack}
             sx={{
               color: isDarkMode ? '#cbd5e1' : '#475569',
+              bgcolor: isDarkMode
+                ? 'rgba(30,41,59,0.5)'
+                : 'rgba(241,245,249,0.7)',
               '&:hover': {
                 bgcolor: isDarkMode
-                  ? 'rgba(255,255,255,0.08)'
-                  : 'rgba(0,0,0,0.05)',
+                  ? 'rgba(71,85,105,0.7)'
+                  : 'rgba(226,232,240,0.9)',
               },
+              borderRadius: 2,
             }}
           >
             <ArrowBackIcon />
           </IconButton>
           <Typography
             variant="h4"
-            component="h1"
-            fontWeight={700}
+            fontWeight={800}
             sx={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
           >
-            상상하기
+            새로운 상상 제안
           </Typography>
         </Box>
 
-        {/* 메인 폼 카드 */}
         <Card
           elevation={0}
           sx={{
-            borderRadius: 3,
-            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)'}`,
+            width: '100%',
+            borderRadius: 4,
+            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
             bgcolor: isDarkMode
-              ? 'rgba(30, 41, 59, 0.72)'
-              : 'rgba(255,255,255,0.96)',
-            backdropFilter: 'blur(16px)',
+              ? 'rgba(30,41,59,0.85)'
+              : 'rgba(255,255,255,0.95)',
+            backdropFilter: 'blur(24px)',
+            boxShadow: isDarkMode
+              ? '0 20px 60px rgba(0,0,0,0.5)'
+              : '0 20px 60px rgba(0,0,0,0.12)',
+            overflow: 'hidden',
           }}
         >
-          <CardContent sx={{ p: { xs: 3, sm: 4, md: 5, lg: 6 } }}>
-            <Grid container spacing={{ xs: 3, md: 4 }}>
-              {/* 제목 - 전체 너비 */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="제목"
-                  variant="outlined"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  InputProps={{
-                    sx: {
-                      bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#ffffff',
-                      color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                      borderRadius: 2,
-                      fontSize: '1.25rem',
-                      fontWeight: 600,
-                    },
-                  }}
-                  InputLabelProps={{
-                    sx: {
-                      color: isDarkMode ? '#94a3b8' : '#475569',
-                      fontSize: '1.1rem',
-                    },
-                  }}
+          <CardContent
+            sx={{
+              p: { xs: 3, sm: 5, md: 6 },
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            <Box sx={{ width: '100%', maxWidth: 1100 }}>
+              <BasicInfoSection
+                title={title}
+                setTitle={setTitle}
+                problem={problem}
+                setProblem={setProblem}
+                solution={solution}
+                setSolution={setSolution}
+                inputSx={inputSx}
+                labelSx={labelSx}
+                isDarkMode={isDarkMode}
+              />
+
+              <Box sx={{ mt: 10 }}>
+                <ParticipantsSection
+                  reviewer={reviewer}
+                  setReviewer={setReviewer}
+                  coProposers={coProposers}
+                  setCoProposers={setCoProposers}
+                  isDarkMode={isDarkMode}
                 />
-              </Grid>
+              </Box>
 
-              {/* 문제점 도출 - 전체 너비 */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="문제점 도출"
-                  multiline
-                  rows={5}
-                  variant="outlined"
-                  value={problem}
-                  onChange={(e) => setProblem(e.target.value)}
-                  required
-                  InputProps={{
-                    sx: {
-                      bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#ffffff',
-                      color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                      borderRadius: 2,
-                    },
-                  }}
-                  InputLabelProps={{
-                    sx: { color: isDarkMode ? '#94a3b8' : '#475569' },
-                  }}
+              <Box sx={{ mt: 10 }}>
+                <ScheduleAndVisibilitySection
+                  startDate={startDate}
+                  setStartDate={setStartDate}
+                  endDate={endDate}
+                  setEndDate={setEndDate}
+                  security={security}
+                  setSecurity={setSecurity}
+                  inputSx={inputSx}
+                  labelSx={labelSx}
+                  isDarkMode={isDarkMode}
                 />
-              </Grid>
+              </Box>
 
-              {/* 해결대안 - 전체 너비 */}
-              <Grid item xs={12}>
+              {/* 4. 실행 계획 */}
+              <Box sx={{ mt: 10 }}>
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  sx={{
+                    mb: 4,
+                    color: isDarkMode ? '#60a5fa' : '#2563eb',
+                  }}
+                >
+                  4. 실행 계획
+                </Typography>
                 <TextField
                   fullWidth
-                  label="해결대안"
+                  label="구체적인 실행 계획을 작성해주세요"
                   multiline
-                  rows={6}
-                  variant="outlined"
-                  value={solution}
-                  onChange={(e) => setSolution(e.target.value)}
-                  required
-                  InputProps={{
-                    sx: {
-                      bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#ffffff',
-                      color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                      borderRadius: 2,
-                    },
-                  }}
-                  InputLabelProps={{
-                    sx: { color: isDarkMode ? '#94a3b8' : '#475569' },
-                  }}
-                />
-              </Grid>
-
-              {/* 심사자 + 공동제안자 (md 이상에서 50:50) */}
-              <Grid item xs={12} md={6}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: { xs: 3, md: 4 },
-                    borderRadius: 2,
-                    bgcolor: isDarkMode
-                      ? 'rgba(15,23,42,0.4)'
-                      : 'rgba(241,245,249,0.7)',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <FormLabel
-                    sx={{
-                      color: isDarkMode ? '#cbd5e1' : '#334155',
-                      mb: 2,
-                      fontWeight: 500,
-                    }}
-                  >
-                    심사자
-                  </FormLabel>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: 1,
-                      mb: 2,
-                      minHeight: 40,
-                    }}
-                  >
-                    {reviewer.map((name, i) => (
-                      <Chip
-                        key={i}
-                        label={name}
-                        color="primary"
-                        variant="outlined"
-                        size="medium"
-                      />
-                    ))}
-                  </Box>
-                  <Button
-                    variant="outlined"
-                    startIcon={<PersonAddIcon />}
-                    fullWidth
-                    onClick={() => alert('심사자 선택 팝업')}
-                    sx={{
-                      borderColor: isDarkMode
-                        ? 'rgba(165,180,252,0.6)'
-                        : 'primary.main',
-                      color: isDarkMode ? '#c7d2fe' : 'primary.main',
-                      borderRadius: 2,
-                      py: 1.2,
-                    }}
-                  >
-                    심사자 찾기
-                  </Button>
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: { xs: 3, md: 4 },
-                    borderRadius: 2,
-                    bgcolor: isDarkMode
-                      ? 'rgba(15,23,42,0.4)'
-                      : 'rgba(241,245,249,0.7)',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <FormLabel
-                    sx={{
-                      color: isDarkMode ? '#cbd5e1' : '#334155',
-                      mb: 2,
-                      fontWeight: 500,
-                    }}
-                  >
-                    공동제안자
-                  </FormLabel>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: 1,
-                      mb: 2,
-                      minHeight: 40,
-                    }}
-                  >
-                    {coProposers.map((name, i) => (
-                      <Chip
-                        key={i}
-                        label={name}
-                        color="secondary"
-                        variant="outlined"
-                        size="medium"
-                      />
-                    ))}
-                  </Box>
-                  <Button
-                    variant="outlined"
-                    startIcon={<GroupAddIcon />}
-                    fullWidth
-                    onClick={() => alert('공동제안자 선택 팝업')}
-                    sx={{
-                      borderColor: isDarkMode
-                        ? 'rgba(251,191,36,0.6)'
-                        : 'secondary.main',
-                      color: isDarkMode ? '#fde68a' : 'secondary.main',
-                      borderRadius: 2,
-                      py: 1.2,
-                    }}
-                  >
-                    팀원 찾기
-                  </Button>
-                </Paper>
-              </Grid>
-
-              {/* 실행 일정 - 전체 너비 */}
-              <Grid item xs={12}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: { xs: 3, md: 4 },
-                    borderRadius: 2,
-                    bgcolor: isDarkMode
-                      ? 'rgba(15,23,42,0.4)'
-                      : 'rgba(241,245,249,0.7)',
-                  }}
-                >
-                  <FormLabel
-                    sx={{
-                      color: isDarkMode ? '#cbd5e1' : '#334155',
-                      mb: 2,
-                      fontWeight: 500,
-                      display: 'block',
-                    }}
-                  >
-                    실행 일정
-                  </FormLabel>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        label="시작일"
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        fullWidth
-                        InputLabelProps={{ shrink: true }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <CalendarTodayIcon fontSize="small" />
-                            </InputAdornment>
-                          ),
-                          sx: {
-                            bgcolor: isDarkMode
-                              ? 'rgba(15,23,42,0.5)'
-                              : '#ffffff',
-                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                            borderRadius: 2,
-                          },
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        label="종료일"
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        fullWidth
-                        InputLabelProps={{ shrink: true }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <CalendarTodayIcon fontSize="small" />
-                            </InputAdornment>
-                          ),
-                          sx: {
-                            bgcolor: isDarkMode
-                              ? 'rgba(15,23,42,0.5)'
-                              : '#ffffff',
-                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                            borderRadius: 2,
-                          },
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </Grid>
-
-              {/* 보안 설정 - 전체 너비 (필요 시 위치 조정 가능) */}
-              <Grid item xs={12}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: { xs: 3, md: 4 },
-                    borderRadius: 2,
-                    bgcolor: isDarkMode
-                      ? 'rgba(15,23,42,0.4)'
-                      : 'rgba(241,245,249,0.7)',
-                  }}
-                >
-                  <FormControl component="fieldset">
-                    <FormLabel
-                      component="legend"
-                      sx={{
-                        color: isDarkMode ? '#cbd5e1' : '#334155',
-                        mb: 1.5,
-                        fontWeight: 500,
-                      }}
-                    >
-                      공개 범위
-                    </FormLabel>
-                    <RadioGroup
-                      row
-                      value={security}
-                      onChange={(e) =>
-                        setSecurity(e.target.value as 'public' | 'private')
-                      }
-                      sx={{ gap: 4 }}
-                    >
-                      <FormControlLabel
-                        value="public"
-                        control={<Radio color="primary" />}
-                        label="전체 공개"
-                        sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}
-                      />
-                      <FormControlLabel
-                        value="private"
-                        control={<Radio color="primary" />}
-                        label="전체 미공개"
-                        sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </Paper>
-              </Grid>
-
-              {/* 실행계획 - 전체 너비 */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="실행계획"
-                  multiline
-                  rows={8}
-                  variant="outlined"
+                  rows={7}
                   value={plan}
                   onChange={(e) => setPlan(e.target.value)}
-                  InputProps={{
-                    sx: {
-                      bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#ffffff',
-                      color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                      borderRadius: 2,
-                    },
-                  }}
-                  InputLabelProps={{
-                    sx: { color: isDarkMode ? '#94a3b8' : '#475569' },
-                  }}
+                  InputProps={{ sx: inputSx }}
+                  InputLabelProps={{ sx: labelSx }}
                 />
-              </Grid>
+              </Box>
 
-              {/* 파일 첨부 - 전체 너비 */}
-              <Grid item xs={12}>
-                <Paper
-                  elevation={0}
+              {/* 5. 첨부 자료 */}
+              <Box sx={{ mt: 10 }}>
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
                   sx={{
-                    p: { xs: 3, md: 4 },
-                    borderRadius: 2,
-                    bgcolor: isDarkMode
-                      ? 'rgba(15,23,42,0.4)'
-                      : 'rgba(241,245,249,0.7)',
+                    mb: 4,
+                    color: isDarkMode ? '#60a5fa' : '#2563eb',
                   }}
                 >
-                  <FormLabel
+                  5. 첨부 자료
+                </Typography>
+
+                <Paper
+                  sx={{
+                    p: { xs: 3, md: 4 },
+                    borderRadius: 3,
+                    bgcolor: isDarkMode
+                      ? 'rgba(30,41,59,0.85)'
+                      : 'rgba(255,255,255,0.94)',
+                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.07)'}`,
+                    boxShadow: isDarkMode
+                      ? '0 10px 40px rgba(0,0,0,0.4)'
+                      : '0 10px 40px rgba(0,0,0,0.1)',
+                    backdropFilter: 'blur(12px)',
+                  }}
+                >
+                  <Button
+                    component="label"
+                    variant="contained"
+                    startIcon={<AttachFileIcon />}
                     sx={{
-                      color: isDarkMode ? '#cbd5e1' : '#334155',
-                      mb: 2,
-                      fontWeight: 500,
-                      display: 'block',
+                      mb: 4,
+                      borderRadius: 3,
+                      px: { xs: 4, md: 6 },
+                      py: 1.6,
+                      fontWeight: 600,
+                      fontSize: '1.05rem',
+                      bgcolor: isDarkMode ? '#475569' : '#64748b',
+                      color: '#ffffff',
+                      '&:hover': {
+                        bgcolor: isDarkMode ? '#64748b' : '#475569',
+                        boxShadow: isDarkMode
+                          ? '0 6px 20px rgba(100,116,139,0.4)'
+                          : '0 6px 20px rgba(71,85,105,0.3)',
+                      },
                     }}
                   >
                     파일 첨부 (여러 개 가능)
-                  </FormLabel>
-
-                  <Button
-                    component="label"
-                    variant="outlined"
-                    startIcon={<AttachFileIcon />}
-                    sx={{
-                      mb: 3,
-                      borderColor: isDarkMode
-                        ? 'rgba(165,180,252,0.6)'
-                        : 'primary.main',
-                      color: isDarkMode ? '#c7d2fe' : 'primary.main',
-                      borderRadius: 2,
-                      px: 5,
-                      py: 1.2,
-                    }}
-                  >
-                    파일 선택
                     <input
                       type="file"
                       hidden
@@ -538,103 +295,145 @@ export default function NewIdea() {
                     />
                   </Button>
 
-                  {files.length > 0 && (
-                    <Grid container spacing={2}>
+                  {files.length > 0 ? (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5 }}>
                       {files.map((file, index) => (
-                        <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                          <Box
-                            sx={{
-                              position: 'relative',
-                              borderRadius: 2,
-                              overflow: 'hidden',
-                              border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)'}`,
-                              bgcolor: isDarkMode
-                                ? 'rgba(30,41,59,0.65)'
-                                : 'rgba(241,245,249,0.85)',
-                              aspectRatio: '1 / 1',
-                              boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
-                            }}
-                          >
-                            {filePreviews[index] ? (
-                              <Box
-                                component="img"
-                                src={filePreviews[index]}
-                                alt={file.name}
-                                sx={{
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: 'cover',
-                                }}
-                              />
-                            ) : (
-                              <Box
-                                sx={{
-                                  height: '100%',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  p: 2,
-                                  textAlign: 'center',
-                                }}
-                              >
-                                <Typography
-                                  variant="caption"
-                                  color="text.secondary"
-                                  noWrap
-                                >
-                                  {file.name}
-                                </Typography>
-                              </Box>
-                            )}
-
-                            <IconButton
-                              size="small"
-                              onClick={() => removeFile(index)}
+                        <Box
+                          key={index}
+                          sx={{
+                            position: 'relative',
+                            width: 160,
+                            height: 160,
+                            borderRadius: 3,
+                            overflow: 'hidden',
+                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.14)'}`,
+                            bgcolor: isDarkMode
+                              ? 'rgba(30,41,59,0.88)'
+                              : '#f8fafc',
+                            boxShadow: isDarkMode
+                              ? '0 4px 16px rgba(0,0,0,0.35)'
+                              : '0 4px 16px rgba(0,0,0,0.08)',
+                            transition:
+                              'transform 0.2s ease, box-shadow 0.2s ease',
+                            '&:hover': {
+                              transform: 'scale(1.04)',
+                              boxShadow: isDarkMode
+                                ? '0 12px 32px rgba(0,0,0,0.5)'
+                                : '0 12px 32px rgba(0,0,0,0.15)',
+                            },
+                          }}
+                        >
+                          {filePreviews[index] ? (
+                            <img
+                              src={filePreviews[index]}
+                              alt={file.name}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                              }}
+                            />
+                          ) : (
+                            <Box
                               sx={{
-                                position: 'absolute',
-                                top: 6,
-                                right: 6,
-                                bgcolor: 'rgba(0,0,0,0.65)',
-                                color: 'white',
-                                '&:hover': { bgcolor: 'rgba(0,0,0,0.85)' },
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                p: 2,
+                                textAlign: 'center',
+                                bgcolor: isDarkMode
+                                  ? 'rgba(15,23,42,0.4)'
+                                  : 'rgba(241,245,249,0.6)',
                               }}
                             >
-                              <CloseIcon fontSize="small" />
-                            </IconButton>
-                          </Box>
-                        </Grid>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: isDarkMode ? '#cbd5e1' : '#475569',
+                                  fontWeight: 500,
+                                }}
+                                noWrap
+                              >
+                                {file.name}
+                              </Typography>
+                            </Box>
+                          )}
+
+                          <IconButton
+                            size="small"
+                            onClick={() => removeFile(index)}
+                            sx={{
+                              position: 'absolute',
+                              top: 8,
+                              right: 8,
+                              bgcolor: isDarkMode
+                                ? 'rgba(0,0,0,0.7)'
+                                : 'rgba(0,0,0,0.65)',
+                              color: '#ffffff',
+                              '&:hover': {
+                                bgcolor: 'rgba(239,68,68,0.9)',
+                                transform: 'scale(1.15)',
+                              },
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <CloseIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
                       ))}
-                    </Grid>
+                    </Box>
+                  ) : (
+                    <Box
+                      sx={{
+                        py: 6,
+                        textAlign: 'center',
+                        color: isDarkMode ? '#94a3b8' : '#64748b',
+                      }}
+                    >
+                      <Typography variant="body1" fontWeight={500}>
+                        아직 첨부된 파일이 없습니다
+                      </Typography>
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        버튼을 눌러 자료를 추가해 주세요
+                      </Typography>
+                    </Box>
                   )}
                 </Paper>
-              </Grid>
-            </Grid>
+              </Box>
 
-            {/* 제출 버튼 - 가운데 정렬 */}
-            <Box sx={{ mt: 8, display: 'flex', justifyContent: 'center' }}>
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<SendIcon />}
-                onClick={handleSubmit}
-                disabled={loading}
-                sx={{
-                  px: { xs: 8, md: 12 },
-                  py: 1.8,
-                  borderRadius: 3,
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  minWidth: 240,
-                  boxShadow: '0 6px 24px rgba(99,102,241,0.3)',
-                  '&:hover': {
-                    boxShadow: '0 10px 32px rgba(99,102,241,0.4)',
-                    transform: 'translateY(-3px)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                {loading ? '등록 중...' : '제안 등록하기'}
-              </Button>
+              {/* 제출 버튼 */}
+              <Box sx={{ mt: 12, display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  onClick={handleSubmit}
+                  startIcon={loading ? null : <SendIcon />}
+                  sx={{
+                    px: 12,
+                    py: 2.5,
+                    borderRadius: 3,
+                    fontSize: '1.25rem',
+                    fontWeight: 700,
+                    minWidth: 320,
+                    boxShadow: isDarkMode
+                      ? '0 12px 32px rgba(59,130,246,0.45)'
+                      : '0 12px 32px rgba(59,130,246,0.3)',
+                    bgcolor: isDarkMode ? '#3b82f6' : '#2563eb',
+                    '&:hover': {
+                      bgcolor: isDarkMode ? '#60a5fa' : '#3b82f6',
+                      boxShadow: isDarkMode
+                        ? '0 16px 40px rgba(59,130,246,0.65)'
+                        : '0 16px 40px rgba(59,130,246,0.45)',
+                      transform: 'translateY(-4px)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  {loading ? '등록 중...' : '상상 제안하기'}
+                </Button>
+              </Box>
             </Box>
           </CardContent>
         </Card>

@@ -12,12 +12,11 @@ export default function MainLayout() {
       <Box
         component="main"
         sx={{
-          pt: { xs: 8, sm: 9 }, // AppBar 높이 (64px + 여유)
-          px: { xs: 2, sm: 3, md: 4 },
-          pb: 6,
+          px: 0,
+          py: 0,
         }}
       >
-        <Outlet /> {/* ← 여기서 Dashboard가 들어옴 */}
+        <Outlet />
       </Box>
     </Box>
   )
