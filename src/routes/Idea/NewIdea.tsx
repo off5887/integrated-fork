@@ -22,6 +22,10 @@ import BasicInfoSection from './BasicInfoSection'
 import ParticipantsSection from './ParticipantsSection'
 import ScheduleAndVisibilitySection from './ScheduleAndVisibilitySection'
 
+// 모달 컴포넌트 import (아래 두 파일이 이미 있다고 가정)
+import CoProposerSelectModal from './components/CoProposerSelectModal'
+import ReviewerSelectModal from './components/ReviewerSelectModal'
+
 export default function NewIdea() {
   const theme = useTheme()
   const { isDarkMode } = useThemeMode()
@@ -40,6 +44,23 @@ export default function NewIdea() {
   const [filePreviews, setFilePreviews] = useState<string[]>([])
 
   const [loading, setLoading] = useState(false)
+
+  // 모달 상태
+  const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
+  const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
+
+  // 선택 핸들러
+  const handleAddReviewer = (name: string) => {
+    if (!reviewer.includes(name)) {
+      setReviewer([...reviewer, name])
+    }
+  }
+
+  const handleAddCoProposer = (name: string) => {
+    if (!coProposers.includes(name)) {
+      setCoProposers([...coProposers, name])
+    }
+  }
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
@@ -197,6 +218,8 @@ export default function NewIdea() {
                   coProposers={coProposers}
                   setCoProposers={setCoProposers}
                   isDarkMode={isDarkMode}
+                  onOpenReviewerModal={() => setReviewerModalOpen(true)}
+                  onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
                 />
               </Box>
 
@@ -437,6 +460,21 @@ export default function NewIdea() {
             </Box>
           </CardContent>
         </Card>
+
+        {/* 모달 렌더링 */}
+        <ReviewerSelectModal
+          open={reviewerModalOpen}
+          onClose={() => setReviewerModalOpen(false)}
+          selected={reviewer}
+          onSelect={handleAddReviewer}
+        />
+
+        <CoProposerSelectModal
+          open={coProposerModalOpen}
+          onClose={() => setCoProposerModalOpen(false)}
+          selected={coProposers}
+          onSelect={handleAddCoProposer}
+        />
       </Box>
     </Box>
   )

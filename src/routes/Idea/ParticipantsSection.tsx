@@ -9,6 +9,9 @@ interface Props {
   coProposers: string[]
   setCoProposers: (v: string[]) => void
   isDarkMode: boolean
+  // 새로 추가된 두 함수 prop
+  onOpenReviewerModal: () => void
+  onOpenCoProposerModal: () => void
 }
 
 export default function ParticipantsSection({
@@ -17,6 +20,8 @@ export default function ParticipantsSection({
   coProposers,
   setCoProposers,
   isDarkMode,
+  onOpenReviewerModal,
+  onOpenCoProposerModal,
 }: Props) {
   return (
     <Box sx={{ width: '100%' }}>
@@ -118,7 +123,7 @@ export default function ParticipantsSection({
               variant="outlined"
               fullWidth
               startIcon={<PersonAddIcon />}
-              onClick={() => alert('심사자 선택 모달')}
+              onClick={onOpenReviewerModal} // ← 여기 연결됨
               sx={{
                 borderRadius: 2,
                 py: 1.5,
@@ -219,7 +224,7 @@ export default function ParticipantsSection({
               variant="outlined"
               fullWidth
               startIcon={<GroupAddIcon />}
-              onClick={() => alert('공동제안자 선택 모달')}
+              onClick={onOpenCoProposerModal} // ← 여기 연결됨
               sx={{
                 borderRadius: 2,
                 py: 1.5,
