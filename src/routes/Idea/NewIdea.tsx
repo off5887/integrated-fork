@@ -1,7 +1,5 @@
 // src/routes/idea/NewIdea.tsx
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import AttachFileIcon from '@mui/icons-material/AttachFile'
-import CloseIcon from '@mui/icons-material/Close'
 import SendIcon from '@mui/icons-material/Send'
 import {
   Box,
@@ -9,20 +7,20 @@ import {
   Card,
   CardContent,
   IconButton,
-  Paper,
   TextField,
   Typography,
   useTheme,
 } from '@mui/material'
-import { ChangeEvent, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '../../context/ThemeContext'
 
-import BasicInfoSection from './BasicInfoSection'
-import ParticipantsSection from './ParticipantsSection'
-import ScheduleAndVisibilitySection from './ScheduleAndVisibilitySection'
+import BasicInfoSection from './Components/BasicInfoSection'
+import FileUploadSection from './Components/FileUploadSection'
+import ParticipantsSection from './Components/ParticipantsSection'
+import ScheduleAndVisibilitySection from './Components/ScheduleAndVisibilitySection'
 
-// 모달 컴포넌트 import (아래 두 파일이 이미 있다고 가정)
+// 모달 컴포넌트
 import CoProposerSelectModal from './components/CoProposerSelectModal'
 import ReviewerSelectModal from './components/ReviewerSelectModal'
 
@@ -60,22 +58,6 @@ export default function NewIdea() {
     if (!coProposers.includes(name)) {
       setCoProposers([...coProposers, name])
     }
-  }
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-    const newFiles = Array.from(e.target.files)
-    setFiles((prev) => [...prev, ...newFiles])
-
-    const previews = newFiles.map((file) =>
-      file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
-    )
-    setFilePreviews((prev) => [...prev, ...previews])
-  }
-
-  const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index))
-    setFilePreviews((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleSubmit = () => {
@@ -263,166 +245,36 @@ export default function NewIdea() {
 
               {/* 5. 첨부 자료 */}
               <Box sx={{ mt: 10 }}>
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
-                  sx={{
-                    mb: 4,
-                    color: isDarkMode ? '#60a5fa' : '#2563eb',
+                <FileUploadSection
+                  files={files}
+                  filePreviews={filePreviews}
+                  onFilesChange={(newFilesFromChild) => {
+                    const addedFiles = newFilesFromChild.slice(files.length)
+                    const newPreviews = addedFiles.map((file) =>
+                      file.type.startsWith('image/')
+                        ? URL.createObjectURL(file)
+                        : '',
+                    )
+
+                    setFiles(newFilesFromChild)
+                    setFilePreviews((prev) => [...prev, ...newPreviews])
                   }}
-                >
-                  5. 첨부 자료
-                </Typography>
+                  onRemoveFile={(index) => {
+                    // 메모리 누수 방지
+                    if (
+                      filePreviews[index] &&
+                      files[index]?.type.startsWith('image/')
+                    ) {
+                      URL.revokeObjectURL(filePreviews[index])
+                    }
 
-                <Paper
-                  sx={{
-                    p: { xs: 3, md: 4 },
-                    borderRadius: 3,
-                    bgcolor: isDarkMode
-                      ? 'rgba(30,41,59,0.85)'
-                      : 'rgba(255,255,255,0.94)',
-                    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.07)'}`,
-                    boxShadow: isDarkMode
-                      ? '0 10px 40px rgba(0,0,0,0.4)'
-                      : '0 10px 40px rgba(0,0,0,0.1)',
-                    backdropFilter: 'blur(12px)',
+                    setFiles((prev) => prev.filter((_, i) => i !== index))
+                    setFilePreviews((prev) =>
+                      prev.filter((_, i) => i !== index),
+                    )
                   }}
-                >
-                  <Button
-                    component="label"
-                    variant="contained"
-                    startIcon={<AttachFileIcon />}
-                    sx={{
-                      mb: 4,
-                      borderRadius: 3,
-                      px: { xs: 4, md: 6 },
-                      py: 1.6,
-                      fontWeight: 600,
-                      fontSize: '1.05rem',
-                      bgcolor: isDarkMode ? '#475569' : '#64748b',
-                      color: '#ffffff',
-                      '&:hover': {
-                        bgcolor: isDarkMode ? '#64748b' : '#475569',
-                        boxShadow: isDarkMode
-                          ? '0 6px 20px rgba(100,116,139,0.4)'
-                          : '0 6px 20px rgba(71,85,105,0.3)',
-                      },
-                    }}
-                  >
-                    파일 첨부 (여러 개 가능)
-                    <input
-                      type="file"
-                      hidden
-                      multiple
-                      onChange={handleFileChange}
-                    />
-                  </Button>
-
-                  {files.length > 0 ? (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5 }}>
-                      {files.map((file, index) => (
-                        <Box
-                          key={index}
-                          sx={{
-                            position: 'relative',
-                            width: 160,
-                            height: 160,
-                            borderRadius: 3,
-                            overflow: 'hidden',
-                            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.14)'}`,
-                            bgcolor: isDarkMode
-                              ? 'rgba(30,41,59,0.88)'
-                              : '#f8fafc',
-                            boxShadow: isDarkMode
-                              ? '0 4px 16px rgba(0,0,0,0.35)'
-                              : '0 4px 16px rgba(0,0,0,0.08)',
-                            transition:
-                              'transform 0.2s ease, box-shadow 0.2s ease',
-                            '&:hover': {
-                              transform: 'scale(1.04)',
-                              boxShadow: isDarkMode
-                                ? '0 12px 32px rgba(0,0,0,0.5)'
-                                : '0 12px 32px rgba(0,0,0,0.15)',
-                            },
-                          }}
-                        >
-                          {filePreviews[index] ? (
-                            <img
-                              src={filePreviews[index]}
-                              alt={file.name}
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                              }}
-                            />
-                          ) : (
-                            <Box
-                              sx={{
-                                height: '100%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                p: 2,
-                                textAlign: 'center',
-                                bgcolor: isDarkMode
-                                  ? 'rgba(15,23,42,0.4)'
-                                  : 'rgba(241,245,249,0.6)',
-                              }}
-                            >
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  color: isDarkMode ? '#cbd5e1' : '#475569',
-                                  fontWeight: 500,
-                                }}
-                                noWrap
-                              >
-                                {file.name}
-                              </Typography>
-                            </Box>
-                          )}
-
-                          <IconButton
-                            size="small"
-                            onClick={() => removeFile(index)}
-                            sx={{
-                              position: 'absolute',
-                              top: 8,
-                              right: 8,
-                              bgcolor: isDarkMode
-                                ? 'rgba(0,0,0,0.7)'
-                                : 'rgba(0,0,0,0.65)',
-                              color: '#ffffff',
-                              '&:hover': {
-                                bgcolor: 'rgba(239,68,68,0.9)',
-                                transform: 'scale(1.15)',
-                              },
-                              transition: 'all 0.2s ease',
-                            }}
-                          >
-                            <CloseIcon fontSize="small" />
-                          </IconButton>
-                        </Box>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Box
-                      sx={{
-                        py: 6,
-                        textAlign: 'center',
-                        color: isDarkMode ? '#94a3b8' : '#64748b',
-                      }}
-                    >
-                      <Typography variant="body1" fontWeight={500}>
-                        아직 첨부된 파일이 없습니다
-                      </Typography>
-                      <Typography variant="body2" sx={{ mt: 1 }}>
-                        버튼을 눌러 자료를 추가해 주세요
-                      </Typography>
-                    </Box>
-                  )}
-                </Paper>
+                  isDarkMode={isDarkMode}
+                />
               </Box>
 
               {/* 제출 버튼 */}

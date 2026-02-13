@@ -2,6 +2,8 @@ import { Box, Card, CardContent, Typography, alpha } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useThemeMode } from '../../../context/ThemeContext'
 import { myIdeasData } from '../data'
+
+
 import { getCardStyle } from '../styles'
 
 export default function MyIdeas() {
