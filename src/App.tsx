@@ -13,7 +13,7 @@ import MainLayout from './layouts/MainLayout'
 import Dashboard from './routes/Dashboard/Dashboard'
 import NewIdea from './routes/Idea/NewIdea'
 import Judge from './routes/Judge/Judge'
-import RqMileage from './routes/Mileage/RequestMileage'
+import RqMileage from './routes/Mileage/MileagePage'
 import Stats from './routes/Stats/Stats'
 
 import Login from './routes/Login'
