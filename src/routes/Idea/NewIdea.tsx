@@ -20,7 +20,6 @@ import FileUploadSection from './Components/FileUploadSection'
 import ParticipantsSection from './Components/ParticipantsSection'
 import ScheduleAndVisibilitySection from './Components/ScheduleAndVisibilitySection'
 
-// 모달 컴포넌트
 import CoProposerSelectModal from './components/CoProposerSelectModal'
 import ReviewerSelectModal from './components/ReviewerSelectModal'
 
@@ -43,21 +42,21 @@ export default function NewIdea() {
 
   const [loading, setLoading] = useState(false)
 
-  // 모달 상태
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
   const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
 
-  // 선택 핸들러
-  const handleAddReviewer = (name: string) => {
-    if (!reviewer.includes(name)) {
-      setReviewer([...reviewer, name])
-    }
+  // 심사자 토글 (추가 ↔ 제거)
+  const handleToggleReviewer = (name: string) => {
+    setReviewer((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    )
   }
 
-  const handleAddCoProposer = (name: string) => {
-    if (!coProposers.includes(name)) {
-      setCoProposers([...coProposers, name])
-    }
+  // 공동제안자도 토글로 변경하고 싶다면 아래와 같이
+  const handleToggleCoProposer = (name: string) => {
+    setCoProposers((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+    )
   }
 
   const handleSubmit = () => {
@@ -120,7 +119,6 @@ export default function NewIdea() {
       }}
     >
       <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
-        {/* 헤더 */}
         <Box
           sx={{
             display: 'flex',
@@ -219,7 +217,6 @@ export default function NewIdea() {
                 />
               </Box>
 
-              {/* 4. 실행 계획 */}
               <Box sx={{ mt: 10 }}>
                 <Typography
                   variant="h5"
@@ -243,7 +240,6 @@ export default function NewIdea() {
                 />
               </Box>
 
-              {/* 5. 첨부 자료 */}
               <Box sx={{ mt: 10 }}>
                 <FileUploadSection
                   files={files}
@@ -260,7 +256,6 @@ export default function NewIdea() {
                     setFilePreviews((prev) => [...prev, ...newPreviews])
                   }}
                   onRemoveFile={(index) => {
-                    // 메모리 누수 방지
                     if (
                       filePreviews[index] &&
                       files[index]?.type.startsWith('image/')
@@ -277,7 +272,6 @@ export default function NewIdea() {
                 />
               </Box>
 
-              {/* 제출 버튼 */}
               <Box sx={{ mt: 12, display: 'flex', justifyContent: 'center' }}>
                 <Button
                   variant="contained"
@@ -313,19 +307,18 @@ export default function NewIdea() {
           </CardContent>
         </Card>
 
-        {/* 모달 렌더링 */}
         <ReviewerSelectModal
           open={reviewerModalOpen}
           onClose={() => setReviewerModalOpen(false)}
           selected={reviewer}
-          onSelect={handleAddReviewer}
+          onToggle={handleToggleReviewer}
         />
 
         <CoProposerSelectModal
           open={coProposerModalOpen}
           onClose={() => setCoProposerModalOpen(false)}
           selected={coProposers}
-          onSelect={handleAddCoProposer}
+          onToggle={handleToggleCoProposer} // ← 공동제안자도 토글 가능
         />
       </Box>
     </Box>

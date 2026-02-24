@@ -9,7 +9,6 @@ interface Props {
   coProposers: string[]
   setCoProposers: (v: string[]) => void
   isDarkMode: boolean
-  // 새로 추가된 두 함수 prop
   onOpenReviewerModal: () => void
   onOpenCoProposerModal: () => void
 }
@@ -84,27 +83,67 @@ export default function ParticipantsSection({
                 mb: 3.5,
               }}
             >
-              {reviewer.map((name, i) => (
-                <Chip
-                  key={i}
-                  label={name}
-                  color="primary"
-                  variant="outlined"
-                  size="medium"
-                  sx={{
-                    borderColor: isDarkMode ? '#60a5fa' : '#2563eb',
-                    color: isDarkMode ? '#dbeafe' : '#1e40af',
-                    bgcolor: isDarkMode
-                      ? 'rgba(96,165,250,0.15)'
-                      : 'rgba(37,99,235,0.1)',
-                    '&:hover': {
+              {reviewer.map((name, i) => {
+                const [displayName, deptPart] = name.includes(' (')
+                  ? name.split(' (')
+                  : [name, '']
+                const dept = deptPart ? deptPart.replace(')', '') : ''
+
+                return (
+                  <Chip
+                    key={i}
+                    label={
+                      <Box
+                        component="span"
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'flex-start',
+                          lineHeight: 1.3,
+                        }}
+                      >
+                        <span>{displayName.trim()}</span>
+                        {dept && (
+                          <Typography
+                            component="span"
+                            variant="caption"
+                            sx={{
+                              fontSize: '0.68rem',
+                              opacity: 0.75,
+                            }}
+                          >
+                            {dept}
+                          </Typography>
+                        )}
+                      </Box>
+                    }
+                    color="primary"
+                    variant="outlined"
+                    size="medium"
+                    onDelete={() =>
+                      setReviewer((prev) => prev.filter((_, idx) => idx !== i))
+                    }
+                    sx={{
+                      borderColor: isDarkMode ? '#60a5fa' : '#2563eb',
+                      color: isDarkMode ? '#dbeafe' : '#1e40af',
                       bgcolor: isDarkMode
-                        ? 'rgba(96,165,250,0.25)'
-                        : 'rgba(37,99,235,0.15)',
-                    },
-                  }}
-                />
-              ))}
+                        ? 'rgba(96,165,250,0.15)'
+                        : 'rgba(37,99,235,0.1)',
+                      height: 'auto',
+                      py: 0.5,
+                      px: 0.5,
+                      '& .MuiChip-label': {
+                        padding: '4px 12px',
+                      },
+                      '&:hover': {
+                        bgcolor: isDarkMode
+                          ? 'rgba(96,165,250,0.25)'
+                          : 'rgba(37,99,235,0.15)',
+                      },
+                    }}
+                  />
+                )
+              })}
 
               {reviewer.length === 0 && (
                 <Typography
@@ -123,7 +162,7 @@ export default function ParticipantsSection({
               variant="outlined"
               fullWidth
               startIcon={<PersonAddIcon />}
-              onClick={onOpenReviewerModal} // ← 여기 연결됨
+              onClick={onOpenReviewerModal}
               sx={{
                 borderRadius: 2,
                 py: 1.5,
@@ -192,6 +231,9 @@ export default function ParticipantsSection({
                   color="secondary"
                   variant="outlined"
                   size="medium"
+                  onDelete={() =>
+                    setCoProposers((prev) => prev.filter((_, idx) => idx !== i))
+                  }
                   sx={{
                     borderColor: isDarkMode ? '#a78bfa' : '#7c3aed',
                     color: isDarkMode ? '#e9d5ff' : '#5b21b6',
@@ -224,7 +266,7 @@ export default function ParticipantsSection({
               variant="outlined"
               fullWidth
               startIcon={<GroupAddIcon />}
-              onClick={onOpenCoProposerModal} // ← 여기 연결됨
+              onClick={onOpenCoProposerModal}
               sx={{
                 borderRadius: 2,
                 py: 1.5,
