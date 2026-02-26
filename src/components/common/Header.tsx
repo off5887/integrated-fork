@@ -9,6 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import MenuIcon from '@mui/icons-material/Menu'
 import RateReviewIcon from '@mui/icons-material/RateReview'
 import SavingsIcon from '@mui/icons-material/Savings'
+import SettingsIcon from '@mui/icons-material/Settings' // ← 추가
 import {
   AppBar,
   Box,
@@ -37,6 +38,9 @@ const menuItems = [
   { icon: <RateReviewIcon />, text: '심사하기', path: '/judge' },
   { icon: <BarChartIcon />, text: '통계', path: '/stats' },
 ]
+
+// 설정 메뉴 항목 (필요하면 나중에 하위 메뉴로 확장 가능)
+const settingsItem = { icon: <SettingsIcon />, text: '설정', path: '/settings' }
 
 export default function Header() {
   const theme = useTheme()
@@ -98,7 +102,7 @@ export default function Header() {
           {/* 중앙 빈 공간 */}
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* PC 버전: 텍스트 + 아이콘 메뉴 + 테마 토글 + 로그아웃 */}
+          {/* PC 버전: 텍스트 메뉴 + 설정 + 테마 + 로그아웃 */}
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               {menuItems.map((item) => (
@@ -128,6 +132,23 @@ export default function Header() {
                   {item.text}
                 </Button>
               ))}
+
+              {/* 설정 아이콘 (PC) */}
+              <Tooltip title="설정" arrow placement="bottom">
+                <IconButton
+                  onClick={() => handleNavigate(settingsItem.path)}
+                  sx={{
+                    color: isDarkMode ? '#f1f5f9' : '#111827',
+                    '&:hover': {
+                      bgcolor: isDarkMode
+                        ? 'rgba(99, 102, 241, 0.15)'
+                        : 'rgba(59, 130, 246, 0.15)',
+                    },
+                  }}
+                >
+                  {settingsItem.icon}
+                </IconButton>
+              </Tooltip>
 
               {/* 테마 토글 */}
               <Tooltip
@@ -262,6 +283,34 @@ export default function Header() {
                 </ListItemButton>
               </ListItem>
             ))}
+
+            {/* 설정 메뉴 (모바일) */}
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => handleNavigate(settingsItem.path)}
+                sx={{
+                  borderRadius: 1,
+                  '&:hover': {
+                    bgcolor: isDarkMode
+                      ? 'rgba(99, 102, 241, 0.15)'
+                      : 'rgba(59, 130, 246, 0.15)',
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{ color: isDarkMode ? '#c7d2fe' : '#3b82f6' }}
+                >
+                  {settingsItem.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={settingsItem.text}
+                  primaryTypographyProps={{
+                    fontWeight: 600,
+                    color: isDarkMode ? '#f1f5f9' : '#111827',
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
 
             <Divider
               sx={{

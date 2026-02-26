@@ -17,6 +17,7 @@ import RqMileage from './routes/Mileage/MileagePage'
 import Stats from './routes/Stats/Stats'
 
 import Login from './routes/Login'
+import Settings from './routes/Settings/Settings'
 import Welcome from './routes/Welcome/Welcome'
 
 export default function App() {
@@ -64,6 +65,8 @@ export default function App() {
               {/* 필요 시 다른 보호된 페이지들 추가 */}
               {/* 예: <Route path="/mileage" element={<Mileage />} /> */}
               {/* 예: <Route path="/stats" element={<Stats />} /> */}
+
+              <Route path="/settings" element={<Settings />} />
             </Route>
           </Route>
 
