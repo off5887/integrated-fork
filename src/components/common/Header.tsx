@@ -4,12 +4,15 @@ import Brightness4Icon from '@mui/icons-material/Brightness4'
 import Brightness7Icon from '@mui/icons-material/Brightness7'
 import CloseIcon from '@mui/icons-material/Close'
 import DashboardIcon from '@mui/icons-material/Dashboard'
+import GroupAddIcon from '@mui/icons-material/GroupAdd' // ← 새로 추가
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
 import LogoutIcon from '@mui/icons-material/Logout'
 import MenuIcon from '@mui/icons-material/Menu'
 import RateReviewIcon from '@mui/icons-material/RateReview'
 import SavingsIcon from '@mui/icons-material/Savings'
-import SettingsIcon from '@mui/icons-material/Settings' // ← 추가
+import SecurityIcon from '@mui/icons-material/Security' // ← 새로 추가 (용병 관련 아이콘)
+import SettingsIcon from '@mui/icons-material/Settings'
+
 import {
   AppBar,
   Box,
@@ -29,7 +32,7 @@ import {
 import { useTheme } from '@mui/material/styles'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useThemeMode } from '../../context/ThemeContext' // 경로에 맞게 수정 필요
+import { useThemeMode } from '../../context/ThemeContext'
 
 const menuItems = [
   { icon: <DashboardIcon />, text: '대시보드', path: '/dashboard' },
@@ -37,9 +40,12 @@ const menuItems = [
   { icon: <SavingsIcon />, text: '마일리지', path: '/rqMileage' },
   { icon: <RateReviewIcon />, text: '심사하기', path: '/judge' },
   { icon: <BarChartIcon />, text: '통계', path: '/stats' },
+  // ─────────────── 새로 추가 ───────────────
+  { icon: <SecurityIcon />, text: '용병 지원', path: '/mercenary-support' },
+  { icon: <GroupAddIcon />, text: '용병 관리', path: '/mercenary-management' },
+  // ────────────────────────────────────────
 ]
 
-// 설정 메뉴 항목 (필요하면 나중에 하위 메뉴로 확장 가능)
 const settingsItem = { icon: <SettingsIcon />, text: '설정', path: '/settings' }
 
 export default function Header() {
@@ -49,9 +55,7 @@ export default function Header() {
   const navigate = useNavigate()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const toggleDrawer = (open: boolean) => () => {
-    setDrawerOpen(open)
-  }
+  const toggleDrawer = (open: boolean) => () => setDrawerOpen(open)
 
   const handleNavigate = (path: string) => {
     navigate(path)
@@ -99,10 +103,8 @@ export default function Header() {
             />
           </Box>
 
-          {/* 중앙 빈 공간 */}
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* PC 버전: 텍스트 메뉴 + 설정 + 테마 + 로그아웃 */}
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               {menuItems.map((item) => (
@@ -133,7 +135,6 @@ export default function Header() {
                 </Button>
               ))}
 
-              {/* 설정 아이콘 (PC) */}
               <Tooltip title="설정" arrow placement="bottom">
                 <IconButton
                   onClick={() => handleNavigate(settingsItem.path)}
@@ -150,7 +151,6 @@ export default function Header() {
                 </IconButton>
               </Tooltip>
 
-              {/* 테마 토글 */}
               <Tooltip
                 title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
                 arrow
@@ -171,7 +171,6 @@ export default function Header() {
                 </IconButton>
               </Tooltip>
 
-              {/* 로그아웃 */}
               <Tooltip title="로그아웃" arrow placement="bottom">
                 <IconButton
                   onClick={handleLogout}
@@ -191,14 +190,11 @@ export default function Header() {
             </Box>
           )}
 
-          {/* 모바일 버전: 테마 토글 + 햄버거 메뉴 */}
           {isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton
                 onClick={toggleTheme}
-                sx={{
-                  color: isDarkMode ? '#f1f5f9' : '#111827',
-                }}
+                sx={{ color: isDarkMode ? '#f1f5f9' : '#111827' }}
               >
                 {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
               </IconButton>
@@ -206,9 +202,7 @@ export default function Header() {
               <IconButton
                 edge="end"
                 onClick={toggleDrawer(true)}
-                sx={{
-                  color: isDarkMode ? '#f1f5f9' : '#111827',
-                }}
+                sx={{ color: isDarkMode ? '#f1f5f9' : '#111827' }}
               >
                 <MenuIcon />
               </IconButton>
@@ -284,7 +278,6 @@ export default function Header() {
               </ListItem>
             ))}
 
-            {/* 설정 메뉴 (모바일) */}
             <ListItem disablePadding>
               <ListItemButton
                 onClick={() => handleNavigate(settingsItem.path)}
@@ -321,7 +314,6 @@ export default function Header() {
               }}
             />
 
-            {/* 모바일 테마 토글 */}
             <ListItem disablePadding>
               <ListItemButton
                 onClick={toggleTheme}
@@ -349,7 +341,6 @@ export default function Header() {
               </ListItemButton>
             </ListItem>
 
-            {/* 모바일 로그아웃 */}
             <ListItem disablePadding>
               <ListItemButton
                 onClick={handleLogout}
@@ -367,10 +358,7 @@ export default function Header() {
                 </ListItemIcon>
                 <ListItemText
                   primary="로그아웃"
-                  primaryTypographyProps={{
-                    fontWeight: 600,
-                    color: '#ef4444',
-                  }}
+                  primaryTypographyProps={{ fontWeight: 600, color: '#ef4444' }}
                 />
               </ListItemButton>
             </ListItem>
@@ -378,7 +366,6 @@ export default function Header() {
         </Box>
       </Drawer>
 
-      {/* 헤더 높이만큼 spacer */}
       <Toolbar />
     </>
   )
