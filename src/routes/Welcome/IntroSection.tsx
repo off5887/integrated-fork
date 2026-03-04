@@ -2,7 +2,6 @@
 import {
   alpha,
   Box,
-  Button,
   Fade,
   Grid,
   Slide,
@@ -15,6 +14,14 @@ export default function IntroSection() {
   const theme = useTheme()
   const { isDarkMode } = useThemeMode()
 
+  const glassBg = isDarkMode
+    ? 'linear-gradient(145deg, rgba(15, 23, 42, 0.72), rgba(30, 41, 59, 0.52))'
+    : 'linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.82))'
+
+  const glassBorder = isDarkMode
+    ? alpha('#64748b', 0.12)
+    : alpha(theme.palette.primary.main, 0.08)
+
   return (
     <Box
       component="section"
@@ -23,124 +30,235 @@ export default function IntroSection() {
         width: '100%',
         scrollSnapAlign: 'start',
         scrollSnapStop: 'always',
-        flexShrink: 0,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        px: { xs: 2.5, sm: 4, md: 6, lg: 10 },
-        py: { xs: 3, sm: 5, md: 7 },
-        bgcolor: alpha(
-          theme.palette.background.paper,
-          isDarkMode ? 0.35 : 0.45,
-        ),
-        border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.22 : 0.12)}`,
-        backdropFilter: 'blur(10px)',
+        px: { xs: 2, sm: 3, md: 4, lg: 5, xl: 6 },
+        bgcolor: isDarkMode ? '#0a0f1c' : '#f8fafc',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      <Slide direction="up" in timeout={600} mountOnEnter unmountOnExit>
-        <Fade in timeout={900}>
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background: isDarkMode
+            ? 'radial-gradient(circle at 30% 20%, rgba(147, 197, 253, 0.07) 0%, transparent 60%)'
+            : 'radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 65%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <Slide direction="up" in timeout={800} mountOnEnter unmountOnExit>
+        <Fade in timeout={1100}>
           <Box
             sx={{
               width: '100%',
-              maxWidth: { xs: 480, sm: 700, md: 900, lg: 1100 },
+              maxWidth: { xs: 520, sm: 680, md: '86%', lg: 1080, xl: 1200 },
               mx: 'auto',
-              p: { xs: 3, sm: 5, md: 6, lg: 7 },
-              borderRadius: { xs: 2, sm: 3 },
-              backdropFilter: 'blur(12px)',
-              border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.22 : 0.12)}`,
+              p: {
+                xs: 3.5,
+                sm: 5,
+                md: 6.5, // ← 여기 늘림 (기존 5 → 6.5)
+                lg: 8, // ← 여기 늘림 (기존 7 → 8)
+                xl: 9,
+              },
+              borderRadius: { xs: 4, md: 5, lg: 6 },
+              background: glassBg,
+              border: `1px solid ${glassBorder}`,
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
               boxShadow: isDarkMode
-                ? '0 12px 40px rgba(0,0,0,0.55), 0 0 24px rgba(96,165,250,0.10)'
-                : theme.shadows[4],
+                ? '0 24px 70px -10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07)'
+                : '0 24px 70px -10px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.92)',
+              position: 'relative',
+              zIndex: 2,
+              transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              overflow: 'hidden',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                boxShadow: isDarkMode
+                  ? '0 36px 90px -8px rgba(0,0,0,0.65), 0 0 0 1px rgba(147,197,253,0.1)'
+                  : '0 36px 90px -8px rgba(0,0,0,0.18), 0 0 0 1px rgba(59,130,246,0.09)',
+              },
             }}
           >
-            <Typography
-              variant="h3"
-              fontWeight={800}
-              align="center"
-              sx={{
-                fontSize: { xs: '1.85rem', sm: '2.2rem', md: '2.8rem' },
-                lineHeight: 1.2,
-                mb: { xs: 3.5, sm: 4.5, md: 5.5 },
-                letterSpacing: '-0.01em',
-                color: theme.palette.text.primary,
-              }}
-            >
-              곰곰세상이란?
-            </Typography>
+            <Box sx={{ textAlign: 'center', mb: { xs: 3, md: 4.5, lg: 5.5 } }}>
+              <Typography
+                variant="h2"
+                fontWeight={900}
+                sx={{
+                  fontSize: {
+                    xs: '1.6rem',
+                    sm: '2rem',
+                    md: '2.3rem',
+                    lg: '2.5rem',
+                    xl: '3rem',
+                  },
+                  lineHeight: 1.1,
+                  letterSpacing: '-0.03em',
+                  mb: 1, // ← 제목 아래 여백 줄임 (기존 1.5 → 1)
+                  background: isDarkMode
+                    ? 'linear-gradient(90deg, #c4d0ff, #60a5fa, #a5b4fc)'
+                    : `linear-gradient(90deg, ${theme.palette.primary.dark}, #3b82f6)`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                곰곰세상이란?
+              </Typography>
+
+              <Typography
+                variant="h4"
+                sx={{
+                  fontSize: {
+                    xs: '1rem',
+                    sm: '1.1rem',
+                    md: '1.15rem',
+                    lg: '1.3rem',
+                  },
+                  fontWeight: 500,
+                  color: isDarkMode ? '#94a3b8' : '#64748b',
+                  maxWidth: 660,
+                  mb: 1, // ← 서브타이틀 아래 여백 줄임 (기존 1.5 → 1)
+                  mx: 'auto',
+                }}
+              >
+                누구나 참여하는 혁신 플랫폼
+              </Typography>
+            </Box>
 
             <Typography
               variant="body1"
               align="center"
               sx={{
-                fontSize: { xs: '0.96rem', sm: '1.02rem', md: '1.1rem' },
-                lineHeight: 1.7,
-                maxWidth: 760,
+                fontSize: {
+                  xs: '0.98rem',
+                  sm: '1.02rem',
+                  md: '1.06rem',
+                  lg: '1.1rem',
+                },
+                lineHeight: 1.78,
+                maxWidth: 680,
                 mx: 'auto',
-                mb: { xs: 5, sm: 7, md: 8 },
-                color: theme.palette.text.secondary,
+                mb: { xs: 3.5, md: 4.5, lg: 5 }, // ← 본문 아래 여백도 조금 줄임
+                color: isDarkMode ? '#94a3b8' : '#64748b',
+                fontWeight: 400,
               }}
             >
-              곰곰세상은 대림바스 직원 모두가 자유롭게 참여하는{' '}
-              <Box component="span" fontWeight={600} color="primary.main">
-                업무 개선 & 혁신 제안 제도
+              곰곰세상은 대림바스 구성원 누구나 자유롭게 아이디어를 제안하고,
+              실행되는 순간{' '}
+              <Box
+                component="span"
+                sx={{ color: 'primary.main', fontWeight: 700 }}
+              >
+                실질적인 보상
               </Box>
-              입니다. 누구나 아이디어를 제안하고, 채택·실행되면
-              생선(마일리지)으로 보상받으며, 생선이 쌓일수록 나만의 곰곰이가
-              진화하는 재미까지 있는 시스템이에요.
+              을 받는 내부 혁신 제도입니다. 제안할수록, 생선이 쌓일수록 나만의
+              곰곰이가 성장하는 재미까지 더했습니다.
             </Typography>
 
             <Grid
               container
-              spacing={{ xs: 2.5, sm: 3, md: 4 }}
-              justifyContent="center"
+              spacing={{ xs: 2, sm: 2.5, md: 3, lg: 4 }}
+              sx={{
+                width: '100%',
+                maxWidth: '100%',
+                mx: 'auto',
+                mb: { xs: 4, md: 6, lg: 7 }, // ← 그리드 아래 여백도 약간 줄임
+              }}
             >
               {[
                 {
+                  number: '01',
                   title: '누구나 제안 가능',
-                  desc: '복잡한 절차 없이 간단히 등록',
+                  desc: '복잡한 승인 절차 없이 간단하게 아이디어를 등록하고 공유하세요.',
                 },
                 {
-                  title: '생선 = 현금 보상',
-                  desc: '1마리 = 100원, 매월 급여에 반영',
+                  number: '02',
+                  title: '실질적인 보상',
+                  desc: '1마리 생선 = 100원. 채택된 제안은 매월 급여에 직접 반영됩니다.',
                 },
                 {
-                  title: '곰곰이 진화',
-                  desc: '생선 모을수록 곰곰이가 레벨업!',
+                  number: '03',
+                  title: '곰곰이와 함께 성장',
+                  desc: '생선을 모을수록 곰곰이가 진화합니다. 레벨업의 재미를 느껴보세요.',
                 },
               ].map((item, idx) => (
-                <Grid item xs={12} sm={6} md={4} key={idx}>
+                <Grid item xs={12} md={4} key={idx}>
                   <Box
                     sx={{
-                      p: { xs: 2.5, sm: 3.5, md: 4.5 },
-                      borderRadius: 3,
                       height: '100%',
-                      border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.22 : 0.15)}`,
-                      transition: 'all 0.28s ease',
+                      p: { xs: 2.5, sm: 3, md: 3.5, lg: 4.5 },
+                      borderRadius: 4,
+                      background: isDarkMode
+                        ? 'rgba(15, 23, 42, 0.62)'
+                        : 'rgba(255, 255, 255, 0.78)',
+                      border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.09 : 0.07)}`,
+                      backdropFilter: 'blur(12px)',
+                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                      position: 'relative',
+                      overflow: 'hidden',
                       '&:hover': {
-                        transform: 'translateY(-6px)',
+                        transform: 'translateY(-10px)',
+                        borderColor: alpha(theme.palette.primary.main, 0.35),
                         boxShadow: isDarkMode
-                          ? '0 12px 32px rgba(0,0,0,0.5), 0 0 20px rgba(96,165,250,0.15)'
-                          : `0 10px 24px ${alpha(theme.palette.primary.main, 0.22)}`,
+                          ? '0 20px 50px -10px rgba(59, 130, 246, 0.25)'
+                          : '0 20px 50px -10px rgba(59, 130, 246, 0.2)',
+                      },
+                      '&::before': {
+                        content: `"${item.number}"`,
+                        position: 'absolute',
+                        top: 16,
+                        right: 16,
+                        fontSize: '2.8rem',
+                        fontWeight: 900,
+                        lineHeight: 1,
+                        opacity: isDarkMode ? 0.2 : 0.2,
+                        color: '#94a3b8',
+                        pointerEvents: 'none',
                       },
                     }}
                   >
-                    <Typography
-                      variant="h6"
-                      fontWeight={700}
-                      color="primary.main"
-                      sx={{
-                        mb: 1.2,
-                        fontSize: { xs: '1.05rem', sm: '1.15rem' },
-                      }}
-                    >
-                      {item.title}
-                    </Typography>
+                    <Box sx={{ mb: 2.5, position: 'relative', zIndex: 1 }}>
+                      <Box
+                        sx={{
+                          width: 36,
+                          height: 3,
+                          bgcolor: 'primary.main',
+                          borderRadius: 2,
+                          mb: 2,
+                        }}
+                      />
+                      <Typography
+                        variant="h6"
+                        fontWeight={800}
+                        sx={{
+                          fontSize: {
+                            xs: '1.1rem',
+                            md: '1.18rem',
+                            lg: '1.25rem',
+                          },
+                          mb: 1.2,
+                        }}
+                      >
+                        {item.title}
+                      </Typography>
+                    </Box>
+
                     <Typography
                       variant="body2"
-                      color="text.secondary"
                       sx={{
-                        fontSize: { xs: '0.88rem', sm: '0.95rem' },
-                        lineHeight: 1.55,
+                        fontSize: {
+                          xs: '0.9rem',
+                          md: '0.94rem',
+                          lg: '0.97rem',
+                        },
+                        lineHeight: 1.65,
+                        color: isDarkMode ? '#94a3b8' : '#64748b',
+                        position: 'relative',
+                        zIndex: 1,
                       }}
                     >
                       {item.desc}
@@ -150,29 +268,7 @@ export default function IntroSection() {
               ))}
             </Grid>
 
-            <Box sx={{ textAlign: 'center', mt: { xs: 5, sm: 7, md: 9 } }}>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{
-                  minWidth: { xs: 200, sm: 240 },
-                  py: { xs: 1.4, sm: 1.6 },
-                  px: { xs: 5, sm: 7 },
-                  borderRadius: 50,
-                  fontSize: { xs: '0.98rem', sm: '1.05rem' },
-                  fontWeight: 600,
-                  bgcolor: theme.palette.primary.main,
-                  boxShadow: `0 6px 20px ${alpha(theme.palette.primary.main, isDarkMode ? 0.4 : 0.3)}`,
-                  '&:hover': {
-                    bgcolor: theme.palette.primary.dark,
-                    boxShadow: `0 10px 30px ${alpha(theme.palette.primary.main, isDarkMode ? 0.5 : 0.35)}`,
-                  },
-                }}
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              >
-                지금 상상 제안하기 🐻
-              </Button>
-            </Box>
+            {/* 버튼이 있었다면 여기 다시 추가하세요 */}
           </Box>
         </Fade>
       </Slide>

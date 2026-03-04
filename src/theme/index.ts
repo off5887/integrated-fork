@@ -15,7 +15,7 @@ export const lightPalette = {
   cardItemHoverBg: 'rgba(226, 232, 240, 0.98)',
 
   textPrimary: '#0f172a',
-  textSecondary: '#475569', // 로그인 페이지 secondary와 비슷하게 조정
+  textSecondary: '#8793a3', // 로그인 페이지 secondary와 비슷하게 조정
 
   primary: {
     main: '#0ea5e9', // 로그인 페이지와 완전히 동일
@@ -68,7 +68,7 @@ export const darkPalette = {
   cardItemHoverBg: 'rgba(71, 85, 105, 0.78)',
 
   textPrimary: '#f1f5f9',
-  textSecondary: '#94a3b8', // 로그인 페이지와 동일
+  textSecondary: '#a8b2c0', // 로그인 페이지와 동일
 
   primary: {
     main: '#60a5fa', // ← 핵심 변경: #38bdf8보다 덜 네온, 더 HUD/은은한 cyan
