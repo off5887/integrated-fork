@@ -1,4 +1,4 @@
-// src/routes/Dashboard/Dashboard.tsx (Welcome 페이지)
+// src/routes/Dashboard/Dashboard.tsx
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import {
@@ -16,7 +16,7 @@ import IntroSection from './IntroSection'
 
 export default function Welcome() {
   const navigate = useNavigate()
-  const theme = useTheme() // MUI 테마 직접 사용
+  const theme = useTheme()
   const { isDarkMode, toggleTheme } = useThemeMode()
   const fishCount = 3200 // 임시값
 
@@ -30,10 +30,9 @@ export default function Welcome() {
         overflowY: 'scroll',
         scrollSnapType: 'y mandatory',
         scrollBehavior: 'smooth',
-        bgcolor: theme.palette.background.default,
         background: `linear-gradient(135deg, ${
-          isDarkMode ? '#0b121f' : '#f8fafc'
-        } 0%, ${isDarkMode ? '#1a2336' : '#e2e8f0'} 100%)`,
+          isDarkMode ? '#0f172a' : '#f8fafc'
+        } 0%, ${isDarkMode ? '#1e293b' : '#e2e8f0'} 100%)`,
         color: theme.palette.text.primary,
         WebkitOverflowScrolling: 'touch',
         position: 'relative',
@@ -43,7 +42,7 @@ export default function Welcome() {
         },
       }}
     >
-      {/* 다크모드 토글 */}
+      {/* 다크모드 토글 - 로그인과 동일하게 */}
       <IconButton
         onClick={toggleTheme}
         size="medium"
@@ -57,7 +56,7 @@ export default function Welcome() {
             isDarkMode ? 0.7 : 0.85,
           ),
           backdropFilter: 'blur(12px)',
-          border: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
+          border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.2 : 0.12)}`,
           borderRadius: '50%',
           boxShadow: theme.shadows[4],
           transition: 'all 0.25s ease',
@@ -93,8 +92,7 @@ export default function Welcome() {
           py: { xs: 4, md: 8 },
           scrollSnapAlign: 'start',
           scrollSnapStop: 'always',
-          bgcolor: theme.palette.background.paper,
-          border: `1px solid ${theme.palette.divider}`,
+          border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.2 : 0.1)}`,
           backdropFilter: 'blur(16px)',
           boxShadow: theme.shadows[6],
           margin: 0,
@@ -125,7 +123,9 @@ export default function Welcome() {
             fontSize: { xs: '2.5rem', md: '3.6rem' },
             lineHeight: 1.15,
             mb: 4,
-            background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
+            background: `linear-gradient(90deg, ${
+              isDarkMode ? '#93c5fd' : theme.palette.primary.light
+            }, ${isDarkMode ? '#60a5fa' : theme.palette.primary.main})`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             textAlign: 'center',
@@ -136,12 +136,12 @@ export default function Welcome() {
         </Typography>
 
         <Typography
-          variant="h6"
+          variant="h3"
           sx={{
             maxWidth: 720,
             mb: 6,
             fontSize: { xs: '1.1rem', md: '1.25rem' },
-            color: theme.palette.text.secondary,
+            color: isDarkMode ? '#94a3b8' : '#64748b',
             lineHeight: 1.7,
             textAlign: 'center',
           }}
@@ -171,6 +171,7 @@ export default function Welcome() {
               borderRadius: 3,
               fontWeight: 600,
               bgcolor: theme.palette.primary.main,
+              color: '#ffffff',
               '&:hover': {
                 bgcolor: theme.palette.primary.dark,
                 transform: 'translateY(-2px)',
@@ -193,8 +194,8 @@ export default function Welcome() {
               py: 1.6,
               px: 6,
               borderRadius: 3,
-              borderColor: theme.palette.divider,
-              color: theme.palette.text.primary,
+              borderColor: theme.palette.primary.main,
+              color: theme.palette.primary.main,
               fontWeight: 600,
               '&:hover': {
                 borderColor: theme.palette.primary.main,
@@ -236,8 +237,11 @@ export default function Welcome() {
           justifyContent: 'center',
           px: { xs: 3, sm: 6, md: 10 },
           py: { xs: 4, md: 8 },
-          bgcolor: theme.palette.background.paper,
-          border: `1px solid ${theme.palette.divider}`,
+          bgcolor: alpha(
+            theme.palette.background.paper,
+            isDarkMode ? 0.75 : 0.92,
+          ),
+          border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.2 : 0.1)}`,
           backdropFilter: 'blur(14px)',
           margin: 0,
           boxSizing: 'border-box',

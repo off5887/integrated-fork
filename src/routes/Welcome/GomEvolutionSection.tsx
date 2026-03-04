@@ -59,7 +59,7 @@ export default function GomEvolutionSection({
   const nextLevel = GOM_LEVELS.find((l) => l.min > fishCount) || null
   const [openModal, setOpenModal] = useState(false)
 
-  const primaryMain = palette.primaryMain ?? theme.palette.primary.main
+  const primaryMain = theme.palette.primary.main
 
   return (
     <Box
@@ -76,7 +76,23 @@ export default function GomEvolutionSection({
       }}
     >
       <Box
-        sx={{ width: '100%', maxWidth: 1000, mx: 'auto', textAlign: 'center' }}
+        sx={{
+          width: '100%',
+          maxWidth: 1000,
+          mx: 'auto',
+          textAlign: 'center',
+          bgcolor: alpha(
+            theme.palette.background.paper,
+            isDarkMode ? 0.68 : 0.92,
+          ),
+          borderRadius: 3,
+          p: { xs: 3, md: 4 },
+          border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.22 : 0.12)}`,
+          backdropFilter: 'blur(12px)',
+          boxShadow: isDarkMode
+            ? '0 12px 40px rgba(0,0,0,0.55), 0 0 24px rgba(96,165,250,0.10)'
+            : theme.shadows[4],
+        }}
       >
         <Typography
           variant="h4"
@@ -84,6 +100,7 @@ export default function GomEvolutionSection({
           sx={{
             mb: { xs: 4, md: 5 },
             fontSize: { xs: '1.8rem', md: '2.25rem' },
+            color: theme.palette.text.primary,
           }}
         >
           현재 곰곰이 단계
@@ -106,9 +123,12 @@ export default function GomEvolutionSection({
               width: '100%',
               borderRadius: 3,
               objectFit: 'contain',
-              boxShadow: `0 12px 40px ${alpha(theme.palette.common.black, 0.15)}`,
+              border: `2px solid ${alpha(primaryMain, isDarkMode ? 0.35 : 0.25)}`,
+              boxShadow: isDarkMode
+                ? '0 16px 48px rgba(0,0,0,0.6), 0 0 28px rgba(96,165,250,0.22)'
+                : `0 12px 40px ${alpha(theme.palette.common.black, 0.15)}`,
               transition: 'all 0.4s ease',
-              '&:hover': { transform: 'scale(1.04)' },
+              '&:hover': { transform: 'scale(1.05)' },
             }}
           />
         </Box>
@@ -118,8 +138,8 @@ export default function GomEvolutionSection({
           fontWeight={900}
           sx={{
             fontSize: { xs: '1.9rem', sm: '2.4rem', md: '2.8rem' },
-            background: `linear-gradient(90deg, ${palette.levelTextGradientStart || primaryMain}, ${
-              palette.levelTextGradientEnd || theme.palette.primary.dark
+            background: `linear-gradient(90deg, ${palette.gom?.levelTextStart || primaryMain}, ${
+              palette.gom?.levelTextEnd || theme.palette.primary.dark
             })`,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -129,7 +149,7 @@ export default function GomEvolutionSection({
           {currentLevel.name}
         </Typography>
 
-        <Typography variant="h5" color="primary" sx={{ mb: 1 }}>
+        <Typography variant="h5" color="primary.main" sx={{ mb: 1 }}>
           {fishCount.toLocaleString()} 마리
         </Typography>
 
@@ -154,14 +174,16 @@ export default function GomEvolutionSection({
             borderColor: primaryMain,
             color: primaryMain,
             fontWeight: 600,
-            '&:hover': { bgcolor: alpha(primaryMain, 0.08) },
+            '&:hover': {
+              bgcolor: alpha(primaryMain, isDarkMode ? 0.15 : 0.08),
+              borderColor: primaryMain,
+            },
           }}
         >
           다른 진화 단계 & 특별 카드 구경하기 🐻
         </Button>
       </Box>
 
-      {/* 분리된 모달 컴포넌트 */}
       <GomEvolutionModal
         open={openModal}
         onClose={() => setOpenModal(false)}

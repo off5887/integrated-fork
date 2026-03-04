@@ -14,7 +14,6 @@ import {
 } from '@mui/material'
 import { darkPalette, lightPalette } from '../../theme/index'
 
-// 진화 단계 데이터
 const GOM_LEVELS = [
   {
     min: 0,
@@ -48,7 +47,6 @@ const GOM_LEVELS = [
   },
 ] as const
 
-// 특별 카드 데이터
 const SPECIAL_CARDS = [
   {
     name: '심사위원 곰',
@@ -79,7 +77,7 @@ export default function GomEvolutionModal({
 }: GomEvolutionModalProps) {
   const theme = useTheme()
   const palette = isDarkMode ? darkPalette : lightPalette
-  const primaryMain = palette.primaryMain ?? theme.palette.primary.main
+  const primaryMain = theme.palette.primary.main
 
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'))
@@ -89,17 +87,23 @@ export default function GomEvolutionModal({
       open={open}
       onClose={onClose}
       fullScreen={isMobile}
-      maxWidth={isMobile ? false : 'lg'} // xl → lg로 줄여서 너무 넓지 않게
+      maxWidth={isMobile ? false : 'lg'}
       fullWidth={!isMobile}
       sx={{
         '& .MuiDialog-paper': {
-          bgcolor: isDarkMode ? '#0f172a' : '#ffffff',
-          borderRadius: 8, // 너무 둥글지 않게 8px
-          boxShadow: '0 10px 40px rgba(0,0,0,0.35)',
-          border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
+          bgcolor: alpha(
+            theme.palette.background.paper,
+            isDarkMode ? 0.68 : 0.92,
+          ),
+          borderRadius: 3,
+          boxShadow: isDarkMode
+            ? '0 16px 60px rgba(0,0,0,0.65), 0 0 32px rgba(96,165,250,0.15)'
+            : '0 12px 48px rgba(0,0,0,0.18)',
+          border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.25 : 0.12)}`,
+          backdropFilter: 'blur(16px)',
           overflow: 'hidden',
           maxHeight: isMobile ? '100%' : '90vh',
-          width: isLargeScreen ? '80%' : '100%',
+          width: isLargeScreen ? '82%' : '100%',
         },
       }}
     >
@@ -123,7 +127,7 @@ export default function GomEvolutionModal({
           sx={{
             cursor: 'pointer',
             fontSize: isMobile ? 32 : 28,
-            '&:hover': { opacity: 0.7 },
+            '&:hover': { opacity: 0.75 },
           }}
         />
       </DialogTitle>
@@ -132,6 +136,7 @@ export default function GomEvolutionModal({
         sx={{
           p: isMobile ? { xs: 2, sm: 3 } : { xs: 3, md: 4, lg: 5 },
           overflowY: 'auto',
+          bgcolor: 'transparent',
         }}
       >
         <Typography
@@ -168,26 +173,36 @@ export default function GomEvolutionModal({
               >
                 <Box
                   sx={{
-                    borderRadius: 6, // 둥글기 줄임
+                    borderRadius: 3,
                     overflow: 'hidden',
-                    bgcolor: palette.cardBg || 'background.paper',
-                    border: `1px solid ${isCurrent ? primaryMain : alpha(theme.palette.divider, 0.2)}`,
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                    transition: 'all 0.22s ease',
+                    bgcolor: alpha(
+                      palette.cardBg || theme.palette.background.paper,
+                      isDarkMode ? 0.68 : 0.92,
+                    ),
+                    border: `1px solid ${isCurrent ? primaryMain : alpha(theme.palette.divider, isDarkMode ? 0.28 : 0.18)}`,
+                    boxShadow: isDarkMode
+                      ? '0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(96,165,250,0.12)'
+                      : '0 6px 20px rgba(0,0,0,0.1)',
+                    transition: 'all 0.28s ease',
                     height: '100%',
                     maxWidth: isLargeScreen ? 210 : 240,
                     mx: 'auto',
                     '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
+                      transform: 'translateY(-6px)',
+                      boxShadow: isDarkMode
+                        ? '0 16px 48px rgba(0,0,0,0.6), 0 0 32px rgba(96,165,250,0.20)'
+                        : '0 12px 32px rgba(0,0,0,0.18)',
                     },
-                    opacity: isAchieved ? 1 : 0.75,
+                    opacity: isAchieved ? 1 : 0.78,
                   }}
                 >
                   <Box
                     sx={{
                       p: { xs: 1.8, lg: 2 },
-                      bgcolor: alpha(primaryMain, isCurrent ? 0.08 : 0.03),
+                      bgcolor: alpha(
+                        primaryMain,
+                        isCurrent ? (isDarkMode ? 0.18 : 0.1) : 0.05,
+                      ),
                       aspectRatio: '4/4.2',
                       display: 'flex',
                       alignItems: 'center',
@@ -202,6 +217,9 @@ export default function GomEvolutionModal({
                         width: '88%',
                         height: 'auto',
                         objectFit: 'contain',
+                        filter: isAchieved
+                          ? 'none'
+                          : 'grayscale(0.7) brightness(0.9)',
                       }}
                     />
                   </Box>
@@ -212,7 +230,9 @@ export default function GomEvolutionModal({
                       fontWeight={700}
                       sx={{
                         fontSize: { xs: '0.96rem', lg: '1.02rem' },
-                        color: isCurrent ? primaryMain : 'text.primary',
+                        color: isCurrent
+                          ? primaryMain
+                          : theme.palette.text.primary,
                       }}
                     >
                       {level.name}
@@ -271,25 +291,32 @@ export default function GomEvolutionModal({
             <Grid item xs={12} sm={6} md={6} lg={5} key={card.name}>
               <Box
                 sx={{
-                  borderRadius: 6, // 둥글기 줄임
+                  borderRadius: 3,
                   overflow: 'hidden',
-                  border: `1px solid ${alpha(primaryMain, 0.3)}`,
-                  bgcolor: palette.cardBg || 'background.paper',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                  transition: 'all 0.22s ease',
+                  border: `1px solid ${alpha(primaryMain, isDarkMode ? 0.35 : 0.25)}`,
+                  bgcolor: alpha(
+                    palette.cardBg || theme.palette.background.paper,
+                    isDarkMode ? 0.68 : 0.92,
+                  ),
+                  boxShadow: isDarkMode
+                    ? '0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(96,165,250,0.12)'
+                    : '0 6px 20px rgba(0,0,0,0.1)',
+                  transition: 'all 0.28s ease',
                   maxWidth: 340,
                   mx: 'auto',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
-                    borderColor: primaryMain,
+                    transform: 'translateY(-6px)',
+                    boxShadow: isDarkMode
+                      ? '0 16px 48px rgba(0,0,0,0.6), 0 0 32px rgba(96,165,250,0.22)'
+                      : '0 12px 32px rgba(0,0,0,0.18)',
+                    borderColor: alpha(primaryMain, 0.6),
                   },
                 }}
               >
                 <Box
                   sx={{
                     p: { xs: 2.5, lg: 3 },
-                    bgcolor: alpha(primaryMain, 0.04),
+                    bgcolor: alpha(primaryMain, isDarkMode ? 0.12 : 0.06),
                     aspectRatio: '4/4.2',
                     display: 'flex',
                     alignItems: 'center',

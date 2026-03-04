@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ==========================================================================
-   Modern CSS Reset + 다크모드 지원
+   Modern CSS Reset + 다크모드 지원 (MUI 테마와 충돌 최소화)
    ========================================================================== */
 
 *,
@@ -50,6 +50,7 @@ body,
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 .snap-container::-webkit-scrollbar {
@@ -59,10 +60,13 @@ body,
   background: transparent;
 }
 .snap-container::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
   border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
-/* 이미지 등 */
+/* 기본 요소 스타일 */
 img,
 picture,
 video,
@@ -90,6 +94,7 @@ a {
   color: inherit;
 }
 
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -98,7 +103,7 @@ a {
   }
 }
 
-/* 다크모드 변수 (root에 클래스 .dark 붙이면 적용) */
+/* CSS 변수 - MUI 테마와 충돌 최소화 */
 :root {
   --bg-primary: #f8fafc;
   --bg-secondary: #f1f5f9;
@@ -110,7 +115,7 @@ a {
   --primary-dark: #0284c7;
   --accent: #14b8a6;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --scrollbar-thumb: #64748b;
+  --scrollbar-thumb: #94a3b8;
 }
 
 .dark {
@@ -118,22 +123,34 @@ a {
   --bg-secondary: #1e293b;
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
-  --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: 1px solid rgba(148, 163, 184, 0.2);
-  --primary: #38bdf8;
-  --primary-dark: #0ea5e9;
+  --glass-bg: rgba(30, 41, 59, 0.75);
+  --glass-border: 1px solid rgba(148, 163, 184, 0.25);
+  --primary: #60a5fa; /* 로그인 다크모드와 더 잘 맞는 cyan 계열 */
+  --primary-dark: #3b82f6;
   --accent: #2dd4bf;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --scrollbar-thumb: #94a3b8;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  --scrollbar-thumb: #64748b; /* 다크모드에서 덜 밝게 */
 }
 
+/* 배경만 CSS 변수로 적용 (텍스트 색상은 MUI에 맡김) */
 html,
 body,
 #root {
   background: var(--bg-primary);
-  color: var(--text-primary);
+  /* color: var(--text-primary);  ← 삭제! MUI가 텍스트 색상을 제어하도록 */
 }
 
-.snap-container::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
+/* Glassmorphism 유틸리티 클래스 (필요 시 사용) */
+.glass {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* MUI와 Tailwind 충돌 방지용 기본 오버라이드 (필요 시) */
+.MuiTypography-root,
+.MuiButton-root,
+.MuiIconButton-root {
+  transition: color 0.3s ease;
 }

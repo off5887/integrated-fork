@@ -29,9 +29,12 @@ export default function IntroSection() {
         justifyContent: 'center',
         px: { xs: 2.5, sm: 4, md: 6, lg: 10 },
         py: { xs: 3, sm: 5, md: 7 },
-        bgcolor: alpha(theme.palette.background.paper, 0.35),
-        border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-        backdropFilter: 'blur(8px)',
+        bgcolor: alpha(
+          theme.palette.background.paper,
+          isDarkMode ? 0.35 : 0.45,
+        ),
+        border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.22 : 0.12)}`,
+        backdropFilter: 'blur(10px)',
       }}
     >
       <Slide direction="up" in timeout={600} mountOnEnter unmountOnExit>
@@ -43,10 +46,11 @@ export default function IntroSection() {
               mx: 'auto',
               p: { xs: 3, sm: 5, md: 6, lg: 7 },
               borderRadius: { xs: 2, sm: 3 },
-              bgcolor: alpha(theme.palette.background.paper, 0.88),
-              backdropFilter: 'blur(10px)',
-              border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
-              boxShadow: theme.shadows[3],
+              backdropFilter: 'blur(12px)',
+              border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.22 : 0.12)}`,
+              boxShadow: isDarkMode
+                ? '0 12px 40px rgba(0,0,0,0.55), 0 0 24px rgba(96,165,250,0.10)'
+                : theme.shadows[4],
             }}
           >
             <Typography
@@ -58,6 +62,7 @@ export default function IntroSection() {
                 lineHeight: 1.2,
                 mb: { xs: 3.5, sm: 4.5, md: 5.5 },
                 letterSpacing: '-0.01em',
+                color: theme.palette.text.primary,
               }}
             >
               곰곰세상이란?
@@ -107,17 +112,15 @@ export default function IntroSection() {
                   <Box
                     sx={{
                       p: { xs: 2.5, sm: 3.5, md: 4.5 },
-                      borderRadius: 2.5,
+                      borderRadius: 3,
                       height: '100%',
-                      bgcolor: alpha(theme.palette.background.paper, 0.92),
-                      border: `1px solid ${alpha(theme.palette.divider, 0.15)}`,
-                      transition: 'all 0.25s ease',
+                      border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.22 : 0.15)}`,
+                      transition: 'all 0.28s ease',
                       '&:hover': {
                         transform: 'translateY(-6px)',
-                        boxShadow: `0 10px 24px ${alpha(
-                          theme.palette.primary.main,
-                          isDarkMode ? 0.18 : 0.12,
-                        )}`,
+                        boxShadow: isDarkMode
+                          ? '0 12px 32px rgba(0,0,0,0.5), 0 0 20px rgba(96,165,250,0.15)'
+                          : `0 10px 24px ${alpha(theme.palette.primary.main, 0.22)}`,
                       },
                     }}
                   >
@@ -158,7 +161,12 @@ export default function IntroSection() {
                   borderRadius: 50,
                   fontSize: { xs: '0.98rem', sm: '1.05rem' },
                   fontWeight: 600,
-                  boxShadow: `0 5px 16px ${alpha(theme.palette.primary.main, 0.28)}`,
+                  bgcolor: theme.palette.primary.main,
+                  boxShadow: `0 6px 20px ${alpha(theme.palette.primary.main, isDarkMode ? 0.4 : 0.3)}`,
+                  '&:hover': {
+                    bgcolor: theme.palette.primary.dark,
+                    boxShadow: `0 10px 30px ${alpha(theme.palette.primary.main, isDarkMode ? 0.5 : 0.35)}`,
+                  },
                 }}
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               >
