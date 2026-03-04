@@ -9,26 +9,38 @@ interface Props {
 }
 
 export default function IdeaCard({ idea, onApply }: Props) {
-  const { isDarkMode } = useThemeMode() // ← 다크모드 상태 가져오기
+  const { isDarkMode } = useThemeMode()
 
-  // 다크/라이트별 색상 세트 (더 세련되게 조정)
+  // 2026 트렌드 반영: Liquid Glass + elevated neutrals + indigo/teal premium
   const colors = {
-    cardBg: isDarkMode ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.97)',
-    border: isDarkMode ? 'rgba(148,163,184,0.30)' : 'rgba(148,163,184,0.28)',
-    textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-    textSecondary: isDarkMode ? '#cbd5e1' : '#475569',
-    chipBg: isDarkMode ? '#334155' : '#e2e8f0',
-    rewardText: isDarkMode ? '#c084fc' : '#7c3aed', // 보라 계열로 세련되게
+    cardBg: isDarkMode ? 'rgba(30, 41, 59, 0.88)' : 'rgba(251, 251, 254, 0.94)', // warm off-white + 미세 teal tint
+
+    border: isDarkMode
+      ? 'rgba(148, 163, 184, 0.42)'
+      : 'rgba(226, 232, 240, 0.88)', // soft slate border
+
+    textPrimary: isDarkMode ? '#f1f5f9' : '#111827', // modern slate-900
+    textSecondary: isDarkMode ? '#cbd5e1' : '#64748b', // slate-500
+
+    chipBg: isDarkMode ? '#334155' : 'rgba(241, 245, 249, 0.80)',
+
+    // 보상: indigo 기반 soft gradient (2026 premium 느낌 최고)
+    rewardGradient: isDarkMode
+      ? 'linear-gradient(90deg, #c4b5fd, #a78bfa)'
+      : 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+    // 대안 teal (Transformative Teal 느낌): 'linear-gradient(90deg, #0ea5e9, #38bdf8)'
+
     hoverShadow: isDarkMode
-      ? '0 20px 35px -8px rgba(0,0,0,0.6), 0 10px 15px -5px rgba(99,102,241,0.35)'
-      : '0 20px 35px -8px rgba(0,0,0,0.15), 0 10px 15px -5px rgba(79,70,229,0.25)',
-    hoverBg: isDarkMode ? 'rgba(51,65,85,0.15)' : 'rgba(241,245,249,0.7)',
+      ? '0 20px 40px -10px rgba(0,0,0,0.55), 0 10px 20px -5px rgba(99,102,241,0.45)'
+      : '0 24px 48px -12px rgba(0,0,0,0.10), 0 12px 24px -6px rgba(99,102,241,0.18)',
+
+    hoverBg: isDarkMode ? 'rgba(51,65,85,0.20)' : 'rgba(241,245,249,0.50)',
   }
 
   return (
     <Card
       sx={{
-        width: { xs: '340px', sm: '360px', md: '600px' },
+        width: { xs: '360px', sm: '360px', md: '600px' },
         maxWidth: '100%',
         minWidth: '280px',
         height: '100%',
@@ -37,15 +49,16 @@ export default function IdeaCard({ idea, onApply }: Props) {
         bgcolor: colors.cardBg,
         border: '1px solid',
         borderColor: colors.border,
-        borderRadius: 3,
+        borderRadius: 4, // 조금 더 부드럽게 4로
         overflow: 'hidden',
         mx: 'auto',
-        transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
         boxShadow: 'none',
-        backdropFilter: 'blur(12px)', // 글래스모피즘 효과 추가
+        backdropFilter: 'blur(16px)', // Liquid Glass 느낌 ↑ blur 강화
+        WebkitBackdropFilter: 'blur(16px)',
 
         '&:hover': {
-          transform: 'translateY(-12px)',
+          transform: 'translateY(-14px)',
           boxShadow: colors.hoverShadow,
           bgcolor: colors.hoverBg,
         },
@@ -57,7 +70,7 @@ export default function IdeaCard({ idea, onApply }: Props) {
           display: 'flex',
           flexDirection: 'column',
           p: { xs: 3, sm: 3, md: 4 },
-          gap: { xs: 1.5, sm: 2.5, md: 3 },
+          gap: { xs: 2, sm: 2.5, md: 3 },
         }}
       >
         {/* 상단 - 분야 + 보상 */}
@@ -66,7 +79,7 @@ export default function IdeaCard({ idea, onApply }: Props) {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-start',
-            gap: 1.5,
+            gap: 2,
             flexWrap: 'wrap',
           }}
         >
@@ -74,10 +87,11 @@ export default function IdeaCard({ idea, onApply }: Props) {
             label={idea.field}
             size="small"
             sx={{
-              bgcolor: 'primary.main',
+              bgcolor: isDarkMode ? '#4f46e5' : '#6366f1', // indigo-600 / 500
               color: '#ffffff',
               fontWeight: 600,
-              borderRadius: '12px',
+              borderRadius: '14px',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
             }}
           />
 
@@ -86,7 +100,9 @@ export default function IdeaCard({ idea, onApply }: Props) {
               variant="h5"
               fontWeight={800}
               sx={{
-                color: colors.rewardText,
+                background: colors.rewardGradient,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
                 lineHeight: 1.1,
               }}
             >
@@ -137,7 +153,7 @@ export default function IdeaCard({ idea, onApply }: Props) {
             WebkitLineClamp: { xs: 4, sm: 5, md: 6 },
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            mb: 2,
+            mb: 3,
           }}
         >
           {idea.desc}
@@ -152,7 +168,7 @@ export default function IdeaCard({ idea, onApply }: Props) {
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: 2,
-            pt: 1.5,
+            pt: 2,
             borderTop: '1px solid',
             borderColor: colors.border,
           }}
@@ -166,6 +182,7 @@ export default function IdeaCard({ idea, onApply }: Props) {
               color: colors.textSecondary,
               borderColor: colors.border,
               fontWeight: 500,
+              borderRadius: '12px',
             }}
           />
 
@@ -178,13 +195,14 @@ export default function IdeaCard({ idea, onApply }: Props) {
               px: { xs: 4, sm: 5 },
               minWidth: { xs: 110, sm: 130 },
               fontWeight: 600,
-              bgcolor: 'primary.main',
+              bgcolor: isDarkMode ? '#4f46e5' : '#6366f1', // indigo
+              color: '#fff',
               '&:hover': {
-                bgcolor: 'primary.dark',
-                transform: 'scale(1.05)',
-                boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
+                bgcolor: isDarkMode ? '#4338ca' : '#4f46e5',
+                transform: 'scale(1.06)',
+                boxShadow: '0 12px 32px rgba(79,70,229,0.35)',
               },
-              transition: 'all 0.3s ease',
+              transition: 'all 0.35s ease',
             }}
           >
             지원하기
