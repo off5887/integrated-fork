@@ -30,9 +30,7 @@ export default function Welcome() {
         overflowY: 'scroll',
         scrollSnapType: 'y mandatory',
         scrollBehavior: 'smooth',
-        background: `linear-gradient(135deg, ${
-          isDarkMode ? '#0f172a' : '#f8fafc'
-        } 0%, ${isDarkMode ? '#1e293b' : '#e2e8f0'} 100%)`,
+        background: isDarkMode ? '#0f172a' : '#fff',
         color: theme.palette.text.primary,
         WebkitOverflowScrolling: 'touch',
         position: 'relative',
