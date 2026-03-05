@@ -1,19 +1,24 @@
-// src/components/Common/Header.tsx
+// src/components/common/Header.tsx  ← 최종 합본 예시
+
 import BarChartIcon from '@mui/icons-material/BarChart'
 import Brightness4Icon from '@mui/icons-material/Brightness4'
 import Brightness7Icon from '@mui/icons-material/Brightness7'
 import CloseIcon from '@mui/icons-material/Close'
 import DashboardIcon from '@mui/icons-material/Dashboard'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
 import LogoutIcon from '@mui/icons-material/Logout'
 import MenuIcon from '@mui/icons-material/Menu'
 import RateReviewIcon from '@mui/icons-material/RateReview'
 import SavingsIcon from '@mui/icons-material/Savings'
+import SecurityIcon from '@mui/icons-material/Security' // tf-management-ui에서 추가
 import SettingsIcon from '@mui/icons-material/Settings'
+
 import {
-  alpha,
   AppBar,
   Box,
+  Button,
+  Divider, // tf-management-ui에서 사용
   Drawer,
   IconButton,
   List,
@@ -23,7 +28,6 @@ import {
   ListItemText,
   Toolbar,
   Tooltip,
-  Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
@@ -31,35 +35,20 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '../../context/ThemeContext'
 
+// ─────────────── 메뉴 아이템 합치기 ───────────────
+// tf-management-ui의 구조 + integrated-main의 메뉴 이름/경로 유지
 const menuItems = [
-  {
-    icon: <DashboardIcon fontSize="small" />,
-    text: '대시보드',
-    path: '/dashboard',
-  },
-  {
-    icon: <LightbulbIcon fontSize="small" />,
-    text: '상상하기',
-    path: '/newIdea',
-  },
-  {
-    icon: <SavingsIcon fontSize="small" />,
-    text: '마일리지',
-    path: '/rqMileage',
-  },
-  {
-    icon: <RateReviewIcon fontSize="small" />,
-    text: '심사하기',
-    path: '/judge',
-  },
-  { icon: <BarChartIcon fontSize="small" />, text: '통계', path: '/stats' },
+  { icon: <DashboardIcon />, text: '대시보드', path: '/dashboard' },
+  { icon: <LightbulbIcon />, text: '상상하기', path: '/newIdea' },
+  { icon: <SavingsIcon />, text: '마일리지', path: '/rqMileage' },
+  { icon: <RateReviewIcon />, text: '심사하기', path: '/judge' },
+  { icon: <BarChartIcon />, text: '통계', path: '/stats' },
+  // tf-management-ui에서 새로 추가된 메뉴들
+  { icon: <SecurityIcon />, text: '용병 지원', path: '/mercenary-support' },
+  { icon: <GroupAddIcon />, text: '용병 관리', path: '/mercenary-management' },
 ]
 
-const settingsItem = {
-  icon: <SettingsIcon fontSize="small" />,
-  text: '설정',
-  path: '/settings',
-}
+const settingsItem = { icon: <SettingsIcon />, text: '설정', path: '/settings' }
 
 export default function Header() {
   const theme = useTheme()
@@ -90,106 +79,137 @@ export default function Header() {
 
   const navContent = (
     <>
-      {/* 로고 */}
-      <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+      {/* 로고 - tf-management-ui 스타일 유지 (더 멋짐) */}
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box
           component="img"
           src="/gomgom_logo.png"
-          alt="Gomgom"
+          alt="Gomgom Logo"
           sx={{
-            height: { xs: 32, md: 36 },
-            mr: 2,
-            filter: isDarkMode ? 'brightness(1.15) contrast(1.05)' : 'none',
+            height: { xs: 38, md: 46 },
+            width: 'auto',
+            filter: isDarkMode
+              ? 'drop-shadow(0 2px 12px rgba(99, 102, 241, 0.5))'
+              : 'drop-shadow(0 2px 12px rgba(59, 130, 246, 0.4))',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'scale(1.1) rotate(5deg)',
+            },
           }}
         />
       </Box>
 
-      {/* PC 메뉴 아이템들 */}
+      <Box sx={{ flexGrow: 1 }} />
+
+      {/* PC 메뉴 - tf-management-ui의 Button 스타일 유지 */}
       {!isMobile && (
-        <Box
-          sx={{ display: 'flex', alignItems: 'center', gap: { md: 1, lg: 2 } }}
-        >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           {menuItems.map((item) => (
-            <Box
+            <Button
               key={item.text}
+              startIcon={item.icon}
               onClick={() => handleNavigate(item.path)}
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                px: 2,
-                py: 0.8,
-                borderRadius: 2,
-                color: isDarkMode ? '#e2e8f0' : 'text.primary',
+                color: isDarkMode ? '#f1f5f9' : '#111827',
+                textTransform: 'none',
+                fontWeight: 600,
                 fontSize: '0.95rem',
-                fontWeight: 500,
-                cursor: 'pointer',
+                borderRadius: 1.5,
+                px: 2,
+                py: 0.75,
+                minWidth: 'auto',
                 transition: 'all 0.2s ease',
                 '&:hover': {
                   bgcolor: isDarkMode
-                    ? alpha('#6366f1', 0.14)
-                    : alpha(theme.palette.primary.main, 0.1),
+                    ? 'rgba(99, 102, 241, 0.15)'
+                    : 'rgba(59, 130, 246, 0.15)',
+                  color: isDarkMode ? '#c7d2fe' : '#1d4ed8',
+                  transform: 'translateY(-1px)',
                 },
               }}
             >
-              {item.icon}
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {item.text}
-              </Typography>
-            </Box>
+              {item.text}
+            </Button>
           ))}
+
+          {/* 우측 아이콘들 - tf-management-ui 스타일 */}
+          <Tooltip title="설정" arrow placement="bottom">
+            <IconButton
+              onClick={() => handleNavigate(settingsItem.path)}
+              sx={{
+                color: isDarkMode ? '#f1f5f9' : '#111827',
+                '&:hover': {
+                  bgcolor: isDarkMode
+                    ? 'rgba(99, 102, 241, 0.15)'
+                    : 'rgba(59, 130, 246, 0.15)',
+                },
+              }}
+            >
+              {settingsItem.icon}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip
+            title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+            arrow
+            placement="bottom"
+          >
+            <IconButton
+              onClick={toggleTheme}
+              sx={{
+                color: isDarkMode ? '#f1f5f9' : '#111827',
+                '&:hover': {
+                  bgcolor: isDarkMode
+                    ? 'rgba(249, 115, 22, 0.15)'
+                    : 'rgba(234, 88, 12, 0.15)',
+                },
+              }}
+            >
+              {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="로그아웃" arrow placement="bottom">
+            <IconButton
+              onClick={handleLogout}
+              sx={{
+                color: isDarkMode ? '#f1f5f9' : '#111827',
+                '&:hover': {
+                  bgcolor: isDarkMode
+                    ? 'rgba(239, 68, 68, 0.15)'
+                    : 'rgba(220, 38, 38, 0.15)',
+                  color: '#ef4444',
+                },
+              }}
+            >
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
       )}
 
-      {/* 우측 아이콘들 */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <Tooltip title="설정" arrow>
+      {isMobile && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <IconButton
-            size="small"
-            onClick={() => handleNavigate(settingsItem.path)}
-            sx={{ color: isDarkMode ? '#cbd5e1' : 'text.primary' }}
-          >
-            {settingsItem.icon}
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title={isDarkMode ? 'Light Mode' : 'Dark Mode'} arrow>
-          <IconButton
-            size="small"
             onClick={toggleTheme}
-            sx={{ color: isDarkMode ? '#cbd5e1' : 'text.primary' }}
+            sx={{ color: isDarkMode ? '#f1f5f9' : '#111827' }}
           >
-            {isDarkMode ? (
-              <Brightness7Icon fontSize="small" />
-            ) : (
-              <Brightness4Icon fontSize="small" />
-            )}
+            {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
-        </Tooltip>
 
-        <Tooltip title="로그아웃" arrow>
           <IconButton
-            size="small"
-            onClick={handleLogout}
-            sx={{ color: isDarkMode ? '#fca5a5' : 'error.main' }}
-          >
-            <LogoutIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-
-        {isMobile && (
-          <IconButton
-            size="medium"
+            edge="end"
             onClick={toggleDrawer(true)}
-            sx={{ color: isDarkMode ? '#cbd5e1' : 'text.primary', ml: 1 }}
+            sx={{ color: isDarkMode ? '#f1f5f9' : '#111827' }}
           >
             <MenuIcon />
           </IconButton>
-        )}
-      </Box>
+        </Box>
+      )}
     </>
   )
 
+  // 나머지 부분은 tf-management-ui 버전 그대로 사용
   return (
     <>
       <AppBar
@@ -202,18 +222,11 @@ export default function Header() {
           backgroundColor: 'transparent',
         }}
       >
-        <Toolbar
-          sx={{
-            minHeight: { xs: 64, md: 72 },
-            px: { xs: 2, sm: 3, md: 5, lg: 8 },
-            justifyContent: 'space-between',
-          }}
-        >
+        <Toolbar sx={{ minHeight: { xs: 64, md: 68 }, px: { xs: 2, md: 4 } }}>
           {navContent}
         </Toolbar>
       </AppBar>
-
-      {/* 모바일 Drawer */}
+      {/* 모바일 Drawer - tf-management-ui 버전 유지 */}
       <Drawer
         anchor="right"
         open={drawerOpen}
@@ -255,10 +268,7 @@ export default function Header() {
               <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
                 <ListItemButton
                   onClick={() => handleNavigate(item.path)}
-                  sx={{
-                    borderRadius: 2,
-                    py: 1.4,
-                  }}
+                  sx={{ borderRadius: 2, py: 1.4 }}
                 >
                   <ListItemIcon
                     sx={{ color: isDarkMode ? '#c7d2fe' : 'primary.main' }}
@@ -273,7 +283,16 @@ export default function Header() {
               </ListItem>
             ))}
 
-            <ListItem disablePadding sx={{ mb: 0.5, mt: 2 }}>
+            <Divider
+              sx={{
+                my: 2,
+                borderColor: isDarkMode
+                  ? 'rgba(255,255,255,0.12)'
+                  : 'rgba(0,0,0,0.12)',
+              }}
+            />
+
+            <ListItem disablePadding>
               <ListItemButton
                 onClick={() => handleNavigate(settingsItem.path)}
                 sx={{ borderRadius: 2, py: 1.4 }}
@@ -290,7 +309,7 @@ export default function Header() {
               </ListItemButton>
             </ListItem>
 
-            <ListItem disablePadding sx={{ mt: 3 }}>
+            <ListItem disablePadding>
               <ListItemButton
                 onClick={toggleTheme}
                 sx={{ borderRadius: 2, py: 1.4 }}
@@ -307,7 +326,7 @@ export default function Header() {
               </ListItemButton>
             </ListItem>
 
-            <ListItem disablePadding sx={{ mt: 1 }}>
+            <ListItem disablePadding>
               <ListItemButton
                 onClick={handleLogout}
                 sx={{ borderRadius: 2, py: 1.4 }}
@@ -319,19 +338,14 @@ export default function Header() {
                 </ListItemIcon>
                 <ListItemText
                   primary="로그아웃"
-                  primaryTypographyProps={{
-                    fontWeight: 500,
-                    color: isDarkMode ? '#f87171' : 'error.main',
-                  }}
+                  primaryTypographyProps={{ fontWeight: 600, color: '#ef4444' }}
                 />
               </ListItemButton>
             </ListItem>
           </List>
         </Box>
       </Drawer>
-
-      {/* 콘텐츠가 헤더에 가려지지 않도록 spacer */}
-      <Box sx={{ height: { xs: 64, md: 72 } }} />
+      <Toolbar /> {/* spacer */}
     </>
   )
 }
