@@ -39,9 +39,16 @@ export default function MyGomgomiCard({ fishTotal, fishToNextLevel }: Props) {
           : '0 20px 40px -8px rgba(59,130,246,0.1)',
       }}
     >
-      <Box sx={{ p: { xs: 3, sm: 4 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box
+        sx={{
+          p: { xs: 2, sm: 2.5 },
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+        }}
+      >
         {/* 헤더 섹션 */}
-        <Box sx={{ mb: 5 }}>
+        <Box sx={{ mb: 2.5 }}>
           <Typography
             variant="h4"
             fontWeight={900}
@@ -70,9 +77,9 @@ export default function MyGomgomiCard({ fishTotal, fishToNextLevel }: Props) {
           sx={{
             display: 'flex',
             alignItems: 'flex-start',
-            gap: 4,
-            mb: 5,
-            pb: 4,
+            gap: 2.5,
+            mb: 3,
+            pb: 3,
             borderBottom: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.2)' : 'rgba(203,213,225,0.3)'}`,
           }}
         >
@@ -80,9 +87,9 @@ export default function MyGomgomiCard({ fishTotal, fishToNextLevel }: Props) {
           <Box
             sx={{
               position: 'relative',
-              width: 140,
-              height: 140,
-              minWidth: 140,
+              width: 110,
+              height: 110,
+              minWidth: 110,
               borderRadius: 4,
               overflow: 'hidden',
               boxShadow: isDarkMode
@@ -131,7 +138,7 @@ export default function MyGomgomiCard({ fishTotal, fishToNextLevel }: Props) {
               </Typography>
               <Typography
                 sx={{
-                  fontSize: '3.2rem',
+                  fontSize: '2.8rem',
                   fontWeight: 900,
                   lineHeight: 1,
                   background: `linear-gradient(90deg, ${accentColor}, ${isDarkMode ? '#10b981' : '#06b6d4'})`,
@@ -172,7 +179,7 @@ export default function MyGomgomiCard({ fishTotal, fishToNextLevel }: Props) {
         </Box>
 
         {/* 생선 정보 섹션 */}
-        <Box sx={{ mb: 5 }}>
+        <Box sx={{ mb: 3 }}>
           <Box sx={{ mb: 2.5 }}>
             <Typography
               variant="body2"
@@ -223,7 +230,14 @@ export default function MyGomgomiCard({ fishTotal, fishToNextLevel }: Props) {
 
         {/* 프로그레스 섹션 */}
         <Box>
-          <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box
+            sx={{
+              mb: 2,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <Typography
               variant="body2"
               sx={{

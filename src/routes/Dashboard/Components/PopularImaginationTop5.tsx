@@ -33,6 +33,7 @@ export default function PopularImaginationTop5() {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        p: { xs: 2.5, md: 3 },
       }}
     >
       {/* 타이틀 */}
@@ -49,12 +50,15 @@ export default function PopularImaginationTop5() {
       >
         인기 상상 TOP 5
       </Typography>
-      <Typography variant="caption" sx={{ color: textSecondary, mb: 3, display: 'block' }}>
+      <Typography
+        variant="caption"
+        sx={{ color: textSecondary, mb: 3, display: 'block' }}
+      >
         가장 많은 공감을 얻은 아이디어들입니다
       </Typography>
 
       {/* 리스트 컨테이너 */}
-      <Box sx={{ flex: 1, overflowY: 'auto', pb: 2 }}>
+      <Box sx={{ flex: 1, overflowY: 'auto' }}>
         {items.map((item, i) => (
           <Box
             key={i}
@@ -139,9 +143,9 @@ export default function PopularImaginationTop5() {
               <Typography component="span" fontWeight={700}>
                 {item.likes}
               </Typography>
-              <Typography 
+              <Typography
                 component="span"
-                sx={{ 
+                sx={{
                   color: heartColor,
                   fontSize: '1.1rem',
                   display: 'flex',

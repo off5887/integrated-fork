@@ -26,11 +26,7 @@ export default function ExecutionCompletionRate({
 
   const statusColor = getStatusColor(completionRate)
   const statusLabel =
-    completionRate >= 80
-      ? '우수'
-      : completionRate >= 60
-        ? '보통'
-        : '개선 필요'
+    completionRate >= 80 ? '우수' : completionRate >= 60 ? '보통' : '개선 필요'
 
   const options: any = {
     chart: {
@@ -120,86 +116,109 @@ export default function ExecutionCompletionRate({
         border: `1px solid ${isDarkMode ? 'rgba(34,197,94,0.15)' : 'rgba(34,197,94,0.1)'}`,
       }}
     >
-      <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* 헤더 */}
-      <Box sx={{ mb: 2 }}>
-        <Typography
-          variant="h5"
-          fontWeight={800}
-          sx={{
-            background: `linear-gradient(90deg, ${primaryColor}, ${theme.palette.primary.light})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            letterSpacing: '-0.02em',
-          }}
-        >
-          전체 실행 완료율
-        </Typography>
-        <Typography variant="caption" sx={{ color: textSecondary, mt: 0.5, display: 'block' }}>
-          프로젝트 진행 현황을 한눈에 확인하세요
-        </Typography>
-      </Box>
-
-      {/* 차트 */}
-      <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Chart options={options} series={series} type="radialBar" height={340} width="100%" />
-      </Box>
-
-      {/* 상세 정보 */}
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 2,
-          mt: 2,
-          pt: 2,
-          borderTop: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.2)' : 'rgba(203,213,225,0.3)'}`,
+          p: { xs: 2, md: 3 },
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
         }}
       >
-        <Box
-          sx={{
-            p: 2,
-            borderRadius: 2,
-            bgcolor: isDarkMode
-              ? alpha('#475569', 0.15)
-              : alpha('#e2e8f0', 0.5),
-            border: `1px solid ${isDarkMode ? alpha('#64748b', 0.2) : alpha('#cbd5e1', 0.3)}`,
-          }}
-        >
-          <Typography variant="caption" sx={{ color: textSecondary }}>
-            완료 건수
+        {/* 헤더 */}
+        <Box sx={{ mb: 2 }}>
+          <Typography
+            variant="h5"
+            fontWeight={800}
+            sx={{
+              background: `linear-gradient(90deg, ${primaryColor}, ${theme.palette.primary.light})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            전체 실행 완료율
           </Typography>
           <Typography
-            variant="h6"
-            fontWeight={700}
-            sx={{ color: textPrimary, mt: 0.5 }}
+            variant="caption"
+            sx={{ color: textSecondary, mt: 0.5, display: 'block' }}
           >
-            {Math.round((completionRate / 100) * 150)}건
+            프로젝트 진행 현황을 한눈에 확인하세요
           </Typography>
         </Box>
 
+        {/* 차트 */}
         <Box
           sx={{
-            p: 2,
-            borderRadius: 2,
-            bgcolor: isDarkMode
-              ? alpha('#475569', 0.15)
-              : alpha('#e2e8f0', 0.5),
-            border: `1px solid ${isDarkMode ? alpha('#64748b', 0.2) : alpha('#cbd5e1', 0.3)}`,
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          <Typography variant="caption" sx={{ color: textSecondary }}>
-            총 건수
-          </Typography>
-          <Typography
-            variant="h6"
-            fontWeight={700}
-            sx={{ color: textPrimary, mt: 0.5 }}
-          >
-            150건
-          </Typography>
+          <Chart
+            options={options}
+            series={series}
+            type="radialBar"
+            height={340}
+            width="100%"
+          />
         </Box>
-      </Box>
+
+        {/* 상세 정보 */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 2,
+            mt: 2,
+            pt: 2,
+            borderTop: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.2)' : 'rgba(203,213,225,0.3)'}`,
+          }}
+        >
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              bgcolor: isDarkMode
+                ? alpha('#475569', 0.15)
+                : alpha('#e2e8f0', 0.5),
+              border: `1px solid ${isDarkMode ? alpha('#64748b', 0.2) : alpha('#cbd5e1', 0.3)}`,
+            }}
+          >
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              완료 건수
+            </Typography>
+            <Typography
+              variant="h6"
+              fontWeight={700}
+              sx={{ color: textPrimary, mt: 0.5 }}
+            >
+              {Math.round((completionRate / 100) * 150)}건
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              bgcolor: isDarkMode
+                ? alpha('#475569', 0.15)
+                : alpha('#e2e8f0', 0.5),
+              border: `1px solid ${isDarkMode ? alpha('#64748b', 0.2) : alpha('#cbd5e1', 0.3)}`,
+            }}
+          >
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              총 건수
+            </Typography>
+            <Typography
+              variant="h6"
+              fontWeight={700}
+              sx={{ color: textPrimary, mt: 0.5 }}
+            >
+              150건
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     </Box>
   )

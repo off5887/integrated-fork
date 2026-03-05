@@ -1,5 +1,5 @@
 // src/routes/Dashboard/Components/ApprovalStatusPie.tsx
-import { alpha, Box, Typography, useTheme } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import Chart from 'react-apexcharts'
 import { useThemeMode } from '../../../context/ThemeContext'
 
@@ -126,35 +126,58 @@ export default function ApprovalStatusPie() {
         border: `1px solid ${isDarkMode ? 'rgba(96,165,250,0.15)' : 'rgba(59,130,246,0.1)'}`,
       }}
     >
-      <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Typography
-        variant="h5"
-        fontWeight={800}
+      <Box
         sx={{
-          mb: 1,
-          background: `linear-gradient(90deg, ${primaryColor}, ${theme.palette.primary.light})`,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          letterSpacing: '-0.02em',
+          p: { xs: 2.5, md: 3.5 },
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
         }}
       >
-        결재 단계별 현황
-      </Typography>
-      <Typography variant="caption" sx={{ color: textSecondary, mb: 3, display: 'block' }}>
-        아이디어 제안의 결재 진행 상황입니다
-      </Typography>
+        <Typography
+          variant="h5"
+          fontWeight={800}
+          sx={{
+            mb: 1,
+            background: `linear-gradient(90deg, ${primaryColor}, ${theme.palette.primary.light})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '-0.02em',
+          }}
+        >
+          결재 단계별 현황
+        </Typography>
+        <Typography
+          variant="caption"
+          sx={{ color: textSecondary, mb: 3, display: 'block' }}
+        >
+          아이디어 제안의 결재 진행 상황입니다
+        </Typography>
 
-      <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Chart options={options} series={series} type="donut" height={360} width="100%" />
-      </Box>
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Chart
+            options={options}
+            series={series}
+            type="donut"
+            height={360}
+            width="100%"
+          />
+        </Box>
 
-      <Typography
-        align="center"
-        variant="caption"
-        sx={{ color: textSecondary, mt: 1, fontWeight: 500 }}
-      >
-        💡 부문장 단계가 병목 (68%) - 검토 가속화 필요
-      </Typography>
+        <Typography
+          align="center"
+          variant="caption"
+          sx={{ color: textSecondary, mt: 1, fontWeight: 500 }}
+        >
+          💡 부문장 단계가 병목 (68%) - 검토 가속화 필요
+        </Typography>
       </Box>
     </Box>
   )

@@ -108,7 +108,8 @@ export default function RealDashboard() {
             대시보드
           </Typography>
           <Typography variant="body1" sx={{ mt: 1, opacity: 0.75 }}>
-            마지막 업데이트: {new Date().toLocaleDateString('ko-KR')} {new Date().toLocaleTimeString('ko-KR')}
+            마지막 업데이트: {new Date().toLocaleDateString('ko-KR')}{' '}
+            {new Date().toLocaleTimeString('ko-KR')}
           </Typography>
         </Box>
 
@@ -132,39 +133,75 @@ export default function RealDashboard() {
         </Button>
       </Box>
 
-      <Container maxWidth={false} sx={{ position: 'relative', zIndex: 2, pb: 8, px: { xs: 3, md: 4, lg: 8 } }}>
+      <Container
+        maxWidth={false}
+        sx={{
+          position: 'relative',
+          zIndex: 2,
+          pb: 8,
+          px: { xs: 3, md: 4, lg: 8 },
+        }}
+      >
         {/* 섹션: 메인 대시보드 */}
         <Box component="section" sx={{ mb: 4 }}>
-          <Grid container spacing={{ xs: 2.5, md: 3 }} sx={{ alignItems: 'stretch' }}>
+          <Grid
+            container
+            spacing={{ xs: 2.5, md: 3 }}
+            sx={{ alignItems: 'stretch' }}
+          >
             {/* 첫 번째 줄: MyGomgomiCard */}
             <Grid size={{ xs: 12, lg: 6 }} sx={{ height: '100%' }}>
-              <DashboardCard delay={0} sx={{ minHeight: { md: '420px', lg: '420px' }, height: '100%' }}>
+              <DashboardCard
+                delay={0}
+                sx={{ minHeight: { md: '360px', lg: '360px' }, height: '100%' }}
+              >
                 <MyGomgomiCard fishTotal={5420} fishToNextLevel={8000} />
               </DashboardCard>
             </Grid>
 
             {/* 두 번째 줄: 3개 차트 */}
             <Grid size={{ xs: 12, lg: 6 }} sx={{ height: '100%' }}>
-              <DashboardCard delay={0.1} sx={{ minHeight: { md: '420px', lg: '420px' }, height: '100%' }}>
+              <DashboardCard
+                delay={0.1}
+                sx={{ minHeight: { md: '520px', lg: '520px' }, height: '100%' }}
+              >
                 <ApprovalStatusPie />
               </DashboardCard>
             </Grid>
 
             {/* 세 번째 줄: DepartmentTop5Bar + ExecutionCompletionRate */}
-            <Grid size={{ xs: 12, lg: 5 }} sx={{ height: '100%', display: 'flex' }}>
-              <DashboardCard delay={0.25} sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}>
+            <Grid
+              size={{ xs: 12, lg: 6 }}
+              sx={{ height: '100%', display: 'flex' }}
+            >
+              <DashboardCard
+                delay={0.25}
+                sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}
+              >
                 <PopularImaginationTop5 />
               </DashboardCard>
             </Grid>
 
-            <Grid size={{ xs: 12, lg: 4 }} sx={{ height: '100%', display: 'flex' }}>
-              <DashboardCard delay={0.2} sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}>
+            <Grid
+              size={{ xs: 12, lg: 3 }}
+              sx={{ height: '100%', display: 'flex' }}
+            >
+              <DashboardCard
+                delay={0.2}
+                sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}
+              >
                 <DepartmentTop5Bar />
               </DashboardCard>
             </Grid>
 
-            <Grid size={{ xs: 12, lg: 3 }} sx={{ height: '100%', display: 'flex' }}>
-              <DashboardCard delay={0.15} sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}>
+            <Grid
+              size={{ xs: 12, lg: 3 }}
+              sx={{ height: '100%', display: 'flex' }}
+            >
+              <DashboardCard
+                delay={0.15}
+                sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}
+              >
                 <ExecutionCompletionRate completionRate={73.4} />
               </DashboardCard>
             </Grid>

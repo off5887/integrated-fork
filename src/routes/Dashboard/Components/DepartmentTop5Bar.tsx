@@ -1,5 +1,5 @@
 // src/routes/Dashboard/Components/DepartmentTop5Bar.tsx
-import { alpha, Box, Typography, useTheme } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import Chart from 'react-apexcharts'
 import { useThemeMode } from '../../../context/ThemeContext'
 
@@ -18,7 +18,9 @@ export default function DepartmentTop5Bar() {
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
   const primaryColor = isDarkMode ? '#38bdf8' : '#0ea5e9'
-  const gridColor = isDarkMode ? 'rgba(148,163,184,0.15)' : 'rgba(203,213,225,0.3)'
+  const gridColor = isDarkMode
+    ? 'rgba(148,163,184,0.15)'
+    : 'rgba(203,213,225,0.3)'
 
   const options: any = {
     chart: {
@@ -152,49 +154,62 @@ export default function DepartmentTop5Bar() {
         border: `1px solid ${isDarkMode ? 'rgba(59,130,246,0.15)' : 'rgba(37,99,235,0.1)'}`,
       }}
     >
-      <Box sx={{ p: { xs: 2, md: 3 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* 헤더 */}
-      <Box sx={{ mb: 2 }}>
-        <Typography
-          variant="h5"
-          fontWeight={800}
-          sx={{
-            background: `linear-gradient(90deg, ${primaryColor}, ${theme.palette.primary.light})`,
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            letterSpacing: '-0.02em',
-          }}
-        >
-          부서별 TOP 5 실행 건수
-        </Typography>
-        <Typography variant="caption" sx={{ color: textSecondary, mt: 0.5, display: 'block' }}>
-          부서의 아이디어 실행 현황을 비교하세요
-        </Typography>
-      </Box>
-
-      {/* 차트 */}
-      <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-        <Chart
-          options={options}
-          series={series}
-          type="bar"
-          height={340}
-          width="100%"
-        />
-      </Box>
-
-      {/* 범례 및 설명 */}
       <Box
         sx={{
-          mt: 2,
-          pt: 2,
-          borderTop: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.2)' : 'rgba(203,213,225,0.3)'}`,
+          p: { xs: 2, md: 3 },
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
         }}
       >
-        <Typography variant="caption" sx={{ color: textSecondary, display: 'block' }}>
-          💡 상위의 부서들이 더 많은 아이디어를 실현하고 있습니다.
-        </Typography>
-      </Box>
+        {/* 헤더 */}
+        <Box sx={{ mb: 2 }}>
+          <Typography
+            variant="h5"
+            fontWeight={800}
+            sx={{
+              background: `linear-gradient(90deg, ${primaryColor}, ${theme.palette.primary.light})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            부서별 TOP 5 실행 건수
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{ color: textSecondary, mt: 0.5, display: 'block' }}
+          >
+            부서의 아이디어 실행 현황을 비교하세요
+          </Typography>
+        </Box>
+
+        {/* 차트 */}
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+          <Chart
+            options={options}
+            series={series}
+            type="bar"
+            height={340}
+            width="100%"
+          />
+        </Box>
+
+        {/* 범례 및 설명 */}
+        <Box
+          sx={{
+            mt: 2,
+            pt: 2,
+            borderTop: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.2)' : 'rgba(203,213,225,0.3)'}`,
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{ color: textSecondary, display: 'block' }}
+          >
+            💡 상위의 부서들이 더 많은 아이디어를 실현하고 있습니다.
+          </Typography>
+        </Box>
       </Box>
     </Box>
   )
