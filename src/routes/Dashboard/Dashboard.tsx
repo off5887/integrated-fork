@@ -1,13 +1,5 @@
 // src/pages/Dashboard/RealDashboard.tsx
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Typography,
-  alpha,
-  useTheme,
-} from '@mui/material'
+import { Box, Container, Grid, Typography, alpha } from '@mui/material'
 import { useThemeMode } from '../../context/ThemeContext'
 
 import ApprovalStatusPie from './Components/ApprovalStatusPie'
@@ -18,260 +10,256 @@ import PopularImaginationTop5 from './Components/PopularImaginationTop5'
 
 import DashboardCard from './Components/DashboardCard'
 
+const KPI_STATS = [
+  { label: '전체 아이디어', value: '150건', icon: '💡', color: '#3b82f6' },
+  { label: '승인 완료', value: '68건', icon: '✅', color: '#10b981' },
+  { label: '이번 달 신규', value: '23건', icon: '🚀', color: '#f59e0b' },
+  { label: '전체 실행률', value: '73.4%', icon: '📊', color: '#8b5cf6' },
+]
+
+const RECENT_ACTIVITIES = [
+  { user: 'John', action: 'Q3 예산 아이디어 승인', time: '2시간 전', icon: '✓', color: '#10b981' },
+  { user: 'Sarah', action: '새로운 디자인 안 업로드', time: '4시간 전', icon: '📎', color: '#3b82f6' },
+  { user: 'Mike', action: '마일스톤 완료', time: '어제', icon: '🎯', color: '#f59e0b' },
+  { user: '김민지', action: '원격근무 제안 공감 50건 달성', time: '어제', icon: '♥', color: '#ef4444' },
+]
+
 export default function RealDashboard() {
-  const theme = useTheme()
   const { isDarkMode } = useThemeMode()
 
-  // 2026 트렌드 반영: muted neutral 기반, saturation 낮춤
-  const bgGradient = isDarkMode
-    ? 'linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #0a0f1a 100%)' // deep charcoal/navy
-    : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)' // soft cool gray
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.4)'
+  const dividerColor = isDarkMode ? 'rgba(148,163,184,0.15)' : 'rgba(203,213,225,0.5)'
+  const bgBase = isDarkMode ? '#0d1117' : '#f8fafc'
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
         width: '100%',
-        m: 0,
-        p: 0,
-        position: 'relative',
-        overflow: 'hidden',
-        bgcolor: isDarkMode ? '#0b121f' : 'background.default',
-        background: bgGradient,
-        color: isDarkMode ? '#e2e8f0' : '#1e293b',
+        bgcolor: bgBase,
+        color: textPrimary,
       }}
     >
-      {/* 배경 Blob - muted indigo/blue 계열, opacity 낮춤 */}
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          overflow: 'hidden',
-          zIndex: 0,
-          '&::before, &::after': {
-            content: '""',
-            position: 'absolute',
-            borderRadius: '50%',
-            filter: 'blur(100px)', // 더 부드럽게
-            opacity: isDarkMode ? 0.07 : 0.1,
-          },
-          '&::before': {
-            width: '110%',
-            height: '110%',
-            top: '-30%',
-            left: '-30%',
-            background: isDarkMode ? '#4f46e5' : '#3b82f6', // indigo / blue muted
-            transform: 'translate(-15%, -25%) rotate(25deg)',
-          },
-          '&::after': {
-            width: '90%',
-            height: '130%',
-            bottom: '-50%',
-            right: '-20%',
-            background: isDarkMode ? '#6366f1' : '#60a5fa', // softer indigo/blue
-            transform: 'translate(15%, 30%) rotate(-15deg)',
-          },
-        }}
-      />
-
-      {/* 상단 헤더 영역 */}
+      {/* 헤더 */}
       <Box
         component="header"
         sx={{
-          position: 'relative',
-          zIndex: 2,
-          px: { xs: 3, md: 4 },
-          pt: { xs: 4, md: 5 },
-          pb: { xs: 3, md: 4 },
+          px: { xs: 3, md: 5 },
+          pt: { xs: 3, md: 4 },
+          pb: { xs: 2, md: 3 },
+          borderBottom: `1px solid ${borderColor}`,
           display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          alignItems: { xs: 'flex-start', md: 'center' },
+          alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 3,
+          bgcolor: isDarkMode ? 'rgba(13,17,23,0.95)' : 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(12px)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
         }}
       >
         <Box>
           <Typography
-            variant="h1"
-            fontWeight={900}
-            sx={{
-              fontSize: { xs: '2.2rem', md: '3rem', lg: '3.8rem' },
-              background: isDarkMode
-                ? 'linear-gradient(90deg, #60a5fa, #ffffff)' // muted blue → indigo
-                : 'linear-gradient(90deg, #1d4ed8, #4f46e5)', // deep blue → indigo
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              letterSpacing: '-0.03em',
-            }}
+            variant="h5"
+            fontWeight={700}
+            sx={{ color: textPrimary, letterSpacing: '-0.02em' }}
           >
             대시보드
           </Typography>
-          <Typography variant="body1" sx={{ mt: 1, opacity: 0.75 }}>
-            마지막 업데이트: {new Date().toLocaleDateString('ko-KR')}{' '}
-            {new Date().toLocaleTimeString('ko-KR')}
+          <Typography variant="caption" sx={{ color: textSecondary, mt: 0.25, display: 'block' }}>
+            {new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} 기준
           </Typography>
         </Box>
-
-        <Button
-          variant="outlined"
-          size="small"
-          aria-label="도움말 및 문의"
+        <Box
           sx={{
-            borderRadius: 20,
-            px: 3,
-            borderColor: alpha(theme.palette.primary.main, 0.3),
-            color: theme.palette.primary.main,
-            '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.08) },
-            '&:focus': {
-              outline: `2px solid ${theme.palette.primary.main}`,
-              outlineOffset: '2px',
-            },
+            px: 2,
+            py: 0.75,
+            borderRadius: 2,
+            bgcolor: isDarkMode ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.08)',
+            border: `1px solid ${isDarkMode ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.2)'}`,
           }}
         >
-          💡 도움말
-        </Button>
+          <Typography variant="caption" fontWeight={600} sx={{ color: '#3b82f6' }}>
+            실시간 현황
+          </Typography>
+        </Box>
       </Box>
 
       <Container
         maxWidth={false}
-        sx={{
-          position: 'relative',
-          zIndex: 2,
-          pb: 8,
-          px: { xs: 3, md: 4, lg: 8 },
-        }}
+        sx={{ px: { xs: 2, md: 4, lg: 5 }, py: { xs: 3, md: 4 } }}
       >
-        {/* 섹션: 메인 대시보드 */}
-        <Box component="section" sx={{ mb: 4 }}>
-          <Grid
-            container
-            spacing={{ xs: 2.5, md: 3 }}
-            sx={{ alignItems: 'stretch' }}
-          >
-            {/* 첫 번째 줄: MyGomgomiCard */}
-            <Grid size={{ xs: 12, lg: 6 }} sx={{ height: '100%' }}>
-              <DashboardCard
-                delay={0}
-                sx={{ minHeight: { md: '360px', lg: '360px' }, height: '100%' }}
-              >
-                <MyGomgomiCard fishTotal={5420} fishToNextLevel={8000} />
-              </DashboardCard>
-            </Grid>
+        <Grid container spacing={{ xs: 2, md: 2.5 }}>
 
-            {/* 두 번째 줄: 3개 차트 */}
-            <Grid size={{ xs: 12, lg: 6 }} sx={{ height: '100%' }}>
-              <DashboardCard
-                delay={0.1}
-                sx={{ minHeight: { md: '520px', lg: '520px' }, height: '100%' }}
-              >
-                <ApprovalStatusPie />
-              </DashboardCard>
-            </Grid>
-
-            {/* 세 번째 줄: DepartmentTop5Bar + ExecutionCompletionRate */}
-            <Grid
-              size={{ xs: 12, lg: 6 }}
-              sx={{ height: '100%', display: 'flex' }}
-            >
-              <DashboardCard
-                delay={0.25}
-                sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}
-              >
-                <PopularImaginationTop5 />
-              </DashboardCard>
-            </Grid>
-
-            <Grid
-              size={{ xs: 12, lg: 3 }}
-              sx={{ height: '100%', display: 'flex' }}
-            >
-              <DashboardCard
-                delay={0.2}
-                sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}
-              >
-                <DepartmentTop5Bar />
-              </DashboardCard>
-            </Grid>
-
-            <Grid
-              size={{ xs: 12, lg: 3 }}
-              sx={{ height: '100%', display: 'flex' }}
-            >
-              <DashboardCard
-                delay={0.15}
-                sx={{ minHeight: { md: '400px', lg: '400px' }, height: '100%' }}
-              >
-                <ExecutionCompletionRate completionRate={73.4} />
-              </DashboardCard>
-            </Grid>
-          </Grid>
-        </Box>
-
-        {/* 섹션 3: 최근 활동 */}
-        <Box component="section">
-          <DashboardCard delay={0.3}>
-            <Box
-              role="region"
-              aria-live="polite"
-              aria-label="최근 활동 목록"
-              sx={{ p: { xs: 2, md: 3 } }}
-            >
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {[
-                  {
-                    user: 'John',
-                    action: 'Q3 예산 승인',
-                    time: '2시간 전',
-                    icon: '✓',
-                  },
-                  {
-                    user: 'Sarah',
-                    action: '새로운 디자인 업로드',
-                    time: '4시간 전',
-                    icon: '📎',
-                  },
-                  {
-                    user: 'Mike',
-                    action: '마일스톤 완료',
-                    time: '어제',
-                    icon: '🎯',
-                  },
-                ].map((act, i) => (
+          {/* Row 1: KPI 요약 카드 4개 */}
+          {KPI_STATS.map((stat, i) => (
+            <Grid key={i} size={{ xs: 6, lg: 3 }}>
+              <DashboardCard delay={i * 0.05}>
+                <Box
+                  sx={{
+                    p: { xs: 2, md: 2.5 },
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                  }}
+                >
                   <Box
-                    key={i}
-                    sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 2.5,
+                      bgcolor: alpha(stat.color, isDarkMode ? 0.15 : 0.1),
+                      border: `1px solid ${alpha(stat.color, 0.2)}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.4rem',
+                      flexShrink: 0,
+                    }}
                   >
+                    {stat.icon}
+                  </Box>
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: textSecondary, fontWeight: 500, display: 'block', mb: 0.25 }}
+                    >
+                      {stat.label}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      fontWeight={700}
+                      sx={{ color: stat.color, lineHeight: 1.2 }}
+                    >
+                      {stat.value}
+                    </Typography>
+                  </Box>
+                </Box>
+              </DashboardCard>
+            </Grid>
+          ))}
+
+          {/* Row 2: MyGomgomi (5) + ApprovalStatusPie (7) */}
+          <Grid size={{ xs: 12, lg: 5 }}>
+            <DashboardCard delay={0.2} sx={{ minHeight: 400, height: '100%' }}>
+              <MyGomgomiCard fishTotal={5420} fishToNextLevel={8000} />
+            </DashboardCard>
+          </Grid>
+
+          <Grid size={{ xs: 12, lg: 7 }}>
+            <DashboardCard delay={0.25} sx={{ minHeight: 400, height: '100%' }}>
+              <ApprovalStatusPie />
+            </DashboardCard>
+          </Grid>
+
+          {/* Row 3: PopularTop5 (7) + DepartmentBar (5) */}
+          <Grid size={{ xs: 12, lg: 7 }}>
+            <DashboardCard delay={0.3} sx={{ minHeight: 380, height: '100%' }}>
+              <PopularImaginationTop5 />
+            </DashboardCard>
+          </Grid>
+
+          <Grid size={{ xs: 12, lg: 5 }}>
+            <DashboardCard delay={0.35} sx={{ minHeight: 380, height: '100%' }}>
+              <DepartmentTop5Bar />
+            </DashboardCard>
+          </Grid>
+
+          {/* Row 4: ExecutionRate (4) + RecentActivity (8) */}
+          <Grid size={{ xs: 12, lg: 4 }}>
+            <DashboardCard delay={0.4} sx={{ minHeight: 380, height: '100%' }}>
+              <ExecutionCompletionRate completionRate={73.4} />
+            </DashboardCard>
+          </Grid>
+
+          <Grid size={{ xs: 12, lg: 8 }}>
+            <DashboardCard delay={0.45} sx={{ minHeight: 380, height: '100%' }}>
+              <Box sx={{ p: { xs: 2.5, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  sx={{ color: textPrimary, mb: 0.5, letterSpacing: '-0.01em' }}
+                >
+                  최근 활동
+                </Typography>
+                <Typography variant="caption" sx={{ color: textSecondary, mb: 3, display: 'block' }}>
+                  팀 내 최신 아이디어 활동 내역입니다
+                </Typography>
+
+                <Box
+                  role="list"
+                  aria-label="최근 활동 목록"
+                  sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}
+                >
+                  {RECENT_ACTIVITIES.map((act, i) => (
                     <Box
+                      key={i}
+                      role="listitem"
                       sx={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: '50%',
-                        bgcolor: 'primary.main',
-                        color: 'white',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 700,
-                        fontSize: '1.2rem',
+                        gap: 2,
+                        py: 2,
+                        borderBottom:
+                          i < RECENT_ACTIVITIES.length - 1
+                            ? `1px solid ${dividerColor}`
+                            : 'none',
                       }}
                     >
-                      {act.icon}
-                    </Box>
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        {act.user} · {act.action}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Box
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: '50%',
+                          bgcolor: alpha(act.color, isDarkMode ? 0.15 : 0.1),
+                          border: `1px solid ${alpha(act.color, 0.25)}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '1rem',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {act.icon}
+                      </Box>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight={600}
+                          sx={{ color: textPrimary, lineHeight: 1.4 }}
+                          noWrap
+                        >
+                          {act.user}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: textSecondary }} noWrap>
+                          {act.action}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: textSecondary,
+                          flexShrink: 0,
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 1.5,
+                          bgcolor: isDarkMode
+                            ? 'rgba(148,163,184,0.08)'
+                            : 'rgba(203,213,225,0.3)',
+                        }}
+                      >
                         {act.time}
                       </Typography>
                     </Box>
-                  </Box>
-                ))}
+                  ))}
+                </Box>
               </Box>
-            </Box>
-          </DashboardCard>
-        </Box>
+            </DashboardCard>
+          </Grid>
+
+        </Grid>
       </Container>
     </Box>
   )
