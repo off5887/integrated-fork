@@ -1,12 +1,5 @@
 // src/routes/MileageStatsCards.tsx
-import {
-  alpha,
-  Box,
-  Card,
-  Grid,
-  Typography,
-  useMediaQuery,
-} from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
 import { useThemeMode } from '../../context/ThemeContext'
 
 interface Props {
@@ -15,147 +8,125 @@ interface Props {
   thisMonthExchanged: number
 }
 
-export default function MileageStatsCards({
-  totalFish,
-  thisMonthFish,
-  thisMonthExchanged,
-}: Props) {
-  const { isDarkMode } = useThemeMode()
-  const isMobile = useMediaQuery('(max-width:600px)')
+const CARDS = (totalFish: number, thisMonthFish: number, thisMonthExchanged: number) => [
+  {
+    label: '내가 잡은 생선',
+    value: totalFish,
+    unit: '마리',
+    icon: '🐟',
+    color: '#6366f1',
+    sub: `현금 환산 ≈ ${(totalFish * 100).toLocaleString()}원`,
+  },
+  {
+    label: '이달에 잡은 생선',
+    value: thisMonthFish,
+    unit: '마리',
+    icon: '🌱',
+    color: '#10b981',
+    sub: '이번 달 누적 획득량',
+  },
+  {
+    label: '이달에 바꾼 생선',
+    value: thisMonthExchanged,
+    unit: '마리',
+    icon: '💰',
+    color: '#f59e0b',
+    sub: `현금 환산 ≈ ${(thisMonthExchanged * 100).toLocaleString()}원`,
+  },
+]
 
-  const cards = [
-    {
-      emoji: '🐟',
-      title: '내가 잡은 생선',
-      value: totalFish,
-      color: isDarkMode ? '#c7d2fe' : '#6366f1',
-      bgAlpha: '#6366f1',
-    },
-    {
-      emoji: '🌱',
-      title: '이달에 잡은 생선',
-      value: thisMonthFish,
-      color: isDarkMode ? '#a7f3d0' : '#10b981',
-      bgAlpha: '#10b981',
-    },
-    {
-      emoji: '💰',
-      title: '이달에 바꾼 생선',
-      value: thisMonthExchanged,
-      color: isDarkMode ? '#fef08a' : '#ca8a04',
-      bgAlpha: '#eab308',
-    },
-  ]
+export default function MileageStatsCards({ totalFish, thisMonthFish, thisMonthExchanged }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const cards = CARDS(totalFish, thisMonthFish, thisMonthExchanged)
+
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const cardBg = isDarkMode ? 'rgba(22,30,46,0.92)' : 'rgba(255,255,255,0.97)'
+  const cardBorder = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(226,232,240,0.8)'
 
   return (
-    <Grid
-      container
-      spacing={isMobile ? 2 : 3}
-      sx={{
-        mb: isMobile ? 5 : 7,
-        justifyContent: isMobile ? 'center' : 'flex-start',
-      }}
-    >
+    <Grid container spacing={2.5} sx={{ mb: 5 }}>
       {cards.map((card, i) => (
-        <Grid
-          item
-          xs={12}
-          sm={4}
-          key={i}
-          sx={{
-            // 모바일에서 너비 완전 통일 & 중앙 정렬
-            maxWidth: isMobile ? 360 : 'none',
-            flexBasis: isMobile ? '100%' : 'auto',
-            flexGrow: 0,
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <Card
-            elevation={isDarkMode ? 4 : 2}
+        <Grid key={i} size={{ xs: 12, sm: 4 }}>
+          <Box
             sx={{
-              p: isMobile ? 2.5 : 4,
+              p: 2.5,
               borderRadius: 3,
-              bgcolor: isDarkMode
-                ? 'rgba(30,41,59,0.96)'
-                : 'rgba(255,255,255,0.98)',
-              border: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.30)' : 'rgba(148,163,184,0.25)'}`,
-              transition: 'all 0.25s ease',
-              width: '100%', // ← 핵심: width 100% 강제
-              maxWidth: isMobile ? 360 : '100%', // ← 모바일 최대 너비 고정
-              mx: 'auto',
+              bgcolor: cardBg,
+              border: `1px solid ${cardBorder}`,
               boxShadow: isDarkMode
-                ? '0 6px 20px rgba(0,0,0,0.35)'
-                : '0 4px 16px rgba(0,0,0,0.08)',
+                ? '0 2px 16px rgba(0,0,0,0.3)'
+                : '0 2px 12px rgba(0,0,0,0.05)',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
               '&:hover': {
-                transform: 'translateY(-4px)',
+                transform: 'translateY(-2px)',
                 boxShadow: isDarkMode
-                  ? '0 12px 32px rgba(99,102,241,0.25)'
-                  : '0 12px 32px rgba(79,70,229,0.15)',
+                  ? `0 8px 24px rgba(0,0,0,0.4)`
+                  : `0 8px 24px rgba(0,0,0,0.08)`,
               },
             }}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                mb: isMobile ? 1.5 : 2.5,
-                gap: isMobile ? 1.5 : 2,
-              }}
-            >
+            {/* 상단: 아이콘 + 라벨 */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
               <Box
                 sx={{
-                  width: isMobile ? 44 : 52,
-                  height: isMobile ? 44 : 52,
-                  borderRadius: '50%',
-                  bgcolor: alpha(card.bgAlpha, isDarkMode ? 0.22 : 0.14),
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  bgcolor: `${card.color}18`,
+                  border: `1px solid ${card.color}30`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  fontSize: '1.2rem',
                   flexShrink: 0,
                 }}
               >
-                <Typography variant={isMobile ? 'h5' : 'h4'}>
-                  {card.emoji}
-                </Typography>
+                {card.icon}
               </Box>
-
               <Typography
-                variant={isMobile ? 'subtitle1' : 'h6'}
-                fontWeight={700}
-                sx={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
+                variant="body2"
+                fontWeight={600}
+                sx={{ color: textSecondary, letterSpacing: '0.01em' }}
               >
-                {card.title}
+                {card.label}
               </Typography>
             </Box>
 
-            <Typography
-              variant={isMobile ? 'h4' : 'h3'}
-              fontWeight={800}
-              sx={{
-                color: card.color,
-                lineHeight: 1.1,
-                mt: isMobile ? 0.5 : 1,
-                textAlign: 'center',
-              }}
-            >
-              {card.value.toLocaleString()}
+            {/* 수치 */}
+            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75, mb: 0.75 }}>
               <Typography
-                component="span"
-                variant={isMobile ? 'h6' : 'h5'}
                 sx={{
-                  ml: 1,
-                  color: isDarkMode ? '#cbd5e1' : '#475569',
-                  fontWeight: 500,
+                  fontSize: '2rem',
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  letterSpacing: '-0.03em',
+                  color: card.color,
                 }}
               >
-                마리
+                {card.value.toLocaleString()}
               </Typography>
+              <Typography variant="body2" fontWeight={600} sx={{ color: textSecondary }}>
+                {card.unit}
+              </Typography>
+            </Box>
+
+            {/* 서브텍스트 */}
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              {card.sub}
             </Typography>
-          </Card>
+
+            {/* 하단 컬러 바 */}
+            <Box
+              sx={{
+                mt: 2.5,
+                height: 3,
+                borderRadius: '999px',
+                background: `linear-gradient(90deg, ${card.color}, ${card.color}60)`,
+              }}
+            />
+          </Box>
         </Grid>
       ))}
     </Grid>
   )
 }
-

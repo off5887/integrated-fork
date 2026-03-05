@@ -1,7 +1,7 @@
 // src/routes/idea/ParticipantsSection.tsx
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import { Box, Button, Chip, Paper, Typography } from '@mui/material'
+import { Box, Button, Chip, Typography } from '@mui/material'
 
 interface Props {
   reviewer: string[]
@@ -22,269 +22,145 @@ export default function ParticipantsSection({
   onOpenReviewerModal,
   onOpenCoProposerModal,
 }: Props) {
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography
-        variant="h5"
-        fontWeight={700}
-        sx={{
-          mb: 4,
-          color: isDarkMode ? '#60a5fa' : '#2563eb',
-        }}
-      >
-        2. 참여자
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+        <Box
+          sx={{
+            width: 26, height: 26, borderRadius: '50%',
+            bgcolor: '#6366f1', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
+          }}
+        >
+          2
+        </Box>
+        <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
+          참여자
+        </Typography>
+      </Box>
 
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          gap: { xs: 4, md: 5 },
-        }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
         {/* 심사자 */}
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Paper
+        <Box
+          sx={{
+            flex: 1, minWidth: 0, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
+            bgcolor: isDarkMode ? 'rgba(99,102,241,0.05)' : 'rgba(99,102,241,0.03)',
+            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.14)' : 'rgba(99,102,241,0.1)'}`,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2.5 }}>
+            <PersonAddIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+            <Typography variant="body1" fontWeight={700} sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}>
+              심사자
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, minHeight: 44, mb: 2.5 }}>
+            {reviewer.length === 0 ? (
+              <Typography variant="body2" sx={{ color: textSecondary, py: 0.5 }}>
+                아직 추가된 심사자가 없습니다
+              </Typography>
+            ) : reviewer.map((name, i) => {
+              const [displayName, deptPart] = name.includes(' (') ? name.split(' (') : [name, '']
+              const dept = deptPart ? deptPart.replace(')', '') : ''
+              return (
+                <Chip
+                  key={i}
+                  label={
+                    <Box component="span" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.3 }}>
+                      <span>{displayName.trim()}</span>
+                      {dept && (
+                        <Typography component="span" variant="caption" sx={{ fontSize: '0.68rem', opacity: 0.75 }}>
+                          {dept}
+                        </Typography>
+                      )}
+                    </Box>
+                  }
+                  variant="outlined"
+                  size="medium"
+                  onDelete={() => setReviewer(reviewer.filter((_, idx) => idx !== i))}
+                  sx={{
+                    borderColor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)',
+                    color: isDarkMode ? '#c7d2fe' : '#4338ca',
+                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
+                    height: 'auto', py: 0.5,
+                    '& .MuiChip-label': { padding: '4px 10px' },
+                    '&:hover': { bgcolor: isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.12)' },
+                  }}
+                />
+              )
+            })}
+          </Box>
+          <Button
+            variant="outlined"
+            fullWidth
+            size="small"
+            startIcon={<PersonAddIcon sx={{ fontSize: '1rem' }} />}
+            onClick={onOpenReviewerModal}
             sx={{
-              p: { xs: 3, md: 4 },
-              borderRadius: 3,
-              bgcolor: isDarkMode
-                ? 'rgba(30,41,59,0.85)'
-                : 'rgba(255,255,255,0.94)',
-              border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.07)'}`,
-              boxShadow: isDarkMode
-                ? '0 10px 40px rgba(0,0,0,0.4)'
-                : '0 10px 40px rgba(0,0,0,0.1)',
-              height: '100%',
+              borderRadius: 1.5, py: 0.9, fontWeight: 600, fontSize: '0.8rem',
+              borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
+              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              '&:hover': { borderColor: '#6366f1', bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)' },
             }}
           >
-            <Box
-              sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}
-            >
-              <PersonAddIcon
-                sx={{ color: isDarkMode ? '#93c5fd' : '#1d4ed8' }}
-                fontSize="medium"
-              />
-              <Typography
-                variant="h6"
-                fontWeight={600}
-                sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}
-              >
-                심사자
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 1.2,
-                minHeight: 52,
-                mb: 3.5,
-              }}
-            >
-              {reviewer.map((name, i) => {
-                const [displayName, deptPart] = name.includes(' (')
-                  ? name.split(' (')
-                  : [name, '']
-                const dept = deptPart ? deptPart.replace(')', '') : ''
-
-                return (
-                  <Chip
-                    key={i}
-                    label={
-                      <Box
-                        component="span"
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'flex-start',
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        <span>{displayName.trim()}</span>
-                        {dept && (
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            sx={{
-                              fontSize: '0.68rem',
-                              opacity: 0.75,
-                            }}
-                          >
-                            {dept}
-                          </Typography>
-                        )}
-                      </Box>
-                    }
-                    color="primary"
-                    variant="outlined"
-                    size="medium"
-                    onDelete={() =>
-                      setReviewer((prev) => prev.filter((_, idx) => idx !== i))
-                    }
-                    sx={{
-                      borderColor: isDarkMode ? '#60a5fa' : '#2563eb',
-                      color: isDarkMode ? '#dbeafe' : '#1e40af',
-                      bgcolor: isDarkMode
-                        ? 'rgba(96,165,250,0.15)'
-                        : 'rgba(37,99,235,0.1)',
-                      height: 'auto',
-                      py: 0.5,
-                      px: 0.5,
-                      '& .MuiChip-label': {
-                        padding: '4px 12px',
-                      },
-                      '&:hover': {
-                        bgcolor: isDarkMode
-                          ? 'rgba(96,165,250,0.25)'
-                          : 'rgba(37,99,235,0.15)',
-                      },
-                    }}
-                  />
-                )
-              })}
-
-              {reviewer.length === 0 && (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: isDarkMode ? '#94a3b8' : '#64748b',
-                    py: 1,
-                  }}
-                >
-                  아직 추가된 심사자가 없습니다
-                </Typography>
-              )}
-            </Box>
-
-            <Button
-              variant="outlined"
-              fullWidth
-              startIcon={<PersonAddIcon />}
-              onClick={onOpenReviewerModal}
-              sx={{
-                borderRadius: 2,
-                py: 1.5,
-                borderColor: isDarkMode ? '#60a5fa' : '#2563eb',
-                color: isDarkMode ? '#bfdbfe' : '#1e40af',
-                fontWeight: 500,
-                '&:hover': {
-                  borderColor: isDarkMode ? '#3b82f6' : '#1d4ed8',
-                  bgcolor: isDarkMode
-                    ? 'rgba(59,130,246,0.15)'
-                    : 'rgba(29,78,216,0.08)',
-                  color: isDarkMode ? '#dbeafe' : '#1e3a8a',
-                },
-              }}
-            >
-              심사자 추가
-            </Button>
-          </Paper>
+            심사자 추가
+          </Button>
         </Box>
 
         {/* 공동제안자 */}
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Paper
+        <Box
+          sx={{
+            flex: 1, minWidth: 0, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
+            bgcolor: isDarkMode ? 'rgba(139,92,246,0.05)' : 'rgba(139,92,246,0.03)',
+            border: `1px solid ${isDarkMode ? 'rgba(139,92,246,0.14)' : 'rgba(139,92,246,0.1)'}`,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2.5 }}>
+            <GroupAddIcon sx={{ color: '#8b5cf6', fontSize: '1.1rem' }} />
+            <Typography variant="body1" fontWeight={700} sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}>
+              공동제안자
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, minHeight: 44, mb: 2.5 }}>
+            {coProposers.length === 0 ? (
+              <Typography variant="body2" sx={{ color: textSecondary, py: 0.5 }}>
+                아직 추가된 공동제안자가 없습니다
+              </Typography>
+            ) : coProposers.map((name, i) => (
+              <Chip
+                key={i}
+                label={name}
+                variant="outlined"
+                size="medium"
+                onDelete={() => setCoProposers(coProposers.filter((_, idx) => idx !== i))}
+                sx={{
+                  borderColor: isDarkMode ? 'rgba(139,92,246,0.4)' : 'rgba(139,92,246,0.3)',
+                  color: isDarkMode ? '#c4b5fd' : '#6d28d9',
+                  bgcolor: isDarkMode ? 'rgba(139,92,246,0.12)' : 'rgba(139,92,246,0.07)',
+                  '&:hover': { bgcolor: isDarkMode ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.12)' },
+                }}
+              />
+            ))}
+          </Box>
+          <Button
+            variant="outlined"
+            fullWidth
+            size="small"
+            startIcon={<GroupAddIcon sx={{ fontSize: '1rem' }} />}
+            onClick={onOpenCoProposerModal}
             sx={{
-              p: { xs: 3, md: 4 },
-              borderRadius: 3,
-              bgcolor: isDarkMode
-                ? 'rgba(30,41,59,0.85)'
-                : 'rgba(255,255,255,0.94)',
-              border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.07)'}`,
-              boxShadow: isDarkMode
-                ? '0 10px 40px rgba(0,0,0,0.4)'
-                : '0 10px 40px rgba(0,0,0,0.1)',
-              height: '100%',
+              borderRadius: 1.5, py: 0.9, fontWeight: 600, fontSize: '0.8rem',
+              borderColor: isDarkMode ? 'rgba(139,92,246,0.35)' : 'rgba(139,92,246,0.3)',
+              color: isDarkMode ? '#c4b5fd' : '#6d28d9',
+              '&:hover': { borderColor: '#8b5cf6', bgcolor: isDarkMode ? 'rgba(139,92,246,0.12)' : 'rgba(139,92,246,0.07)' },
             }}
           >
-            <Box
-              sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}
-            >
-              <GroupAddIcon
-                sx={{ color: isDarkMode ? '#c4b5fd' : '#6d28d9' }}
-                fontSize="medium"
-              />
-              <Typography
-                variant="h6"
-                fontWeight={600}
-                sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}
-              >
-                공동제안자
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 1.2,
-                minHeight: 52,
-                mb: 3.5,
-              }}
-            >
-              {coProposers.map((name, i) => (
-                <Chip
-                  key={i}
-                  label={name}
-                  color="secondary"
-                  variant="outlined"
-                  size="medium"
-                  onDelete={() =>
-                    setCoProposers((prev) => prev.filter((_, idx) => idx !== i))
-                  }
-                  sx={{
-                    borderColor: isDarkMode ? '#a78bfa' : '#7c3aed',
-                    color: isDarkMode ? '#e9d5ff' : '#5b21b6',
-                    bgcolor: isDarkMode
-                      ? 'rgba(167,139,250,0.15)'
-                      : 'rgba(124,58,237,0.1)',
-                    '&:hover': {
-                      bgcolor: isDarkMode
-                        ? 'rgba(167,139,250,0.25)'
-                        : 'rgba(124,58,237,0.15)',
-                    },
-                  }}
-                />
-              ))}
-
-              {coProposers.length === 0 && (
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: isDarkMode ? '#94a3b8' : '#64748b',
-                    py: 1,
-                  }}
-                >
-                  아직 추가된 공동제안자가 없습니다
-                </Typography>
-              )}
-            </Box>
-
-            <Button
-              variant="outlined"
-              fullWidth
-              startIcon={<GroupAddIcon />}
-              onClick={onOpenCoProposerModal}
-              sx={{
-                borderRadius: 2,
-                py: 1.5,
-                borderColor: isDarkMode ? '#a78bfa' : '#7c3aed',
-                color: isDarkMode ? '#ddd6fe' : '#5b21b6',
-                fontWeight: 500,
-                '&:hover': {
-                  borderColor: isDarkMode ? '#8b5cf6' : '#6d28d9',
-                  bgcolor: isDarkMode
-                    ? 'rgba(139,92,246,0.15)'
-                    : 'rgba(109,40,217,0.08)',
-                  color: isDarkMode ? '#f3e8ff' : '#4c1d95',
-                },
-              }}
-            >
-              공동제안자 추가
-            </Button>
-          </Paper>
+            공동제안자 추가
+          </Button>
         </Box>
       </Box>
     </Box>

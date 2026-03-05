@@ -1,5 +1,5 @@
 // src/routes/MileageMobileCards.tsx
-import { alpha, Box, Checkbox, Divider, Paper, Typography } from '@mui/material'
+import { Box, Checkbox, Typography } from '@mui/material'
 import { useThemeMode } from '../../context/ThemeContext'
 
 interface Props {
@@ -8,184 +8,144 @@ interface Props {
   onToggle: (id: number) => void
 }
 
-export default function MileageMobileCards({
-  data,
-  selected,
-  onToggle,
-}: Props) {
+const STATUS_MAP: Record<string, { color: string; bg: string; border: string }> = {
+  전환완료: { color: '#10b981', bg: '#10b98112', border: '#10b98128' },
+  전환요청중: { color: '#f59e0b', bg: '#f59e0b12', border: '#f59e0b28' },
+  default: { color: '#ef4444', bg: '#ef444412', border: '#ef444428' },
+}
+
+export default function MileageMobileCards({ data, selected, onToggle }: Props) {
   const { isDarkMode } = useThemeMode()
 
-  const colors = {
-    surface2: isDarkMode ? '#1e293b' : '#ffffff',
-    border: isDarkMode ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.25)',
-    textPrimary: isDarkMode ? '#e2e8f0' : '#0f172a',
-    textSecondary: isDarkMode ? '#94a3b8' : '#64748b',
-    primary: isDarkMode ? '#6366f1' : '#4f46e5',
-    success: isDarkMode ? '#22d3ee' : '#06b6d4',
-    warning: isDarkMode ? '#fbbf24' : '#d97706',
-    danger: isDarkMode ? '#f87171' : '#ef4444',
-    selected: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(79,70,229,0.08)',
-    hover: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(79,70,229,0.04)',
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const cardBg = isDarkMode ? 'rgba(22,30,46,0.92)' : '#ffffff'
+  const selectedBg = isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.05)'
+  const selectedBorder = isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)'
+  const dividerColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.4)'
+
+  if (data.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 10 }}>
+        <Typography variant="body2" sx={{ color: textSecondary }}>
+          표시할 데이터가 없습니다
+        </Typography>
+      </Box>
+    )
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2.5,
-        px: { xs: 1, sm: 2 },
-      }}
-    >
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {data.map((item) => {
         const isSelected = selected.includes(item.id)
+        const statusStyle = STATUS_MAP[item.status] ?? STATUS_MAP.default
+
         return (
-          <Paper
+          <Box
             key={item.id}
-            elevation={isDarkMode ? 4 : 1}
+            onClick={() => onToggle(item.id)}
             sx={{
-              p: 3,
+              p: 2.5,
               borderRadius: 3,
-              bgcolor: isSelected ? colors.selected : colors.surface2,
-              border: `1px solid ${colors.border}`,
-              maxWidth: 480,
-              mx: 'auto',
-              width: '100%',
-              transition: 'all 0.18s ease',
-              boxShadow: isDarkMode
-                ? '0 4px 20px rgba(0,0,0,0.35)'
-                : '0 2px 12px rgba(0,0,0,0.08)',
+              bgcolor: isSelected ? selectedBg : cardBg,
+              border: `1px solid ${isSelected ? selectedBorder : borderColor}`,
+              boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 8px rgba(0,0,0,0.04)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
               '&:hover': {
-                transform: 'translateY(-3px)',
-                boxShadow: isDarkMode
-                  ? '0 12px 32px rgba(99,102,241,0.25)'
-                  : '0 8px 24px rgba(79,70,229,0.15)',
-                bgcolor: isSelected ? colors.selected : colors.hover,
+                borderColor: isSelected ? selectedBorder : (isDarkMode ? 'rgba(148,163,184,0.2)' : 'rgba(148,163,184,0.4)'),
               },
             }}
-            onClick={() => onToggle(item.id)}
           >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                mb: 2,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            {/* 헤더 행 */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
                 <Checkbox
                   checked={isSelected}
-                  color="primary"
                   size="small"
-                  sx={{ p: 0 }}
+                  sx={{
+                    p: 0,
+                    color: textSecondary,
+                    '&.Mui-checked': { color: '#6366f1' },
+                  }}
                 />
-                <Typography
-                  variant="subtitle1"
-                  fontWeight={700}
-                  color={colors.textPrimary}
-                >
+                <Typography variant="caption" fontWeight={600} sx={{ color: textSecondary }}>
                   #{item.id}
                 </Typography>
               </Box>
 
-              <Typography
-                variant="body2"
-                fontWeight={600}
-                sx={{
-                  color:
-                    item.status === '전환완료'
-                      ? colors.success
-                      : item.status === '전환요청중'
-                        ? colors.warning
-                        : colors.danger,
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: 10,
-                  bgcolor: alpha(
-                    item.status === '전환완료'
-                      ? colors.success
-                      : item.status === '전환요청중'
-                        ? colors.warning
-                        : colors.danger,
-                    0.12,
-                  ),
-                }}
-              >
-                {item.status}
-              </Typography>
-            </Box>
-
-            <Divider sx={{ my: 2, borderColor: colors.border }} />
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.8 }}>
+              {/* 상태 배지 */}
               <Box
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
+                  display: 'inline-flex',
                   alignItems: 'center',
+                  px: 1.25,
+                  py: 0.35,
+                  borderRadius: '999px',
+                  bgcolor: statusStyle.bg,
+                  border: `1px solid ${statusStyle.border}`,
+                  gap: 0.75,
                 }}
               >
-                <Typography variant="body2" color={colors.textSecondary}>
+                <Box
+                  sx={{
+                    width: 5,
+                    height: 5,
+                    borderRadius: '50%',
+                    bgcolor: statusStyle.color,
+                    flexShrink: 0,
+                  }}
+                />
+                <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: statusStyle.color }}>
+                  {item.status}
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* 구분선 */}
+            <Box sx={{ height: '1px', bgcolor: dividerColor, mb: 2 }} />
+
+            {/* 내용 */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 500 }}>
                   지급일
                 </Typography>
-                <Typography
-                  variant="body1"
-                  fontWeight={500}
-                  color={colors.textPrimary}
-                >
+                <Typography variant="body2" sx={{ color: textPrimary }}>
                   {item.paymentDate}
                 </Typography>
               </Box>
 
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <Typography variant="body2" color={colors.textSecondary}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
+                <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 500, flexShrink: 0 }}>
                   내역
                 </Typography>
                 <Typography
-                  variant="body1"
-                  fontWeight={500}
-                  color={colors.textPrimary}
-                  sx={{ textAlign: 'right', flex: 1, pl: 3 }}
+                  variant="body2"
+                  sx={{ color: textPrimary, textAlign: 'right', flex: 1 }}
                 >
                   {item.detail}
                 </Typography>
               </Box>
 
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Typography variant="body2" color={colors.textSecondary}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 500 }}>
                   생선
                 </Typography>
-                <Typography
-                  variant="h6"
-                  fontWeight={800}
-                  color={colors.primary}
-                >
-                  {item.fish} 마리
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                  <Typography variant="body2" fontWeight={800} sx={{ color: '#6366f1' }}>
+                    {item.fish.toLocaleString()}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 500 }}>
+                    마리
+                  </Typography>
+                </Box>
               </Box>
             </Box>
-          </Paper>
+          </Box>
         )
       })}
-
-      {data.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 10, color: colors.textSecondary }}>
-          <Typography variant="h6">표시할 데이터가 없습니다</Typography>
-        </Box>
-      )}
     </Box>
   )
 }

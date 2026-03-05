@@ -4,12 +4,9 @@ import SendIcon from '@mui/icons-material/Send'
 import {
   Box,
   Button,
-  Card,
-  CardContent,
   IconButton,
   TextField,
   Typography,
-  useTheme,
 } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -20,11 +17,22 @@ import FileUploadSection from './Components/FileUploadSection'
 import ParticipantsSection from './Components/ParticipantsSection'
 import ScheduleAndVisibilitySection from './Components/ScheduleAndVisibilitySection'
 
-import CoProposerSelectModal from './components/CoProposerSelectModal'
-import ReviewerSelectModal from './components/ReviewerSelectModal'
+import CoProposerSelectModal from './Components/CoProposerSelectModal'
+import ReviewerSelectModal from './Components/ReviewerSelectModal'
+
+function SectionDivider({ isDarkMode }: { isDarkMode: boolean }) {
+  return (
+    <Box
+      sx={{
+        height: '1px',
+        bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)',
+        my: 5,
+      }}
+    />
+  )
+}
 
 export default function NewIdea() {
-  const theme = useTheme()
   const { isDarkMode } = useThemeMode()
   const navigate = useNavigate()
 
@@ -39,20 +47,17 @@ export default function NewIdea() {
   const [plan, setPlan] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<string[]>([])
-
   const [loading, setLoading] = useState(false)
 
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
   const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
 
-  // 심사자 토글 (추가 ↔ 제거)
   const handleToggleReviewer = (name: string) => {
     setReviewer((prev) =>
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
     )
   }
 
-  // 공동제안자도 토글로 변경하고 싶다면 아래와 같이
   const handleToggleCoProposer = (name: string) => {
     setCoProposers((prev) =>
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
@@ -60,17 +65,10 @@ export default function NewIdea() {
   }
 
   const handleSubmit = () => {
-    if (
-      !title.trim() ||
-      !problem.trim() ||
-      !solution.trim() ||
-      !startDate ||
-      !endDate
-    ) {
+    if (!title.trim() || !problem.trim() || !solution.trim() || !startDate || !endDate) {
       alert('필수 항목을 모두 입력해주세요.')
       return
     }
-
     setLoading(true)
     setTimeout(() => {
       alert('제안이 등록되었습니다!')
@@ -81,246 +79,240 @@ export default function NewIdea() {
 
   const handleBack = () => navigate(-1)
 
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+
   const inputSx = {
-    bgcolor: isDarkMode ? 'rgba(30,41,59,0.88)' : 'rgba(255,255,255,0.97)',
-    borderRadius: 3,
-    color: isDarkMode ? '#f1f5f9' : '#0f172a',
+    bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
+    borderRadius: 2,
+    color: textPrimary,
+    '& .MuiInputBase-input': { color: textPrimary },
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode
-        ? 'rgba(148,163,184,0.6)'
-        : 'rgba(148,163,184,0.6)',
+      borderColor: isDarkMode ? 'rgba(148,163,184,0.18)' : 'rgba(203,213,225,0.7)',
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? '#94a3b8' : '#64748b',
+      borderColor: isDarkMode ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.5)',
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? '#60a5fa' : '#3b82f6',
-      borderWidth: 2,
+      borderColor: '#6366f1',
+      borderWidth: '1.5px',
     },
   }
 
   const labelSx = {
-    color: isDarkMode ? '#94a3b8' : '#475569',
-    fontWeight: 500,
-    '&.Mui-focused': {
-      color: isDarkMode ? '#60a5fa' : '#3b82f6',
-    },
+    color: textSecondary,
+    fontSize: '0.875rem',
+    '&.Mui-focused': { color: '#6366f1' },
   }
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: isDarkMode ? '#0f172a' : '#f8fafc',
-        pt: { xs: 10, md: 12 },
-        pb: 16,
-        px: { xs: 2, sm: 4 },
-        transition: 'background-color 0.4s ease',
+        bgcolor: isDarkMode ? '#0a0f1e' : '#f1f5f9',
+        pt: { xs: 9, md: 10 },
+        pb: 14,
+        px: { xs: 2, sm: 3 },
+        transition: 'background-color 0.3s ease',
       }}
     >
-      <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2,
-            mb: { xs: 5, md: 7 },
-          }}
-        >
+      <Box sx={{ maxWidth: 860, mx: 'auto' }}>
+        {/* 페이지 헤더 */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
           <IconButton
             onClick={handleBack}
+            size="small"
             sx={{
-              color: isDarkMode ? '#cbd5e1' : '#475569',
-              bgcolor: isDarkMode
-                ? 'rgba(30,41,59,0.5)'
-                : 'rgba(241,245,249,0.7)',
-              '&:hover': {
-                bgcolor: isDarkMode
-                  ? 'rgba(71,85,105,0.7)'
-                  : 'rgba(226,232,240,0.9)',
-              },
+              color: textSecondary,
+              bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)',
               borderRadius: 2,
+              '&:hover': {
+                bgcolor: isDarkMode ? 'rgba(148,163,184,0.15)' : 'rgba(203,213,225,0.7)',
+              },
             }}
           >
-            <ArrowBackIcon />
+            <ArrowBackIcon fontSize="small" />
           </IconButton>
-          <Typography
-            variant="h4"
-            fontWeight={800}
-            sx={{ color: isDarkMode ? '#f1f5f9' : '#0f172a' }}
-          >
-            새로운 상상 제안
-          </Typography>
+          <Box>
+            <Typography
+              variant="h5"
+              fontWeight={800}
+              sx={{ color: textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
+            >
+              새로운 상상 제안
+            </Typography>
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              아이디어를 제안하고 함께 실현해보세요
+            </Typography>
+          </Box>
         </Box>
 
-        <Card
-          elevation={0}
+        {/* 메인 폼 카드 */}
+        <Box
           sx={{
-            width: '100%',
-            borderRadius: 4,
-            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
-            bgcolor: isDarkMode
-              ? 'rgba(30,41,59,0.85)'
-              : 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(24px)',
+            borderRadius: 3,
+            bgcolor: isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
+            border: `1px solid ${borderColor}`,
             boxShadow: isDarkMode
-              ? '0 20px 60px rgba(0,0,0,0.5)'
-              : '0 20px 60px rgba(0,0,0,0.12)',
+              ? '0 8px 32px rgba(0,0,0,0.4)'
+              : '0 4px 24px rgba(0,0,0,0.06)',
             overflow: 'hidden',
           }}
         >
-          <CardContent
-            sx={{
-              p: { xs: 3, sm: 5, md: 6 },
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            <Box sx={{ width: '100%', maxWidth: 1100 }}>
-              <BasicInfoSection
-                title={title}
-                setTitle={setTitle}
-                problem={problem}
-                setProblem={setProblem}
-                solution={solution}
-                setSolution={setSolution}
-                inputSx={inputSx}
-                labelSx={labelSx}
-                isDarkMode={isDarkMode}
-              />
+          {/* 상단 컬러 스트립 */}
+          <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
 
-              <Box sx={{ mt: 10 }}>
-                <ParticipantsSection
-                  reviewer={reviewer}
-                  setReviewer={setReviewer}
-                  coProposers={coProposers}
-                  setCoProposers={setCoProposers}
-                  isDarkMode={isDarkMode}
-                  onOpenReviewerModal={() => setReviewerModalOpen(true)}
-                  onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
-                />
-              </Box>
+          <Box sx={{ p: { xs: 3, sm: 5 } }}>
+            <BasicInfoSection
+              title={title}
+              setTitle={setTitle}
+              problem={problem}
+              setProblem={setProblem}
+              solution={solution}
+              setSolution={setSolution}
+              inputSx={inputSx}
+              labelSx={labelSx}
+              isDarkMode={isDarkMode}
+            />
 
-              <Box sx={{ mt: 10 }}>
-                <ScheduleAndVisibilitySection
-                  startDate={startDate}
-                  setStartDate={setStartDate}
-                  endDate={endDate}
-                  setEndDate={setEndDate}
-                  security={security}
-                  setSecurity={setSecurity}
-                  inputSx={inputSx}
-                  labelSx={labelSx}
-                  isDarkMode={isDarkMode}
-                />
-              </Box>
+            <SectionDivider isDarkMode={isDarkMode} />
 
-              <Box sx={{ mt: 10 }}>
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
+            <ParticipantsSection
+              reviewer={reviewer}
+              setReviewer={setReviewer}
+              coProposers={coProposers}
+              setCoProposers={setCoProposers}
+              isDarkMode={isDarkMode}
+              onOpenReviewerModal={() => setReviewerModalOpen(true)}
+              onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
+            />
+
+            <SectionDivider isDarkMode={isDarkMode} />
+
+            <ScheduleAndVisibilitySection
+              startDate={startDate}
+              setStartDate={setStartDate}
+              endDate={endDate}
+              setEndDate={setEndDate}
+              security={security}
+              setSecurity={setSecurity}
+              inputSx={inputSx}
+              labelSx={labelSx}
+              isDarkMode={isDarkMode}
+            />
+
+            <SectionDivider isDarkMode={isDarkMode} />
+
+            {/* 4. 실행 계획 */}
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                <Box
                   sx={{
-                    mb: 4,
-                    color: isDarkMode ? '#60a5fa' : '#2563eb',
+                    width: 26, height: 26, borderRadius: '50%',
+                    bgcolor: '#6366f1', color: '#fff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
                   }}
                 >
-                  4. 실행 계획
+                  4
+                </Box>
+                <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
+                  실행 계획
                 </Typography>
-                <TextField
-                  fullWidth
-                  label="구체적인 실행 계획을 작성해주세요"
-                  multiline
-                  rows={7}
-                  value={plan}
-                  onChange={(e) => setPlan(e.target.value)}
-                  InputProps={{ sx: inputSx }}
-                  InputLabelProps={{ sx: labelSx }}
-                />
               </Box>
-
-              <Box sx={{ mt: 10 }}>
-                <FileUploadSection
-                  files={files}
-                  filePreviews={filePreviews}
-                  onFilesChange={(newFilesFromChild) => {
-                    const addedFiles = newFilesFromChild.slice(files.length)
-                    const newPreviews = addedFiles.map((file) =>
-                      file.type.startsWith('image/')
-                        ? URL.createObjectURL(file)
-                        : '',
-                    )
-
-                    setFiles(newFilesFromChild)
-                    setFilePreviews((prev) => [...prev, ...newPreviews])
-                  }}
-                  onRemoveFile={(index) => {
-                    if (
-                      filePreviews[index] &&
-                      files[index]?.type.startsWith('image/')
-                    ) {
-                      URL.revokeObjectURL(filePreviews[index])
-                    }
-
-                    setFiles((prev) => prev.filter((_, i) => i !== index))
-                    setFilePreviews((prev) =>
-                      prev.filter((_, i) => i !== index),
-                    )
-                  }}
-                  isDarkMode={isDarkMode}
-                />
-              </Box>
-
-              <Box sx={{ mt: 12, display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  disabled={loading}
-                  onClick={handleSubmit}
-                  startIcon={loading ? null : <SendIcon />}
-                  sx={{
-                    px: 12,
-                    py: 2.5,
-                    borderRadius: 3,
-                    fontSize: '1.25rem',
-                    fontWeight: 700,
-                    minWidth: 320,
-                    boxShadow: isDarkMode
-                      ? '0 12px 32px rgba(59,130,246,0.45)'
-                      : '0 12px 32px rgba(59,130,246,0.3)',
-                    bgcolor: isDarkMode ? '#3b82f6' : '#2563eb',
-                    '&:hover': {
-                      bgcolor: isDarkMode ? '#60a5fa' : '#3b82f6',
-                      boxShadow: isDarkMode
-                        ? '0 16px 40px rgba(59,130,246,0.65)'
-                        : '0 16px 40px rgba(59,130,246,0.45)',
-                      transform: 'translateY(-4px)',
-                    },
-                    transition: 'all 0.3s ease',
-                  }}
-                >
-                  {loading ? '등록 중...' : '상상 제안하기'}
-                </Button>
-              </Box>
+              <TextField
+                fullWidth
+                label="구체적인 실행 계획을 작성해주세요"
+                multiline
+                rows={7}
+                value={plan}
+                onChange={(e) => setPlan(e.target.value)}
+                slotProps={{
+                  input: { sx: inputSx },
+                  inputLabel: { sx: labelSx },
+                }}
+              />
             </Box>
-          </CardContent>
-        </Card>
 
-        <ReviewerSelectModal
-          open={reviewerModalOpen}
-          onClose={() => setReviewerModalOpen(false)}
-          selected={reviewer}
-          onToggle={handleToggleReviewer}
-        />
+            <SectionDivider isDarkMode={isDarkMode} />
 
-        <CoProposerSelectModal
-          open={coProposerModalOpen}
-          onClose={() => setCoProposerModalOpen(false)}
-          selected={coProposers}
-          onToggle={handleToggleCoProposer} // ← 공동제안자도 토글 가능
-        />
+            <FileUploadSection
+              files={files}
+              filePreviews={filePreviews}
+              onFilesChange={(newFilesFromChild) => {
+                const addedFiles = newFilesFromChild.slice(files.length)
+                const newPreviews = addedFiles.map((file) =>
+                  file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+                )
+                setFiles(newFilesFromChild)
+                setFilePreviews((prev) => [...prev, ...newPreviews])
+              }}
+              onRemoveFile={(index) => {
+                if (filePreviews[index] && files[index]?.type.startsWith('image/')) {
+                  URL.revokeObjectURL(filePreviews[index])
+                }
+                setFiles((prev) => prev.filter((_, i) => i !== index))
+                setFilePreviews((prev) => prev.filter((_, i) => i !== index))
+              }}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* 제출 버튼 */}
+            <Box sx={{ mt: 6, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+              <Button
+                variant="outlined"
+                onClick={handleBack}
+                sx={{
+                  borderRadius: 2, px: 3, py: 1.25, fontWeight: 600,
+                  borderColor: borderColor, color: textSecondary,
+                  '&:hover': {
+                    borderColor: isDarkMode ? 'rgba(148,163,184,0.3)' : 'rgba(148,163,184,0.6)',
+                    bgcolor: 'transparent',
+                  },
+                }}
+              >
+                취소
+              </Button>
+              <Button
+                variant="contained"
+                disabled={loading}
+                onClick={handleSubmit}
+                startIcon={loading ? null : <SendIcon />}
+                sx={{
+                  borderRadius: 2, px: 4, py: 1.25, fontWeight: 700,
+                  bgcolor: '#6366f1', boxShadow: 'none',
+                  '&:hover': {
+                    bgcolor: '#4f46e5',
+                    boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
+                  },
+                  '&.Mui-disabled': {
+                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)',
+                    color: '#fff',
+                  },
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {loading ? '등록 중...' : '상상 제안하기'}
+              </Button>
+            </Box>
+          </Box>
+        </Box>
       </Box>
+
+      <ReviewerSelectModal
+        open={reviewerModalOpen}
+        onClose={() => setReviewerModalOpen(false)}
+        selected={reviewer}
+        onToggle={handleToggleReviewer}
+      />
+
+      <CoProposerSelectModal
+        open={coProposerModalOpen}
+        onClose={() => setCoProposerModalOpen(false)}
+        selected={coProposers}
+        onToggle={handleToggleCoProposer}
+      />
     </Box>
   )
 }
