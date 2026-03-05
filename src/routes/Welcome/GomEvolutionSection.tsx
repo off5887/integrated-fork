@@ -1,63 +1,41 @@
 // src/routes/Dashboard/GomEvolutionSection.tsx
-import CloseIcon from '@mui/icons-material/Close'
 import {
+  alpha,
   Box,
   Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid,
+  CircularProgress,
+  Fade,
+  Slide,
+  SvgIcon,
   Typography,
+  useTheme,
 } from '@mui/material'
 import { useState } from 'react'
 import { useThemeMode } from '../../context/ThemeContext'
-import { darkPalette, lightPalette } from '../../theme/index'
+import GomEvolutionModal from './GomEvolutionModal'
+
+function FishIcon({ size = 20 }: { size?: number }) {
+  return (
+    <SvgIcon fontSize="inherit" style={{ width: size, height: size }}>
+      <path
+        d="M6 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8z"
+        fill="currentColor"
+        opacity="0.9"
+      />
+      <circle cx="18" cy="12" r="2.5" fill="#ffffff" />
+      <circle cx="19" cy="11.5" r="1" fill="#000000" opacity="0.4" />
+      <path d="M22 12l6-4v8z" fill="currentColor" opacity="0.85" />
+      <path d="M4 12l4-3v6z" fill="currentColor" opacity="0.7" />
+    </SvgIcon>
+  )
+}
 
 const GOM_LEVELS = [
-  {
-    min: 0,
-    name: '아기 곰곰이',
-    image: '/tarot/baby_bear.png',
-    desc: '아직 애기예요 🍼',
-  },
-  {
-    min: 500,
-    name: '꼬마 곰곰이',
-    image: '/tarot/kid_bear.png',
-    desc: '이제 좀 낚시할 줄 알아요 🎣',
-  },
-  {
-    min: 2000,
-    name: '곰곰 워리어',
-    image: '/tarot/warrior_bear.png',
-    desc: '사냥꾼 곰곰 등장!',
-  },
-  {
-    min: 5000,
-    name: '곰곰 마스터',
-    image: '/tarot/master_bear.png',
-    desc: '전설의 시작',
-  },
-  {
-    min: 10000,
-    name: '곰신',
-    image: '/tarot/god_bear.png',
-    desc: '곰신 강림 🐻✨',
-  },
-] as const
-
-const SPECIAL_CARDS = [
-  {
-    name: '심사위원 곰',
-    image: '/tarot/judge_bear.png',
-    desc: '아이디어를 심사할 수 있는 공정한 곰곰이예요. 채택 여부를 결정하는 중요한 역할을 맡고 있어요!',
-  },
-  {
-    name: '시스템 관리자 곰',
-    image: '/tarot/mecha_bear.png',
-    desc: '곰곰세상을 관리하는 시스템 관리자 곰이에요. 서버, 데이터, 규칙을 모두 지키고 있어요!',
-  },
+  { min: 0, name: '아기 곰곰이', image: '/tarot/baby_bear.png' },
+  { min: 500, name: '꼬마 곰곰이', image: '/tarot/kid_bear.png' },
+  { min: 2000, name: '곰곰 워리어', image: '/tarot/warrior_bear.png' },
+  { min: 5000, name: '곰곰 마스터', image: '/tarot/master_bear.png' },
+  { min: 10000, name: '곰신', image: '/tarot/god_bear.png' },
 ] as const
 
 function getGomLevel(fishCount: number) {
@@ -73,324 +51,281 @@ interface GomEvolutionSectionProps {
 export default function GomEvolutionSection({
   fishCount,
 }: GomEvolutionSectionProps) {
+  const theme = useTheme()
   const { isDarkMode } = useThemeMode()
-  const palette = isDarkMode ? darkPalette : lightPalette
 
   const currentLevel = getGomLevel(fishCount)
-  const nextLevel = GOM_LEVELS.find((l) => l.min > fishCount) || null
-
+  const nextLevel =
+    GOM_LEVELS.find((l) => l.min > fishCount) ||
+    GOM_LEVELS[GOM_LEVELS.length - 1]
   const [openModal, setOpenModal] = useState(false)
 
-  const primaryMain =
-    palette.primaryMain ?? (isDarkMode ? '#7dd3fc' : '#0ea5e9')
+  const progress =
+    nextLevel.min > fishCount
+      ? Math.min(100, Math.round((fishCount / nextLevel.min) * 100))
+      : 100
+
+  const glassBg = isDarkMode
+    ? 'linear-gradient(145deg, rgba(15, 23, 42, 0.72), rgba(30, 41, 59, 0.52))'
+    : 'linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.82))'
+
+  const glassBorder = isDarkMode
+    ? alpha('#64748b', 0.12)
+    : alpha(theme.palette.primary.main, 0.08)
 
   return (
     <Box
+      component="section"
       sx={{
-        textAlign: 'center',
+        height: '100dvh',
+        minHeight: '100vh',
+        minHeight: '-webkit-fill-available',
+        width: '100%',
+        scrollSnapAlign: 'start',
+        scrollSnapStop: 'always',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        px: { xs: 1.5, sm: 3, md: 5 },
+        bgcolor: isDarkMode ? '#0a0f1c' : '#f8fafc',
         position: 'relative',
-        zIndex: 1,
-        maxWidth: 900,
-        mx: 'auto',
-        px: { xs: 2, sm: 4 },
-        py: 4,
+        overflow: 'hidden',
+        boxSizing: 'border-box',
       }}
     >
-      {/* 현재 레벨 */}
-      <Typography
-        variant="h4"
-        fontWeight="bold"
-        sx={{ mb: 4, color: palette.textPrimary }}
-      >
-        현재 곰곰이 단계
-      </Typography>
-
       <Box
         sx={{
-          position: 'relative',
-          display: 'inline-block',
-          mb: 5,
-          maxWidth: 420,
-          mx: 'auto',
+          position: 'absolute',
+          inset: 0,
+          background: isDarkMode
+            ? 'radial-gradient(circle at 30% 20%, rgba(147, 197, 253, 0.07) 0%, transparent 60%)'
+            : 'radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 65%)',
+          pointerEvents: 'none',
         }}
-      >
-        <Box
-          component="img"
-          src={currentLevel.image}
-          alt={currentLevel.name}
-          sx={{
-            width: '100%',
-            borderRadius: 2,
-            objectFit: 'contain',
-            transition: 'all 0.4s ease',
-            '&:hover': {
-              transform: 'scale(1.03)',
-              boxShadow: `0 24px 64px ${palette.shadowSoft}1a`,
-            },
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            inset: -20,
-            borderRadius: 12,
-            background: `radial-gradient(circle, ${primaryMain}59 0%, transparent 70%)`,
-            animation: 'pulse 4s infinite ease-in-out',
-            pointerEvents: 'none',
-          }}
-        />
-      </Box>
+      />
 
-      <Typography
-        variant="h3"
-        fontWeight="900"
-        sx={{
-          background: `linear-gradient(90deg, ${palette.levelTextGradientStart}, ${palette.levelTextGradientEnd})`,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          mb: 1,
-          fontSize: { xs: '1.8rem', sm: '2.4rem', md: '3rem' },
-        }}
-      >
-        {currentLevel.name}
-      </Typography>
-
-      <Typography
-        variant="h5"
-        fontWeight="bold"
-        sx={{ color: primaryMain, mb: 2 }}
-      >
-        {fishCount.toLocaleString()} 마리
-      </Typography>
-
-      {nextLevel && (
-        <Typography
-          variant="body1"
-          sx={{ color: palette.textSecondary, mb: 4, fontSize: '1.1rem' }}
-        >
-          다음 진화까지 {nextLevel.min - fishCount} 마리 남았어요!
-        </Typography>
-      )}
-
-      <Button
-        variant="outlined"
-        size="large"
-        onClick={() => setOpenModal(true)}
-        sx={{
-          py: 1.5,
-          px: 5,
-          borderRadius: 50,
-          borderColor: primaryMain,
-          color: primaryMain,
-          fontWeight: 600,
-          '&:hover': {
-            bgcolor: `${primaryMain}1a`,
-            borderColor: palette.primaryDark ?? primaryMain,
-          },
-        }}
-      >
-        다른 진화 단계 & 특별 카드 구경하기 🐻
-      </Button>
-
-      {/* 모달 */}
-      <Dialog
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        maxWidth="lg"
-        fullWidth
-        sx={{
-          '& .MuiDialog-paper': {
-            bgcolor: isDarkMode ? '#0f172a' : '#ffffff',
-            borderRadius: 12,
-            overflow: 'hidden',
-            maxHeight: '90vh',
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            bgcolor: primaryMain,
-            color: '#fff',
-            py: 2,
-            px: { xs: 3, md: 4 },
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Typography variant="h5" fontWeight="bold">
-            곰곰이 진화 & 특별 카드
-          </Typography>
-          <CloseIcon
-            onClick={() => setOpenModal(false)}
-            sx={{ cursor: 'pointer', fontSize: 28 }}
-          />
-        </DialogTitle>
-
-        <DialogContent
-          sx={{ p: { xs: 2, sm: 3, md: 4, lg: 5 }, overflowY: 'auto' }}
-        >
-          {/* 진화 단계 */}
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            sx={{ mb: 3, color: palette.textPrimary }}
+      <Slide direction="up" in timeout={900} mountOnEnter unmountOnExit>
+        <Fade in timeout={1200}>
+          <Box
+            sx={{
+              width: 'min(92%, 680px)',
+              maxWidth: { xs: '92vw', sm: 520, md: 620, lg: 680 },
+              minHeight: 'min(65dvh, 480px)',
+              mx: 'auto',
+              p: { xs: 3, sm: 4, md: 5 },
+              borderRadius: { xs: 4, md: 5 },
+              background: glassBg,
+              border: `1px solid ${glassBorder}`,
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              boxShadow: isDarkMode
+                ? '0 24px 70px -10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07)'
+                : '0 24px 70px -10px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.92)',
+              display: 'flex',
+              flexDirection: 'column',
+              maxHeight: '92dvh',
+              transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              '&:hover': {
+                transform: 'translateY(-6px)',
+              },
+            }}
           >
-            진화 단계
-          </Typography>
+            {/* 헤더 - 여백 줄임 */}
+            <Box sx={{ textAlign: 'center', mb: { xs: 2.5, md: 3.5 } }}>
+              <Typography
+                variant="h3"
+                fontWeight={900}
+                sx={{
+                  fontSize: { xs: '1.5rem', sm: '1.9rem', md: '2.2rem' },
+                  lineHeight: 1.15,
+                  letterSpacing: '-0.03em',
+                  mb: 0.75,
+                  background: isDarkMode
+                    ? 'linear-gradient(90deg, #c4d0ff, #60a5fa, #a5b4fc)'
+                    : `linear-gradient(90deg, ${theme.palette.primary.dark}, #3b82f6)`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                곰곰이 진화
+              </Typography>
 
-          <Grid
-            container
-            spacing={{ xs: 2, sm: 3, md: 4 }}
-            justifyContent="center"
-            sx={{ mb: 6 }}
-          >
-            {GOM_LEVELS.map((level) => {
-              const isCurrent = level.min === currentLevel.min
-              const isAchieved = fishCount >= level.min
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
+                  fontWeight: 500,
+                  color: theme.palette.text.secondary,
+                  maxWidth: 580,
+                  mx: 'auto',
+                }}
+              >
+                생선 모을수록 성장하는 나만의 곰곰이
+              </Typography>
+            </Box>
 
-              return (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={level.min}>
-                  <Box
-                    sx={{
-                      borderRadius: 12,
-                      overflow: 'hidden',
-                      bgcolor: palette.cardBg,
-                      border: `2px solid ${isCurrent ? primaryMain : palette.cardBorder}`,
-                      boxShadow: isCurrent
-                        ? `0 10px 24px ${palette.shadowPrimary}59`
-                        : `0 4px 12px ${palette.shadowSoft}1a`,
-                      transition: 'all 0.3s ease',
-                      maxWidth: 240, // ← 카드 최대 너비 축소
-                      width: '100%',
-                      mx: 'auto',
-                      '&:hover': {
-                        transform: 'translateY(-6px)',
-                        boxShadow: `0 14px 32px ${palette.shadowPrimary}80`,
-                      },
-                      opacity: isAchieved ? 1 : 0.75,
-                      filter: isAchieved
-                        ? 'none'
-                        : 'grayscale(0.6) brightness(0.95)',
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      src={level.image}
-                      alt={level.name}
-                      sx={{
-                        width: '100%',
-                        aspectRatio: '3/4',
-                        objectFit: 'contain',
-                        background: palette.cardItemBg,
-                        p: 2, // ← padding 줄임
-                      }}
-                    />
-                    <Box sx={{ p: 2, textAlign: 'center' }}>
-                      <Typography
-                        variant="subtitle1"
-                        fontWeight="bold"
-                        sx={{
-                          color: isCurrent ? primaryMain : palette.textPrimary,
-                          fontSize: '1rem',
-                        }}
-                      >
-                        {level.name}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: palette.textSecondary,
-                          display: 'block',
-                          mt: 0.5,
-                        }}
-                      >
-                        {level.desc}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          mt: 1,
-                          color: isAchieved
-                            ? primaryMain
-                            : palette.textSecondary,
-                          fontWeight: isAchieved ? 600 : 400,
-                        }}
-                      >
-                        {isAchieved
-                          ? '달성 ✓'
-                          : `${level.min.toLocaleString()}`}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-              )
-            })}
-          </Grid>
-
-          <Divider sx={{ my: 5, borderColor: palette.cardBorder }} />
-
-          {/* 특별 카드 */}
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            sx={{ mb: 3, color: palette.textPrimary }}
-          >
-            특별 카드
-          </Typography>
-
-          <Grid container spacing={3} justifyContent="center">
-            {SPECIAL_CARDS.map((card) => (
-              <Grid item xs={12} sm={6} md={6} lg={5} key={card.name}>
+            {/* 메인 콘텐츠 */}
+            <Box
+              sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                my: 1,
+              }}
+            >
+              <Box sx={{ textAlign: 'center', mb: 3 }}>
                 <Box
+                  component="img"
+                  src={currentLevel.image}
+                  alt={currentLevel.name}
                   sx={{
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                    bgcolor: palette.cardBg,
-                    border: `2px solid ${primaryMain}`,
-                    boxShadow: `0 8px 24px ${primaryMain}4d`,
-                    transition: 'all 0.3s ease',
-                    maxWidth: 320, // ← 특별 카드도 크기 축소
+                    width: { xs: 120, sm: 150, md: 170 },
+                    height: 'auto',
+                    borderRadius: 4,
+                    objectFit: 'contain',
+                    mb: 2,
                     mx: 'auto',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: `0 16px 40px ${primaryMain}80`,
-                    },
+                    display: 'block',
+                    filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.12))',
+                  }}
+                />
+
+                <Typography
+                  variant="h5"
+                  fontWeight={700}
+                  sx={{
+                    fontSize: { xs: '1.3rem', sm: '1.45rem', md: '1.65rem' },
+                    mb: 0.75,
+                    color: isDarkMode ? '#f8fafc' : theme.palette.text.primary,
+                    textShadow: isDarkMode
+                      ? '0 1px 6px rgba(0,0,0,0.5)'
+                      : 'none',
                   }}
                 >
-                  <Box
-                    component="img"
-                    src={card.image}
-                    alt={card.name}
+                  {currentLevel.name}
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 1.2,
+                  }}
+                >
+                  <Typography
                     sx={{
-                      width: '100%',
-                      aspectRatio: '3/4',
-                      objectFit: 'contain',
-                      background: palette.cardItemBg,
-                      p: 3,
+                      fontSize: { xs: '1.45rem', sm: '1.6rem' },
+                      fontWeight: 700,
+                      color: theme.palette.primary.main,
+                    }}
+                  >
+                    {fishCount.toLocaleString()}
+                  </Typography>
+                  <FishIcon size={20} />
+                </Box>
+              </Box>
+
+              <Box sx={{ textAlign: 'center', mb: 4 }}>
+                <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                  <CircularProgress
+                    variant="determinate"
+                    value={100}
+                    size={{ xs: 70, md: 80 }}
+                    thickness={4}
+                    sx={{
+                      color: isDarkMode
+                        ? alpha('#64748b', 0.18)
+                        : alpha('#e2e8f0', 0.5),
+                      position: 'absolute',
                     }}
                   />
-                  <Box sx={{ p: { xs: 2, sm: 3 }, textAlign: 'center' }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      sx={{ color: primaryMain, mb: 1 }}
-                    >
-                      {card.name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: palette.textSecondary }}
-                    >
-                      {card.desc}
-                    </Typography>
+                  <CircularProgress
+                    variant="determinate"
+                    value={progress}
+                    size={{ xs: 70, md: 80 }}
+                    thickness={5}
+                    sx={{
+                      color: theme.palette.primary.main,
+                      '& .MuiCircularProgress-circle': {
+                        strokeLinecap: 'round',
+                      },
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: { xs: '1.1rem', md: '1.3rem' },
+                      fontWeight: 700,
+                      color: isDarkMode
+                        ? '#f8fafc'
+                        : theme.palette.text.primary,
+                    }}
+                  >
+                    {progress}%
                   </Box>
                 </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </DialogContent>
-      </Dialog>
+
+                {nextLevel.min > fishCount && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mt: 2,
+                      color: theme.palette.text.secondary,
+                      fontSize: '0.95rem',
+                    }}
+                  >
+                    다음 단계까지 <strong>{nextLevel.min - fishCount}</strong>{' '}
+                    마리
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+
+            {/* 버튼 영역 */}
+            <Box sx={{ textAlign: 'center', mt: 'auto', pt: 2, pb: 3 }}>
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => setOpenModal(true)}
+                sx={{
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  px: 5,
+                  py: 1.2,
+                  borderRadius: 3,
+                  textTransform: 'none',
+                  borderColor: alpha(theme.palette.primary.main, 0.5),
+                  color: theme.palette.primary.main,
+                  minWidth: 180,
+                  '&:hover': {
+                    borderColor: theme.palette.primary.main,
+                    bgcolor: alpha(
+                      theme.palette.primary.main,
+                      isDarkMode ? 0.15 : 0.1,
+                    ),
+                  },
+                }}
+              >
+                모든 단계 보기 →
+              </Button>
+            </Box>
+          </Box>
+        </Fade>
+      </Slide>
+
+      <GomEvolutionModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        currentLevelMin={currentLevel.min}
+        fishCount={fishCount}
+        isDarkMode={isDarkMode}
+      />
     </Box>
   )
 }

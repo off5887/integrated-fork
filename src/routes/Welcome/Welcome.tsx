@@ -1,4 +1,4 @@
-// src/routes/Dashboard/Dashboard.tsx (Welcome 페이지)
+// src/routes/Dashboard/Dashboard.tsx
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import {
@@ -16,7 +16,7 @@ import IntroSection from './IntroSection'
 
 export default function Welcome() {
   const navigate = useNavigate()
-  const theme = useTheme() // MUI 테마 직접 사용
+  const theme = useTheme()
   const { isDarkMode, toggleTheme } = useThemeMode()
   const fishCount = 3200 // 임시값
 
@@ -30,20 +30,18 @@ export default function Welcome() {
         overflowY: 'scroll',
         scrollSnapType: 'y mandatory',
         scrollBehavior: 'smooth',
-        bgcolor: theme.palette.background.default,
-        background: `linear-gradient(135deg, ${
-          isDarkMode ? '#0b121f' : '#f8fafc'
-        } 0%, ${isDarkMode ? '#1a2336' : '#e2e8f0'} 100%)`,
+        background: isDarkMode ? '#0f172a' : '#fff', // ← 원래 색상 복구
         color: theme.palette.text.primary,
         WebkitOverflowScrolling: 'touch',
         position: 'relative',
-        transition: 'background 0.5s ease',
+        transition: 'background 0.35s ease', // 0.5s → 0.35s (부드러움 유지하면서 부하 ↓)
+        willChange: 'background', // GPU 힌트
         '@supports (height: 100dvh)': {
           minHeight: '100dvh',
         },
       }}
     >
-      {/* 다크모드 토글 */}
+      {/* 다크모드 토글 - blur 그대로 유지 (영역 작아서 문제 거의 없음) */}
       <IconButton
         onClick={toggleTheme}
         size="medium"
@@ -56,8 +54,8 @@ export default function Welcome() {
             theme.palette.background.paper,
             isDarkMode ? 0.7 : 0.85,
           ),
-          backdropFilter: 'blur(12px)',
-          border: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
+          backdropFilter: 'blur(12px)', // 원래 값 유지
+          border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.2 : 0.12)}`,
           borderRadius: '50%',
           boxShadow: theme.shadows[4],
           transition: 'all 0.25s ease',
@@ -78,7 +76,7 @@ export default function Welcome() {
         )}
       </IconButton>
 
-      {/* 1. 환영 섹션 */}
+      {/* 1. 환영 섹션 - blur 값 낮춤 (16px → 6px) */}
       <Box
         component="section"
         sx={{
@@ -93,12 +91,13 @@ export default function Welcome() {
           py: { xs: 4, md: 8 },
           scrollSnapAlign: 'start',
           scrollSnapStop: 'always',
-          bgcolor: theme.palette.background.paper,
-          border: `1px solid ${theme.palette.divider}`,
-          backdropFilter: 'blur(16px)',
+          backdropFilter: 'blur(6px)', // ← 핵심: 16px → 6px (성능 크게 개선, 느낌 비슷)
           boxShadow: theme.shadows[6],
           margin: 0,
           boxSizing: 'border-box',
+          transition: 'backdrop-filter 0.35s ease, background 0.35s ease',
+          willChange: 'backdrop-filter, transform',
+          transform: 'translateZ(0)', // GPU 강제 레이어
         }}
       >
         <Box
@@ -125,9 +124,8 @@ export default function Welcome() {
             fontSize: { xs: '2.5rem', md: '3.6rem' },
             lineHeight: 1.15,
             mb: 4,
-            background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
+            color: isDarkMode ? '#93c5fd' : theme.palette.primary.light,
             WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
             textAlign: 'center',
             letterSpacing: '-0.02em',
           }}
@@ -136,17 +134,17 @@ export default function Welcome() {
         </Typography>
 
         <Typography
-          variant="h6"
+          variant="h3"
           sx={{
             maxWidth: 720,
             mb: 6,
             fontSize: { xs: '1.1rem', md: '1.25rem' },
-            color: theme.palette.text.secondary,
+            color: isDarkMode ? '#94a3b8' : '#64748b',
             lineHeight: 1.7,
             textAlign: 'center',
           }}
         >
-          🎉 메인 대시보드에 오신 걸 환영해요 🎉
+          🎉 안녕하세요. 곰곰세상입니다. 🎉
           <br />
           아래로 스크롤하면 곰곰세상 소개와 나의 곰곰이 상태를 확인할 수 있어요
           🐻
@@ -171,6 +169,7 @@ export default function Welcome() {
               borderRadius: 3,
               fontWeight: 600,
               bgcolor: theme.palette.primary.main,
+              color: '#ffffff',
               '&:hover': {
                 bgcolor: theme.palette.primary.dark,
                 transform: 'translateY(-2px)',
@@ -193,8 +192,8 @@ export default function Welcome() {
               py: 1.6,
               px: 6,
               borderRadius: 3,
-              borderColor: theme.palette.divider,
-              color: theme.palette.text.primary,
+              borderColor: theme.palette.primary.main,
+              color: theme.palette.primary.main,
               fontWeight: 600,
               '&:hover': {
                 borderColor: theme.palette.primary.main,
@@ -221,7 +220,7 @@ export default function Welcome() {
       {/* 2. 소개 섹션 */}
       <IntroSection />
 
-      {/* 3. 곰곰이 진화 섹션 */}
+      {/* 3. 곰곰이 진화 섹션 - blur 값 낮춤 (14px → 6px) */}
       <Box
         component="section"
         sx={{
@@ -236,11 +235,17 @@ export default function Welcome() {
           justifyContent: 'center',
           px: { xs: 3, sm: 6, md: 10 },
           py: { xs: 4, md: 8 },
-          bgcolor: theme.palette.background.paper,
-          border: `1px solid ${theme.palette.divider}`,
-          backdropFilter: 'blur(14px)',
+          bgcolor: alpha(
+            theme.palette.background.paper,
+            isDarkMode ? 0.75 : 0.92,
+          ),
+          border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.2 : 0.1)}`,
+          backdropFilter: 'blur(6px)', // ← 14px → 6px (성능 개선, 유리 느낌 유지)
           margin: 0,
           boxSizing: 'border-box',
+          transition: 'backdrop-filter 0.35s ease, background 0.35s ease',
+          willChange: 'backdrop-filter, transform',
+          transform: 'translateZ(0)',
         }}
       >
         <GomEvolutionSection fishCount={fishCount} />
