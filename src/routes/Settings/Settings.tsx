@@ -3,9 +3,11 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { Box, Chip, Container, Tab, Tabs, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { useThemeMode } from '../../context/ThemeContext'
+import ReviewChange from './components/reviewChange/ReviewChange'
 import ReviewerAssignment from './components/sectionReviewers/ReviewerAssignment'
 import SpecialMileage from './components/specialMileage/SpecialMileage'
 import UserManagement from './components/user/UserManagement'
@@ -118,16 +120,21 @@ export default function Settings() {
             <Tabs
               value={tabValue}
               onChange={(_, v) => setTabValue(v)}
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
               sx={{
-                px: { xs: 2, md: 4 },
+                px: { xs: 0, sm: 1, md: 4 },
+                minHeight: { xs: 48, md: 56 },
                 '& .MuiTab-root': {
                   color: textSecondary,
                   fontWeight: 600,
-                  fontSize: '0.875rem',
+                  fontSize: { xs: '0.75rem', md: '0.875rem' },
                   textTransform: 'none',
-                  minHeight: 56,
-                  px: 3,
-                  gap: 1,
+                  minHeight: { xs: 48, md: 56 },
+                  minWidth: { xs: 'auto', md: 120 },
+                  px: { xs: 1.5, sm: 2, md: 3 },
+                  gap: { xs: 0.5, md: 1 },
                   '&.Mui-selected': {
                     color: isDarkMode ? '#a5b4fc' : '#4338ca',
                   },
@@ -137,27 +144,40 @@ export default function Settings() {
                   height: 2,
                   borderRadius: 1,
                 },
+                '& .MuiTabScrollButton-root': {
+                  color: textSecondary,
+                  opacity: 0.8,
+                  width: 28,
+                  '&.Mui-disabled': { opacity: 0 },
+                },
               }}
             >
               <Tab
                 label="심사자 배정"
                 id="settings-tab-0"
                 aria-controls="settings-tabpanel-0"
-                icon={<SupervisorAccountIcon sx={{ fontSize: '1rem' }} />}
+                icon={<SupervisorAccountIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
                 iconPosition="start"
               />
               <Tab
                 label="사용자 관리"
                 id="settings-tab-1"
                 aria-controls="settings-tabpanel-1"
-                icon={<ManageAccountsIcon sx={{ fontSize: '1rem' }} />}
+                icon={<ManageAccountsIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
                 iconPosition="start"
               />
               <Tab
                 label="특별 마일리지"
                 id="settings-tab-2"
                 aria-controls="settings-tabpanel-2"
-                icon={<CardGiftcardIcon sx={{ fontSize: '1rem' }} />}
+                icon={<CardGiftcardIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
+                iconPosition="start"
+              />
+              <Tab
+                label="심사변경"
+                id="settings-tab-3"
+                aria-controls="settings-tabpanel-3"
+                icon={<SwapHorizIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
                 iconPosition="start"
               />
             </Tabs>
@@ -172,6 +192,9 @@ export default function Settings() {
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
               <SpecialMileage isDarkMode={isDarkMode} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={3}>
+              <ReviewChange isDarkMode={isDarkMode} />
             </TabPanel>
           </Box>
         </Box>
