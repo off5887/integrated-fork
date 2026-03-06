@@ -13,6 +13,7 @@ import {
   Box,
   Button,
   Chip,
+  Collapse,
   Grid,
   IconButton,
   InputAdornment,
@@ -24,6 +25,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { OrgMember } from '../../../../api/types/reviewer'
@@ -68,6 +70,10 @@ export default function SpecialMileage({ isDarkMode }: Props) {
   const rowBg = isDarkMode ? 'rgba(30,41,59,0.4)' : '#ffffff'
   const rowHoverBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
   const panelBg = isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(99,102,241,0.02)'
+
+  const isMobile = useMediaQuery('(max-width: 1199px)')
+  const [orgPanelOpen, setOrgPanelOpen] = useState(false)
+  const showOrgContent = !isMobile || orgPanelOpen
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<MileageEntry[]>([])
@@ -223,13 +229,18 @@ export default function SpecialMileage({ isDarkMode }: Props) {
               overflow: 'hidden',
             }}
           >
-            {/* 패널 헤더 */}
+            {/* 패널 헤더 — 모바일에서 클릭하면 접기/펼치기 */}
             <Box
+              onClick={() => isMobile && setOrgPanelOpen((v) => !v)}
               sx={{
                 px: 2, py: 1.5,
                 display: 'flex', alignItems: 'center', gap: 1,
-                borderBottom: `1px solid ${borderColor}`,
+                borderBottom: showOrgContent ? `1px solid ${borderColor}` : 'none',
                 bgcolor: headerBg,
+                cursor: isMobile ? 'pointer' : 'default',
+                userSelect: 'none',
+                transition: 'background 0.15s ease',
+                '&:hover': isMobile ? { bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)' } : {},
               }}
             >
               <PersonSearchIcon sx={{ fontSize: '1rem', color: isDarkMode ? '#a5b4fc' : '#4338ca' }} />
@@ -247,8 +258,20 @@ export default function SpecialMileage({ isDarkMode }: Props) {
                   '& .MuiChip-label': { px: 0.75 },
                 }}
               />
+              {isMobile && (
+                <ExpandMoreIcon
+                  sx={{
+                    fontSize: '1.1rem',
+                    color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                    ml: 0.5,
+                    transition: 'transform 0.2s ease',
+                    transform: orgPanelOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }}
+                />
+              )}
             </Box>
 
+            <Collapse in={showOrgContent} timeout={220} unmountOnExit>
             <Box sx={{ p: 2 }}>
               {/* 검색 */}
               <TextField
@@ -493,6 +516,7 @@ export default function SpecialMileage({ isDarkMode }: Props) {
                 )}
               </Box>
             </Box>
+            </Collapse>
           </Box>
         </Grid>
 
