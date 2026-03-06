@@ -14,22 +14,47 @@ import {
 } from '@mui/material'
 
 const GOM_LEVELS = [
-  { min: 0, name: '아기 곰곰이', image: '/tarot/baby_bear.png', desc: '아직 애기예요' },
-  { min: 500, name: '꼬마 곰곰이', image: '/tarot/kid_bear.png', desc: '이제 좀 낚시할 줄 알아요' },
-  { min: 2000, name: '곰곰 워리어', image: '/tarot/warrior_bear.png', desc: '사냥꾼 곰곰 등장!' },
-  { min: 5000, name: '곰곰 마스터', image: '/tarot/master_bear.png', desc: '전설의 시작' },
-  { min: 10000, name: '곰신', image: '/tarot/god_bear.png', desc: '곰신 강림' },
+  {
+    min: 0,
+    name: '아기 곰곰이',
+    image: '/src/assets/tarot/baby_bear.png',
+    desc: '아직 애기예요',
+  },
+  {
+    min: 500,
+    name: '꼬마 곰곰이',
+    image: '/src/assets/tarot/kid_bear.png',
+    desc: '이제 좀 낚시할 줄 알아요',
+  },
+  {
+    min: 2000,
+    name: '곰곰 워리어',
+    image: '/src/assets/tarot/warrior_bear.png',
+    desc: '사냥꾼 곰곰 등장!',
+  },
+  {
+    min: 5000,
+    name: '곰곰 마스터',
+    image: '/src/assets/tarot/master_bear.png',
+    desc: '전설의 시작',
+  },
+  {
+    min: 10000,
+    name: '곰신',
+    image: '/src/assets/tarot/god_bear.png',
+    desc: '곰신 강림',
+  },
 ] as const
 
 const SPECIAL_CARDS = [
   {
     name: '심사위원 곰',
-    image: '/tarot/judge_bear.png',
+    image: '/src/assets/tarot/judge_bear.png',
     desc: '아이디어를 심사할 수 있는 공정한 곰곰이예요. 채택 여부를 결정하는 중요한 역할을 맡고 있어요!',
   },
   {
     name: '시스템 관리자 곰',
-    image: '/tarot/mecha_bear.png',
+    image: '/src/assets/tarot/mecha_bear.png',
     desc: '곰곰세상을 관리하는 시스템 관리자 곰이에요. 서버, 데이터, 규칙을 모두 지키고 있어요!',
   },
 ] as const
@@ -52,7 +77,9 @@ export default function GomEvolutionModal({
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const borderColor = isDarkMode
+    ? 'rgba(148,163,184,0.1)'
+    : 'rgba(203,213,225,0.5)'
   const cardBg = isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff'
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
@@ -81,7 +108,12 @@ export default function GomEvolutionModal({
     >
       {/* 헤더 */}
       <DialogTitle sx={{ p: 0 }}>
-        <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+        <Box
+          sx={{
+            height: 3,
+            background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+          }}
+        />
         <Box
           sx={{
             display: 'flex',
@@ -114,7 +146,11 @@ export default function GomEvolutionModal({
             size="small"
             sx={{
               color: textSecondary,
-              '&:hover': { bgcolor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
+              '&:hover': {
+                bgcolor: isDarkMode
+                  ? 'rgba(255,255,255,0.05)'
+                  : 'rgba(0,0,0,0.05)',
+              },
             }}
           >
             <CloseIcon />
@@ -155,8 +191,8 @@ export default function GomEvolutionModal({
                     boxShadow: isCurrent
                       ? '0 4px 20px rgba(99,102,241,0.25)'
                       : isDarkMode
-                      ? '0 2px 12px rgba(0,0,0,0.3)'
-                      : '0 2px 8px rgba(0,0,0,0.05)',
+                        ? '0 2px 12px rgba(0,0,0,0.3)'
+                        : '0 2px 8px rgba(0,0,0,0.05)',
                     opacity: isAchieved ? 1 : 0.6,
                     transition: 'all 0.25s ease',
                     height: '100%',
@@ -170,15 +206,24 @@ export default function GomEvolutionModal({
                   }}
                 >
                   {isCurrent && (
-                    <Box sx={{ height: 2, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
+                    <Box
+                      sx={{
+                        height: 2,
+                        background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                      }}
+                    />
                   )}
 
                   <Box
                     sx={{
                       p: 1.5,
                       bgcolor: isDarkMode
-                        ? isCurrent ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.05)'
-                        : isCurrent ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)',
+                        ? isCurrent
+                          ? 'rgba(99,102,241,0.12)'
+                          : 'rgba(99,102,241,0.05)'
+                        : isCurrent
+                          ? 'rgba(99,102,241,0.06)'
+                          : 'rgba(99,102,241,0.03)',
                       aspectRatio: '1',
                       display: 'flex',
                       alignItems: 'center',
@@ -193,7 +238,9 @@ export default function GomEvolutionModal({
                         width: '80%',
                         height: 'auto',
                         objectFit: 'contain',
-                        filter: isAchieved ? 'none' : 'grayscale(0.7) brightness(0.85)',
+                        filter: isAchieved
+                          ? 'none'
+                          : 'grayscale(0.7) brightness(0.85)',
                       }}
                     />
                   </Box>
@@ -204,14 +251,23 @@ export default function GomEvolutionModal({
                       fontWeight={700}
                       sx={{
                         fontSize: '0.85rem',
-                        color: isCurrent ? (isDarkMode ? '#a5b4fc' : '#4338ca') : textPrimary,
+                        color: isCurrent
+                          ? isDarkMode
+                            ? '#a5b4fc'
+                            : '#4338ca'
+                          : textPrimary,
                         mb: 0.5,
                       }}
                     >
                       {level.name}
                     </Typography>
                     <Typography
-                      sx={{ fontSize: '0.75rem', color: textSecondary, display: 'block', mb: 0.75 }}
+                      sx={{
+                        fontSize: '0.75rem',
+                        color: textSecondary,
+                        display: 'block',
+                        mb: 0.75,
+                      }}
                     >
                       {level.desc}
                     </Typography>
@@ -219,10 +275,16 @@ export default function GomEvolutionModal({
                       sx={{
                         fontSize: '0.78rem',
                         fontWeight: isAchieved ? 700 : 500,
-                        color: isAchieved ? (isDarkMode ? '#a5b4fc' : '#4338ca') : textSecondary,
+                        color: isAchieved
+                          ? isDarkMode
+                            ? '#a5b4fc'
+                            : '#4338ca'
+                          : textSecondary,
                       }}
                     >
-                      {isAchieved ? '달성 ✓' : `${level.min.toLocaleString()} 마일리지`}
+                      {isAchieved
+                        ? '달성 ✓'
+                        : `${level.min.toLocaleString()} 마일리지`}
                     </Typography>
                   </Box>
                 </Box>
@@ -259,22 +321,33 @@ export default function GomEvolutionModal({
                   overflow: 'hidden',
                   maxWidth: 360,
                   mx: 'auto',
-                  boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.05)',
+                  boxShadow: isDarkMode
+                    ? '0 2px 12px rgba(0,0,0,0.3)'
+                    : '0 2px 8px rgba(0,0,0,0.05)',
                   transition: 'all 0.25s ease',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    borderColor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)',
+                    borderColor: isDarkMode
+                      ? 'rgba(99,102,241,0.3)'
+                      : 'rgba(99,102,241,0.2)',
                     boxShadow: isDarkMode
                       ? '0 12px 32px rgba(0,0,0,0.5)'
                       : '0 12px 28px rgba(0,0,0,0.1)',
                   },
                 }}
               >
-                <Box sx={{ height: 2, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
+                <Box
+                  sx={{
+                    height: 2,
+                    background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                  }}
+                />
                 <Box
                   sx={{
                     p: 3,
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
+                    bgcolor: isDarkMode
+                      ? 'rgba(99,102,241,0.08)'
+                      : 'rgba(99,102,241,0.04)',
                     aspectRatio: '2/1',
                     display: 'flex',
                     alignItems: 'center',
@@ -302,7 +375,11 @@ export default function GomEvolutionModal({
                   </Typography>
                   <Typography
                     variant="body2"
-                    sx={{ color: textSecondary, lineHeight: 1.65, fontSize: '0.88rem' }}
+                    sx={{
+                      color: textSecondary,
+                      lineHeight: 1.65,
+                      fontSize: '0.88rem',
+                    }}
                   >
                     {card.desc}
                   </Typography>

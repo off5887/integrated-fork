@@ -67,7 +67,7 @@ export default function MobileNavigationDrawer({
         >
           <Box
             component="img"
-            src="/gomgom_logo.png"
+            src="/src/assets/gomgom_logo.png"
             alt="Gomgom"
             sx={{ height: 34, filter: isDarkMode ? 'brightness(1.1)' : 'none' }}
           />

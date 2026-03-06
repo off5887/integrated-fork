@@ -84,7 +84,7 @@ export default function Header() {
           >
             <Box
               component="img"
-              src="/gomgom_logo.png"
+              src="/src/assets/gomgom_logo.png"
               alt="Gomgom"
               sx={{
                 height: { xs: 32, md: 36 },

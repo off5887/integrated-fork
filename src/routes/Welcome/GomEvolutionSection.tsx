@@ -6,28 +6,41 @@ import { useThemeMode } from '../../context/ThemeContext'
 import GomEvolutionModal from './GomEvolutionModal'
 
 const GOM_LEVELS = [
-  { min: 0, name: '아기 곰곰이', image: '/tarot/baby_bear.png' },
-  { min: 500, name: '꼬마 곰곰이', image: '/tarot/kid_bear.png' },
-  { min: 2000, name: '곰곰 워리어', image: '/tarot/warrior_bear.png' },
-  { min: 5000, name: '곰곰 마스터', image: '/tarot/master_bear.png' },
-  { min: 10000, name: '곰신', image: '/tarot/god_bear.png' },
+  { min: 0, name: '아기 곰곰이', image: '/src/assets/tarot/baby_bear.png' },
+  { min: 500, name: '꼬마 곰곰이', image: '/src/assets/tarot/kid_bear.png' },
+  {
+    min: 2000,
+    name: '곰곰 워리어',
+    image: '/src/assets/tarot/warrior_bear.png',
+  },
+  {
+    min: 5000,
+    name: '곰곰 마스터',
+    image: '/src/assets/tarot/master_bear.png',
+  },
+  { min: 10000, name: '곰신', image: '/src/assets/tarot/god_bear.png' },
 ] as const
 
 function getGomLevel(fishCount: number) {
-  return GOM_LEVELS.reduce((prev, curr) => (fishCount >= curr.min ? curr : prev))
+  return GOM_LEVELS.reduce((prev, curr) =>
+    fishCount >= curr.min ? curr : prev,
+  )
 }
 
 interface GomEvolutionSectionProps {
   fishCount: number
 }
 
-export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionProps) {
+export default function GomEvolutionSection({
+  fishCount,
+}: GomEvolutionSectionProps) {
   const { isDarkMode } = useThemeMode()
   const [openModal, setOpenModal] = useState(false)
 
   const currentLevel = getGomLevel(fishCount)
   const nextLevel =
-    GOM_LEVELS.find((l) => l.min > fishCount) || GOM_LEVELS[GOM_LEVELS.length - 1]
+    GOM_LEVELS.find((l) => l.min > fishCount) ||
+    GOM_LEVELS[GOM_LEVELS.length - 1]
   const progress =
     nextLevel.min > fishCount
       ? Math.min(100, Math.round((fishCount / nextLevel.min) * 100))
@@ -35,7 +48,9 @@ export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionPr
 
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const borderColor = isDarkMode
+    ? 'rgba(148,163,184,0.1)'
+    : 'rgba(203,213,225,0.5)'
 
   return (
     <Box
@@ -104,7 +119,12 @@ export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionPr
         }}
       >
         {/* 상단 그라디언트 스트립 */}
-        <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+        <Box
+          sx={{
+            height: 3,
+            background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+          }}
+        />
 
         <Box sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
           {/* 헤더 */}
@@ -139,7 +159,9 @@ export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionPr
                 width: { xs: 130, md: 150 },
                 height: { xs: 130, md: 150 },
                 borderRadius: '50%',
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.06)',
+                bgcolor: isDarkMode
+                  ? 'rgba(99,102,241,0.12)'
+                  : 'rgba(99,102,241,0.06)',
                 border: `2px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
                 mb: 2,
                 mx: 'auto',
@@ -174,11 +196,18 @@ export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionPr
                 px: 2,
                 py: 0.6,
                 borderRadius: 9999,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
+                bgcolor: isDarkMode
+                  ? 'rgba(99,102,241,0.12)'
+                  : 'rgba(99,102,241,0.07)',
                 border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
               }}
             >
-              <EmojiEventsIcon sx={{ fontSize: '0.9rem', color: isDarkMode ? '#a5b4fc' : '#4338ca' }} />
+              <EmojiEventsIcon
+                sx={{
+                  fontSize: '0.9rem',
+                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                }}
+              />
               <Typography
                 sx={{
                   fontSize: '1rem',
@@ -193,8 +222,21 @@ export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionPr
 
           {/* 진행률 */}
           <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-              <Typography sx={{ fontSize: '0.82rem', color: textSecondary, fontWeight: 600 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 1,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: '0.82rem',
+                  color: textSecondary,
+                  fontWeight: 600,
+                }}
+              >
                 다음 레벨까지
               </Typography>
               <Typography
@@ -214,7 +256,9 @@ export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionPr
               sx={{
                 height: 8,
                 borderRadius: 9999,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.08)',
+                bgcolor: isDarkMode
+                  ? 'rgba(99,102,241,0.12)'
+                  : 'rgba(99,102,241,0.08)',
                 '& .MuiLinearProgress-bar': {
                   borderRadius: 9999,
                   background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
@@ -224,10 +268,21 @@ export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionPr
 
             {nextLevel.min > fishCount && (
               <Typography
-                sx={{ fontSize: '0.8rem', color: textSecondary, mt: 1, textAlign: 'right' }}
+                sx={{
+                  fontSize: '0.8rem',
+                  color: textSecondary,
+                  mt: 1,
+                  textAlign: 'right',
+                }}
               >
                 {nextLevel.name}까지{' '}
-                <Box component="span" sx={{ fontWeight: 700, color: isDarkMode ? '#c4b5fd' : '#6366f1' }}>
+                <Box
+                  component="span"
+                  sx={{
+                    fontWeight: 700,
+                    color: isDarkMode ? '#c4b5fd' : '#6366f1',
+                  }}
+                >
                   {(nextLevel.min - fishCount).toLocaleString()}
                 </Box>{' '}
                 마일리지 남음

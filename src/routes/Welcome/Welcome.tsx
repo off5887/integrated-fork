@@ -140,7 +140,7 @@ export default function Welcome() {
           {/* 로고 - 가운데 강조 버전 */}
           <Box
             component="img"
-            src="/gomgom_logo.png"
+            src="/src/assets/gomgom_logo.png"
             alt="Gomgom Logo"
             sx={{
               width: { xs: 110, sm: 130, md: 100 },

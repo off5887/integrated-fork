@@ -76,7 +76,7 @@ export default function MyGomgomiCard({ fishTotal, fishToNextLevel }: Props) {
             }}
           >
             <img
-              src="/tarot/god_bear.png"
+              src="/src/assets/tarot/god_bear.png"
               alt="나의 곰곰이"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
