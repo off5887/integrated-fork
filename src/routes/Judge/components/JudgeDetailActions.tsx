@@ -4,18 +4,17 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import { Box, Button } from '@mui/material'
-import { judgeData } from '../JudgeData'
 
 interface Props {
-  proposalId: number
+  isFirst: boolean
+  isLast: boolean
   onClose: () => void
+  onPrev: () => void
+  onNext: () => void
   isDarkMode: boolean
 }
 
-export default function JudgeDetailActions({ proposalId, onClose, isDarkMode }: Props) {
-  const currentIndex = judgeData.findIndex((p) => p.id === proposalId)
-  const isFirst = currentIndex === 0
-  const isLast = currentIndex === judgeData.length - 1
+export default function JudgeDetailActions({ isFirst, isLast, onClose, onPrev, onNext, isDarkMode }: Props) {
 
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
   const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
@@ -38,7 +37,7 @@ export default function JudgeDetailActions({ proposalId, onClose, isDarkMode }: 
         <Button
           startIcon={<ArrowBackIcon sx={{ fontSize: '0.9rem' }} />}
           disabled={isFirst}
-          onClick={onClose}
+          onClick={onPrev}
           size="small"
           sx={{
             borderRadius: 1.5,
@@ -57,7 +56,7 @@ export default function JudgeDetailActions({ proposalId, onClose, isDarkMode }: 
         <Button
           endIcon={<ArrowForwardIcon sx={{ fontSize: '0.9rem' }} />}
           disabled={isLast}
-          onClick={onClose}
+          onClick={onNext}
           size="small"
           sx={{
             borderRadius: 1.5,
