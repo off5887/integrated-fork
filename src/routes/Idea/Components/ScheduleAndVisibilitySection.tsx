@@ -6,12 +6,14 @@ import {
   Box,
   FormControl,
   FormControlLabel,
-  InputAdornment,
   Radio,
   RadioGroup,
-  TextField,
   Typography,
 } from '@mui/material'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import dayjs from 'dayjs'
 
 interface Props {
   startDate: string
@@ -42,43 +44,32 @@ export default function ScheduleAndVisibilitySection({
   const panelBase = {
     flex: 1,
     minWidth: 0,
-    p: { xs: 2.5, md: 3 },
-    borderRadius: 2.5,
+    p: { xs: 3, md: 3.5 },
+    borderRadius: 3,
     bgcolor: isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(99,102,241,0.03)',
-    border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.09)'}`,
+    border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.14)' : 'rgba(99,102,241,0.10)'}`,
+    display: 'flex',
+    flexDirection: 'column',
   }
 
-  // 날짜 입력 전용 스타일 (잘림/눈에 띄지 않는 문제 해결 중심)
-  const dateInputSx = {
+  // 두 패널의 높이를 비슷하게 맞추기 위한 최소 높이
+  const commonMinHeight = { xs: '280px', md: '320px', lg: '340px' }
+
+  const dateFieldSx = {
     ...inputSx,
     '& .MuiInputBase-root': {
       borderRadius: '12px',
-      height: '56px', // 높이 확보
+      height: '56px',
       background: isDarkMode ? 'rgba(30,41,59,0.55)' : 'rgba(241,245,249,0.85)',
     },
     '& .MuiInputBase-input': {
-      padding: '14px 16px 14px 52px !important', // 왼쪽 크게 → 아이콘 + 텍스트 여유
-      fontSize: '1.00rem', // 숫자 더 크게
+      fontSize: '1rem',
       fontWeight: 500,
       color: textPrimary,
-      letterSpacing: '0.03em',
     },
     '& .MuiInputLabel-root': {
       ...labelSx,
-      transform: 'translate(14px, 16px) scale(1)',
-      fontSize: '0.95rem',
-      '&.MuiInputLabel-shrink': {
-        transform: 'translate(14px, -9px) scale(0.75)',
-        color: '#6366f1',
-        fontWeight: 600,
-      },
-    },
-    '& .MuiInputAdornment-root': {
-      position: 'absolute',
-      left: '14px',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      pointerEvents: 'none',
+      '&.MuiInputLabel-shrink': { color: '#6366f1', fontWeight: 600 },
     },
     '& .MuiOutlinedInput-notchedOutline': {
       borderColor: isDarkMode
@@ -98,233 +89,229 @@ export default function ScheduleAndVisibilitySection({
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-        <Box
-          sx={{
-            width: 26,
-            height: 26,
-            borderRadius: '50%',
-            bgcolor: '#6366f1',
-            color: '#fff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '0.75rem',
-            fontWeight: 800,
-            flexShrink: 0,
-          }}
-        >
-          3
-        </Box>
-        <Typography
-          variant="h6"
-          fontWeight={700}
-          sx={{ color: textPrimary, letterSpacing: '-0.01em' }}
-        >
-          실행 일정 & 공개 범위
-        </Typography>
-      </Box>
-
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          gap: 3,
-        }}
-      >
-        {/* 실행 일정 패널 */}
-        <Box sx={panelBase}>
-          <Box
-            sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2.5 }}
-          >
-            <CalendarTodayIcon sx={{ color: '#6366f1', fontSize: '1.3rem' }} />
-            <Typography
-              variant="body1"
-              fontWeight={700}
-              sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}
-            >
-              실행 일정
-            </Typography>
-          </Box>
-
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
           <Box
             sx={{
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              bgcolor: '#6366f1',
+              color: '#fff',
               display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' },
-              gap: 3,
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.8rem',
+              fontWeight: 800,
             }}
           >
-            {/* 시작일 */}
-            <TextField
-              label="시작일"
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              fullWidth
-              InputLabelProps={{ shrink: true, sx: labelSx }}
-              InputProps={{
-                sx: dateInputSx,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <CalendarTodayIcon
-                      sx={{
-                        fontSize: '1.4rem',
-                        color: startDate ? '#6366f1' : textSecondary,
-                        opacity: startDate ? 1 : 0.65,
-                      }}
-                    />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '& .MuiInputLabel-root': {
-                  color: startDate ? '#6366f1 !important' : textSecondary,
-                  fontWeight: startDate ? 600 : 400,
-                },
-              }}
-            />
-
-            {/* 종료일 */}
-            <TextField
-              label="종료일"
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              fullWidth
-              InputLabelProps={{ shrink: true, sx: labelSx }}
-              InputProps={{
-                sx: dateInputSx,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <CalendarTodayIcon
-                      sx={{
-                        fontSize: '1.4rem',
-                        color: endDate ? '#6366f1' : textSecondary,
-                        opacity: endDate ? 1 : 0.65,
-                      }}
-                    />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '& .MuiInputLabel-root': {
-                  color: endDate ? '#6366f1 !important' : textSecondary,
-                  fontWeight: endDate ? 600 : 400,
-                },
-              }}
-            />
+            3
           </Box>
+          <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary }}>
+            실행 일정 & 공개 범위
+          </Typography>
         </Box>
 
-        {/* 공개 범위 패널 */}
-        <Box sx={panelBase}>
-          <Box
-            sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2.5 }}
-          >
-            <PublicIcon sx={{ color: '#6366f1', fontSize: '1.3rem' }} />
-            <Typography
-              variant="body1"
-              fontWeight={700}
-              sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 3, md: 4 },
+            '& > *': { minHeight: commonMinHeight }, // 핵심: 두 패널 높이 강제 동기화
+          }}
+        >
+          {/* 실행 일정 패널 */}
+          <Box sx={panelBase}>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2.5 }}
             >
-              공개 범위
-            </Typography>
+              <CalendarTodayIcon
+                sx={{ color: '#6366f1', fontSize: '1.4rem' }}
+              />
+              <Typography
+                variant="body1"
+                fontWeight={700}
+                sx={{ color: textPrimary }}
+              >
+                실행 일정
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2.25,
+                mt: 1,
+              }}
+            >
+              <DatePicker
+                label="시작일"
+                value={startDate ? dayjs(startDate) : null}
+                onChange={(newValue) =>
+                  setStartDate(newValue ? newValue.format('YYYY-MM-DD') : '')
+                }
+                format="YYYY-MM-DD"
+                slotProps={{
+                  textField: { fullWidth: true, sx: dateFieldSx },
+                  openPickerIcon: {
+                    children: (
+                      <CalendarTodayIcon
+                        sx={{ color: startDate ? '#6366f1' : textSecondary }}
+                      />
+                    ),
+                  },
+                }}
+              />
+
+              <DatePicker
+                label="종료일"
+                value={endDate ? dayjs(endDate) : null}
+                onChange={(newValue) =>
+                  setEndDate(newValue ? newValue.format('YYYY-MM-DD') : '')
+                }
+                format="YYYY-MM-DD"
+                slotProps={{
+                  textField: { fullWidth: true, sx: dateFieldSx },
+                  openPickerIcon: {
+                    children: (
+                      <CalendarTodayIcon
+                        sx={{ color: endDate ? '#6366f1' : textSecondary }}
+                      />
+                    ),
+                  },
+                }}
+              />
+            </Box>
+
+            {/* 높이 채우기용 빈 공간 (필요 시) */}
+            <Box sx={{ flex: 1, minHeight: '40px' }} />
           </Box>
 
-          <FormControl>
-            <RadioGroup
-              value={security}
-              onChange={(e) =>
-                setSecurity(e.target.value as 'public' | 'private')
-              }
-              sx={{ gap: 1.5 }}
+          {/* 공개 범위 패널 */}
+          <Box sx={panelBase}>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2.5 }}
             >
-              {[
-                {
-                  value: 'public',
-                  label: '전체 공개',
-                  icon: <PublicIcon sx={{ fontSize: '1.1rem' }} />,
-                },
-                {
-                  value: 'private',
-                  label: '전체 미공개',
-                  icon: <LockIcon sx={{ fontSize: '1.1rem' }} />,
-                },
-              ].map((opt) => {
-                const isSelected = security === opt.value
-                return (
-                  <FormControlLabel
-                    key={opt.value}
-                    value={opt.value}
-                    control={
-                      <Radio
-                        size="small"
-                        sx={{
-                          color: textSecondary,
-                          '&.Mui-checked': { color: '#6366f1' },
-                        }}
-                      />
-                    }
-                    label={
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                      >
+              <PublicIcon sx={{ color: '#6366f1', fontSize: '1.4rem' }} />
+              <Typography
+                variant="body1"
+                fontWeight={700}
+                sx={{ color: textPrimary }}
+              >
+                공개 범위
+              </Typography>
+            </Box>
+
+            <FormControl component="fieldset" sx={{ width: '100%', flex: 1 }}>
+              <RadioGroup
+                value={security}
+                onChange={(e) =>
+                  setSecurity(e.target.value as 'public' | 'private')
+                }
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                  justifyContent: 'center', // 중앙 정렬로 균형감
+                }}
+              >
+                {[
+                  { value: 'public', label: '전체 공개', icon: PublicIcon },
+                  { value: 'private', label: '전체 미공개', icon: LockIcon },
+                ].map((opt) => {
+                  const isSelected = security === opt.value
+                  const IconComponent = opt.icon
+
+                  return (
+                    <FormControlLabel
+                      key={opt.value}
+                      value={opt.value}
+                      control={
+                        <Radio
+                          size="medium"
+                          sx={{
+                            color: textSecondary,
+                            '&.Mui-checked': { color: '#6366f1' },
+                            ml: 1,
+                          }}
+                        />
+                      }
+                      label={
                         <Box
                           sx={{
-                            color: isSelected ? '#6366f1' : textSecondary,
                             display: 'flex',
-                            opacity: isSelected ? 1 : 0.85,
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            width: '100%',
+                            flex: 1,
                           }}
                         >
-                          {opt.icon}
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1.75,
+                            }}
+                          >
+                            <IconComponent
+                              sx={{
+                                color: isSelected ? '#6366f1' : textSecondary,
+                                fontSize: '1.5rem',
+                              }}
+                            />
+                            <Typography
+                              sx={{
+                                fontSize: '1.05rem',
+                                fontWeight: isSelected ? 700 : 500,
+                                color: isSelected
+                                  ? isDarkMode
+                                    ? '#c7d2fe'
+                                    : '#4f46e5'
+                                  : textPrimary,
+                              }}
+                            >
+                              {opt.label}
+                            </Typography>
+                          </Box>
                         </Box>
-                        <Typography
-                          sx={{
-                            fontSize: '0.92rem',
-                            fontWeight: isSelected ? 600 : 500,
-                            color: isSelected
-                              ? isDarkMode
-                                ? '#c7d2fe'
-                                : '#4338ca'
-                              : textPrimary,
-                          }}
-                        >
-                          {opt.label}
-                        </Typography>
-                      </Box>
-                    }
-                    sx={{
-                      m: 0,
-                      px: 2,
-                      py: 1.2,
-                      borderRadius: 2.5,
-                      bgcolor: isSelected
-                        ? isDarkMode
-                          ? 'rgba(99,102,241,0.14)'
-                          : 'rgba(99,102,241,0.08)'
-                        : 'transparent',
-                      border: isSelected
-                        ? `1px solid ${
-                            isDarkMode
-                              ? 'rgba(99,102,241,0.28)'
-                              : 'rgba(99,102,241,0.20)'
-                          }`
-                        : `1px solid ${isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.3)'}`,
-                      transition: 'all 0.18s ease',
-                      '&:hover': {
-                        bgcolor: isDarkMode
-                          ? 'rgba(99,102,241,0.08)'
-                          : 'rgba(99,102,241,0.05)',
-                      },
-                    }}
-                  />
-                )
-              })}
-            </RadioGroup>
-          </FormControl>
+                      }
+                      disableTypography
+                      sx={{
+                        m: 0,
+                        width: '100%',
+                        borderRadius: 2.5,
+                        px: 3,
+                        py: 2.2,
+                        bgcolor: isSelected
+                          ? isDarkMode
+                            ? 'linear-gradient(135deg, rgba(99,102,241,0.16), rgba(139,92,246,0.08))'
+                            : 'linear-gradient(135deg, rgba(99,102,241,0.10), rgba(139,92,246,0.05))'
+                          : 'transparent',
+                        border: isSelected
+                          ? `1px solid ${isDarkMode ? 'rgba(99,102,241,0.40)' : 'rgba(99,102,241,0.30)'}`
+                          : `1px solid ${isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.40)'}`,
+                        boxShadow: isSelected
+                          ? '0 3px 14px rgba(99,102,241,0.12)'
+                          : 'none',
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          bgcolor: isDarkMode
+                            ? 'rgba(99,102,241,0.09)'
+                            : 'rgba(99,102,241,0.05)',
+                          borderColor: '#6366f1',
+                        },
+                      }}
+                    />
+                  )
+                })}
+              </RadioGroup>
+            </FormControl>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </LocalizationProvider>
   )
 }

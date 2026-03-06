@@ -1,13 +1,7 @@
 // src/routes/idea/NewIdea.tsx
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import SendIcon from '@mui/icons-material/Send'
-import {
-  Box,
-  Button,
-  IconButton,
-  TextField,
-  Typography,
-} from '@mui/material'
+import { Box, Button, IconButton, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '../../context/ThemeContext'
@@ -25,7 +19,9 @@ function SectionDivider({ isDarkMode }: { isDarkMode: boolean }) {
     <Box
       sx={{
         height: '1px',
-        bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)',
+        bgcolor: isDarkMode
+          ? 'rgba(148,163,184,0.08)'
+          : 'rgba(203,213,225,0.4)',
         my: 5,
       }}
     />
@@ -65,7 +61,13 @@ export default function NewIdea() {
   }
 
   const handleSubmit = () => {
-    if (!title.trim() || !problem.trim() || !solution.trim() || !startDate || !endDate) {
+    if (
+      !title.trim() ||
+      !problem.trim() ||
+      !solution.trim() ||
+      !startDate ||
+      !endDate
+    ) {
       alert('필수 항목을 모두 입력해주세요.')
       return
     }
@@ -81,7 +83,9 @@ export default function NewIdea() {
 
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const borderColor = isDarkMode
+    ? 'rgba(148,163,184,0.1)'
+    : 'rgba(203,213,225,0.5)'
 
   const inputSx = {
     bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
@@ -89,10 +93,14 @@ export default function NewIdea() {
     color: textPrimary,
     '& .MuiInputBase-input': { color: textPrimary },
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? 'rgba(148,163,184,0.18)' : 'rgba(203,213,225,0.7)',
+      borderColor: isDarkMode
+        ? 'rgba(148,163,184,0.18)'
+        : 'rgba(203,213,225,0.7)',
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.5)',
+      borderColor: isDarkMode
+        ? 'rgba(148,163,184,0.35)'
+        : 'rgba(148,163,184,0.5)',
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
       borderColor: '#6366f1',
@@ -125,10 +133,14 @@ export default function NewIdea() {
             size="small"
             sx={{
               color: textSecondary,
-              bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)',
+              bgcolor: isDarkMode
+                ? 'rgba(148,163,184,0.08)'
+                : 'rgba(203,213,225,0.4)',
               borderRadius: 2,
               '&:hover': {
-                bgcolor: isDarkMode ? 'rgba(148,163,184,0.15)' : 'rgba(203,213,225,0.7)',
+                bgcolor: isDarkMode
+                  ? 'rgba(148,163,184,0.15)'
+                  : 'rgba(203,213,225,0.7)',
               },
             }}
           >
@@ -138,7 +150,11 @@ export default function NewIdea() {
             <Typography
               variant="h5"
               fontWeight={800}
-              sx={{ color: textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
+              sx={{
+                color: textPrimary,
+                letterSpacing: '-0.02em',
+                lineHeight: 1.2,
+              }}
             >
               새로운 상상 제안
             </Typography>
@@ -161,7 +177,12 @@ export default function NewIdea() {
           }}
         >
           {/* 상단 컬러 스트립 */}
-          <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+          <Box
+            sx={{
+              height: 3,
+              background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+            }}
+          />
 
           <Box sx={{ p: { xs: 3, sm: 5 } }}>
             <BasicInfoSection
@@ -206,18 +227,31 @@ export default function NewIdea() {
 
             {/* 4. 실행 계획 */}
             <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}
+              >
                 <Box
                   sx={{
-                    width: 26, height: 26, borderRadius: '50%',
-                    bgcolor: '#6366f1', color: '#fff',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
+                    width: 26,
+                    height: 26,
+                    borderRadius: '50%',
+                    bgcolor: '#6366f1',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    flexShrink: 0,
                   }}
                 >
                   4
                 </Box>
-                <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  sx={{ color: textPrimary, letterSpacing: '-0.01em' }}
+                >
                   실행 계획
                 </Typography>
               </Box>
@@ -243,13 +277,18 @@ export default function NewIdea() {
               onFilesChange={(newFilesFromChild) => {
                 const addedFiles = newFilesFromChild.slice(files.length)
                 const newPreviews = addedFiles.map((file) =>
-                  file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
+                  file.type.startsWith('image/')
+                    ? URL.createObjectURL(file)
+                    : '',
                 )
                 setFiles(newFilesFromChild)
                 setFilePreviews((prev) => [...prev, ...newPreviews])
               }}
               onRemoveFile={(index) => {
-                if (filePreviews[index] && files[index]?.type.startsWith('image/')) {
+                if (
+                  filePreviews[index] &&
+                  files[index]?.type.startsWith('image/')
+                ) {
                   URL.revokeObjectURL(filePreviews[index])
                 }
                 setFiles((prev) => prev.filter((_, i) => i !== index))
@@ -259,15 +298,28 @@ export default function NewIdea() {
             />
 
             {/* 제출 버튼 */}
-            <Box sx={{ mt: 6, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+            <Box
+              sx={{
+                mt: 6,
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: 2,
+              }}
+            >
               <Button
                 variant="outlined"
                 onClick={handleBack}
                 sx={{
-                  borderRadius: 2, px: 3, py: 1.25, fontWeight: 600,
-                  borderColor: borderColor, color: textSecondary,
+                  borderRadius: 2,
+                  px: 3,
+                  py: 1.25,
+                  fontWeight: 600,
+                  borderColor: borderColor,
+                  color: textSecondary,
                   '&:hover': {
-                    borderColor: isDarkMode ? 'rgba(148,163,184,0.3)' : 'rgba(148,163,184,0.6)',
+                    borderColor: isDarkMode
+                      ? 'rgba(148,163,184,0.3)'
+                      : 'rgba(148,163,184,0.6)',
                     bgcolor: 'transparent',
                   },
                 }}
@@ -280,14 +332,21 @@ export default function NewIdea() {
                 onClick={handleSubmit}
                 startIcon={loading ? null : <SendIcon />}
                 sx={{
-                  borderRadius: 2, px: 4, py: 1.25, fontWeight: 700,
-                  bgcolor: '#6366f1', boxShadow: 'none',
+                  borderRadius: 2,
+                  px: 4,
+                  py: 1.25,
+                  fontWeight: 700,
+                  bgcolor: '#6366f1',
+                  boxShadow: 'none',
+                  color: '#fff',
                   '&:hover': {
                     bgcolor: '#4f46e5',
                     boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
                   },
                   '&.Mui-disabled': {
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)',
+                    bgcolor: isDarkMode
+                      ? 'rgba(99,102,241,0.4)'
+                      : 'rgba(99,102,241,0.3)',
                     color: '#fff',
                   },
                   transition: 'all 0.15s ease',

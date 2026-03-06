@@ -20,14 +20,23 @@ function SectionDivider({ isDarkMode }: { isDarkMode: boolean }) {
     <Box
       sx={{
         height: '1px',
-        bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)',
+        bgcolor: isDarkMode
+          ? 'rgba(148,163,184,0.08)'
+          : 'rgba(203,213,225,0.4)',
+        my: 4,
       }}
     />
   )
 }
 
 export default function JudgeDetail({ proposal, onClose, isDarkMode }: Props) {
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const borderColor = isDarkMode
+    ? 'rgba(148,163,184,0.1)'
+    : 'rgba(203,213,225,0.5)'
+  const scrollThumbColor = isDarkMode ? '#6366f1' : '#d8c7ff'
+  const scrollTrackColor = isDarkMode
+    ? 'rgba(30,41,59,0.4)'
+    : 'rgba(241,245,249,0.7)'
 
   return (
     <Dialog
@@ -35,6 +44,7 @@ export default function JudgeDetail({ proposal, onClose, isDarkMode }: Props) {
       onClose={onClose}
       maxWidth="lg"
       fullWidth
+      scroll="paper" // paper 스크롤 방식으로 변경 (더 자연스러운 스크롤)
       slotProps={{
         paper: {
           sx: {
@@ -45,6 +55,15 @@ export default function JudgeDetail({ proposal, onClose, isDarkMode }: Props) {
               ? '0 24px 64px rgba(0,0,0,0.6)'
               : '0 24px 64px rgba(0,0,0,0.12)',
             overflow: 'hidden',
+            maxHeight: '92vh', // 너무 크지 않게 제한
+          },
+        },
+        backdrop: {
+          sx: {
+            backdropFilter: 'blur(8px)',
+            backgroundColor: isDarkMode
+              ? 'rgba(0,0,0,0.65)'
+              : 'rgba(0,0,0,0.45)',
           },
         },
       }}
@@ -55,8 +74,38 @@ export default function JudgeDetail({ proposal, onClose, isDarkMode }: Props) {
         isDarkMode={isDarkMode}
       />
 
-      <DialogContent sx={{ p: { xs: 3, md: 5 }, pt: 4, pb: 5 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <DialogContent
+        sx={{
+          p: { xs: 3, md: 5 },
+          pt: 2,
+          pb: 6,
+          // 현대적인 스크롤바 스타일 적용
+          overflowY: 'auto',
+          '&::-webkit-scrollbar': {
+            width: '8px', // 아주 얇게
+            height: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: scrollTrackColor,
+            borderRadius: '10px',
+            margin: '4px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: scrollThumbColor,
+            borderRadius: '10px',
+            border: `2px solid ${scrollTrackColor}`, // 테두리로 깔끔하게
+            minHeight: '40px',
+            transition: 'background 0.2s ease',
+            '&:hover': {
+              background: isDarkMode ? '#7c7ff2' : '#a78bfa',
+            },
+          },
+          // 모바일 터치 스크롤 최적화
+          WebkitOverflowScrolling: 'touch',
+          scrollBehavior: 'smooth',
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4.5 }}>
           <BasicInfoSection
             problem={proposal.problem}
             solution={proposal.solution}
