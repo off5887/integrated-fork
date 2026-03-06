@@ -1,11 +1,13 @@
 // src/pages/Settings.tsx
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import { Box, Chip, Container, Tab, Tabs, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { useThemeMode } from '../../context/ThemeContext'
 import ReviewerAssignment from './components/sectionReviewers/ReviewerAssignment'
+import SpecialMileage from './components/specialMileage/SpecialMileage'
 import UserManagement from './components/user/UserManagement'
 
 interface TabPanelProps {
@@ -151,6 +153,13 @@ export default function Settings() {
                 icon={<ManageAccountsIcon sx={{ fontSize: '1rem' }} />}
                 iconPosition="start"
               />
+              <Tab
+                label="특별 마일리지"
+                id="settings-tab-2"
+                aria-controls="settings-tabpanel-2"
+                icon={<CardGiftcardIcon sx={{ fontSize: '1rem' }} />}
+                iconPosition="start"
+              />
             </Tabs>
           </Box>
 
@@ -160,6 +169,9 @@ export default function Settings() {
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
               <UserManagement isDarkMode={isDarkMode} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={2}>
+              <SpecialMileage isDarkMode={isDarkMode} />
             </TabPanel>
           </Box>
         </Box>
