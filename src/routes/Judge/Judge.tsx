@@ -186,6 +186,26 @@ export default function Judge() {
     )
   }
 
+  const handleApprove = (reason: string) => {
+    if (!selectedProposal) return
+    setProposals((prev) =>
+      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '승인' as const } : p)),
+    )
+    setSelectedProposal(null)
+    // TODO: API 연동 시 reason과 함께 서버로 전송
+    console.log('승인 사유:', reason)
+  }
+
+  const handleReject = (reason: string) => {
+    if (!selectedProposal) return
+    setProposals((prev) =>
+      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '반려' as const } : p)),
+    )
+    setSelectedProposal(null)
+    // TODO: API 연동 시 reason과 함께 서버로 전송
+    console.log('반려 사유:', reason)
+  }
+
   const selectedIndex = selectedProposal
     ? filteredProposals.findIndex((p) => p.id === selectedProposal.id)
     : -1
@@ -594,6 +614,8 @@ export default function Judge() {
           onClose={() => setSelectedProposal(null)}
           onPrev={handlePrev}
           onNext={handleNext}
+          onApprove={handleApprove}
+          onReject={handleReject}
           isFirst={isFirst}
           isLast={isLast}
           isDarkMode={isDarkMode}
