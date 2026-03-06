@@ -1,50 +1,24 @@
-// src/routes/Dashboard/GomEvolutionModal.tsx
+// src/routes/Welcome/GomEvolutionModal.tsx
 import CloseIcon from '@mui/icons-material/Close'
 import {
-  alpha,
   Box,
   Dialog,
   DialogContent,
   DialogTitle,
   Divider,
   Grid,
+  IconButton,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { darkPalette, lightPalette } from '../../theme/index'
 
 const GOM_LEVELS = [
-  {
-    min: 0,
-    name: '아기 곰곰이',
-    image: '/tarot/baby_bear.png',
-    desc: '아직 애기예요 🍼',
-  },
-  {
-    min: 500,
-    name: '꼬마 곰곰이',
-    image: '/tarot/kid_bear.png',
-    desc: '이제 좀 낚시할 줄 알아요 🎣',
-  },
-  {
-    min: 2000,
-    name: '곰곰 워리어',
-    image: '/tarot/warrior_bear.png',
-    desc: '사냥꾼 곰곰 등장!',
-  },
-  {
-    min: 5000,
-    name: '곰곰 마스터',
-    image: '/tarot/master_bear.png',
-    desc: '전설의 시작',
-  },
-  {
-    min: 10000,
-    name: '곰신',
-    image: '/tarot/god_bear.png',
-    desc: '곰신 강림 🐻✨',
-  },
+  { min: 0, name: '아기 곰곰이', image: '/tarot/baby_bear.png', desc: '아직 애기예요' },
+  { min: 500, name: '꼬마 곰곰이', image: '/tarot/kid_bear.png', desc: '이제 좀 낚시할 줄 알아요' },
+  { min: 2000, name: '곰곰 워리어', image: '/tarot/warrior_bear.png', desc: '사냥꾼 곰곰 등장!' },
+  { min: 5000, name: '곰곰 마스터', image: '/tarot/master_bear.png', desc: '전설의 시작' },
+  { min: 10000, name: '곰신', image: '/tarot/god_bear.png', desc: '곰신 강림' },
 ] as const
 
 const SPECIAL_CARDS = [
@@ -76,134 +50,136 @@ export default function GomEvolutionModal({
   isDarkMode,
 }: GomEvolutionModalProps) {
   const theme = useTheme()
-  const palette = isDarkMode ? darkPalette : lightPalette
-  const primaryMain = theme.palette.primary.main
-
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'))
+
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const cardBg = isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff'
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullScreen={isMobile}
-      maxWidth={isMobile ? false : 'lg'}
-      fullWidth={!isMobile}
-      sx={{
-        '& .MuiDialog-paper': {
-          bgcolor: alpha(
-            theme.palette.background.paper,
-            isDarkMode ? 0.68 : 0.92,
-          ),
-          borderRadius: 3,
-          boxShadow: isDarkMode
-            ? '0 16px 60px rgba(0,0,0,0.65), 0 0 32px rgba(96,165,250,0.15)'
-            : '0 12px 48px rgba(0,0,0,0.18)',
-          border: `1px solid ${alpha(theme.palette.divider, isDarkMode ? 0.25 : 0.12)}`,
-          backdropFilter: 'blur(16px)',
-          overflow: 'hidden',
-          maxHeight: isMobile ? '100%' : '90vh',
-          width: isLargeScreen ? '82%' : '100%',
+      maxWidth="lg"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            bgcolor: isDarkMode ? '#0d1526' : '#f8fafc',
+            borderRadius: isMobile ? 0 : 3,
+            border: `1px solid ${borderColor}`,
+            boxShadow: isDarkMode
+              ? '0 16px 60px rgba(0,0,0,0.7)'
+              : '0 12px 48px rgba(0,0,0,0.14)',
+            overflow: 'hidden',
+            maxHeight: isMobile ? '100%' : '90vh',
+          },
         },
       }}
     >
-      <DialogTitle
-        sx={{
-          bgcolor: primaryMain,
-          color: '#ffffff',
-          py: isMobile ? 2 : 2.5,
-          px: { xs: 3, md: 4 },
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: `1px solid ${alpha('#ffffff', 0.18)}`,
-        }}
-      >
-        <Typography variant="h5" fontWeight={700}>
-          곰곰이 진화 & 특별 카드
-        </Typography>
-        <CloseIcon
-          onClick={onClose}
+      {/* 헤더 */}
+      <DialogTitle sx={{ p: 0 }}>
+        <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+        <Box
           sx={{
-            cursor: 'pointer',
-            fontSize: isMobile ? 32 : 28,
-            '&:hover': { opacity: 0.75 },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: { xs: 3, md: 4 },
+            py: 2.5,
+            bgcolor: isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
+            borderBottom: `1px solid ${borderColor}`,
           }}
-        />
+        >
+          <Box>
+            <Typography
+              variant="h5"
+              fontWeight={800}
+              sx={{
+                color: textPrimary,
+                letterSpacing: '-0.02em',
+                fontSize: { xs: '1.1rem', md: '1.3rem' },
+              }}
+            >
+              곰곰이 진화 단계
+            </Typography>
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              생선을 모을수록 성장하는 나만의 곰곰이 — 모든 단계 보기
+            </Typography>
+          </Box>
+          <IconButton
+            onClick={onClose}
+            size="small"
+            sx={{
+              color: textSecondary,
+              '&:hover': { bgcolor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
 
-      <DialogContent
-        sx={{
-          p: isMobile ? { xs: 2, sm: 3 } : { xs: 3, md: 4, lg: 5 },
-          overflowY: 'auto',
-          bgcolor: 'transparent',
-        }}
-      >
+      <DialogContent sx={{ p: { xs: 2.5, md: 4 }, overflowY: 'auto' }}>
+        {/* 진화 단계 */}
         <Typography
-          variant="h6"
-          fontWeight={700}
+          variant="overline"
           sx={{
-            mt: 2,
-            mb: 3,
-            color: primaryMain,
-            textAlign: 'center',
+            display: 'block',
+            mb: 2,
+            mt: 1,
+            color: isDarkMode ? '#a5b4fc' : '#4338ca',
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            fontSize: '0.72rem',
           }}
         >
           진화 단계
         </Typography>
 
-        <Grid
-          container
-          spacing={{ xs: 2, sm: 3, md: 3.5, lg: 4 }}
-          justifyContent="center"
-        >
+        <Grid container spacing={{ xs: 1.5, md: 2 }}>
           {GOM_LEVELS.map((level) => {
             const isCurrent = level.min === currentLevelMin
             const isAchieved = fishCount >= level.min
 
             return (
-              <Grid
-                item
-                xs={6}
-                sm={4}
-                md={3}
-                lg={isLargeScreen ? 2 : 3}
-                xl={2}
-                key={level.min}
-              >
+              <Grid size={{ xs: 6, sm: 4, md: 2 }} key={level.min}>
                 <Box
                   sx={{
+                    bgcolor: cardBg,
+                    border: `1px solid ${isCurrent ? 'rgba(99,102,241,0.5)' : borderColor}`,
                     borderRadius: 3,
                     overflow: 'hidden',
-                    bgcolor: alpha(
-                      palette.cardBg || theme.palette.background.paper,
-                      isDarkMode ? 0.68 : 0.92,
-                    ),
-                    border: `1px solid ${isCurrent ? primaryMain : alpha(theme.palette.divider, isDarkMode ? 0.28 : 0.18)}`,
-                    boxShadow: isDarkMode
-                      ? '0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(96,165,250,0.12)'
-                      : '0 6px 20px rgba(0,0,0,0.1)',
-                    transition: 'all 0.28s ease',
+                    boxShadow: isCurrent
+                      ? '0 4px 20px rgba(99,102,241,0.25)'
+                      : isDarkMode
+                      ? '0 2px 12px rgba(0,0,0,0.3)'
+                      : '0 2px 8px rgba(0,0,0,0.05)',
+                    opacity: isAchieved ? 1 : 0.6,
+                    transition: 'all 0.25s ease',
                     height: '100%',
-                    maxWidth: isLargeScreen ? 210 : 240,
-                    mx: 'auto',
                     '&:hover': {
-                      transform: 'translateY(-6px)',
+                      transform: 'translateY(-4px)',
+                      opacity: 1,
                       boxShadow: isDarkMode
-                        ? '0 16px 48px rgba(0,0,0,0.6), 0 0 32px rgba(96,165,250,0.20)'
-                        : '0 12px 32px rgba(0,0,0,0.18)',
+                        ? '0 12px 32px rgba(0,0,0,0.5)'
+                        : '0 12px 28px rgba(0,0,0,0.1)',
                     },
-                    opacity: isAchieved ? 1 : 0.78,
                   }}
                 >
+                  {isCurrent && (
+                    <Box sx={{ height: 2, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
+                  )}
+
                   <Box
                     sx={{
-                      p: { xs: 1.8, lg: 2 },
-                      bgcolor: alpha(
-                        primaryMain,
-                        isCurrent ? (isDarkMode ? 0.18 : 0.1) : 0.05,
-                      ),
-                      aspectRatio: '4/4.2',
+                      p: 1.5,
+                      bgcolor: isDarkMode
+                        ? isCurrent ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.05)'
+                        : isCurrent ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)',
+                      aspectRatio: '1',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -214,56 +190,39 @@ export default function GomEvolutionModal({
                       src={level.image}
                       alt={level.name}
                       sx={{
-                        width: '88%',
+                        width: '80%',
                         height: 'auto',
                         objectFit: 'contain',
-                        filter: isAchieved
-                          ? 'none'
-                          : 'grayscale(0.7) brightness(0.9)',
+                        filter: isAchieved ? 'none' : 'grayscale(0.7) brightness(0.85)',
                       }}
                     />
                   </Box>
 
-                  <Box sx={{ p: { xs: 1.6, lg: 2 }, textAlign: 'center' }}>
+                  <Box sx={{ p: { xs: 1.5, md: 2 }, textAlign: 'center' }}>
                     <Typography
-                      variant="subtitle1"
+                      variant="subtitle2"
                       fontWeight={700}
                       sx={{
-                        fontSize: { xs: '0.96rem', lg: '1.02rem' },
-                        color: isCurrent
-                          ? primaryMain
-                          : theme.palette.text.primary,
+                        fontSize: '0.85rem',
+                        color: isCurrent ? (isDarkMode ? '#a5b4fc' : '#4338ca') : textPrimary,
+                        mb: 0.5,
                       }}
                     >
                       {level.name}
                     </Typography>
-
                     <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{
-                        fontSize: { xs: '0.78rem', lg: '0.82rem' },
-                        display: 'block',
-                        mt: 0.5,
-                        lineHeight: 1.45,
-                      }}
+                      sx={{ fontSize: '0.75rem', color: textSecondary, display: 'block', mb: 0.75 }}
                     >
                       {level.desc}
                     </Typography>
-
                     <Typography
-                      variant="caption"
                       sx={{
-                        mt: 1,
-                        fontSize: { xs: '0.8rem', lg: '0.84rem' },
-                        color: isAchieved
-                          ? primaryMain
-                          : theme.palette.text.secondary,
-                        fontWeight: isAchieved ? 600 : 400,
-                        display: 'block',
+                        fontSize: '0.78rem',
+                        fontWeight: isAchieved ? 700 : 500,
+                        color: isAchieved ? (isDarkMode ? '#a5b4fc' : '#4338ca') : textSecondary,
                       }}
                     >
-                      {isAchieved ? '달성 ✓' : `${level.min.toLocaleString()}`}
+                      {isAchieved ? '달성 ✓' : `${level.min.toLocaleString()} 마일리지`}
                     </Typography>
                   </Box>
                 </Box>
@@ -272,52 +231,51 @@ export default function GomEvolutionModal({
           })}
         </Grid>
 
-        <Divider sx={{ my: { xs: 5, lg: 6 } }} />
+        <Divider sx={{ my: { xs: 4, md: 5 }, borderColor }} />
 
+        {/* 특별 카드 */}
         <Typography
-          variant="h6"
-          fontWeight={700}
+          variant="overline"
           sx={{
-            mb: 3,
-            color: primaryMain,
-            textAlign: 'center',
+            display: 'block',
+            mb: 2,
+            color: isDarkMode ? '#a5b4fc' : '#4338ca',
+            fontWeight: 700,
+            letterSpacing: '0.1em',
+            fontSize: '0.72rem',
           }}
         >
           특별 카드
         </Typography>
 
-        <Grid container spacing={{ xs: 3, lg: 4 }} justifyContent="center">
+        <Grid container spacing={{ xs: 2, md: 3 }} justifyContent="center">
           {SPECIAL_CARDS.map((card) => (
-            <Grid item xs={12} sm={6} md={6} lg={5} key={card.name}>
+            <Grid size={{ xs: 12, sm: 6 }} key={card.name}>
               <Box
                 sx={{
+                  bgcolor: cardBg,
+                  border: `1px solid ${borderColor}`,
                   borderRadius: 3,
                   overflow: 'hidden',
-                  border: `1px solid ${alpha(primaryMain, isDarkMode ? 0.35 : 0.25)}`,
-                  bgcolor: alpha(
-                    palette.cardBg || theme.palette.background.paper,
-                    isDarkMode ? 0.68 : 0.92,
-                  ),
-                  boxShadow: isDarkMode
-                    ? '0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(96,165,250,0.12)'
-                    : '0 6px 20px rgba(0,0,0,0.1)',
-                  transition: 'all 0.28s ease',
-                  maxWidth: 340,
+                  maxWidth: 360,
                   mx: 'auto',
+                  boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.05)',
+                  transition: 'all 0.25s ease',
                   '&:hover': {
-                    transform: 'translateY(-6px)',
+                    transform: 'translateY(-4px)',
+                    borderColor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)',
                     boxShadow: isDarkMode
-                      ? '0 16px 48px rgba(0,0,0,0.6), 0 0 32px rgba(96,165,250,0.22)'
-                      : '0 12px 32px rgba(0,0,0,0.18)',
-                    borderColor: alpha(primaryMain, 0.6),
+                      ? '0 12px 32px rgba(0,0,0,0.5)'
+                      : '0 12px 28px rgba(0,0,0,0.1)',
                   },
                 }}
               >
+                <Box sx={{ height: 2, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
                 <Box
                   sx={{
-                    p: { xs: 2.5, lg: 3 },
-                    bgcolor: alpha(primaryMain, isDarkMode ? 0.12 : 0.06),
-                    aspectRatio: '4/4.2',
+                    p: 3,
+                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
+                    aspectRatio: '2/1',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -327,21 +285,16 @@ export default function GomEvolutionModal({
                     component="img"
                     src={card.image}
                     alt={card.name}
-                    sx={{
-                      width: '86%',
-                      height: 'auto',
-                      objectFit: 'contain',
-                    }}
+                    sx={{ width: '45%', height: 'auto', objectFit: 'contain' }}
                   />
                 </Box>
-
-                <Box sx={{ p: { xs: 2, lg: 2.5 }, textAlign: 'center' }}>
+                <Box sx={{ p: { xs: 2.5, md: 3 }, textAlign: 'center' }}>
                   <Typography
                     variant="h6"
                     fontWeight={700}
                     sx={{
-                      color: primaryMain,
-                      fontSize: { xs: '1.05rem', lg: '1.1rem' },
+                      color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                      fontSize: '1rem',
                       mb: 1,
                     }}
                   >
@@ -349,11 +302,7 @@ export default function GomEvolutionModal({
                   </Typography>
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      fontSize: { xs: '0.9rem', lg: '0.95rem' },
-                      lineHeight: 1.55,
-                    }}
+                    sx={{ color: textSecondary, lineHeight: 1.65, fontSize: '0.88rem' }}
                   >
                     {card.desc}
                   </Typography>

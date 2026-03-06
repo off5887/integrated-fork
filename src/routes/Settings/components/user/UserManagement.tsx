@@ -1,34 +1,33 @@
 // src/components/UserManagement.tsx
 import AddIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import {
+  Avatar,
   Box,
   Button,
   Chip,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
   IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material'
 import { useState } from 'react'
 
@@ -72,17 +71,9 @@ const mockUsers = [
   },
 ]
 
-// mock 부서 목록 (실제로는 API로 가져올 예정)
 const mockDepartments = [
-  '개발1팀',
-  '개발2팀',
-  '기획팀',
-  '디자인팀',
-  '영업1팀',
-  '마케팅팀',
-  '인사팀',
-  '재무팀',
-  '총무팀',
+  '개발1팀', '개발2팀', '기획팀', '디자인팀',
+  '영업1팀', '마케팅팀', '인사팀', '재무팀', '총무팀',
 ]
 
 interface User {
@@ -95,293 +86,575 @@ interface User {
   active: boolean
 }
 
-export default function UserManagement() {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+interface Props {
+  isDarkMode: boolean
+}
+
+export default function UserManagement({ isDarkMode }: Props) {
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const rowBg = isDarkMode ? 'rgba(30,41,59,0.4)' : '#ffffff'
+  const rowHoverBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
+  const headerBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
+  const cardBg = isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff'
 
   const [users, setUsers] = useState<User[]>(mockUsers)
   const [open, setOpen] = useState(false)
-  const [newUser, setNewUser] = useState<Partial<User & { password: string }>>(
-    {},
-  )
+  const [editUser, setEditUser] = useState<User | null>(null)
+  const [formData, setFormData] = useState<Partial<User & { password: string }>>({})
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleClickOpen = () => {
-    setNewUser({})
+  const isEditing = editUser !== null
+
+  const handleAddOpen = () => {
+    setEditUser(null)
+    setFormData({})
+    setShowPassword(false)
+    setOpen(true)
+  }
+
+  const handleEditOpen = (user: User) => {
+    setEditUser(user)
+    setFormData({ ...user })
     setShowPassword(false)
     setOpen(true)
   }
 
   const handleClose = () => {
     setOpen(false)
-    setNewUser({})
+    setFormData({})
+    setEditUser(null)
   }
 
-  const handleAddUser = () => {
-    if (
-      !newUser.name ||
-      !newUser.employeeNumber ||
-      !newUser.email ||
-      !newUser.role ||
-      !newUser.department ||
-      !newUser.password
-    ) {
+  const handleSave = () => {
+    if (!formData.name || !formData.employeeNumber || !formData.email || !formData.role || !formData.department) {
       alert('모든 필수 항목을 입력해주세요.')
       return
     }
-
-    setUsers([
-      ...users,
-      {
-        id: users.length ? Math.max(...users.map((u) => u.id)) + 1 : 1,
-        name: newUser.name || '',
-        employeeNumber: newUser.employeeNumber || '',
-        email: newUser.email || '',
-        role: newUser.role || '사원',
-        department: newUser.department || '',
-        active: true,
-      },
-    ])
-
-    // 실제 구현에서는 password를 여기서 암호화해서 백엔드로 보내야 함
-    console.log('새 사용자 비밀번호 (암호화 전):', newUser.password)
-
+    if (isEditing) {
+      setUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, ...formData } : u))
+    } else {
+      if (!formData.password) {
+        alert('비밀번호를 입력해주세요.')
+        return
+      }
+      setUsers(prev => [
+        ...prev,
+        {
+          id: prev.length ? Math.max(...prev.map(u => u.id)) + 1 : 1,
+          name: formData.name!,
+          employeeNumber: formData.employeeNumber!,
+          email: formData.email!,
+          role: formData.role!,
+          department: formData.department!,
+          active: true,
+        },
+      ])
+    }
     handleClose()
+  }
+
+  const handleToggleActive = (id: number) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, active: !u.active } : u))
   }
 
   const handleDelete = (id: number) => {
     if (window.confirm('정말 이 사용자를 삭제하시겠습니까?')) {
-      setUsers(users.filter((u) => u.id !== id))
+      setUsers(prev => prev.filter(u => u.id !== id))
     }
   }
 
+  const inputSx = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+      fontSize: '0.875rem',
+      '& fieldset': { borderColor },
+      '&:hover fieldset': { borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)' },
+      '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+    },
+    '& .MuiInputBase-input': { color: textPrimary },
+    '& .MuiInputLabel-root': { color: textSecondary, '&.Mui-focused': { color: '#6366f1' } },
+  }
+
+  const ActiveChip = ({ user }: { user: User }) => (
+    <Tooltip title={user.active ? '클릭하여 비활성화' : '클릭하여 활성화'} placement="top">
+      <Chip
+        label={user.active ? '활성' : '비활성'}
+        size="small"
+        onClick={() => handleToggleActive(user.id)}
+        sx={{
+          cursor: 'pointer',
+          bgcolor: user.active
+            ? (isDarkMode ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.07)')
+            : (isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.07)'),
+          color: user.active
+            ? (isDarkMode ? '#34d399' : '#059669')
+            : (isDarkMode ? '#f87171' : '#dc2626'),
+          border: `1px solid ${user.active
+            ? (isDarkMode ? 'rgba(16,185,129,0.3)' : 'rgba(16,185,129,0.2)')
+            : (isDarkMode ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.2)')}`,
+          fontWeight: 700,
+          fontSize: '0.7rem',
+          transition: 'all 0.15s ease',
+          '&:hover': {
+            bgcolor: user.active
+              ? (isDarkMode ? 'rgba(16,185,129,0.22)' : 'rgba(16,185,129,0.14)')
+              : (isDarkMode ? 'rgba(239,68,68,0.22)' : 'rgba(239,68,68,0.14)'),
+          },
+        }}
+      />
+    </Tooltip>
+  )
+
   return (
     <Box>
-      {/* 상단 액션 영역 */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          mb: { xs: 2, md: 3 },
-        }}
-      >
+      {/* 상단 액션 */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, pb: 3, borderBottom: `1px solid ${borderColor}` }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ width: 26, height: 26, borderRadius: '50%', bgcolor: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <ManageAccountsIcon sx={{ fontSize: '0.9rem' }} />
+          </Box>
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, lineHeight: 1.3 }}>
+              사용자 관리
+            </Typography>
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              총 {users.length}명 등록됨 · 활성 {users.filter(u => u.active).length}명
+            </Typography>
+          </Box>
+        </Box>
         <Button
           variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          size={isMobile ? 'medium' : 'large'}
-          fullWidth={isMobile}
-          onClick={handleClickOpen}
-          sx={{ minWidth: { sm: 180 } }}
+          startIcon={<AddIcon sx={{ fontSize: '0.9rem' }} />}
+          onClick={handleAddOpen}
+          sx={{
+            borderRadius: 9999, px: 2.5, py: 0.9,
+            fontWeight: 700, fontSize: '0.82rem', textTransform: 'none',
+            bgcolor: '#6366f1', color: '#fff', boxShadow: 'none',
+            '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 6px 20px rgba(99,102,241,0.4)' },
+            transition: 'all 0.2s ease',
+          }}
         >
           사용자 추가
         </Button>
       </Box>
 
-      {/* 테이블 */}
-      <TableContainer
-        component={Paper}
-        elevation={2}
-        sx={{ overflowX: 'auto', borderRadius: 2 }}
+      {/* 모바일 카드 목록 (xs only) */}
+      <Box sx={{ display: { xs: 'flex', sm: 'none' }, flexDirection: 'column', gap: 1.5 }}>
+        {users.map(user => (
+          <Box
+            key={user.id}
+            sx={{
+              bgcolor: cardBg,
+              border: `1px solid ${borderColor}`,
+              borderRadius: 2.5,
+              overflow: 'hidden',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            {/* 카드 상단 */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 2, borderBottom: `1px solid ${borderColor}` }}>
+              <Avatar
+                sx={{
+                  width: 36, height: 36,
+                  bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
+                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                  fontSize: '0.875rem', fontWeight: 700,
+                  border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.15)'}`,
+                  flexShrink: 0,
+                }}
+              >
+                {user.name[0]}
+              </Avatar>
+              <Box flex={1} minWidth={0}>
+                <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: textPrimary, lineHeight: 1.2 }}>
+                  {user.name}
+                </Typography>
+                <Typography sx={{ fontSize: '0.72rem', color: textSecondary, fontFamily: 'monospace' }}>
+                  {user.employeeNumber}
+                </Typography>
+              </Box>
+              <ActiveChip user={user} />
+            </Box>
+
+            {/* 카드 본문 */}
+            <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
+                <Chip
+                  label={user.role}
+                  size="small"
+                  sx={{
+                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
+                    color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                    border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                    fontWeight: 600, fontSize: '0.72rem',
+                  }}
+                />
+                <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
+                  {user.department}
+                </Typography>
+              </Box>
+              <Typography sx={{ fontSize: '0.75rem', color: textSecondary, fontFamily: 'monospace' }}>
+                {user.email}
+              </Typography>
+            </Box>
+
+            {/* 카드 하단 액션 */}
+            <Box sx={{ display: 'flex', gap: 1, px: 2, pb: 1.5, justifyContent: 'flex-end' }}>
+              <IconButton
+                size="small"
+                onClick={() => handleEditOpen(user)}
+                sx={{
+                  color: textSecondary, opacity: 0.7,
+                  '&:hover': { color: isDarkMode ? '#a5b4fc' : '#4338ca', opacity: 1, bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)' },
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <EditIcon sx={{ fontSize: '1rem' }} />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={() => handleToggleActive(user.id)}
+                sx={{
+                  color: user.active ? (isDarkMode ? '#34d399' : '#059669') : textSecondary,
+                  opacity: 0.7,
+                  '&:hover': { opacity: 1, bgcolor: isDarkMode ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.06)' },
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <PowerSettingsNewIcon sx={{ fontSize: '1rem' }} />
+              </IconButton>
+              <IconButton
+                size="small"
+                onClick={() => handleDelete(user.id)}
+                sx={{
+                  color: textSecondary, opacity: 0.7,
+                  '&:hover': { color: '#ef4444', opacity: 1, bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)' },
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                <DeleteIcon sx={{ fontSize: '1rem' }} />
+              </IconButton>
+            </Box>
+          </Box>
+        ))}
+
+        {users.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <ManageAccountsIcon sx={{ fontSize: '2rem', color: textSecondary, opacity: 0.3, mb: 1 }} />
+            <Typography variant="body2" sx={{ color: textSecondary }}>
+              등록된 사용자가 없습니다
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      {/* 데스크탑 테이블 (sm+) */}
+      <Box
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          borderRadius: 2.5,
+          border: `1px solid ${borderColor}`,
+          overflow: 'hidden',
+        }}
       >
-        <Table size={isMobile ? 'small' : 'medium'}>
+        <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: 'action.hover' }}>
-              <TableCell sx={{ fontWeight: 600, minWidth: 100 }}>
-                이름
-              </TableCell>
-              <TableCell sx={{ fontWeight: 600, minWidth: 120 }}>
-                사번
-              </TableCell>
-              <TableCell sx={{ fontWeight: 600, minWidth: 180 }}>
-                이메일
-              </TableCell>
-              <TableCell sx={{ fontWeight: 600, minWidth: 100 }}>
-                역할
-              </TableCell>
-              <TableCell sx={{ fontWeight: 600, minWidth: 140 }}>
-                부서
-              </TableCell>
-              <TableCell sx={{ fontWeight: 600, minWidth: 80 }}>상태</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 600, minWidth: 100 }}>
-                관리
-              </TableCell>
+            <TableRow sx={{ bgcolor: headerBg }}>
+              {['이름', '사번', '이메일', '역할', '부서', '상태', ''].map((label, i) => (
+                <TableCell
+                  key={i}
+                  align={i === 6 ? 'right' : 'left'}
+                  sx={{
+                    color: textSecondary, fontWeight: 600, fontSize: '0.72rem',
+                    letterSpacing: '0.05em', textTransform: 'uppercase',
+                    py: 1.75, borderBottomColor: borderColor,
+                  }}
+                >
+                  {label}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id} hover>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.employeeNumber}</TableCell>
-                <TableCell>{user.email}</TableCell>
+            {users.map(user => (
+              <TableRow
+                key={user.id}
+                sx={{
+                  bgcolor: rowBg,
+                  transition: 'background-color 0.15s ease',
+                  '&:hover': { bgcolor: rowHoverBg },
+                  '& .MuiTableCell-root': { borderBottomColor: borderColor, py: 1.5 },
+                }}
+              >
+                <TableCell>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Avatar
+                      sx={{
+                        width: 30, height: 30,
+                        bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
+                        color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                        fontSize: '0.75rem', fontWeight: 700,
+                        border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.15)'}`,
+                      }}
+                    >
+                      {user.name[0]}
+                    </Avatar>
+                    <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: textPrimary }}>
+                      {user.name}
+                    </Typography>
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Typography sx={{ fontSize: '0.8rem', color: textSecondary, fontFamily: 'monospace' }}>
+                    {user.employeeNumber}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography sx={{ fontSize: '0.8rem', color: textSecondary, fontFamily: 'monospace' }}>
+                    {user.email}
+                  </Typography>
+                </TableCell>
                 <TableCell>
                   <Chip
                     label={user.role}
                     size="small"
-                    color="primary"
-                    variant="outlined"
+                    sx={{
+                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
+                      color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                      border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                      fontWeight: 600, fontSize: '0.72rem',
+                    }}
                   />
                 </TableCell>
-                <TableCell>{user.department || '-'}</TableCell>
                 <TableCell>
-                  <Chip
-                    label={user.active ? '활성' : '비활성'}
-                    size="small"
-                    color={user.active ? 'success' : 'error'}
-                  />
+                  <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>
+                    {user.department || '-'}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <ActiveChip user={user} />
                 </TableCell>
                 <TableCell align="right">
-                  <IconButton size="small" color="primary" sx={{ mr: 0.5 }}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
+                  <Tooltip title="수정">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleEditOpen(user)}
+                      sx={{
+                        mr: 0.5, color: textSecondary, opacity: 0.6,
+                        '&:hover': { color: isDarkMode ? '#a5b4fc' : '#4338ca', opacity: 1, bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)' },
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <EditIcon sx={{ fontSize: '1rem' }} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={user.active ? '비활성화' : '활성화'}>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleToggleActive(user.id)}
+                      sx={{
+                        mr: 0.5,
+                        color: user.active ? (isDarkMode ? '#34d399' : '#059669') : textSecondary,
+                        opacity: 0.6,
+                        '&:hover': { opacity: 1, bgcolor: isDarkMode ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.06)' },
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <PowerSettingsNewIcon sx={{ fontSize: '1rem' }} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="삭제">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDelete(user.id)}
+                      sx={{
+                        color: textSecondary, opacity: 0.6,
+                        '&:hover': { color: '#ef4444', opacity: 1, bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)' },
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <DeleteIcon sx={{ fontSize: '1rem' }} />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
-
             {users.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    등록된 사용자가 없습니다.
+                <TableCell colSpan={7} align="center" sx={{ py: 8, borderBottomColor: borderColor }}>
+                  <ManageAccountsIcon sx={{ fontSize: '2rem', color: textSecondary, opacity: 0.3, mb: 1 }} />
+                  <Typography variant="body2" sx={{ color: textSecondary }}>
+                    등록된 사용자가 없습니다
                   </Typography>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-      </TableContainer>
+      </Box>
 
-      {/* 사용자 추가 다이얼로그 */}
+      {/* 추가/수정 다이얼로그 */}
       <Dialog
         open={open}
         onClose={handleClose}
         maxWidth="sm"
         fullWidth
-        fullScreen={isMobile}
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: isDarkMode ? 'rgba(15,23,42,0.98)' : '#ffffff',
+              border: `1px solid ${borderColor}`,
+              borderRadius: 3,
+              overflow: 'hidden',
+              backgroundImage: 'none',
+            },
+          },
+        }}
       >
-        <DialogTitle>새 사용자 추가</DialogTitle>
-        <DialogContent dividers sx={{ pt: 3 }}>
+        <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+        <Box sx={{ px: 3.5, py: 2.5, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: `1px solid ${borderColor}` }}>
           <Box
-            component="form"
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
+            sx={{
+              width: 32, height: 32, borderRadius: 2,
+              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}
           >
-            {/* 이름 */}
+            <ManageAccountsIcon sx={{ color: '#fff', fontSize: '1rem' }} />
+          </Box>
+          <Typography variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, flex: 1 }}>
+            {isEditing ? '사용자 수정' : '새 사용자 추가'}
+          </Typography>
+          <IconButton
+            size="small"
+            onClick={handleClose}
+            sx={{
+              color: textSecondary,
+              '&:hover': { color: '#ef4444', bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)' },
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <CloseIcon sx={{ fontSize: '1.1rem' }} />
+          </IconButton>
+        </Box>
+
+        <DialogContent sx={{ p: 3.5 }}>
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
             <TextField
               label="이름"
-              fullWidth
-              required
-              value={newUser.name || ''}
-              onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+              fullWidth required size="small"
+              value={formData.name || ''}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               autoFocus
+              sx={inputSx}
             />
-
-            {/* 사번 */}
             <TextField
               label="사번"
-              fullWidth
-              required
-              value={newUser.employeeNumber || ''}
-              onChange={(e) =>
-                setNewUser({ ...newUser, employeeNumber: e.target.value })
-              }
+              fullWidth required size="small"
+              value={formData.employeeNumber || ''}
+              onChange={(e) => setFormData({ ...formData, employeeNumber: e.target.value })}
               placeholder="예: DEV001"
+              sx={{ ...inputSx, '& .MuiInputBase-input': { color: textPrimary, fontFamily: 'monospace' } }}
             />
-
-            {/* 이메일 */}
             <TextField
               label="이메일"
-              fullWidth
-              type="email"
-              required
-              value={newUser.email || ''}
-              onChange={(e) =>
-                setNewUser({ ...newUser, email: e.target.value })
-              }
+              fullWidth required size="small" type="email"
+              value={formData.email || ''}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              sx={{ ...inputSx, '& .MuiInputBase-input': { color: textPrimary, fontFamily: 'monospace' } }}
             />
-
-            {/* 비밀번호 */}
-            <TextField
-              label="비밀번호"
-              fullWidth
-              required
-              type={showPassword ? 'text' : 'password'}
-              value={newUser.password || ''}
-              onChange={(e) =>
-                setNewUser({ ...newUser, password: e.target.value })
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            {/* 역할 */}
-            <FormControl fullWidth required>
+            {!isEditing && (
+              <TextField
+                label="비밀번호"
+                fullWidth required size="small"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password || ''}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                sx={inputSx}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end" size="small"
+                          sx={{ color: textSecondary }}
+                        >
+                          {showPassword
+                            ? <VisibilityOff sx={{ fontSize: '1rem' }} />
+                            : <Visibility sx={{ fontSize: '1rem' }} />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            )}
+            <FormControl fullWidth required size="small" sx={inputSx}>
               <InputLabel id="role-label">역할</InputLabel>
               <Select
-                labelId="role-label"
-                label="역할"
-                value={newUser.role || ''}
-                onChange={(e) =>
-                  setNewUser({ ...newUser, role: e.target.value as string })
-                }
+                labelId="role-label" label="역할"
+                value={formData.role || ''}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               >
-                <MenuItem value="사원">사원</MenuItem>
-                <MenuItem value="팀장">팀장</MenuItem>
-                <MenuItem value="부장">부장</MenuItem>
-                <MenuItem value="부문장">부문장</MenuItem>
-                <MenuItem value="임원">임원</MenuItem>
+                {['사원', '팀장', '부장', '부문장', '임원'].map(r => (
+                  <MenuItem key={r} value={r}>{r}</MenuItem>
+                ))}
               </Select>
             </FormControl>
-
-            {/* 부서 */}
-            <FormControl fullWidth required>
+            <FormControl fullWidth required size="small" sx={inputSx}>
               <InputLabel id="department-label">부서</InputLabel>
               <Select
-                labelId="department-label"
-                label="부서"
-                value={newUser.department || ''}
-                onChange={(e) =>
-                  setNewUser({
-                    ...newUser,
-                    department: e.target.value as string,
-                  })
-                }
+                labelId="department-label" label="부서"
+                value={formData.department || ''}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
               >
-                {mockDepartments.map((dept) => (
-                  <MenuItem key={dept} value={dept}>
-                    {dept}
-                  </MenuItem>
+                {mockDepartments.map(dept => (
+                  <MenuItem key={dept} value={dept}>{dept}</MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Box>
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={handleClose} color="inherit">
+        <Box
+          sx={{
+            px: 3.5, py: 2.5,
+            display: 'flex', justifyContent: 'flex-end', gap: 1.5,
+            borderTop: `1px solid ${borderColor}`,
+            bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : 'rgba(248,250,252,0.8)',
+          }}
+        >
+          <Button
+            onClick={handleClose}
+            size="small"
+            sx={{
+              borderRadius: 9999, px: 2.5, py: 0.8,
+              fontWeight: 600, fontSize: '0.82rem', textTransform: 'none',
+              color: textSecondary,
+              '&:hover': { bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(100,116,139,0.06)' },
+            }}
+          >
             취소
           </Button>
-          <Button variant="contained" onClick={handleAddUser}>
-            추가
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleSave}
+            sx={{
+              borderRadius: 9999, px: 2.5, py: 0.8,
+              fontWeight: 700, fontSize: '0.82rem', textTransform: 'none',
+              bgcolor: '#6366f1', color: '#fff', boxShadow: 'none',
+              '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 6px 20px rgba(99,102,241,0.4)' },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {isEditing ? '저장하기' : '추가하기'}
           </Button>
-        </DialogActions>
+        </Box>
       </Dialog>
     </Box>
   )

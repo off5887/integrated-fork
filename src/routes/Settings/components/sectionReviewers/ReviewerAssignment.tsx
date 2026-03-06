@@ -1,22 +1,21 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Paper,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh'
+import SaveIcon from '@mui/icons-material/Save'
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
+import { Box, Button, Grid, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { OrgMember, SelectedReviewer } from '../../../../api/types/reviewer'
 import { mockOrganization } from './Organization'
 import OrgPanel from './OrgPanel'
 import SelectedReviewersPanel from './SelectedReviewersPanel'
 
-const ReviewerAssignment: React.FC = () => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const isTablet = useMediaQuery(theme.breakpoints.between('md', 'lg'))
+interface Props {
+  isDarkMode: boolean
+}
+
+const ReviewerAssignment: React.FC<Props> = ({ isDarkMode }) => {
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<SelectedReviewer[]>([])
@@ -28,9 +27,7 @@ const ReviewerAssignment: React.FC = () => {
     e.preventDefault()
     const data = e.dataTransfer.getData('application/json')
     const member: OrgMember = JSON.parse(data)
-
     if (selected.some((s) => s.id === member.id)) return
-
     setSelected((prev) => [...prev, { ...member, level: targetLevel }])
   }
 
@@ -51,7 +48,6 @@ const ReviewerAssignment: React.FC = () => {
       )
       .filter((m) => !selected.some((s) => s.id === m.id))
       .map((m) => ({ ...m, level: 1 as const }))
-
     setSelected((prev) => [...prev, ...teamLeaders])
   }
 
@@ -61,13 +57,8 @@ const ReviewerAssignment: React.FC = () => {
   }
 
   return (
-    <Paper
-      sx={{
-        p: { xs: 2, sm: 3, md: 4 },
-        borderRadius: 3,
-        boxShadow: 4,
-      }}
-    >
+    <Box>
+      {/* 섹션 헤더 */}
       <Box
         sx={{
           display: 'flex',
@@ -75,69 +66,103 @@ const ReviewerAssignment: React.FC = () => {
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', sm: 'center' },
           gap: 2,
-          mb: 3,
+          mb: 4,
+          pb: 3,
+          borderBottom: `1px solid ${borderColor}`,
         }}
       >
-        <Typography variant={isMobile ? 'h6' : 'h5'} fontWeight={700}>
-          심사자 배정 - 디지털전략부문
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            sx={{
+              width: 26, height: 26, borderRadius: '50%',
+              bgcolor: '#6366f1', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <SupervisorAccountIcon sx={{ fontSize: '0.9rem' }} />
+          </Box>
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, lineHeight: 1.3 }}>
+              부문별 심사자 배정
+            </Typography>
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              조직도에서 드래그해 심사 단계별로 배정하세요
+            </Typography>
+          </Box>
+        </Box>
 
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 1.5,
-            width: { xs: '100%', sm: 'auto' },
-            justifyContent: { xs: 'stretch', sm: 'flex-end' },
-          }}
-        >
+        <Box sx={{ display: 'flex', gap: 1.5, flexShrink: 0 }}>
           <Button
             variant="outlined"
-            size={isMobile ? 'medium' : 'medium'}
-            fullWidth={isMobile}
+            size="small"
+            startIcon={<AutoFixHighIcon sx={{ fontSize: '0.9rem' }} />}
             onClick={handleAutoAssignTeamLeaders}
+            sx={{
+              borderRadius: 9999,
+              px: 2.5,
+              py: 0.8,
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              textTransform: 'none',
+              borderColor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.35)',
+              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              '&:hover': {
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+                borderColor: '#6366f1',
+              },
+              transition: 'all 0.15s ease',
+            }}
           >
-            팀장급 자동 1차 배정
+            팀장급 자동 배정
           </Button>
           <Button
             variant="contained"
-            color="primary"
-            size={isMobile ? 'medium' : 'medium'}
-            fullWidth={isMobile}
+            size="small"
+            startIcon={<SaveIcon sx={{ fontSize: '0.9rem' }} />}
             onClick={handleSave}
+            sx={{
+              borderRadius: 9999,
+              px: 2.5,
+              py: 0.8,
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              textTransform: 'none',
+              bgcolor: '#6366f1',
+              color: '#fff',
+              boxShadow: 'none',
+              '&:hover': {
+                bgcolor: '#4f46e5',
+                boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+              },
+              transition: 'all 0.2s ease',
+            }}
           >
             저장하기
           </Button>
         </Box>
       </Box>
 
-      <Grid container spacing={{ xs: 2, md: 3 }}>
-        {/* 왼쪽: 조직도 */}
-        <Grid item xs={12} md={5} lg={4}>
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-            조직도에서 선택
-          </Typography>
+      <Grid container spacing={{ xs: 2, sm: 3 }}>
+        <Grid item xs={12} lg={4}>
           <OrgPanel
             members={mockOrganization}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            isDarkMode={isDarkMode}
           />
         </Grid>
-
-        {/* 오른쪽: 선택된 심사자 */}
-        <Grid item xs={12} md={7} lg={8}>
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-            배정된 심사자
-          </Typography>
+        <Grid item xs={12} lg={8}>
           <SelectedReviewersPanel
             selected={selected}
             onLevelChange={handleLevelChange}
             onDelete={handleDelete}
             onDrop={handleDrop}
+            isDarkMode={isDarkMode}
           />
         </Grid>
       </Grid>
-    </Paper>
+    </Box>
   )
 }
 

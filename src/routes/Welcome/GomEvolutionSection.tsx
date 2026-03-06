@@ -1,34 +1,9 @@
-// src/routes/Dashboard/GomEvolutionSection.tsx
-import {
-  alpha,
-  Box,
-  Button,
-  CircularProgress,
-  Fade,
-  Slide,
-  SvgIcon,
-  Typography,
-  useTheme,
-} from '@mui/material'
+// src/routes/Welcome/GomEvolutionSection.tsx
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
+import { Box, Button, LinearProgress, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useThemeMode } from '../../context/ThemeContext'
 import GomEvolutionModal from './GomEvolutionModal'
-
-function FishIcon({ size = 20 }: { size?: number }) {
-  return (
-    <SvgIcon fontSize="inherit" style={{ width: size, height: size }}>
-      <path
-        d="M6 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8z"
-        fill="currentColor"
-        opacity="0.9"
-      />
-      <circle cx="18" cy="12" r="2.5" fill="#ffffff" />
-      <circle cx="19" cy="11.5" r="1" fill="#000000" opacity="0.4" />
-      <path d="M22 12l6-4v8z" fill="currentColor" opacity="0.85" />
-      <path d="M4 12l4-3v6z" fill="currentColor" opacity="0.7" />
-    </SvgIcon>
-  )
-}
 
 const GOM_LEVELS = [
   { min: 0, name: '아기 곰곰이', image: '/tarot/baby_bear.png' },
@@ -39,39 +14,28 @@ const GOM_LEVELS = [
 ] as const
 
 function getGomLevel(fishCount: number) {
-  return GOM_LEVELS.reduce((prev, curr) =>
-    fishCount >= curr.min ? curr : prev,
-  )
+  return GOM_LEVELS.reduce((prev, curr) => (fishCount >= curr.min ? curr : prev))
 }
 
 interface GomEvolutionSectionProps {
   fishCount: number
 }
 
-export default function GomEvolutionSection({
-  fishCount,
-}: GomEvolutionSectionProps) {
-  const theme = useTheme()
+export default function GomEvolutionSection({ fishCount }: GomEvolutionSectionProps) {
   const { isDarkMode } = useThemeMode()
+  const [openModal, setOpenModal] = useState(false)
 
   const currentLevel = getGomLevel(fishCount)
   const nextLevel =
-    GOM_LEVELS.find((l) => l.min > fishCount) ||
-    GOM_LEVELS[GOM_LEVELS.length - 1]
-  const [openModal, setOpenModal] = useState(false)
-
+    GOM_LEVELS.find((l) => l.min > fishCount) || GOM_LEVELS[GOM_LEVELS.length - 1]
   const progress =
     nextLevel.min > fishCount
       ? Math.min(100, Math.round((fishCount / nextLevel.min) * 100))
       : 100
 
-  const glassBg = isDarkMode
-    ? 'linear-gradient(145deg, rgba(15, 23, 42, 0.72), rgba(30, 41, 59, 0.52))'
-    : 'linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.82))'
-
-  const glassBorder = isDarkMode
-    ? alpha('#64748b', 0.12)
-    : alpha(theme.palette.primary.main, 0.08)
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
 
   return (
     <Box
@@ -79,245 +43,226 @@ export default function GomEvolutionSection({
       sx={{
         height: '100dvh',
         minHeight: '100vh',
-        minHeight: '-webkit-fill-available',
         width: '100%',
         scrollSnapAlign: 'start',
         scrollSnapStop: 'always',
+        bgcolor: isDarkMode ? '#0a0f1e' : '#f1f5f9',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        px: { xs: 1.5, sm: 3, md: 5 },
-        bgcolor: isDarkMode ? '#0a0f1c' : '#f8fafc',
+        px: { xs: 2, sm: 3, md: 4 },
         position: 'relative',
         overflow: 'hidden',
+        transition: 'background-color 0.3s ease',
         boxSizing: 'border-box',
       }}
     >
+      {/* 배경 장식 */}
       <Box
         sx={{
           position: 'absolute',
-          inset: 0,
+          bottom: '-15%',
+          left: '-8%',
+          width: '45vw',
+          height: '45vw',
+          borderRadius: '50%',
           background: isDarkMode
-            ? 'radial-gradient(circle at 30% 20%, rgba(147, 197, 253, 0.07) 0%, transparent 60%)'
-            : 'radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 65%)',
+            ? 'radial-gradient(circle, rgba(99,102,241,0.16) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '-10%',
+          right: '-5%',
+          width: '35vw',
+          height: '35vw',
+          borderRadius: '50%',
+          background: isDarkMode
+            ? 'radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(167,139,250,0.07) 0%, transparent 70%)',
           pointerEvents: 'none',
         }}
       />
 
-      <Slide direction="up" in timeout={900} mountOnEnter unmountOnExit>
-        <Fade in timeout={1200}>
-          <Box
-            sx={{
-              width: 'min(92%, 680px)',
-              maxWidth: { xs: '92vw', sm: 520, md: 620, lg: 680 },
-              minHeight: 'min(65dvh, 480px)',
-              mx: 'auto',
-              p: { xs: 3, sm: 4, md: 5 },
-              borderRadius: { xs: 4, md: 5 },
-              background: glassBg,
-              border: `1px solid ${glassBorder}`,
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              boxShadow: isDarkMode
-                ? '0 24px 70px -10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07)'
-                : '0 24px 70px -10px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.92)',
-              display: 'flex',
-              flexDirection: 'column',
-              maxHeight: '92dvh',
-              transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              '&:hover': {
-                transform: 'translateY(-6px)',
-              },
-            }}
-          >
-            {/* 헤더 - 여백 줄임 */}
-            <Box sx={{ textAlign: 'center', mb: { xs: 2.5, md: 3.5 } }}>
-              <Typography
-                variant="h3"
-                fontWeight={900}
-                sx={{
-                  fontSize: { xs: '1.5rem', sm: '1.9rem', md: '2.2rem' },
-                  lineHeight: 1.15,
-                  letterSpacing: '-0.03em',
-                  mb: 0.75,
-                  background: isDarkMode
-                    ? 'linear-gradient(90deg, #c4d0ff, #60a5fa, #a5b4fc)'
-                    : `linear-gradient(90deg, ${theme.palette.primary.dark}, #3b82f6)`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                곰곰이 진화
-              </Typography>
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: 520,
+          mx: 'auto',
+          bgcolor: isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
+          border: `1px solid ${borderColor}`,
+          borderRadius: 4,
+          overflow: 'hidden',
+          boxShadow: isDarkMode
+            ? '0 8px 40px rgba(0,0,0,0.5)'
+            : '0 4px 32px rgba(0,0,0,0.08)',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* 상단 그라디언트 스트립 */}
+        <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
 
-              <Typography
-                variant="h6"
-                sx={{
-                  fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
-                  fontWeight: 500,
-                  color: theme.palette.text.secondary,
-                  maxWidth: 580,
-                  mx: 'auto',
-                }}
-              >
-                생선 모을수록 성장하는 나만의 곰곰이
-              </Typography>
-            </Box>
-
-            {/* 메인 콘텐츠 */}
-            <Box
+        <Box sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
+          {/* 헤더 */}
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography
+              variant="h4"
+              fontWeight={900}
               sx={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                my: 1,
+                fontSize: { xs: '1.6rem', md: '2rem' },
+                letterSpacing: '-0.03em',
+                lineHeight: 1.1,
+                mb: 1,
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
               }}
             >
-              <Box sx={{ textAlign: 'center', mb: 3 }}>
-                <Box
-                  component="img"
-                  src={currentLevel.image}
-                  alt={currentLevel.name}
-                  sx={{
-                    width: { xs: 120, sm: 150, md: 170 },
-                    height: 'auto',
-                    borderRadius: 4,
-                    objectFit: 'contain',
-                    mb: 2,
-                    mx: 'auto',
-                    display: 'block',
-                    filter: 'drop-shadow(0 6px 12px rgba(0,0,0,0.12))',
-                  }}
-                />
+              곰곰이 진화
+            </Typography>
+            <Typography sx={{ fontSize: '0.9rem', color: textSecondary }}>
+              생선을 모을수록 성장하는 나만의 곰곰이
+            </Typography>
+          </Box>
 
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
-                  sx={{
-                    fontSize: { xs: '1.3rem', sm: '1.45rem', md: '1.65rem' },
-                    mb: 0.75,
-                    color: isDarkMode ? '#f8fafc' : theme.palette.text.primary,
-                    textShadow: isDarkMode
-                      ? '0 1px 6px rgba(0,0,0,0.5)'
-                      : 'none',
-                  }}
-                >
-                  {currentLevel.name}
-                </Typography>
-
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 1.2,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: { xs: '1.45rem', sm: '1.6rem' },
-                      fontWeight: 700,
-                      color: theme.palette.primary.main,
-                    }}
-                  >
-                    {fishCount.toLocaleString()}
-                  </Typography>
-                  <FishIcon size={20} />
-                </Box>
-              </Box>
-
-              <Box sx={{ textAlign: 'center', mb: 4 }}>
-                <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                  <CircularProgress
-                    variant="determinate"
-                    value={100}
-                    size={{ xs: 70, md: 80 }}
-                    thickness={4}
-                    sx={{
-                      color: isDarkMode
-                        ? alpha('#64748b', 0.18)
-                        : alpha('#e2e8f0', 0.5),
-                      position: 'absolute',
-                    }}
-                  />
-                  <CircularProgress
-                    variant="determinate"
-                    value={progress}
-                    size={{ xs: 70, md: 80 }}
-                    thickness={5}
-                    sx={{
-                      color: theme.palette.primary.main,
-                      '& .MuiCircularProgress-circle': {
-                        strokeLinecap: 'round',
-                      },
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      inset: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: { xs: '1.1rem', md: '1.3rem' },
-                      fontWeight: 700,
-                      color: isDarkMode
-                        ? '#f8fafc'
-                        : theme.palette.text.primary,
-                    }}
-                  >
-                    {progress}%
-                  </Box>
-                </Box>
-
-                {nextLevel.min > fishCount && (
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mt: 2,
-                      color: theme.palette.text.secondary,
-                      fontSize: '0.95rem',
-                    }}
-                  >
-                    다음 단계까지 <strong>{nextLevel.min - fishCount}</strong>{' '}
-                    마리
-                  </Typography>
-                )}
-              </Box>
+          {/* 캐릭터 이미지 */}
+          <Box sx={{ textAlign: 'center', mb: 3.5 }}>
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: { xs: 130, md: 150 },
+                height: { xs: 130, md: 150 },
+                borderRadius: '50%',
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.06)',
+                border: `2px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                mb: 2,
+                mx: 'auto',
+              }}
+            >
+              <Box
+                component="img"
+                src={currentLevel.image}
+                alt={currentLevel.name}
+                sx={{
+                  width: '78%',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 4px 12px rgba(99,102,241,0.25))',
+                }}
+              />
             </Box>
 
-            {/* 버튼 영역 */}
-            <Box sx={{ textAlign: 'center', mt: 'auto', pt: 2, pb: 3 }}>
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => setOpenModal(true)}
+            <Typography
+              variant="h5"
+              fontWeight={700}
+              sx={{ color: textPrimary, mb: 0.5, fontSize: '1.3rem' }}
+            >
+              {currentLevel.name}
+            </Typography>
+
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.8,
+                px: 2,
+                py: 0.6,
+                borderRadius: 9999,
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
+                border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+              }}
+            >
+              <EmojiEventsIcon sx={{ fontSize: '0.9rem', color: isDarkMode ? '#a5b4fc' : '#4338ca' }} />
+              <Typography
                 sx={{
-                  fontSize: '0.95rem',
-                  fontWeight: 600,
-                  px: 5,
-                  py: 1.2,
-                  borderRadius: 3,
-                  textTransform: 'none',
-                  borderColor: alpha(theme.palette.primary.main, 0.5),
-                  color: theme.palette.primary.main,
-                  minWidth: 180,
-                  '&:hover': {
-                    borderColor: theme.palette.primary.main,
-                    bgcolor: alpha(
-                      theme.palette.primary.main,
-                      isDarkMode ? 0.15 : 0.1,
-                    ),
-                  },
+                  fontSize: '1rem',
+                  fontWeight: 800,
+                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
                 }}
               >
-                모든 단계 보기 →
-              </Button>
+                {fishCount.toLocaleString()} 마일리지
+              </Typography>
             </Box>
           </Box>
-        </Fade>
-      </Slide>
+
+          {/* 진행률 */}
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Typography sx={{ fontSize: '0.82rem', color: textSecondary, fontWeight: 600 }}>
+                다음 레벨까지
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                }}
+              >
+                {progress}%
+              </Typography>
+            </Box>
+
+            <LinearProgress
+              variant="determinate"
+              value={progress}
+              sx={{
+                height: 8,
+                borderRadius: 9999,
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.08)',
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 9999,
+                  background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                },
+              }}
+            />
+
+            {nextLevel.min > fishCount && (
+              <Typography
+                sx={{ fontSize: '0.8rem', color: textSecondary, mt: 1, textAlign: 'right' }}
+              >
+                {nextLevel.name}까지{' '}
+                <Box component="span" sx={{ fontWeight: 700, color: isDarkMode ? '#c4b5fd' : '#6366f1' }}>
+                  {(nextLevel.min - fishCount).toLocaleString()}
+                </Box>{' '}
+                마일리지 남음
+              </Typography>
+            )}
+          </Box>
+
+          {/* 버튼 */}
+          <Box sx={{ textAlign: 'center' }}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => setOpenModal(true)}
+              sx={{
+                borderRadius: 9999,
+                px: 4,
+                py: 1.25,
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                bgcolor: '#6366f1',
+                color: '#fff',
+                boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+                '&:hover': {
+                  bgcolor: '#4f46e5',
+                  boxShadow: '0 10px 28px rgba(99,102,241,0.5)',
+                  transform: 'translateY(-2px)',
+                },
+                transition: 'all 0.25s ease',
+              }}
+            >
+              모든 단계 보기
+            </Button>
+          </Box>
+        </Box>
+      </Box>
 
       <GomEvolutionModal
         open={openModal}

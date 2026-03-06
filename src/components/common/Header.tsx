@@ -1,7 +1,7 @@
 // src/components/common/Header.tsx
 import BarChartIcon from '@mui/icons-material/BarChart'
-import Brightness4Icon from '@mui/icons-material/Brightness4'
-import Brightness7Icon from '@mui/icons-material/Brightness7'
+import NightsStayIcon from '@mui/icons-material/NightsStay'
+import WbSunnyIcon from '@mui/icons-material/WbSunny'
 import CloseIcon from '@mui/icons-material/Close'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
@@ -230,7 +230,7 @@ export default function Header() {
                       transition: 'all 0.15s',
                     }}
                   >
-                    {isDarkMode ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
+                    {isDarkMode ? <WbSunnyIcon fontSize="small" /> : <NightsStayIcon fontSize="small" />}
                   </IconButton>
                 </Tooltip>
 
@@ -259,7 +259,7 @@ export default function Header() {
                 size="small"
                 sx={{ color: textColor }}
               >
-                {isDarkMode ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
+                {isDarkMode ? <WbSunnyIcon fontSize="small" /> : <NightsStayIcon fontSize="small" />}
               </IconButton>
               <IconButton
                 edge="end"
@@ -376,7 +376,7 @@ export default function Header() {
             <ListItem disablePadding sx={{ mb: 0.25 }}>
               <ListItemButton onClick={toggleTheme} sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}>
                 <ListItemIcon sx={{ minWidth: 36, color: isDarkMode ? '#fbbf24' : '#f59e0b' }}>
-                  {isDarkMode ? <Brightness7Icon fontSize="small" /> : <Brightness4Icon fontSize="small" />}
+                  {isDarkMode ? <WbSunnyIcon fontSize="small" /> : <NightsStayIcon fontSize="small" />}
                 </ListItemIcon>
                 <ListItemText
                   primary={<Typography sx={{ fontSize: '0.875rem', fontWeight: 500, color: isDarkMode ? '#e2e8f0' : '#0f172a' }}>{isDarkMode ? '라이트 모드' : '다크 모드'}</Typography>}

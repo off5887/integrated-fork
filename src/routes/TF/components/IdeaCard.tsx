@@ -1,142 +1,106 @@
-// src/routes/idea/components/IdeaCard.tsx
-import { AccessTime, EmojiEvents } from '@mui/icons-material'
-import { Box, Button, Card, CardContent, Chip, Typography } from '@mui/material'
-import { useThemeMode } from '../../../context/ThemeContext' // ← 다크모드 훅 (기존 사용 중)
+// src/routes/TF/components/IdeaCard.tsx
+import AccessTimeIcon from '@mui/icons-material/AccessTime'
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
+import { Box, Button, Chip, Typography } from '@mui/material'
+import { Idea } from '../mocks/mercenaryData'
 
 interface Props {
   idea: Idea
   onApply: (id: number) => void
+  isDarkMode: boolean
 }
 
-export default function IdeaCard({ idea, onApply }: Props) {
-  const { isDarkMode } = useThemeMode()
+export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const cardBg = isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff'
 
-  // 2026 트렌드 반영: Liquid Glass + elevated neutrals + indigo/teal premium
-  const colors = {
-    cardBg: isDarkMode ? 'rgba(30, 41, 59, 0.88)' : 'rgba(251, 251, 254, 0.94)', // warm off-white + 미세 teal tint
-
-    border: isDarkMode
-      ? 'rgba(148, 163, 184, 0.42)'
-      : 'rgba(226, 232, 240, 0.88)', // soft slate border
-
-    textPrimary: isDarkMode ? '#f1f5f9' : '#111827', // modern slate-900
-    textSecondary: isDarkMode ? '#cbd5e1' : '#64748b', // slate-500
-
-    chipBg: isDarkMode ? '#334155' : 'rgba(241, 245, 249, 0.80)',
-
-    // 보상: indigo 기반 soft gradient (2026 premium 느낌 최고)
-    rewardGradient: isDarkMode
-      ? 'linear-gradient(90deg, #c4b5fd, #a78bfa)'
-      : 'linear-gradient(90deg, #6366f1, #8b5cf6)',
-    // 대안 teal (Transformative Teal 느낌): 'linear-gradient(90deg, #0ea5e9, #38bdf8)'
-
-    hoverShadow: isDarkMode
-      ? '0 20px 40px -10px rgba(0,0,0,0.55), 0 10px 20px -5px rgba(99,102,241,0.45)'
-      : '0 24px 48px -12px rgba(0,0,0,0.10), 0 12px 24px -6px rgba(99,102,241,0.18)',
-
-    hoverBg: isDarkMode ? 'rgba(51,65,85,0.20)' : 'rgba(241,245,249,0.50)',
-  }
+  const isUrgent = idea.remainingDays <= 7
 
   return (
-    <Card
+    <Box
       sx={{
-        width: { xs: '360px', sm: '360px', md: '600px' },
-        maxWidth: '100%',
-        minWidth: '280px',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: colors.cardBg,
-        border: '1px solid',
-        borderColor: colors.border,
-        borderRadius: 4, // 조금 더 부드럽게 4로
+        bgcolor: cardBg,
+        border: `1px solid ${borderColor}`,
+        borderRadius: 3,
         overflow: 'hidden',
-        mx: 'auto',
-        transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        boxShadow: 'none',
-        backdropFilter: 'blur(16px)', // Liquid Glass 느낌 ↑ blur 강화
-        WebkitBackdropFilter: 'blur(16px)',
-
+        transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        boxShadow: isDarkMode ? '0 4px 20px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.05)',
         '&:hover': {
-          transform: 'translateY(-14px)',
-          boxShadow: colors.hoverShadow,
-          bgcolor: colors.hoverBg,
+          transform: 'translateY(-6px)',
+          boxShadow: isDarkMode
+            ? '0 20px 40px rgba(0,0,0,0.5), 0 8px 16px rgba(99,102,241,0.3)'
+            : '0 20px 40px rgba(0,0,0,0.09), 0 8px 16px rgba(99,102,241,0.12)',
+          borderColor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)',
         },
       }}
     >
-      <CardContent
+      {/* 상단 그라디언트 스트립 */}
+      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+
+      <Box
         sx={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          p: { xs: 3, sm: 3, md: 4 },
-          gap: { xs: 2, sm: 2.5, md: 3 },
+          flex: 1, display: 'flex', flexDirection: 'column',
+          p: { xs: 2.5, md: 3 },
+          gap: 2.5,
         }}
       >
         {/* 상단 - 분야 + 보상 */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            gap: 2,
-            flexWrap: 'wrap',
-          }}
-        >
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1.5 }}>
           <Chip
             label={idea.field}
             size="small"
             sx={{
-              bgcolor: isDarkMode ? '#4f46e5' : '#6366f1', // indigo-600 / 500
-              color: '#ffffff',
-              fontWeight: 600,
-              borderRadius: '14px',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+              bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
+              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.18)'}`,
+              fontWeight: 700,
+              fontSize: '0.72rem',
+              letterSpacing: '0.01em',
             }}
           />
 
-          <Box sx={{ textAlign: 'right', minWidth: 'fit-content' }}>
+          <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
             <Typography
-              variant="h5"
+              variant="h6"
               fontWeight={800}
               sx={{
-                background: colors.rewardGradient,
+                background: isDarkMode
+                  ? 'linear-gradient(90deg, #c4b5fd, #a78bfa)'
+                  : 'linear-gradient(90deg, #6366f1, #8b5cf6)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 lineHeight: 1.1,
+                fontSize: '1.2rem',
               }}
             >
               +{idea.reward.toLocaleString()}
             </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                color: colors.textSecondary,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                justifyContent: 'flex-end',
-                mt: 0.5,
-              }}
-            >
-              <EmojiEvents fontSize="small" /> 보상
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, justifyContent: 'flex-end', mt: 0.3 }}>
+              <EmojiEventsIcon sx={{ fontSize: '0.75rem', color: textSecondary }} />
+              <Typography variant="caption" sx={{ color: textSecondary, fontSize: '0.7rem' }}>
+                마일리지
+              </Typography>
+            </Box>
           </Box>
         </Box>
 
         {/* 제목 */}
         <Typography
-          variant="h6"
-          component="h3"
+          variant="subtitle1"
           fontWeight={700}
           sx={{
-            color: colors.textPrimary,
-            lineHeight: 1.4,
+            color: textPrimary,
+            lineHeight: 1.45,
             display: '-webkit-box',
-            WebkitLineClamp: 3,
+            WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            mb: 1,
+            letterSpacing: '-0.01em',
           }}
         >
           {idea.title}
@@ -146,14 +110,14 @@ export default function IdeaCard({ idea, onApply }: Props) {
         <Typography
           variant="body2"
           sx={{
-            color: colors.textSecondary,
+            color: textSecondary,
+            lineHeight: 1.65,
             flexGrow: 1,
-            lineHeight: 1.6,
             display: '-webkit-box',
-            WebkitLineClamp: { xs: 4, sm: 5, md: 6 },
+            WebkitLineClamp: 3,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            mb: 3,
+            fontSize: '0.85rem',
           }}
         >
           {idea.desc}
@@ -166,49 +130,53 @@ export default function IdeaCard({ idea, onApply }: Props) {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 2,
+            gap: 1.5,
             pt: 2,
-            borderTop: '1px solid',
-            borderColor: colors.border,
+            borderTop: `1px solid ${borderColor}`,
           }}
         >
           <Chip
-            icon={<AccessTime fontSize="small" />}
+            icon={<AccessTimeIcon sx={{ fontSize: '0.85rem !important' }} />}
             label={`${idea.remainingDays}일 남음`}
             size="small"
-            variant="outlined"
             sx={{
-              color: colors.textSecondary,
-              borderColor: colors.border,
-              fontWeight: 500,
-              borderRadius: '12px',
+              bgcolor: isUrgent
+                ? (isDarkMode ? 'rgba(245,158,11,0.12)' : 'rgba(245,158,11,0.08)')
+                : 'transparent',
+              color: isUrgent ? (isDarkMode ? '#fbbf24' : '#92400e') : textSecondary,
+              border: `1px solid ${isUrgent
+                ? (isDarkMode ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.2)')
+                : borderColor}`,
+              fontWeight: isUrgent ? 700 : 500,
+              fontSize: '0.75rem',
+              '& .MuiChip-icon': { color: 'inherit' },
             }}
           />
 
           <Button
             variant="contained"
-            size="medium"
+            size="small"
             onClick={() => onApply(idea.id)}
             sx={{
               borderRadius: 9999,
-              px: { xs: 4, sm: 5 },
-              minWidth: { xs: 110, sm: 130 },
-              fontWeight: 600,
-              bgcolor: isDarkMode ? '#4f46e5' : '#6366f1', // indigo
+              px: 2.5,
+              py: 0.85,
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              bgcolor: '#6366f1',
               color: '#fff',
+              boxShadow: 'none',
               '&:hover': {
-                bgcolor: isDarkMode ? '#4338ca' : '#4f46e5',
-                transform: 'scale(1.06)',
-                boxShadow: '0 12px 32px rgba(79,70,229,0.35)',
+                bgcolor: '#4f46e5',
+                boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
               },
-              transition: 'all 0.35s ease',
+              transition: 'all 0.2s ease',
             }}
           >
             지원하기
           </Button>
         </Box>
-      </CardContent>
-    </Card>
+      </Box>
+    </Box>
   )
 }

@@ -1,17 +1,8 @@
 import DeleteIcon from '@mui/icons-material/Delete'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Avatar,
   Box,
-  Divider,
   IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
   MenuItem,
   Select,
   Typography,
@@ -24,101 +15,236 @@ interface Props {
   onLevelChange: (id: string, newLevel: 1 | 2 | 3) => void
   onDelete: (id: string) => void
   onDrop: (e: React.DragEvent<HTMLDivElement>, targetLevel: 1 | 2 | 3) => void
+  isDarkMode: boolean
 }
 
-const levelLabels = { 1: '1차 심사자', 2: '2차 심사자', 3: '3차 심사자' }
-const levelColors = { 1: 'primary', 2: 'secondary', 3: 'warning' } as const
+const levelConfig = {
+  1: {
+    label: '1차 심사자',
+    accent: '#6366f1',
+    bg: (dark: boolean) => dark ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
+    border: (dark: boolean) => dark ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)',
+    avatarBg: (dark: boolean) => dark ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.12)',
+    avatarColor: (dark: boolean) => dark ? '#c7d2fe' : '#4338ca',
+    badgeBg: (dark: boolean) => dark ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
+    badgeColor: (dark: boolean) => dark ? '#a5b4fc' : '#4338ca',
+  },
+  2: {
+    label: '2차 심사자',
+    accent: '#8b5cf6',
+    bg: (dark: boolean) => dark ? 'rgba(139,92,246,0.08)' : 'rgba(139,92,246,0.04)',
+    border: (dark: boolean) => dark ? 'rgba(139,92,246,0.3)' : 'rgba(139,92,246,0.2)',
+    avatarBg: (dark: boolean) => dark ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.12)',
+    avatarColor: (dark: boolean) => dark ? '#ddd6fe' : '#6d28d9',
+    badgeBg: (dark: boolean) => dark ? 'rgba(139,92,246,0.15)' : 'rgba(139,92,246,0.08)',
+    badgeColor: (dark: boolean) => dark ? '#c4b5fd' : '#6d28d9',
+  },
+  3: {
+    label: '3차 심사자',
+    accent: '#f59e0b',
+    bg: (dark: boolean) => dark ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.04)',
+    border: (dark: boolean) => dark ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.2)',
+    avatarBg: (dark: boolean) => dark ? 'rgba(245,158,11,0.15)' : 'rgba(245,158,11,0.1)',
+    avatarColor: (dark: boolean) => dark ? '#fde68a' : '#92400e',
+    badgeBg: (dark: boolean) => dark ? 'rgba(245,158,11,0.12)' : 'rgba(245,158,11,0.07)',
+    badgeColor: (dark: boolean) => dark ? '#fbbf24' : '#92400e',
+  },
+} as const
 
 const SelectedReviewersPanel: React.FC<Props> = ({
   selected,
   onLevelChange,
   onDelete,
   onDrop,
+  isDarkMode,
 }) => {
-  const byLevel = (level: 1 | 2 | 3) =>
-    selected.filter((r) => r.level === level)
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+
+  const byLevel = (level: 1 | 2 | 3) => selected.filter((r) => r.level === level)
 
   return (
-    <Box>
-      {[1, 2, 3].map((level) => {
-        const reviewers = byLevel(level as 1 | 2 | 3)
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {([1, 2, 3] as const).map((level) => {
+        const reviewers = byLevel(level)
+        const cfg = levelConfig[level]
+
         return (
-          <Accordion key={level} defaultExpanded={level === 1}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1" fontWeight={600}>
-                {levelLabels[level as keyof typeof levelLabels]} (
-                {reviewers.length}명)
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
+          <Box
+            key={level}
+            sx={{
+              borderRadius: 2.5,
+              border: `1px solid ${borderColor}`,
+              overflow: 'hidden',
+            }}
+          >
+            {/* 레벨 헤더 */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                px: 2.5,
+                py: 1.5,
+                bgcolor: cfg.bg(isDarkMode),
+                borderBottom: `1px solid ${borderColor}`,
+                borderLeft: `3px solid ${cfg.accent}`,
+              }}
+            >
               <Box
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => onDrop(e, level as 1 | 2 | 3)}
                 sx={{
-                  minHeight: 100,
-                  border: '2px dashed #ddd',
-                  borderRadius: 2,
-                  p: 1,
-                  '&:hover': { borderColor: 'primary.main' },
+                  width: 22, height: 22, borderRadius: '50%',
+                  bgcolor: cfg.accent,
+                  color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.65rem', fontWeight: 800, flexShrink: 0,
+                  fontFamily: 'monospace',
                 }}
               >
-                {reviewers.length === 0 ? (
-                  <Typography
-                    color="text.secondary"
-                    align="center"
-                    sx={{ py: 3 }}
-                  >
+                {level}
+              </Box>
+              <Typography variant="body2" fontWeight={700} sx={{ color: textPrimary, flex: 1, fontSize: '0.82rem' }}>
+                {cfg.label}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: cfg.badgeColor(isDarkMode),
+                  bgcolor: cfg.badgeBg(isDarkMode),
+                  border: `1px solid ${cfg.border(isDarkMode)}`,
+                  px: 1.25, py: 0.3,
+                  borderRadius: 9999,
+                  fontWeight: 700,
+                  fontSize: '0.7rem',
+                  fontFamily: 'monospace',
+                }}
+              >
+                {reviewers.length}명
+              </Typography>
+            </Box>
+
+            {/* 드롭 존 */}
+            <Box
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => onDrop(e, level)}
+              sx={{
+                minHeight: 90,
+                p: 1.5,
+                bgcolor: isDarkMode ? 'rgba(15,23,42,0.3)' : '#fafafa',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+              }}
+            >
+              {reviewers.length === 0 ? (
+                <Box
+                  sx={{
+                    flex: 1,
+                    minHeight: 72,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: `1.5px dashed ${cfg.border(isDarkMode)}`,
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: cfg.bg(isDarkMode),
+                      borderStyle: 'solid',
+                    },
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <Typography variant="caption" sx={{ color: textSecondary, opacity: 0.8 }}>
                     여기에 드래그해서 추가하세요
                   </Typography>
-                ) : (
-                  <List dense>
-                    {reviewers.map((reviewer, idx) => (
-                      <React.Fragment key={reviewer.id}>
-                        <ListItem
-                          secondaryAction={
-                            <IconButton
-                              edge="end"
-                              onClick={() => onDelete(reviewer.id)}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          }
-                        >
-                          <ListItemAvatar>
-                            <Avatar
-                              sx={{ bgcolor: `${levelColors[level]}.main` }}
-                            >
-                              {reviewer.name[0]}
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={reviewer.name}
-                            secondary={`${reviewer.position} • ${reviewer.department}`}
-                          />
-                          <Select
-                            value={reviewer.level}
-                            onChange={(e) =>
-                              onLevelChange(
-                                reviewer.id,
-                                e.target.value as 1 | 2 | 3,
-                              )
-                            }
-                            size="small"
-                            sx={{ ml: 2, width: 110 }}
-                          >
-                            <MenuItem value={1}>1차</MenuItem>
-                            <MenuItem value={2}>2차</MenuItem>
-                            <MenuItem value={3}>3차</MenuItem>
-                          </Select>
-                        </ListItem>
-                        {idx < reviewers.length - 1 && <Divider />}
-                      </React.Fragment>
-                    ))}
-                  </List>
-                )}
-              </Box>
-            </AccordionDetails>
-          </Accordion>
+                </Box>
+              ) : (
+                reviewers.map((reviewer) => (
+                  <Box
+                    key={reviewer.id}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      p: 1.5,
+                      bgcolor: isDarkMode ? 'rgba(30,41,59,0.5)' : '#ffffff',
+                      border: `1px solid ${borderColor}`,
+                      borderRadius: 2,
+                      transition: 'all 0.15s ease',
+                      '&:hover': {
+                        bgcolor: cfg.bg(isDarkMode),
+                        borderColor: cfg.border(isDarkMode),
+                      },
+                    }}
+                  >
+                    <Avatar
+                      sx={{
+                        width: 32, height: 32,
+                        bgcolor: cfg.avatarBg(isDarkMode),
+                        color: cfg.avatarColor(isDarkMode),
+                        fontSize: '0.8rem', fontWeight: 700,
+                        border: `1px solid ${cfg.border(isDarkMode)}`,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {reviewer.name[0]}
+                    </Avatar>
+
+                    <Box flex={1} minWidth={0}>
+                      <Typography variant="body2" fontWeight={700} sx={{ color: textPrimary, fontSize: '0.82rem', lineHeight: 1.3 }}>
+                        {reviewer.name}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: textSecondary, fontSize: '0.72rem', fontFamily: 'monospace' }}>
+                        {reviewer.position} · {reviewer.department}
+                      </Typography>
+                    </Box>
+
+                    <Select
+                      value={reviewer.level}
+                      onChange={(e) => onLevelChange(reviewer.id, e.target.value as 1 | 2 | 3)}
+                      size="small"
+                      sx={{
+                        width: 80,
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        color: cfg.badgeColor(isDarkMode),
+                        bgcolor: cfg.badgeBg(isDarkMode),
+                        borderRadius: 1.5,
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          borderColor: cfg.border(isDarkMode),
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                          borderColor: cfg.accent,
+                        },
+                        '& .MuiSelect-icon': { color: cfg.badgeColor(isDarkMode) },
+                      }}
+                    >
+                      <MenuItem value={1}>1차</MenuItem>
+                      <MenuItem value={2}>2차</MenuItem>
+                      <MenuItem value={3}>3차</MenuItem>
+                    </Select>
+
+                    <IconButton
+                      size="small"
+                      onClick={() => onDelete(reviewer.id)}
+                      sx={{
+                        color: textSecondary,
+                        opacity: 0.6,
+                        '&:hover': {
+                          color: '#ef4444',
+                          opacity: 1,
+                          bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)',
+                        },
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <DeleteIcon sx={{ fontSize: '1rem' }} />
+                    </IconButton>
+                  </Box>
+                ))
+              )}
+            </Box>
+          </Box>
         )
       })}
     </Box>
