@@ -15,13 +15,11 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
+import { useThemeMode } from '../../context/ThemeContext'
 import { judgeData, Proposal } from './JudgeData'
 import JudgeDetail from './JudgeDetail'
 
-interface JudgeProps {
-  isDarkMode?: boolean
-}
-
+// statusConfig를 컴포넌트 최상단에 선언 (에러 원인 해결)
 const statusConfig = {
   심사대기: {
     label: '심사대기',
@@ -49,7 +47,9 @@ const statusConfig = {
   },
 } as const
 
-export default function Judge({ isDarkMode = false }: JudgeProps) {
+export default function Judge() {
+  const { isDarkMode } = useThemeMode()
+
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(
     null,
   )
@@ -187,12 +187,12 @@ export default function Judge({ isDarkMode = false }: JudgeProps) {
               <TableHead>
                 <TableRow sx={{ bgcolor: headerBg }}>
                   {[
-                    { label: '번호', align: 'left' as const },
-                    { label: '제안 제목', align: 'left' as const },
-                    { label: '제안자', align: 'left' as const },
-                    { label: '제출일', align: 'left' as const },
-                    { label: '상태', align: 'left' as const },
-                    { label: '상세', align: 'center' as const },
+                    { label: '번호', align: 'left' },
+                    { label: '제안 제목', align: 'left' },
+                    { label: '제안자', align: 'left' },
+                    { label: '제출일', align: 'left' },
+                    { label: '상태', align: 'left' },
+                    { label: '상세', align: 'center' },
                   ].map((col) => (
                     <TableCell
                       key={col.label}
@@ -212,13 +212,15 @@ export default function Judge({ isDarkMode = false }: JudgeProps) {
                   ))}
                 </TableRow>
               </TableHead>
+
               <TableBody>
                 {displayedData.map((item) => {
-                  const status = statusConfig[item.status]
+                  const status = statusConfig[item.status] // ← 여기서 사용 (이제 정의됨)
                   return (
                     <TableRow
                       key={item.id}
                       onClick={() => setSelectedProposal(item)}
+                      hover
                       sx={{
                         cursor: 'pointer',
                         transition: 'background-color 0.15s ease',
@@ -226,6 +228,7 @@ export default function Judge({ isDarkMode = false }: JudgeProps) {
                         '& .MuiTableCell-root': {
                           borderBottomColor: borderColor,
                           py: 1.75,
+                          color: textPrimary,
                         },
                       }}
                     >
@@ -242,7 +245,11 @@ export default function Judge({ isDarkMode = false }: JudgeProps) {
                       </TableCell>
                       <TableCell>
                         <Typography
-                          sx={{ fontSize: '0.9rem', color: textPrimary }}
+                          sx={{
+                            fontSize: '0.9rem',
+                            color: textPrimary,
+                            fontWeight: 500,
+                          }}
                         >
                           {item.title}
                         </Typography>
@@ -321,7 +328,10 @@ export default function Judge({ isDarkMode = false }: JudgeProps) {
                 sx={{
                   color: textSecondary,
                   '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows':
-                    { color: textSecondary, fontSize: '0.8rem' },
+                    {
+                      color: textSecondary,
+                      fontSize: '0.8rem',
+                    },
                   '.MuiTablePagination-select': { color: textPrimary },
                   '.MuiTablePagination-selectIcon': { color: textSecondary },
                   '.MuiTablePagination-actions button': {

@@ -226,11 +226,11 @@ export default function Welcome() {
           {/* 설명 */}
           <Typography
             sx={{
-              fontSize: { xs: '1rem', md: '1.1rem' },
+              fontSize: { xs: '.9rem', md: '1rem' },
               color: textSecondary,
               lineHeight: 1.75,
               mb: 5,
-              maxWidth: 520,
+              maxWidth: 540,
               mx: 'auto',
             }}
           >
