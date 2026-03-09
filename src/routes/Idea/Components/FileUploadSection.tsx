@@ -1,6 +1,7 @@
 // src/routes/idea/components/FileUploadSection.tsx
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import CloseIcon from '@mui/icons-material/Close'
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
 import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import {
   Box,
@@ -8,9 +9,7 @@ import {
   Dialog,
   DialogContent,
   IconButton,
-  Paper,
   Typography,
-  useTheme,
 } from '@mui/material'
 import type { ChangeEvent } from 'react'
 import { useState } from 'react'
@@ -30,20 +29,15 @@ export default function FileUploadSection({
   onRemoveFile,
   isDarkMode,
 }: FileUploadSectionProps) {
-  const theme = useTheme()
-
-  // 미리보기 모달 상태
   const [previewOpen, setPreviewOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
-    const newFiles = Array.from(e.target.files)
-    onFilesChange([...files, ...newFiles])
+    onFilesChange([...files, ...Array.from(e.target.files)])
   }
 
   const openPreview = (index: number) => {
-    // 이미지 파일만 미리보기 열기
     if (files[index]?.type.startsWith('image/') && filePreviews[index]) {
       setSelectedIndex(index)
       setPreviewOpen(true)
@@ -55,191 +49,148 @@ export default function FileUploadSection({
     setSelectedIndex(null)
   }
 
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+
   return (
     <>
-      <Box sx={{ mt: 10 }}>
-        <Typography
-          variant="h5"
-          fontWeight={700}
-          sx={{
-            mb: 4,
-            color: isDarkMode ? '#60a5fa' : '#2563eb',
-          }}
-        >
-          5. 첨부 자료
-        </Typography>
-
-        <Paper
-          sx={{
-            p: { xs: 3, md: 4 },
-            borderRadius: 3,
-            bgcolor: isDarkMode
-              ? 'rgba(30,41,59,0.85)'
-              : 'rgba(255,255,255,0.94)',
-            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.07)'}`,
-            boxShadow: isDarkMode
-              ? '0 10px 40px rgba(0,0,0,0.4)'
-              : '0 10px 40px rgba(0,0,0,0.1)',
-            backdropFilter: 'blur(12px)',
-          }}
-        >
-          <Button
-            component="label"
-            variant="contained"
-            startIcon={<AttachFileIcon />}
+      <Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+          <Box
             sx={{
-              mb: 4,
-              borderRadius: 3,
-              px: { xs: 4, md: 6 },
-              py: 1.6,
-              fontWeight: 600,
-              fontSize: '1.05rem',
-              bgcolor: isDarkMode ? '#475569' : '#64748b',
-              color: '#ffffff',
-              '&:hover': {
-                bgcolor: isDarkMode ? '#64748b' : '#475569',
-                boxShadow: isDarkMode
-                  ? '0 6px 20px rgba(100,116,139,0.4)'
-                  : '0 6px 20px rgba(71,85,105,0.3)',
-              },
+              width: 26, height: 26, borderRadius: '50%',
+              bgcolor: '#6366f1', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
             }}
           >
-            파일 첨부 (여러 개 가능)
-            <input type="file" hidden multiple onChange={handleFileChange} />
-          </Button>
+            5
+          </Box>
+          <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
+            첨부 자료
+          </Typography>
+        </Box>
+
+        {/* 업로드 영역 */}
+        <Box
+          sx={{
+            p: 3,
+            borderRadius: 2.5,
+            bgcolor: isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(99,102,241,0.03)',
+            border: `1px dashed ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.18)'}`,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: files.length > 0 ? 3 : 0 }}>
+            <Button
+              component="label"
+              variant="outlined"
+              startIcon={<AttachFileIcon sx={{ fontSize: '1rem' }} />}
+              size="small"
+              sx={{
+                borderRadius: 1.5,
+                px: 2.5, py: 0.9,
+                fontWeight: 600,
+                fontSize: '0.82rem',
+                borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
+                color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                '&:hover': {
+                  borderColor: '#6366f1',
+                  bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+                },
+              }}
+            >
+              파일 첨부
+              <input type="file" hidden multiple onChange={handleFileChange} />
+            </Button>
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              여러 파일을 한 번에 선택할 수 있습니다
+            </Typography>
+          </Box>
 
           {files.length > 0 ? (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
               {files.map((file, index) => {
                 const isImage = file.type.startsWith('image/')
                 const previewUrl = filePreviews[index]
-
                 return (
                   <Box
                     key={index}
                     onClick={() => isImage && openPreview(index)}
                     sx={{
                       position: 'relative',
-                      width: 160,
-                      height: 160,
-                      borderRadius: 3,
+                      width: 120,
+                      height: 120,
+                      borderRadius: 2,
                       overflow: 'hidden',
-                      border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.14)'}`,
-                      bgcolor: isDarkMode ? 'rgba(30,41,59,0.88)' : '#f8fafc',
-                      boxShadow: isDarkMode
-                        ? '0 4px 16px rgba(0,0,0,0.35)'
-                        : '0 4px 16px rgba(0,0,0,0.08)',
-                      transition: 'all 0.25s ease',
+                      border: `1px solid ${borderColor}`,
+                      bgcolor: isDarkMode ? 'rgba(22,30,46,0.8)' : '#f8fafc',
+                      boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
+                      transition: 'all 0.2s ease',
                       cursor: isImage ? 'zoom-in' : 'default',
                       '&:hover': {
                         transform: isImage ? 'scale(1.04)' : undefined,
-                        boxShadow: isDarkMode
-                          ? '0 12px 32px rgba(0,0,0,0.5)'
-                          : '0 12px 32px rgba(0,0,0,0.15)',
+                        boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
                       },
                     }}
                   >
                     {previewUrl ? (
-                      <img
-                        src={previewUrl}
-                        alt={file.name}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                        }}
-                      />
+                      <img src={previewUrl} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <Box
                         sx={{
-                          height: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          p: 2,
-                          textAlign: 'center',
-                          bgcolor: isDarkMode
-                            ? 'rgba(15,23,42,0.4)'
-                            : 'rgba(241,245,249,0.6)',
+                          height: '100%', display: 'flex', flexDirection: 'column',
+                          alignItems: 'center', justifyContent: 'center', p: 1.5, gap: 0.75,
                         }}
                       >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: isDarkMode ? '#cbd5e1' : '#475569',
-                            fontWeight: 500,
-                          }}
-                          noWrap
-                        >
+                        <InsertDriveFileIcon sx={{ color: textSecondary, fontSize: '2rem' }} />
+                        <Typography variant="caption" sx={{ color: textSecondary, textAlign: 'center', wordBreak: 'break-all', lineHeight: 1.2 }} noWrap>
                           {file.name}
                         </Typography>
                       </Box>
                     )}
 
-                    {/* 확대 아이콘 오버레이 (이미지만) */}
                     {isImage && (
                       <Box
                         sx={{
-                          position: 'absolute',
-                          inset: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
+                          position: 'absolute', inset: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
                           bgcolor: 'rgba(0,0,0,0.45)',
-                          opacity: 0,
-                          transition: 'opacity 0.2s',
+                          opacity: 0, transition: 'opacity 0.2s',
                           pointerEvents: 'none',
                           '&:hover': { opacity: 1 },
                         }}
                       >
-                        <ZoomInIcon sx={{ color: '#fff', fontSize: 60 }} />
+                        <ZoomInIcon sx={{ color: '#fff', fontSize: 36 }} />
                       </Box>
                     )}
 
                     <IconButton
                       size="small"
-                      onClick={(e) => {
-                        e.stopPropagation() // 모달 열리는 것 방지
-                        onRemoveFile(index)
-                      }}
+                      onClick={(e) => { e.stopPropagation(); onRemoveFile(index) }}
                       sx={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                        bgcolor: isDarkMode
-                          ? 'rgba(0,0,0,0.7)'
-                          : 'rgba(0,0,0,0.65)',
-                        color: '#ffffff',
-                        '&:hover': {
-                          bgcolor: 'rgba(239,68,68,0.9)',
-                          transform: 'scale(1.15)',
-                        },
-                        transition: 'all 0.2s ease',
+                        position: 'absolute', top: 4, right: 4,
+                        width: 22, height: 22,
+                        bgcolor: 'rgba(0,0,0,0.6)',
+                        color: '#fff',
+                        '&:hover': { bgcolor: 'rgba(239,68,68,0.9)' },
+                        transition: 'all 0.15s ease',
                       }}
                     >
-                      <CloseIcon fontSize="small" />
+                      <CloseIcon sx={{ fontSize: '0.75rem' }} />
                     </IconButton>
                   </Box>
                 )
               })}
             </Box>
           ) : (
-            <Box
-              sx={{
-                py: 6,
-                textAlign: 'center',
-                color: isDarkMode ? '#94a3b8' : '#64748b',
-              }}
-            >
-              <Typography variant="body1" fontWeight={500}>
+            <Box sx={{ textAlign: 'center', py: 3 }}>
+              <Typography variant="body2" sx={{ color: textSecondary }}>
                 아직 첨부된 파일이 없습니다
-              </Typography>
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                버튼을 눌러 자료를 추가해 주세요
               </Typography>
             </Box>
           )}
-        </Paper>
+        </Box>
       </Box>
 
       {/* 이미지 미리보기 모달 */}
@@ -248,65 +199,41 @@ export default function FileUploadSection({
         onClose={closePreview}
         maxWidth="xl"
         fullWidth
-        sx={{
-          '& .MuiDialog-paper': {
-            bgcolor: 'rgba(0,0,0,0.92)',
-            borderRadius: 3,
-            boxShadow: '0 0 80px rgba(0,0,0,0.9)',
-            overflow: 'hidden',
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: 'rgba(0,0,0,0.94)',
+              borderRadius: 3,
+              boxShadow: '0 0 80px rgba(0,0,0,0.9)',
+              overflow: 'hidden',
+            },
           },
         }}
       >
         <IconButton
           onClick={closePreview}
+          size="small"
           sx={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            color: '#fff',
-            bgcolor: 'rgba(0,0,0,0.6)',
-            zIndex: 10,
-            '&:hover': {
-              bgcolor: 'rgba(239,68,68,0.9)',
-            },
+            position: 'absolute', top: 12, right: 12,
+            color: '#fff', bgcolor: 'rgba(0,0,0,0.5)', zIndex: 10,
+            '&:hover': { bgcolor: 'rgba(239,68,68,0.85)' },
           }}
         >
-          <CloseIcon fontSize="large" />
+          <CloseIcon />
         </IconButton>
 
-        <DialogContent
-          sx={{
-            p: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '70vh',
-          }}
-        >
+        <DialogContent sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
           {selectedIndex !== null && filePreviews[selectedIndex] && (
             <img
               src={filePreviews[selectedIndex]}
               alt={files[selectedIndex]?.name || 'Preview'}
-              style={{
-                maxWidth: '100%',
-                maxHeight: '90vh',
-                objectFit: 'contain',
-                borderRadius: 12,
-              }}
+              style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: 8 }}
             />
           )}
         </DialogContent>
 
-        {/* 하단 파일명 (옵션) */}
         {selectedIndex !== null && (
-          <Box
-            sx={{
-              p: 3,
-              textAlign: 'center',
-              color: '#ddd',
-              fontSize: '0.95rem',
-            }}
-          >
+          <Box sx={{ p: 2, textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
             {files[selectedIndex]?.name}
           </Box>
         )}

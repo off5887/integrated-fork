@@ -1,12 +1,5 @@
 // src/routes/MileagePage.tsx
-import {
-  alpha,
-  Box,
-  Button,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material'
+import { Box, Button, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
@@ -33,16 +26,13 @@ export default function MileagePage() {
   const [selected, setSelected] = useState<number[]>([])
   const [dialogOpen, setDialogOpen] = useState(false)
 
-  // ── 필터링된 데이터 ─────────────────────────────────────────────
   const filteredData = useMemo(() => {
     return data.filter((item) => {
       const date = dayjs(item.paymentDate)
       const inRange =
         (!startDate || date.isAfter(startDate.startOf('day'))) &&
         (!endDate || date.isBefore(endDate.endOf('day')))
-      return (
-        inRange && item.detail.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      return inRange && item.detail.toLowerCase().includes(searchTerm.toLowerCase())
     })
   }, [startDate, endDate, searchTerm])
 
@@ -55,59 +45,78 @@ export default function MileagePage() {
     [selected],
   )
 
-  const paginatedData = filteredData.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  )
+  const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
-  // 전체 선택 핸들러
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = paginatedData.map((item) => item.id)
-      setSelected(newSelected)
+      setSelected(paginatedData.map((item) => item.id))
     } else {
       setSelected([])
     }
   }
 
-  // 개별 행 선택/해제
   const handleToggle = (id: number) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     )
   }
 
-  // ── 다크모드 최적화 색상 ──────────────────────────────────────────
-  const colors = {
-    pageBg: isDarkMode ? '#0f172a' : '#f8fafc',
-    surface: isDarkMode ? '#1e293b' : '#ffffff',
-    surface2: isDarkMode ? 'rgba(30,41,59,0.96)' : 'rgba(255,255,255,0.98)',
-    border: isDarkMode ? 'rgba(148,163,184,0.30)' : 'rgba(148,163,184,0.28)',
-    textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a', // 본문 기본 색상
-    textSecondary: isDarkMode ? '#cbd5e1' : '#475569', // 보조 텍스트
-    textTertiary: isDarkMode ? '#94a3b8' : '#64748b', // placeholder, 라벨
-    primary: isDarkMode ? '#6366f1' : '#4f46e5',
-    primaryHover: isDarkMode ? '#818cf8' : '#4338ca',
-    success: isDarkMode ? '#34d399' : '#10b981',
-    warning: isDarkMode ? '#fbbf24' : '#d97706',
-    danger: isDarkMode ? '#f87171' : '#ef4444',
-    hover: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(79,70,229,0.06)',
-    selected: isDarkMode ? 'rgba(99,102,241,0.20)' : 'rgba(79,70,229,0.10)',
-  }
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.5)'
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box
         sx={{
-          p: { xs: 3, md: 6 },
-          width: 1,
+          px: { xs: 2, md: 5 },
+          py: { xs: 3, md: 4 },
           maxWidth: 1440,
           mx: 'auto',
-          bgcolor: colors.pageBg,
           minHeight: '100vh',
-          color: colors.textPrimary,
+          color: textPrimary,
         }}
       >
+        {/* 페이지 헤더 */}
+        <Box
+          sx={{
+            mb: 5,
+            pb: 4,
+            borderBottom: `1px solid ${borderColor}`,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 2,
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h5"
+              fontWeight={700}
+              sx={{ color: textPrimary, letterSpacing: '-0.02em', mb: 0.5 }}
+            >
+              마일리지
+            </Typography>
+            <Typography variant="caption" sx={{ color: textSecondary }}>
+              보유 생선 현황 및 현금 전환을 관리합니다
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              px: 2,
+              py: 0.75,
+              borderRadius: 2,
+              bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.15)'}`,
+            }}
+          >
+            <Typography variant="caption" fontWeight={600} sx={{ color: '#6366f1' }}>
+              전체 {data.length}건
+            </Typography>
+          </Box>
+        </Box>
+
         {/* 통계 카드 */}
         <MileageStatsCards
           totalFish={data.reduce((sum, item) => sum + item.fish, 0)}
@@ -141,10 +150,15 @@ export default function MileagePage() {
           setSearchTerm={setSearchTerm}
         />
 
-        {/* 선택 합계 + 버튼 */}
+        {/* 액션 바 */}
         <Box
           sx={{
-            mb: 4,
+            mb: 3,
+            px: 2.5,
+            py: 2,
+            borderRadius: 2.5,
+            bgcolor: isDarkMode ? 'rgba(148,163,184,0.05)' : 'rgba(241,245,249,0.8)',
+            border: `1px solid ${borderColor}`,
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -152,13 +166,36 @@ export default function MileagePage() {
             gap: 2,
           }}
         >
-          <Typography
-            variant="h6"
-            fontWeight={600}
-            sx={{ color: colors.textPrimary }}
-          >
-            선택: <strong>{selectedFishSum.toLocaleString()}</strong> 마리
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {selected.length > 0 ? (
+              <>
+                <Box
+                  sx={{
+                    px: 1.5,
+                    py: 0.4,
+                    borderRadius: '999px',
+                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
+                    border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)'}`,
+                  }}
+                >
+                  <Typography variant="caption" fontWeight={700} sx={{ color: '#6366f1' }}>
+                    {selected.length}건 선택됨
+                  </Typography>
+                </Box>
+                <Typography variant="body2" fontWeight={600} sx={{ color: textPrimary }}>
+                  합계{' '}
+                  <Box component="span" sx={{ color: '#6366f1', fontWeight: 800 }}>
+                    {selectedFishSum.toLocaleString()}
+                  </Box>{' '}
+                  마리
+                </Typography>
+              </>
+            ) : (
+              <Typography variant="body2" sx={{ color: textSecondary }}>
+                항목을 선택하면 현금 전환이 가능합니다
+              </Typography>
+            )}
+          </Box>
 
           <Button
             variant="contained"
@@ -166,23 +203,20 @@ export default function MileagePage() {
             onClick={() => setDialogOpen(true)}
             sx={{
               borderRadius: 2,
-              px: 5,
-              py: 1.2,
+              px: 3,
+              py: 1,
               fontWeight: 600,
-              bgcolor: colors.primary,
+              fontSize: '0.875rem',
+              bgcolor: '#6366f1',
               color: '#ffffff',
-              boxShadow: isDarkMode
-                ? '0 4px 12px rgba(99,102,241,0.3)'
-                : '0 4px 12px rgba(79,70,229,0.2)',
+              boxShadow: 'none',
               '&:hover': {
-                bgcolor: colors.primaryHover,
-                boxShadow: isDarkMode
-                  ? '0 8px 20px rgba(99,102,241,0.45)'
-                  : '0 8px 20px rgba(79,70,229,0.3)',
+                bgcolor: '#4f46e5',
+                boxShadow: '0 4px 16px rgba(99,102,241,0.3)',
               },
               '&.Mui-disabled': {
-                bgcolor: alpha(colors.primary, 0.45),
-                color: alpha('#ffffff', 0.75),
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
+                color: isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(99,102,241,0.35)',
               },
             }}
           >
@@ -190,13 +224,9 @@ export default function MileagePage() {
           </Button>
         </Box>
 
-        {/* 모바일 / 데스크톱 분기 */}
+        {/* 테이블 / 모바일 카드 */}
         {isMobile ? (
-          <MileageMobileCards
-            data={paginatedData}
-            selected={selected}
-            onToggle={handleToggle}
-          />
+          <MileageMobileCards data={paginatedData} selected={selected} onToggle={handleToggle} />
         ) : (
           <MileageDesktopTable
             data={paginatedData}
@@ -206,7 +236,7 @@ export default function MileagePage() {
             page={page}
             rowsPerPage={rowsPerPage}
             total={filteredData.length}
-            onPageChange={setPage}
+            onPageChange={(_e, newPage) => setPage(newPage)}
             onRowsPerPageChange={(e) => {
               setRowsPerPage(parseInt(e.target.value, 10))
               setPage(0)
@@ -214,7 +244,6 @@ export default function MileagePage() {
           />
         )}
 
-        {/* 다이얼로그 */}
         <MileageExchangeDialog
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}

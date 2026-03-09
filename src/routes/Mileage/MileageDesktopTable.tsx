@@ -1,6 +1,6 @@
 // src/routes/MileageDesktopTable.tsx
 import {
-  alpha,
+  Box,
   Card,
   Checkbox,
   Table,
@@ -25,6 +25,46 @@ interface Props {
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
+const STATUS_MAP: Record<string, { color: string; bg: string; border: string }> = {
+  전환완료: { color: '#10b981', bg: '#10b98112', border: '#10b98128' },
+  전환요청중: { color: '#f59e0b', bg: '#f59e0b12', border: '#f59e0b28' },
+  default: { color: '#ef4444', bg: '#ef444412', border: '#ef444428' },
+}
+
+function StatusBadge({ status, isDarkMode }: { status: string; isDarkMode: boolean }) {
+  const s = STATUS_MAP[status] ?? STATUS_MAP.default
+  return (
+    <Box
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        px: 1.25,
+        py: 0.35,
+        borderRadius: '999px',
+        bgcolor: s.bg,
+        border: `1px solid ${s.border}`,
+      }}
+    >
+      <Box
+        sx={{
+          width: 5,
+          height: 5,
+          borderRadius: '50%',
+          bgcolor: s.color,
+          mr: 0.75,
+          flexShrink: 0,
+          opacity: isDarkMode ? 0.9 : 1,
+        }}
+      />
+      <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: s.color }}>
+        {status}
+      </Typography>
+    </Box>
+  )
+}
+
+const HEAD_COLS = ['번호', '지급일', '지급내역', '생선', '전환 상태']
+
 export default function MileageDesktopTable({
   data,
   selected,
@@ -36,21 +76,14 @@ export default function MileageDesktopTable({
   onPageChange,
   onRowsPerPageChange,
 }: Props) {
-  const isDarkMode = useThemeMode().isDarkMode
+  const { isDarkMode } = useThemeMode()
 
-  const colors = {
-    surface2: isDarkMode ? 'rgba(30,41,59,0.94)' : 'rgba(255,255,255,0.97)',
-    border: isDarkMode ? 'rgba(148,163,184,0.22)' : 'rgba(148,163,184,0.32)',
-    textPrimary: isDarkMode ? '#f1f5f9' : '#0f172a',
-    primary: isDarkMode ? '#6366f1' : '#4f46e5',
-    success: isDarkMode ? '#34d399' : '#10b981',
-    warning: isDarkMode ? '#fbbf24' : '#d97706',
-    danger: isDarkMode ? '#f87171' : '#ef4444',
-    selected: isDarkMode ? 'rgba(99,102,241,0.18)' : 'rgba(79,70,229,0.10)',
-    hover: isDarkMode ? 'rgba(99,102,241,0.10)' : 'rgba(79,70,229,0.06)',
-  }
-
-  const tableTextColor = isDarkMode ? '#f1f5f9' : colors.textPrimary
+  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const headBg = isDarkMode ? 'rgba(148,163,184,0.06)' : 'rgba(248,250,252,0.9)'
+  const hoverBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
+  const selectedBg = isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.06)'
 
   return (
     <Card
@@ -58,108 +91,115 @@ export default function MileageDesktopTable({
       sx={{
         borderRadius: 3,
         overflow: 'hidden',
-        bgcolor: colors.surface2,
-        border: `1px solid ${colors.border}`,
+        bgcolor: isDarkMode ? 'rgba(22,30,46,0.92)' : '#ffffff',
+        border: `1px solid ${borderColor}`,
+        boxShadow: isDarkMode ? '0 2px 16px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.05)',
       }}
     >
       <Table>
         <TableHead>
-          <TableRow
-            sx={{ bgcolor: alpha(colors.primary, isDarkMode ? 0.18 : 0.88) }}
-          >
-            <TableCell padding="checkbox">
+          <TableRow sx={{ bgcolor: headBg }}>
+            <TableCell padding="checkbox" sx={{ borderBottom: `1px solid ${borderColor}` }}>
               <Checkbox
                 indeterminate={selected.length > 0 && selected.length < total}
-                checked={rowsPerPage > 0 && selected.length === data.length}
+                checked={rowsPerPage > 0 && selected.length === data.length && data.length > 0}
                 onChange={onSelectAll}
-                sx={{ color: isDarkMode ? '#e0e7ff' : '#ffffff' }}
+                size="small"
+                sx={{
+                  color: textSecondary,
+                  '&.Mui-checked, &.MuiCheckbox-indeterminate': { color: '#6366f1' },
+                }}
               />
             </TableCell>
-            <TableCell
-              sx={{
-                color: isDarkMode ? '#e0e7ff' : '#ffffff',
-                fontWeight: 700,
-              }}
-            >
-              번호
-            </TableCell>
-            <TableCell
-              sx={{
-                color: isDarkMode ? '#e0e7ff' : '#ffffff',
-                fontWeight: 700,
-              }}
-            >
-              지급일
-            </TableCell>
-            <TableCell
-              sx={{
-                color: isDarkMode ? '#e0e7ff' : '#ffffff',
-                fontWeight: 700,
-              }}
-            >
-              지급내역
-            </TableCell>
-            <TableCell
-              sx={{
-                color: isDarkMode ? '#e0e7ff' : '#ffffff',
-                fontWeight: 700,
-              }}
-            >
-              생선
-            </TableCell>
-            <TableCell
-              sx={{
-                color: isDarkMode ? '#e0e7ff' : '#ffffff',
-                fontWeight: 700,
-              }}
-            >
-              현금 전환상태
-            </TableCell>
+            {HEAD_COLS.map((col) => (
+              <TableCell
+                key={col}
+                sx={{
+                  color: textSecondary,
+                  fontWeight: 600,
+                  fontSize: '0.72rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  borderBottom: `1px solid ${borderColor}`,
+                  py: 1.75,
+                }}
+              >
+                {col}
+              </TableCell>
+            ))}
           </TableRow>
         </TableHead>
 
-        <TableBody sx={{ '& .MuiTableCell-root': { color: tableTextColor } }}>
+        <TableBody>
           {data.map((item) => {
             const isSelectedRow = selected.includes(item.id)
             return (
               <TableRow
-                hover
-                selected={isSelectedRow}
+                key={item.id}
                 onClick={() => onToggle(item.id)}
                 sx={{
-                  bgcolor: isSelectedRow ? colors.selected : 'inherit',
-                  '&:hover': { bgcolor: colors.hover },
+                  bgcolor: isSelectedRow ? selectedBg : 'transparent',
                   cursor: 'pointer',
-                  transition: 'background-color 0.16s',
+                  transition: 'background-color 0.15s',
+                  '&:hover': { bgcolor: isSelectedRow ? selectedBg : hoverBg },
+                  '& .MuiTableCell-root': {
+                    borderBottom: `1px solid ${borderColor}`,
+                    color: textPrimary,
+                    py: 1.75,
+                    fontSize: '0.875rem',
+                  },
+                  '&:last-child .MuiTableCell-root': { borderBottom: 'none' },
                 }}
-                key={item.id}
               >
                 <TableCell padding="checkbox">
-                  <Checkbox checked={isSelectedRow} color="primary" />
-                </TableCell>
-                <TableCell>{item.id}</TableCell>
-                <TableCell>{item.paymentDate}</TableCell>
-                <TableCell>{item.detail}</TableCell>
-                <TableCell fontWeight={600}>{item.fish}</TableCell>
-                <TableCell>
-                  <Typography
-                    variant="body2"
-                    fontWeight={500}
+                  <Checkbox
+                    checked={isSelectedRow}
+                    size="small"
                     sx={{
-                      color:
-                        item.status === '전환완료'
-                          ? colors.success
-                          : item.status === '전환요청중'
-                            ? colors.warning
-                            : colors.danger,
+                      color: textSecondary,
+                      '&.Mui-checked': { color: '#6366f1' },
                     }}
-                  >
-                    {item.status}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>
+                    #{item.id}
                   </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2" sx={{ color: textPrimary }}>
+                    {item.paymentDate}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2" sx={{ color: textPrimary }}>
+                    {item.detail}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2" fontWeight={700} sx={{ color: '#6366f1' }}>
+                    {item.fish.toLocaleString()}
+                    <Box component="span" sx={{ fontWeight: 500, color: textSecondary, ml: 0.5 }}>
+                      마리
+                    </Box>
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <StatusBadge status={item.status} isDarkMode={isDarkMode} />
                 </TableCell>
               </TableRow>
             )
           })}
+
+          {data.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={6} sx={{ textAlign: 'center', py: 8, border: 'none' }}>
+                <Typography variant="body2" sx={{ color: textSecondary }}>
+                  표시할 데이터가 없습니다
+                </Typography>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
 
@@ -171,15 +211,19 @@ export default function MileageDesktopTable({
         page={page}
         onPageChange={onPageChange}
         onRowsPerPageChange={onRowsPerPageChange}
-        labelRowsPerPage="페이지당 행:"
+        labelRowsPerPage="페이지당:"
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} / ${count}`}
         sx={{
-          borderTop: `1px solid ${colors.border}`,
-          color: colors.textSecondary,
-          '.MuiTablePagination-select, .MuiTablePagination-selectIcon': {
-            color: colors.textPrimary,
+          borderTop: `1px solid ${borderColor}`,
+          color: textSecondary,
+          fontSize: '0.8rem',
+          '.MuiTablePagination-select, .MuiTablePagination-selectIcon': { color: textPrimary },
+          '.MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel': {
+            color: textSecondary,
+            fontSize: '0.8rem',
           },
-          '.MuiTablePagination-displayedRows': { color: colors.textPrimary },
+          '.MuiIconButton-root': { color: textSecondary },
+          '.MuiIconButton-root.Mui-disabled': { color: borderColor },
         }}
       />
     </Card>

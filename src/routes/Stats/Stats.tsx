@@ -213,7 +213,7 @@ export default function RealDashboard() {
             whileHover={{ scale: 1.015 }}
           >
             <Card sx={cardStyle}>
-              <CardContent sx={{ p: { xs: 3, md: 4, lg: 5 } }}>
+              <CardContent sx={{ p: { xs: 3, md: 10, lg: 10 } }}>
                 <Typography
                   variant="h5"
                   fontWeight={700}

@@ -1,524 +1,266 @@
 // src/pages/Dashboard/RealDashboard.tsx
-import {
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  LinearProgress,
-  Typography,
-  alpha,
-  useTheme,
-} from '@mui/material'
-import { motion } from 'framer-motion'
+import { Box, Container, Grid, Typography, alpha } from '@mui/material'
 import { useThemeMode } from '../../context/ThemeContext'
 
-// Nivo 그래프 임포트
-import { ResponsiveBar } from '@nivo/bar'
-import { ResponsivePie } from '@nivo/pie'
+import ApprovalStatusPie from './Components/ApprovalStatusPie'
+import DepartmentTop5Bar from './Components/DepartmentTop5Bar'
+import ExecutionCompletionRate from './Components/ExecutionCompletionRate'
+import MyGomgomiCard from './Components/MyGomgomiCard'
+import PopularImaginationTop5 from './Components/PopularImaginationTop5'
+
+import DashboardCard from './Components/DashboardCard'
+
+const KPI_STATS = [
+  { label: '전체 아이디어', value: '150건', icon: '💡', color: '#3b82f6' },
+  { label: '승인 완료', value: '68건', icon: '✅', color: '#10b981' },
+  { label: '이번 달 신규', value: '23건', icon: '🚀', color: '#f59e0b' },
+  { label: '전체 실행률', value: '73.4%', icon: '📊', color: '#8b5cf6' },
+]
+
+const RECENT_ACTIVITIES = [
+  { user: 'John', action: 'Q3 예산 아이디어 승인', time: '2시간 전', icon: '✓', color: '#10b981' },
+  { user: 'Sarah', action: '새로운 디자인 안 업로드', time: '4시간 전', icon: '📎', color: '#3b82f6' },
+  { user: 'Mike', action: '마일스톤 완료', time: '어제', icon: '🎯', color: '#f59e0b' },
+  { user: '김민지', action: '원격근무 제안 공감 50건 달성', time: '어제', icon: '♥', color: '#ef4444' },
+]
 
 export default function RealDashboard() {
-  const theme = useTheme()
   const { isDarkMode } = useThemeMode()
 
-  const fishTotal = 5420
-  const fishToNextLevel = 8000
-  const progress = (fishTotal / fishToNextLevel) * 100
-
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#cbd5e1' : '#475569'
-  const primaryColor = isDarkMode ? '#38bdf8' : '#0ea5e9'
-
-  const cardBg = isDarkMode
-    ? 'linear-gradient(145deg, rgba(30,41,59,0.92), rgba(15,23,42,0.82))'
-    : 'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(241,245,249,0.92))'
-
-  const cardStyle = {
-    borderRadius: 16,
-    background: cardBg,
-    backdropFilter: 'blur(16px)',
-    border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'}`,
-    boxShadow: isDarkMode
-      ? '0 6px 20px rgba(0,0,0,0.4)'
-      : '0 6px 20px rgba(0,0,0,0.1)',
-    transition: 'all 0.3s ease',
-    '&:hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: isDarkMode
-        ? '0 16px 36px rgba(0,0,0,0.5)'
-        : '0 16px 36px rgba(0,0,0,0.14)',
-    },
-  }
-
-  // Nivo 공통 테마 강화
-  const nivoTheme = {
-    background: 'transparent',
-    textColor: textPrimary,
-    fontSize: 13,
-    fontFamily: 'inherit',
-    axis: {
-      domain: { line: { stroke: alpha(textPrimary, 0.18) } },
-      ticks: {
-        line: { stroke: alpha(textPrimary, 0.18) },
-        text: { fill: textSecondary, fontWeight: 500 },
-      },
-      legend: { text: { fill: textPrimary, fontWeight: 600 } },
-    },
-    grid: { line: { stroke: alpha(textPrimary, 0.09) } },
-    legends: {
-      text: { fill: textSecondary, fontSize: 13, fontWeight: 500 },
-    },
-    tooltip: {
-      container: {
-        background: isDarkMode ? '#1e293b' : '#ffffff',
-        color: textPrimary,
-        borderRadius: 12,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.28)',
-        padding: '12px 16px',
-        fontSize: 13,
-      },
-    },
-    labels: {
-      text: {
-        fontSize: 14,
-        fontWeight: 700,
-        textShadow: isDarkMode
-          ? '0 1px 3px rgba(0,0,0,0.6)'
-          : '0 1px 2px rgba(255,255,255,0.8)',
-      },
-    },
-  }
-
-  const pieColors = ['#6366f1', '#a78bfa', '#f472b6', '#fb7185']
+  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const borderColor = isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.4)'
+  const dividerColor = isDarkMode ? 'rgba(148,163,184,0.15)' : 'rgba(203,213,225,0.5)'
+  const bgBase = isDarkMode ? '#0d1117' : '#f8fafc'
 
   return (
     <Box
       sx={{
-        width: '100vw',
         minHeight: '100vh',
-        m: 0,
-        p: { xs: 3, sm: 4, md: 5, lg: 6 },
-        bgcolor: isDarkMode ? '#0b121f' : '#f8fafc',
-        background: isDarkMode
-          ? 'linear-gradient(135deg, #0b121f 0%, #1a2336 100%)'
-          : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+        width: '100%',
+        bgcolor: bgBase,
         color: textPrimary,
       }}
     >
-      <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
-        {/* 1. 나의 곰곰이 */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            whileHover={{ scale: 1.015 }}
+      {/* 헤더 */}
+      <Box
+        component="header"
+        sx={{
+          px: { xs: 3, md: 5 },
+          pt: { xs: 3, md: 4 },
+          pb: { xs: 2, md: 3 },
+          borderBottom: `1px solid ${borderColor}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: isDarkMode ? 'rgba(13,17,23,0.95)' : 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(12px)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+        }}
+      >
+        <Box>
+          <Typography
+            variant="h5"
+            fontWeight={700}
+            sx={{ color: textPrimary, letterSpacing: '-0.02em' }}
           >
-            <Card sx={cardStyle}>
-              <CardContent sx={{ p: { xs: 3, md: 4, lg: 5 } }}>
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
-                  sx={{ mb: 2.5, color: primaryColor }}
-                >
-                  나의 곰곰이
-                </Typography>
+            대시보드
+          </Typography>
+          <Typography variant="caption" sx={{ color: textSecondary, mt: 0.25, display: 'block' }}>
+            {new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} 기준
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            px: 2,
+            py: 0.75,
+            borderRadius: 2,
+            bgcolor: isDarkMode ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.08)',
+            border: `1px solid ${isDarkMode ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.2)'}`,
+          }}
+        >
+          <Typography variant="caption" fontWeight={600} sx={{ color: '#3b82f6' }}>
+            실시간 현황
+          </Typography>
+        </Box>
+      </Box>
 
-                <Box
-                  sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}
-                >
-                  <img
-                    src="/public/tarot/god_bear.png"
-                    alt="곰곰이"
-                    style={{
-                      width: 110,
-                      height: 110,
-                      borderRadius: 20,
-                      objectFit: 'contain',
-                    }}
-                  />
-                  <Box>
-                    <Typography
-                      variant="h4"
-                      fontWeight={800}
-                      sx={{ color: textPrimary }}
-                    >
-                      Lv.12
-                    </Typography>
-                    <Typography variant="subtitle1" color={textSecondary}>
-                      상상직급 : 아기 곰곰이
-                    </Typography>
-                  </Box>
-                </Box>
+      <Container
+        maxWidth={false}
+        sx={{ px: { xs: 2, md: 4, lg: 5 }, py: { xs: 3, md: 4 } }}
+      >
+        <Grid container spacing={{ xs: 2, md: 2.5 }}>
 
-                <Box sx={{ mb: 3 }}>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    sx={{ color: textPrimary }}
-                  >
-                    생선 {fishTotal.toLocaleString()} 마리
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color={textSecondary}
-                    sx={{ mt: 0.5 }}
-                  >
-                    현금 환산 : {(fishTotal * 100).toLocaleString()} 원
-                  </Typography>
-                </Box>
-
-                <Box sx={{ position: 'relative', mb: 2 }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={progress}
-                    sx={{
-                      height: 12,
-                      borderRadius: 6,
-                      backgroundColor: alpha(primaryColor, 0.2),
-                      '& .MuiLinearProgress-bar': {
-                        background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${primaryColor})`,
-                        borderRadius: 6,
-                      },
-                    }}
-                  />
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      position: 'absolute',
-                      right: 0,
-                      top: -24,
-                      color: primaryColor,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {progress.toFixed(0)}%
-                  </Typography>
-                </Box>
-
-                <Typography variant="body2" align="right" color={textSecondary}>
-                  다음 레벨까지 {(fishToNextLevel - fishTotal).toLocaleString()}{' '}
-                  마리 남음
-                </Typography>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </Grid>
-
-        {/* 2. 인기 상상 TOP 5 */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            whileHover={{ scale: 1.015 }}
-          >
-            <Card sx={cardStyle}>
-              <CardContent sx={{ p: { xs: 3, md: 4, lg: 5 } }}>
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
-                  sx={{ mb: 2.5, color: primaryColor }}
-                >
-                  인기 상상 TOP 5
-                </Typography>
-
-                {[
-                  { title: '사내 카페 메뉴 다양화', likes: 142 },
-                  { title: '원격 근무 시간 유연화', likes: 98 },
-                  { title: '재택근무 복지 확대', likes: 87 },
-                  { title: '회의 문화 개선', likes: 76 },
-                  { title: '사내 도서관 디지털화', likes: 65 },
-                ].map((item, i) => (
-                  <Box
-                    key={i}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      py: 1.5,
-                      borderBottom:
-                        i < 4
-                          ? `1px solid ${alpha(theme.palette.divider, 0.15)}`
-                          : 'none',
-                    }}
-                  >
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight={600}
-                      sx={{ minWidth: 32, color: textPrimary }}
-                    >
-                      {i + 1}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ flex: 1, ml: 2, color: textPrimary }}
-                    >
-                      {item.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color={textSecondary}
-                      sx={{ minWidth: 80, textAlign: 'right' }}
-                    >
-                      {item.likes} 공감
-                    </Typography>
-                  </Box>
-                ))}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </Grid>
-
-        {/* 3. 결재 단계별 현황 - Nivo Pie */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            whileHover={{ scale: 1.015 }}
-          >
-            <Card sx={cardStyle}>
-              <CardContent sx={{ p: { xs: 3, md: 4, lg: 5 } }}>
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
-                  sx={{ mb: 3, color: primaryColor }}
-                >
-                  결재 단계별 현황
-                </Typography>
-
-                {/* 핵심 수정: div + 고정 높이 */}
-                <div style={{ height: '450px', width: '100%' }}>
-                  <ResponsivePie
-                    data={[
-                      {
-                        id: '부문장',
-                        label: '부문장',
-                        value: 68,
-                        color: pieColors[0],
-                      },
-                      {
-                        id: '팀장',
-                        label: '팀장',
-                        value: 15,
-                        color: pieColors[1],
-                      },
-                      {
-                        id: '접수',
-                        label: '접수',
-                        value: 10,
-                        color: pieColors[2],
-                      },
-                      {
-                        id: '실행요청',
-                        label: '실행요청',
-                        value: 7,
-                        color: pieColors[3],
-                      },
-                    ]}
-                    margin={{ top: 40, right: 140, bottom: 140, left: 40 }}
-                    innerRadius={0.48}
-                    padAngle={1.5}
-                    cornerRadius={12}
-                    activeOuterRadiusOffset={14}
-                    colors={pieColors}
-                    borderWidth={2}
-                    borderColor={{
-                      from: 'color',
-                      modifiers: [['darker', 0.7]],
-                    }}
-                    arcLinkLabelsSkipAngle={15}
-                    arcLinkLabelsTextColor={textPrimary}
-                    arcLinkLabelsThickness={3}
-                    arcLinkLabelsColor={{
-                      from: 'color',
-                      modifiers: [['darker', 0.8]],
-                    }}
-                    arcLabelsSkipAngle={20}
-                    arcLabelsTextColor={{
-                      from: 'color',
-                      modifiers: [['darker', 3]],
-                    }}
-                    legends={[
-                      {
-                        anchor: 'bottom',
-                        direction: 'row',
-                        translateY: 90,
-                        itemWidth: 110,
-                        itemHeight: 24,
-                        symbolSize: 20,
-                        symbolShape: 'circle',
-                        textColor: textPrimary,
-                        effects: [
-                          {
-                            on: 'hover',
-                            style: {
-                              itemTextColor: primaryColor,
-                              itemOpacity: 1,
-                            },
-                          },
-                        ],
-                      },
-                    ]}
-                    theme={nivoTheme}
-                  />
-                </div>
-
-                <Typography
-                  align="center"
-                  variant="body2"
-                  color={textSecondary}
-                  sx={{ mt: 2 }}
-                >
-                  부문장 단계 병목 68%
-                </Typography>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </Grid>
-
-        {/* 4. 실행 완료율 */}
-        <Grid size={{ xs: 12, lg: 6 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            whileHover={{ scale: 1.015 }}
-          >
-            <Card sx={cardStyle}>
-              <CardContent
-                sx={{ p: { xs: 3, md: 4, lg: 5 }, textAlign: 'center' }}
-              >
-                <Typography
-                  variant="h5"
-                  fontWeight={700}
-                  sx={{ mb: 3, color: primaryColor }}
-                >
-                  실행 완료율
-                </Typography>
-
+          {/* Row 1: KPI 요약 카드 4개 */}
+          {KPI_STATS.map((stat, i) => (
+            <Grid key={i} size={{ xs: 6, lg: 3 }}>
+              <DashboardCard delay={i * 0.05}>
                 <Box
                   sx={{
-                    position: 'relative',
-                    height: 200,
+                    p: { xs: 2, md: 2.5 },
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    gap: 2,
                   }}
                 >
-                  <Typography
-                    variant="h2"
-                    fontWeight={900}
-                    sx={{ color: primaryColor, lineHeight: 1 }}
-                  >
-                    73.4%
-                  </Typography>
-
-                  <LinearProgress
-                    variant="determinate"
-                    value={73.4}
+                  <Box
                     sx={{
-                      position: 'absolute',
-                      bottom: 30,
-                      left: '10%',
-                      right: '10%',
-                      height: 12,
-                      borderRadius: 6,
-                      backgroundColor: alpha(primaryColor, 0.2),
-                      '& .MuiLinearProgress-bar': {
-                        background: `linear-gradient(90deg, ${theme.palette.primary.light}, ${primaryColor})`,
-                        borderRadius: 6,
-                      },
+                      width: 48,
+                      height: 48,
+                      borderRadius: 2.5,
+                      bgcolor: alpha(stat.color, isDarkMode ? 0.15 : 0.1),
+                      border: `1px solid ${alpha(stat.color, 0.2)}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.4rem',
+                      flexShrink: 0,
                     }}
-                  />
+                  >
+                    {stat.icon}
+                  </Box>
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: textSecondary, fontWeight: 500, display: 'block', mb: 0.25 }}
+                    >
+                      {stat.label}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      fontWeight={700}
+                      sx={{ color: stat.color, lineHeight: 1.2 }}
+                    >
+                      {stat.value}
+                    </Typography>
+                  </Box>
                 </Box>
+              </DashboardCard>
+            </Grid>
+          ))}
 
-                <Typography
-                  variant="body2"
-                  color={textSecondary}
-                  sx={{ mt: 3 }}
-                >
-                  실행요청 후 방치 비율 개선 필요
-                </Typography>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </Grid>
+          {/* Row 2: MyGomgomi (5) + ApprovalStatusPie (7) */}
+          <Grid size={{ xs: 12, lg: 5 }}>
+            <DashboardCard delay={0.2} sx={{ minHeight: 400, height: '100%' }}>
+              <MyGomgomiCard fishTotal={5420} fishToNextLevel={8000} />
+            </DashboardCard>
+          </Grid>
 
-        {/* 5. 부문/팀별 TOP5 - Nivo Bar */}
-        <Grid size={12}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            whileHover={{ scale: 1.015 }}
-          >
-            <Card sx={cardStyle}>
-              <CardContent sx={{ p: { xs: 3, md: 4, lg: 5 } }}>
+          <Grid size={{ xs: 12, lg: 7 }}>
+            <DashboardCard delay={0.25} sx={{ minHeight: 400, height: '100%' }}>
+              <ApprovalStatusPie />
+            </DashboardCard>
+          </Grid>
+
+          {/* Row 3: PopularTop5 (7) + DepartmentBar (5) */}
+          <Grid size={{ xs: 12, lg: 7 }}>
+            <DashboardCard delay={0.3} sx={{ minHeight: 380, height: '100%' }}>
+              <PopularImaginationTop5 />
+            </DashboardCard>
+          </Grid>
+
+          <Grid size={{ xs: 12, lg: 5 }}>
+            <DashboardCard delay={0.35} sx={{ minHeight: 380, height: '100%' }}>
+              <DepartmentTop5Bar />
+            </DashboardCard>
+          </Grid>
+
+          {/* Row 4: ExecutionRate (4) + RecentActivity (8) */}
+          <Grid size={{ xs: 12, lg: 4 }}>
+            <DashboardCard delay={0.4} sx={{ minHeight: 380, height: '100%' }}>
+              <ExecutionCompletionRate completionRate={73.4} />
+            </DashboardCard>
+          </Grid>
+
+          <Grid size={{ xs: 12, lg: 8 }}>
+            <DashboardCard delay={0.45} sx={{ minHeight: 380, height: '100%' }}>
+              <Box sx={{ p: { xs: 2.5, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   fontWeight={700}
-                  sx={{ mb: 3, color: primaryColor }}
+                  sx={{ color: textPrimary, mb: 0.5, letterSpacing: '-0.01em' }}
                 >
-                  부문/팀별 실행 건수 TOP 5
+                  최근 활동
+                </Typography>
+                <Typography variant="caption" sx={{ color: textSecondary, mb: 3, display: 'block' }}>
+                  팀 내 최신 아이디어 활동 내역입니다
                 </Typography>
 
-                {/* 핵심 수정: div + 고정 높이 */}
-                <div style={{ height: '450px', width: '100%' }}>
-                  <ResponsiveBar
-                    data={[
-                      { team: '개발1팀', value: 320 },
-                      { team: '생산2부', value: 280 },
-                      { team: '영업3팀', value: 210 },
-                      { team: '품질팀', value: 180 },
-                      { team: 'R&D팀', value: 150 },
-                    ]}
-                    keys={['value']}
-                    indexBy="team"
-                    margin={{ top: 40, right: 40, bottom: 100, left: 80 }}
-                    padding={0.32}
-                    valueScale={{ type: 'linear' }}
-                    indexScale={{ type: 'band', round: true }}
-                    colors={{ scheme: 'pastel1' }}
-                    borderWidth={1.5}
-                    borderColor={{
-                      from: 'color',
-                      modifiers: [['darker', 1.6]],
-                    }}
-                    axisBottom={{
-                      tickSize: 5,
-                      tickPadding: 8,
-                      tickRotation: -40,
-                      legend: '팀 / 부서',
-                      legendPosition: 'middle',
-                      legendOffset: 55,
-                    }}
-                    axisLeft={{
-                      tickSize: 5,
-                      tickPadding: 8,
-                      tickRotation: 0,
-                      legend: '실행 건수',
-                      legendPosition: 'middle',
-                      legendOffset: -60,
-                    }}
-                    labelSkipWidth={16}
-                    labelSkipHeight={16}
-                    labelTextColor={{
-                      from: 'color',
-                      modifiers: [['darker', 2.2]],
-                    }}
-                    role="application"
-                    ariaLabel="팀별 실행 건수 바 차트"
-                    barAriaLabel={(e) =>
-                      `${e.id}: ${e.formattedValue} in team: ${e.indexValue}`
-                    }
-                    theme={nivoTheme}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                <Box
+                  role="list"
+                  aria-label="최근 활동 목록"
+                  sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}
+                >
+                  {RECENT_ACTIVITIES.map((act, i) => (
+                    <Box
+                      key={i}
+                      role="listitem"
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        py: 2,
+                        borderBottom:
+                          i < RECENT_ACTIVITIES.length - 1
+                            ? `1px solid ${dividerColor}`
+                            : 'none',
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: '50%',
+                          bgcolor: alpha(act.color, isDarkMode ? 0.15 : 0.1),
+                          border: `1px solid ${alpha(act.color, 0.25)}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '1rem',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {act.icon}
+                      </Box>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight={600}
+                          sx={{ color: textPrimary, lineHeight: 1.4 }}
+                          noWrap
+                        >
+                          {act.user}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: textSecondary }} noWrap>
+                          {act.action}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: textSecondary,
+                          flexShrink: 0,
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 1.5,
+                          bgcolor: isDarkMode
+                            ? 'rgba(148,163,184,0.08)'
+                            : 'rgba(203,213,225,0.3)',
+                        }}
+                      >
+                        {act.time}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            </DashboardCard>
+          </Grid>
+
         </Grid>
-      </Grid>
+      </Container>
     </Box>
   )
 }
