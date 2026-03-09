@@ -1,53 +1,38 @@
-// src/routes/Mileage/MileageDesktopTable.tsx
-import {
-  Box,
-  Card,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material'
+// src/routes/Mileage/ExchangeHistoryTable.tsx
+import { Box, Card, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 import { useThemeMode } from '../../context/ThemeContext'
 
+interface ExchangeItem {
+  id: number
+  requestDate: string
+  amount: number
+  cashAmount: number
+  status: string
+}
+
 interface Props {
-  data: any[]
-  page: number
-  rowsPerPage: number
-  total: number
-  onPageChange: (event: unknown, newPage: number) => void
-  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  data: ExchangeItem[]
 }
 
 const STATUS_MAP: Record<string, { color: string; bg: string; border: string }> = {
-  전환완료:   { color: '#10b981', bg: '#10b98112', border: '#10b98128' },
-  전환요청중: { color: '#f59e0b', bg: '#f59e0b12', border: '#f59e0b28' },
-  default:   { color: '#ef4444', bg: '#ef444412', border: '#ef444428' },
+  완료:   { color: '#10b981', bg: '#10b98112', border: '#10b98128' },
+  신청중: { color: '#f59e0b', bg: '#f59e0b12', border: '#f59e0b28' },
+  반려:   { color: '#ef4444', bg: '#ef444412', border: '#ef444428' },
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_MAP[status] ?? STATUS_MAP.default
+  const s = STATUS_MAP[status] ?? STATUS_MAP.신청중
   return (
-    <Box
-      sx={{
-        display: 'inline-flex', alignItems: 'center',
-        px: 1.25, py: 0.35, borderRadius: '999px',
-        bgcolor: s.bg, border: `1px solid ${s.border}`,
-      }}
-    >
+    <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1.25, py: 0.35, borderRadius: '999px', bgcolor: s.bg, border: `1px solid ${s.border}` }}>
       <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: s.color, mr: 0.75, flexShrink: 0 }} />
       <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: s.color }}>{status}</Typography>
     </Box>
   )
 }
 
-const HEAD_COLS = ['번호', '지급일', '지급내역', '생선', '상태']
+const HEAD_COLS = ['번호', '신청일', '신청 마일리지', '현금 환산', '상태']
 
-export default function MileageDesktopTable({
-  data, page, rowsPerPage, total, onPageChange, onRowsPerPageChange,
-}: Props) {
+export default function ExchangeHistoryTable({ data }: Props) {
   const { isDarkMode } = useThemeMode()
 
   const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
@@ -99,20 +84,20 @@ export default function MileageDesktopTable({
               }}
             >
               <TableCell>
-                <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>
-                  #{item.id}
-                </Typography>
+                <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>#{item.id}</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: textPrimary }}>{item.paymentDate}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="body2" sx={{ color: textPrimary }}>{item.detail}</Typography>
+                <Typography variant="body2" sx={{ color: textPrimary }}>{item.requestDate}</Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="body2" fontWeight={700} sx={{ color: '#6366f1' }}>
-                  {item.fish.toLocaleString()}
+                  {item.amount.toLocaleString()}
                   <Box component="span" sx={{ fontWeight: 500, color: textSecondary, ml: 0.5 }}>마리</Box>
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="body2" fontWeight={600} sx={{ color: isDarkMode ? '#c4b5fd' : '#7c3aed' }}>
+                  {item.cashAmount.toLocaleString()}원
                 </Typography>
               </TableCell>
               <TableCell>
@@ -124,32 +109,12 @@ export default function MileageDesktopTable({
           {data.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} sx={{ textAlign: 'center', py: 8, border: 'none' }}>
-                <Typography variant="body2" sx={{ color: textSecondary }}>표시할 데이터가 없습니다</Typography>
+                <Typography variant="body2" sx={{ color: textSecondary }}>환전 신청 내역이 없습니다</Typography>
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25, 50]}
-        component="div"
-        count={total}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={onPageChange}
-        onRowsPerPageChange={onRowsPerPageChange}
-        labelRowsPerPage="페이지당:"
-        labelDisplayedRows={({ from, to, count }) => `${from}–${to} / ${count}`}
-        sx={{
-          borderTop: `1px solid ${borderColor}`,
-          color: textSecondary, fontSize: '0.8rem',
-          '.MuiTablePagination-select, .MuiTablePagination-selectIcon': { color: textPrimary },
-          '.MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel': { color: textSecondary, fontSize: '0.8rem' },
-          '.MuiIconButton-root': { color: textSecondary },
-          '.MuiIconButton-root.Mui-disabled': { color: borderColor },
-        }}
-      />
     </Card>
   )
 }
