@@ -1,38 +1,12 @@
 // src/components/common/Header/Header.tsx
-import * as MuiIcons from '@mui/icons-material'
 import { AppBar, Box, Toolbar, useMediaQuery, useTheme } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '../../context/ThemeContext'
 import DesktopNavigation from './DesktopNavigation'
+import { menuItems, settingsItem } from './headerConfig'
 import MobileNavigationDrawer from './MobileNavigationDrawer'
 import MobileToolbar from './MobileToolbar'
-
-const menuItems = [
-  { iconName: 'Dashboard' as const, text: '대시보드', path: '/dashboard' },
-  { iconName: 'Lightbulb' as const, text: '상상하기', path: '/newIdea' },
-  { iconName: 'AttachMoney' as const, text: '마일리지', path: '/rqMileage' }, // Savings → AttachMoney
-  { iconName: 'RateReview' as const, text: '심사하기', path: '/judge' },
-  { iconName: 'BarChart' as const, text: '통계', path: '/stats' },
-  {
-    iconName: 'Security' as const,
-    text: '용병 지원',
-    path: '/mercenary-support',
-  },
-  {
-    iconName: 'GroupAdd' as const,
-    text: '용병 관리',
-    path: '/mercenary-management',
-  },
-] as const
-
-const settingsItem = {
-  iconName: 'Settings' as const,
-  text: '설정',
-  path: '/settings',
-}
-
-type IconName = keyof typeof MuiIcons
 
 export default function Header() {
   const theme = useTheme()

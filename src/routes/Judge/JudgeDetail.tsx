@@ -12,6 +12,12 @@ import { Proposal } from './JudgeData'
 interface Props {
   proposal: Proposal
   onClose: () => void
+  onPrev: () => void
+  onNext: () => void
+  onApprove: (reason: string) => void
+  onReject: (reason: string) => void
+  isFirst: boolean
+  isLast: boolean
   isDarkMode: boolean
 }
 
@@ -29,7 +35,7 @@ function SectionDivider({ isDarkMode }: { isDarkMode: boolean }) {
   )
 }
 
-export default function JudgeDetail({ proposal, onClose, isDarkMode }: Props) {
+export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onApprove, onReject, isFirst, isLast, isDarkMode }: Props) {
   const borderColor = isDarkMode
     ? 'rgba(148,163,184,0.1)'
     : 'rgba(203,213,225,0.5)'
@@ -146,8 +152,14 @@ export default function JudgeDetail({ proposal, onClose, isDarkMode }: Props) {
       </DialogContent>
 
       <JudgeDetailActions
-        proposalId={proposal.id}
+        proposalTitle={proposal.title}
+        isFirst={isFirst}
+        isLast={isLast}
         onClose={onClose}
+        onPrev={onPrev}
+        onNext={onNext}
+        onApprove={onApprove}
+        onReject={onReject}
         isDarkMode={isDarkMode}
       />
     </Dialog>

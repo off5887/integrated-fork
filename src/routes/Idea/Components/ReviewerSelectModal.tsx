@@ -1,276 +1,275 @@
 // src/routes/idea/components/ReviewerSelectModal.tsx
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import SearchIcon from '@mui/icons-material/Search'
 import {
   Avatar,
   Box,
-  Chip,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
+  Button,
+  Dialog,
+  DialogContent,
+  IconButton,
+  InputAdornment,
   TextField,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
-import Modal from '../../../components/common/Modal'
+import { useMemo, useState } from 'react'
 import { useThemeMode } from '../../../context/ThemeContext'
 
-const dummyReviewers = [
-  {
-    id: 1,
-    name: '김디자인',
-    dept: 'UX팀',
-    position: 'UX Designer',
-    avatar: '/avatars/1.jpg',
-  },
-  {
-    id: 2,
-    name: '박프로덕트',
-    dept: '프로덕트팀',
-    position: 'Product Manager',
-    avatar: '/avatars/2.jpg',
-  },
-  {
-    id: 3,
-    name: '이개발',
-    dept: '프론트엔드팀',
-    position: 'Frontend Engineer',
-    avatar: '/avatars/3.jpg',
-  },
-  {
-    id: 4,
-    name: '최마케팅',
-    dept: '그로스팀',
-    position: 'Growth Marketer',
-    avatar: '/avatars/4.jpg',
-  },
-  {
-    id: 5,
-    name: '정기획',
-    dept: '기획팀',
-    position: 'Planner',
-    avatar: '/avatars/5.jpg',
-  },
-  {
-    id: 6,
-    name: '윤서버',
-    dept: '백엔드팀',
-    position: 'Backend Engineer',
-    avatar: '/avatars/6.jpg',
-  },
-  {
-    id: 7,
-    name: '한디렉터',
-    dept: '디자인실',
-    position: 'Design Director',
-    avatar: '/avatars/7.jpg',
-  },
+const REVIEWERS = [
+  { id: 1, name: '김디자인',    dept: 'UX팀',       position: 'UX Designer' },
+  { id: 2, name: '박프로덕트',  dept: '프로덕트팀', position: 'Product Manager' },
+  { id: 3, name: '이개발',      dept: '프론트엔드팀', position: 'Frontend Engineer' },
+  { id: 4, name: '최마케팅',    dept: '그로스팀',   position: 'Growth Marketer' },
+  { id: 5, name: '정기획',      dept: '기획팀',     position: 'Planner' },
+  { id: 6, name: '윤서버',      dept: '백엔드팀',   position: 'Backend Engineer' },
+  { id: 7, name: '한디렉터',    dept: '디자인실',   position: 'Design Director' },
 ]
 
-interface ReviewerSelectModalProps {
+interface Props {
   open: boolean
   onClose: () => void
   selected: string[]
   onToggle: (name: string) => void
 }
 
-export default function ReviewerSelectModal({
-  open,
-  onClose,
-  selected,
-  onToggle,
-}: ReviewerSelectModalProps) {
+export default function ReviewerSelectModal({ open, onClose, selected, onToggle }: Props) {
   const { isDarkMode } = useThemeMode()
   const [search, setSearch] = useState('')
 
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
+  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode
-    ? 'rgba(148,163,184,0.12)'
-    : 'rgba(203,213,225,0.55)'
-  const bgInput = isDarkMode ? 'rgba(15,23,42,0.45)' : 'rgba(248,250,252,0.85)'
+  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
 
-  const inputSx = {
-    bgcolor: bgInput,
-    borderRadius: 2,
-    color: textPrimary,
-    '& .MuiInputBase-input': { color: textPrimary },
-    '& .MuiInputBase-input::placeholder': {
-      color: textSecondary,
-      opacity: 0.7,
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: borderColor,
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode
-        ? 'rgba(148,163,184,0.4)'
-        : 'rgba(148,163,184,0.6)',
-    },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: '#6366f1',
-      borderWidth: '1.5px',
-    },
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return REVIEWERS
+    return REVIEWERS.filter(
+      (r) => r.name.includes(q) || r.dept.includes(q) || r.position.toLowerCase().includes(q),
+    )
+  }, [search])
+
+  const handleClose = () => {
+    setSearch('')
+    onClose()
   }
 
-  const filtered = dummyReviewers.filter(
-    (r) =>
-      r.name.toLowerCase().includes(search.toLowerCase()) ||
-      r.dept.toLowerCase().includes(search.toLowerCase()) ||
-      r.position.toLowerCase().includes(search.toLowerCase()),
-  )
-
   return (
-    <Modal
+    <Dialog
       open={open}
-      onClose={onClose}
-      title="심사자 선택"
-      maxWidth={540}
-      titleSx={{
-        background: 'linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        fontWeight: 700,
+      onClose={handleClose}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: 3,
+            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
+            border: `1px solid ${borderColor}`,
+            boxShadow: isDarkMode
+              ? '0 24px 64px rgba(0,0,0,0.6)'
+              : '0 24px 64px rgba(0,0,0,0.12)',
+            overflow: 'hidden',
+            m: { xs: 2, sm: 3 },
+          },
+        },
+        backdrop: {
+          sx: {
+            backdropFilter: 'blur(6px)',
+            backgroundColor: isDarkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)',
+          },
+        },
       }}
     >
-      <TextField
-        fullWidth
-        placeholder="이름, 부서, 직무로 검색..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <SearchIcon sx={{ mr: 1.5, color: '#6366f1', opacity: 0.9 }} />
-          ),
-        }}
-        sx={{ mb: 3.5 }}
-        size="medium"
-        InputLabelProps={{ shrink: true }}
-        variant="outlined"
-        sxInput={inputSx} // ← MUI v5에서는 slotProps.input 사용 권장
-        // 만약 MUI v5라면 아래처럼 변경하세요:
-        // slotProps={{ input: { sx: inputSx } }}
-      />
+      {/* 상단 그라디언트 스트립 */}
+      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
 
-      <List
+      {/* 헤더 */}
+      <Box
         sx={{
-          pt: 0,
-          maxHeight: 460,
-          overflowY: 'auto',
-          '& .MuiListItem-root': { px: 0 },
+          px: 2.5, pt: 2, pb: 1.75,
+          display: 'flex', alignItems: 'center', gap: 1.25,
+          borderBottom: `1px solid ${borderColor}`,
         }}
       >
-        {filtered.map((reviewer) => {
-          const isSelected = selected.includes(reviewer.name)
-
-          return (
-            <ListItem key={reviewer.id} disablePadding sx={{ mb: 1.5 }}>
-              <ListItemButton
-                onClick={() => onToggle(reviewer.name)}
-                selected={isSelected}
-                sx={{
-                  borderRadius: 2.5,
-                  py: 1.5,
-                  px: 2.5,
-                  transition: 'all 0.18s ease',
-                  bgcolor: isSelected
-                    ? isDarkMode
-                      ? 'rgba(99,102,241,0.18)'
-                      : 'rgba(99,102,241,0.12)'
-                    : 'transparent',
-                  border: isSelected
-                    ? `1px solid ${isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)'}`
-                    : `1px solid ${borderColor}`,
-                  boxShadow: isSelected
-                    ? isDarkMode
-                      ? '0 4px 16px rgba(99,102,241,0.22)'
-                      : '0 4px 12px rgba(99,102,241,0.15)'
-                    : 'none',
-                  '&:hover': {
-                    bgcolor: isDarkMode
-                      ? 'rgba(99,102,241,0.12)'
-                      : 'rgba(99,102,241,0.08)',
-                    borderColor: '#6366f1',
-                  },
-                  '&.Mui-selected': {
-                    bgcolor: isDarkMode
-                      ? 'rgba(99,102,241,0.18)'
-                      : 'rgba(99,102,241,0.12)',
-                  },
-                  '&.Mui-selected:hover': {
-                    bgcolor: isDarkMode
-                      ? 'rgba(99,102,241,0.24)'
-                      : 'rgba(99,102,241,0.16)',
-                  },
-                }}
-              >
-                <ListItemAvatar>
-                  <Avatar
-                    alt={reviewer.name}
-                    src={reviewer.avatar}
-                    sx={{
-                      width: 52,
-                      height: 52,
-                      border: `2px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'}`,
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                    }}
-                  />
-                </ListItemAvatar>
-
-                <ListItemText
-                  primary={
-                    <Box sx={{ ml: 1 }}>
-                      <Typography
-                        variant="subtitle1"
-                        fontWeight={700}
-                        sx={{ color: textPrimary }}
-                      >
-                        {reviewer.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: textSecondary,
-                          fontSize: '0.875rem',
-                          mt: 0.25,
-                        }}
-                      >
-                        {reviewer.dept} · {reviewer.position}
-                      </Typography>
-                    </Box>
-                  }
-                />
-
-                {isSelected && (
-                  <Chip
-                    label="선택됨"
-                    size="small"
-                    sx={{
-                      ml: 2,
-                      bgcolor: '#10b981',
-                      color: '#fff',
-                      fontWeight: 600,
-                      '& .MuiChip-label': { px: 1.5 },
-                    }}
-                  />
-                )}
-              </ListItemButton>
-            </ListItem>
-          )
-        })}
-
-        {filtered.length === 0 && (
-          <Box sx={{ py: 8, textAlign: 'center' }}>
-            <Typography
-              variant="body1"
-              sx={{ color: textSecondary, fontWeight: 500 }}
-            >
-              검색 결과가 없습니다
+        <Box
+          sx={{
+            width: 32, height: 32, borderRadius: '50%',
+            bgcolor: '#6366f1', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}
+        >
+          <PersonAddIcon sx={{ fontSize: '1rem' }} />
+        </Box>
+        <Box flex={1}>
+          <Typography fontWeight={700} sx={{ color: textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
+            심사자 선택
+          </Typography>
+          {selected.length > 0 && (
+            <Typography variant="caption" sx={{ color: '#6366f1', fontWeight: 600 }}>
+              {selected.length}명 선택됨
             </Typography>
-          </Box>
-        )}
-      </List>
-    </Modal>
+          )}
+        </Box>
+        <IconButton size="small" onClick={handleClose} sx={{ color: textSecondary, flexShrink: 0 }}>
+          <CloseIcon sx={{ fontSize: '1.1rem' }} />
+        </IconButton>
+      </Box>
+
+      <DialogContent sx={{ p: 2, pb: 0 }}>
+        {/* 검색 */}
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="이름, 부서, 직무로 검색"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{
+            mb: 1.5,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              backgroundColor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+              fontSize: '0.875rem',
+              '& fieldset': { borderColor },
+              '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
+              '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+            },
+            '& .MuiInputBase-input': {
+              color: textPrimary,
+              WebkitTextFillColor: textPrimary,
+              '&::placeholder': { color: textSecondary, opacity: 1 },
+            },
+          }}
+        />
+
+        {/* 목록 */}
+        <Box
+          sx={{
+            display: 'flex', flexDirection: 'column', gap: 0.75,
+            maxHeight: 340, overflowY: 'auto', pr: 0.25, mb: 2,
+            '&::-webkit-scrollbar': { width: 4 },
+            '&::-webkit-scrollbar-track': { background: 'transparent' },
+            '&::-webkit-scrollbar-thumb': {
+              background: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+              borderRadius: 9999,
+            },
+            scrollbarWidth: 'thin',
+            scrollbarColor: isDarkMode
+              ? 'rgba(99,102,241,0.25) transparent'
+              : 'rgba(99,102,241,0.2) transparent',
+          }}
+        >
+          {filtered.length === 0 ? (
+            <Box sx={{ py: 5, textAlign: 'center' }}>
+              <Typography variant="caption" sx={{ color: textSecondary }}>
+                검색 결과가 없습니다
+              </Typography>
+            </Box>
+          ) : (
+            filtered.map((r) => {
+              const isSelected = selected.includes(r.name)
+              return (
+                <Box
+                  key={r.id}
+                  onClick={() => onToggle(r.name)}
+                  sx={{
+                    display: 'flex', alignItems: 'center', gap: 1.25,
+                    p: 1.25, borderRadius: 1.5, cursor: 'pointer',
+                    border: `1px solid ${isSelected
+                      ? isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)'
+                      : borderColor}`,
+                    bgcolor: isSelected
+                      ? isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.05)'
+                      : isDarkMode ? 'rgba(30,41,59,0.5)' : '#ffffff',
+                    transition: 'all 0.12s ease',
+                    '&:hover': {
+                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
+                      borderColor: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+                    },
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      width: 34, height: 34, flexShrink: 0,
+                      bgcolor: isSelected
+                        ? isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.12)'
+                        : isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(241,245,249,0.9)',
+                      color: isSelected
+                        ? isDarkMode ? '#a5b4fc' : '#4338ca'
+                        : textSecondary,
+                      fontSize: '0.8rem', fontWeight: 700,
+                      border: `1px solid ${isSelected
+                        ? isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'
+                        : borderColor}`,
+                    }}
+                  >
+                    {r.name[0]}
+                  </Avatar>
+
+                  <Box flex={1} minWidth={0}>
+                    <Typography
+                      sx={{
+                        fontSize: '0.83rem', fontWeight: isSelected ? 700 : 600,
+                        color: isSelected
+                          ? isDarkMode ? '#a5b4fc' : '#4338ca'
+                          : textPrimary,
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {r.name}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.72rem', color: textSecondary, fontFamily: 'monospace' }}>
+                      {r.dept} · {r.position}
+                    </Typography>
+                  </Box>
+
+                  {isSelected && (
+                    <CheckIcon sx={{ fontSize: '1rem', color: isDarkMode ? '#a5b4fc' : '#4338ca', flexShrink: 0 }} />
+                  )}
+                </Box>
+              )
+            })
+          )}
+        </Box>
+      </DialogContent>
+
+      {/* 하단 버튼 */}
+      <Box
+        sx={{
+          px: 2.5, py: 2,
+          borderTop: `1px solid ${borderColor}`,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          bgcolor: isDarkMode ? 'rgba(15,23,42,0.3)' : 'rgba(248,250,252,0.8)',
+        }}
+      >
+        <Typography variant="caption" sx={{ color: textSecondary }}>
+          {selected.length > 0 ? `${selected.length}명 선택됨` : '클릭하여 선택'}
+        </Typography>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={handleClose}
+          sx={{
+            borderRadius: 1.5, px: 3, py: 0.85,
+            fontWeight: 700, fontSize: '0.82rem',
+            textTransform: 'none', boxShadow: 'none',
+            bgcolor: '#6366f1', color: '#fff',
+            '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 14px rgba(99,102,241,0.4)' },
+          }}
+        >
+          완료
+        </Button>
+      </Box>
+    </Dialog>
   )
 }

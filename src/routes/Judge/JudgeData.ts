@@ -6,6 +6,8 @@ export interface Proposal {
   solution: string
   proposers: string[]
   reviewer: string
+  /** 결재자 변경 이전 담당자 (이관된 경우에만 존재) */
+  transferredFrom?: string
   startDate: string
   endDate: string
   scope: string
@@ -23,6 +25,7 @@ export const judgeData: Proposal[] = [
     solution: 'LED 교체 시 연간 1,200만원 절감 예상',
     proposers: ['김개발', '이생산'],
     reviewer: '박부장',
+    transferredFrom: '이과장',
     startDate: '2026-03-01',
     endDate: '2026-06-30',
     scope: '전사',
@@ -121,6 +124,7 @@ export const judgeData: Proposal[] = [
     solution: '오전/오후 추가 노선 2개 신설',
     proposers: ['최교통', '이인사'],
     reviewer: '박복지',
+    transferredFrom: '한팀장',
     startDate: '2026-09-01',
     endDate: '2026-12-31',
     scope: '본사·연구소',
