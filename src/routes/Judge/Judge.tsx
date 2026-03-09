@@ -182,7 +182,11 @@ export default function Judge() {
 
   const handleReviewerChange = (proposalId: number, newReviewer: string) => {
     setProposals((prev) =>
-      prev.map((p) => (p.id === proposalId ? { ...p, reviewer: newReviewer } : p)),
+      prev.map((p) =>
+        p.id === proposalId
+          ? { ...p, reviewer: newReviewer, transferredFrom: p.reviewer }
+          : p,
+      ),
     )
   }
 
@@ -429,7 +433,20 @@ export default function Judge() {
                         sx={{
                           cursor: 'pointer',
                           transition: 'background-color 0.15s ease',
-                          '&:hover': { bgcolor: rowHoverBg },
+                          // 이관된 항목: 좌측 amber 인디케이터 + 미세 배경
+                          ...(item.transferredFrom && {
+                            boxShadow: 'inset 3px 0 0 rgba(245,158,11,0.7)',
+                            bgcolor: isDarkMode
+                              ? 'rgba(245,158,11,0.03)'
+                              : 'rgba(245,158,11,0.02)',
+                          }),
+                          '&:hover': {
+                            bgcolor: item.transferredFrom
+                              ? isDarkMode
+                                ? 'rgba(245,158,11,0.06)'
+                                : 'rgba(245,158,11,0.04)'
+                              : rowHoverBg,
+                          },
                           '& .MuiTableCell-root': {
                             borderBottomColor: borderColor,
                             py: 1.75,
@@ -446,26 +463,61 @@ export default function Judge() {
 
                         {/* 제안 제목 */}
                         <TableCell>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography
-                              sx={{ fontSize: '0.9rem', color: textPrimary, fontWeight: 500 }}
-                            >
-                              {item.title}
-                            </Typography>
-                            {/* 모바일: 상태 인라인 표시 */}
-                            <Chip
-                              label={status.label}
-                              size="small"
-                              sx={{
-                                display: { xs: 'flex', sm: 'none' },
-                                bgcolor: status.bg,
-                                color: status.color,
-                                border: `1px solid ${status.border}`,
-                                fontWeight: 600,
-                                fontSize: '0.68rem',
-                                height: 20,
-                              }}
-                            />
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.4 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                              <Typography
+                                sx={{ fontSize: '0.9rem', color: textPrimary, fontWeight: 500 }}
+                              >
+                                {item.title}
+                              </Typography>
+                              {/* 모바일: 상태 인라인 표시 */}
+                              <Chip
+                                label={status.label}
+                                size="small"
+                                sx={{
+                                  display: { xs: 'flex', sm: 'none' },
+                                  bgcolor: status.bg,
+                                  color: status.color,
+                                  border: `1px solid ${status.border}`,
+                                  fontWeight: 600,
+                                  fontSize: '0.68rem',
+                                  height: 20,
+                                }}
+                              />
+                            </Box>
+
+                            {/* 이관 배지 */}
+                            {item.transferredFrom && (
+                              <Tooltip
+                                title={`결재자 변경된 항목 · 이전 담당자: ${item.transferredFrom}`}
+                                placement="right"
+                                arrow
+                              >
+                                <Box
+                                  sx={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 0.4,
+                                    width: 'fit-content',
+                                    px: 0.8,
+                                    py: 0.2,
+                                    borderRadius: 1,
+                                    bgcolor: isDarkMode
+                                      ? 'rgba(245,158,11,0.12)'
+                                      : 'rgba(245,158,11,0.08)',
+                                    border: '1px solid rgba(245,158,11,0.3)',
+                                    cursor: 'default',
+                                  }}
+                                >
+                                  <SwapHorizIcon sx={{ fontSize: '0.65rem', color: '#f59e0b' }} />
+                                  <Typography
+                                    sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#f59e0b', lineHeight: 1 }}
+                                  >
+                                    이관됨 · {item.transferredFrom}
+                                  </Typography>
+                                </Box>
+                              </Tooltip>
+                            )}
                           </Box>
                         </TableCell>
 
