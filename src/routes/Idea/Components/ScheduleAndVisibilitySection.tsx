@@ -76,7 +76,25 @@ export default function ScheduleAndVisibilitySection({
       backgroundColor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
       height: 50,
     },
-    // 선택된 날짜 텍스트 색상 — WebkitTextFillColor로 MUI 내부 override 방지
+    // MUI X v7 DatePicker 날짜 섹션 텍스트 색상
+    '& .MuiPickersSectionList-root': {
+      color: `${textPrimary} !important`,
+    },
+    '& .MuiPickersSectionList-section': {
+      color: `${textPrimary} !important`,
+    },
+    '& .MuiPickersSectionList-sectionContent': {
+      color: `${textPrimary} !important`,
+    },
+    '& .MuiPickersSectionList-separator': {
+      color: `${textSecondary} !important`,
+    },
+    // placeholder 상태 (미선택)
+    '& .MuiPickersSectionList-section[data-placeholder]': {
+      color: `${textSecondary} !important`,
+      opacity: 0.6,
+    },
+    // 일반 input fallback
     '& .MuiInputBase-input': {
       fontSize: '0.9rem',
       fontWeight: 500,
@@ -100,7 +118,6 @@ export default function ScheduleAndVisibilitySection({
       borderWidth: '1.5px',
     },
     '& .MuiSvgIcon-root': { color: textSecondary },
-    // DatePicker 팝업 내 버튼/텍스트 색상 보정
     '& .MuiIconButton-root': { color: textSecondary },
   }
 
