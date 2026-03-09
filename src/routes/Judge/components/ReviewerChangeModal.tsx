@@ -16,7 +16,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { Proposal } from '../JudgeData'
+import { Proposal } from '../judgeData'
 
 // ─── 결재 후보 목록 (실제 환경에서는 API로 받아옴) ───────────────────────────
 
