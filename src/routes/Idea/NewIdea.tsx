@@ -18,14 +18,14 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '../../context/ThemeContext'
 
-import BasicInfoSection from './Components/BasicInfoSection'
-import FileUploadSection from './Components/FileUploadSection'
-import ParticipantsSection from './Components/ParticipantsSection'
-import ScheduleAndVisibilitySection from './Components/ScheduleAndVisibilitySection'
+import BasicInfoSection from './components/BasicInfoSection'
+import FileUploadSection from './components/FileUploadSection'
+import ParticipantsSection from './components/ParticipantsSection'
+import ScheduleAndVisibilitySection from './components/ScheduleAndVisibilitySection'
 
-import CoProposerSelectModal from './Components/CoProposerSelectModal'
-import ReviewerSelectModal from './Components/ReviewerSelectModal'
-import SimilarIdeaSearchModal from './Components/SimilarIdeaSearchModal'
+import CoProposerSelectModal from './components/CoProposerSelectModal'
+import ReviewerSelectModal from './components/ReviewerSelectModal'
+import SimilarIdeaSearchModal from './components/SimilarIdeaSearchModal'
 
 const DRAFT_KEY = 'gomgom_new_idea_draft'
 const AUTO_SAVE_INTERVAL = 5 * 60 * 1000 // 5분

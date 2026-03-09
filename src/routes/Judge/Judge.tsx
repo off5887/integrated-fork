@@ -21,7 +21,7 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { useThemeMode } from '../../context/ThemeContext'
-import { judgeData, Proposal } from './JudgeData'
+import { judgeData, Proposal } from './judgeData'
 import JudgeDetail from './JudgeDetail'
 import ReviewerChangeModal from './components/ReviewerChangeModal'
 
