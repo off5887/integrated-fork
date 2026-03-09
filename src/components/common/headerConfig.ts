@@ -18,6 +18,7 @@ export type MenuItem = {
 export const menuItems: MenuItem[] = [
   { iconName: 'Dashboard', text: '대시보드', path: '/dashboard' },
   { iconName: 'Lightbulb', text: '상상하기', path: '/newIdea' },
+  { iconName: 'AutoStories', text: '상상보기', path: '/ideaBrowse' },
   { iconName: 'AttachMoney', text: '마일리지', path: '/rqMileage' },
   { iconName: 'RateReview', text: '심사하기', path: '/judge' },
   { iconName: 'BarChart', text: '통계', path: '/stats' },

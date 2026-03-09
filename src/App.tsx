@@ -11,6 +11,7 @@ import AuthLayout from './layouts/AuthLayout'
 import MainLayout from './layouts/MainLayout'
 
 import Dashboard from './routes/Dashboard/Dashboard'
+import IdeaBrowse from './routes/IdeaBrowse/IdeaBrowse'
 import NewIdea from './routes/Idea/NewIdea'
 import Judge from './routes/Judge/Judge'
 import RqMileage from './routes/Mileage/MileagePage'
@@ -52,6 +53,7 @@ export default function App() {
             <Route element={<MainLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/newIdea" element={<NewIdea />} />
+              <Route path="/ideaBrowse" element={<IdeaBrowse />} />
               <Route path="/rqMileage" element={<RqMileage />} />
               <Route path="/judge" element={<Judge />} />
               <Route path="/stats" element={<Stats />} />

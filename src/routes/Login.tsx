@@ -43,9 +43,20 @@ export default function Login() {
     }
   }, [isDarkMode])
 
+  // 데모용 우회 계정
+  const DEMO_ID = 'demo'
+  const DEMO_PW = 'demo1234'
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMsg('')
+
+    // 데모 계정 우회 로그인 (서버 통신 없음)
+    if (employeeId === DEMO_ID && password === DEMO_PW) {
+      localStorage.setItem('accessToken', 'demo-token')
+      navigate('/welcome')
+      return
+    }
 
     try {
       const data = await mutation.mutateAsync({ employeeId, password })
@@ -188,6 +199,37 @@ export default function Login() {
             >
               Welcome back
             </Typography>
+          </Box>
+
+          {/* 데모 계정 안내 */}
+          <Box
+            sx={{
+              mb: 4,
+              p: 2,
+              borderRadius: 2.5,
+              bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'}`,
+            }}
+          >
+            <Typography
+              sx={{ fontSize: '0.72rem', fontWeight: 700, color: isDarkMode ? '#a5b4fc' : '#4338ca', mb: 0.75, letterSpacing: '0.04em', textTransform: 'uppercase' }}
+            >
+              데모 계정
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Box>
+                <Typography sx={{ fontSize: '0.72rem', color: isDarkMode ? '#94a3b8' : '#64748b' }}>사번</Typography>
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: isDarkMode ? '#e2e8f0' : '#1e293b', letterSpacing: '0.02em' }}>
+                  demo
+                </Typography>
+              </Box>
+              <Box>
+                <Typography sx={{ fontSize: '0.72rem', color: isDarkMode ? '#94a3b8' : '#64748b' }}>비밀번호</Typography>
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: isDarkMode ? '#e2e8f0' : '#1e293b', letterSpacing: '0.02em' }}>
+                  demo1234
+                </Typography>
+              </Box>
+            </Box>
           </Box>
 
           {/* 에러 메시지 */}
