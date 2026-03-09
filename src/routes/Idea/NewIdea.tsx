@@ -25,6 +25,7 @@ import ScheduleAndVisibilitySection from './Components/ScheduleAndVisibilitySect
 
 import CoProposerSelectModal from './Components/CoProposerSelectModal'
 import ReviewerSelectModal from './Components/ReviewerSelectModal'
+import SimilarIdeaSearchModal from './Components/SimilarIdeaSearchModal'
 
 const DRAFT_KEY = 'gomgom_new_idea_draft'
 const AUTO_SAVE_INTERVAL = 5 * 60 * 1000 // 5분
@@ -83,6 +84,7 @@ export default function NewIdea() {
   // ─── 모달 상태 ─────────────────────────────────────────────────────────────
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
   const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
+  const [similarSearchOpen, setSimilarSearchOpen] = useState(false)
 
   // ─── 자동저장 상태 ─────────────────────────────────────────────────────────
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
@@ -314,6 +316,58 @@ export default function NewIdea() {
               </IconButton>
             </Tooltip>
           </Box>
+        </Box>
+
+        {/* ─── 유사 아이디어 검색 배너 ──────────────────────────────────── */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: { xs: 1.5, sm: 2 },
+            px: 2.5, py: 1.75, mb: 2.5,
+            borderRadius: 2.5,
+            bgcolor: isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)',
+            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.15)'}`,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Box
+            sx={{
+              width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+              bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
+              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1rem',
+            }}
+          >
+            🔍
+          </Box>
+          <Box flex={1} minWidth={0}>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}>
+              유사한 아이디어가 이미 있을 수 있어요
+            </Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: textSecondary }}>
+              제안 전 기존 아이디어와 중복 여부를 확인해 보세요
+            </Typography>
+          </Box>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => setSimilarSearchOpen(true)}
+            sx={{
+              borderRadius: 2, px: 2, py: 0.7,
+              fontWeight: 700, fontSize: '0.8rem',
+              textTransform: 'none', flexShrink: 0,
+              borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
+              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              '&:hover': {
+                borderColor: '#6366f1',
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+              },
+            }}
+          >
+            유사 아이디어 검색
+          </Button>
         </Box>
 
         {/* ─── 임시저장 복원 배너 ──────────────────────────────────────── */}
@@ -611,6 +665,12 @@ export default function NewIdea() {
       </Box>
 
       {/* ─── 모달 ───────────────────────────────────────────────────────── */}
+      <SimilarIdeaSearchModal
+        open={similarSearchOpen}
+        onClose={() => setSimilarSearchOpen(false)}
+        isDarkMode={isDarkMode}
+        initialQuery={title}
+      />
       <ReviewerSelectModal
         open={reviewerModalOpen}
         onClose={() => setReviewerModalOpen(false)}
