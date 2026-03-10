@@ -1,7 +1,7 @@
 // src/routes/dashboard/Dashboard.tsx
 import { Box, Container, Grid, Typography, alpha } from '@mui/material'
 import { useThemeMode } from '../../context/ThemeContext'
-import { getDashboardTheme, dashboardAccent } from '../../theme/dashboardTheme'
+import { dashboardAccent, getDashboardTheme } from '../../theme/dashboardTheme'
 
 import ApprovalStatusPie from './components/ApprovalStatusPie'
 import DepartmentTop5Bar from './components/DepartmentTop5Bar'
@@ -9,8 +9,13 @@ import ExecutionCompletionRate from './components/ExecutionCompletionRate'
 import MyGomgomiCard from './components/MyGomgomiCard'
 import PopularImaginationTop5 from './components/PopularImaginationTop5'
 
+import {
+  EXECUTION_RATE,
+  KPI_STATS,
+  MY_GOMGOMI,
+  RECENT_ACTIVITIES,
+} from '../../api/mock/dashboard'
 import DashboardCard from './components/DashboardCard'
-import { KPI_STATS, RECENT_ACTIVITIES, MY_GOMGOMI, EXECUTION_RATE } from '../../api/mock/dashboard'
 
 export default function RealDashboard() {
   const { isDarkMode } = useThemeMode()
@@ -68,11 +73,17 @@ export default function RealDashboard() {
             px: 2,
             py: 0.75,
             borderRadius: 2,
-            bgcolor: isDarkMode ? 'rgba(59,130,246,0.12)' : 'rgba(59,130,246,0.08)',
+            bgcolor: isDarkMode
+              ? 'rgba(59,130,246,0.12)'
+              : 'rgba(59,130,246,0.08)',
             border: `1px solid ${isDarkMode ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.2)'}`,
           }}
         >
-          <Typography variant="caption" fontWeight={600} sx={{ color: dashboardAccent.blue }}>
+          <Typography
+            variant="caption"
+            fontWeight={600}
+            sx={{ color: dashboardAccent.blue }}
+          >
             실시간 현황
           </Typography>
         </Box>
@@ -114,7 +125,12 @@ export default function RealDashboard() {
                   <Box>
                     <Typography
                       variant="caption"
-                      sx={{ color: dt.textSecondary, fontWeight: 500, display: 'block', mb: 0.25 }}
+                      sx={{
+                        color: dt.textSecondary,
+                        fontWeight: 500,
+                        display: 'block',
+                        mb: 0.25,
+                      }}
                     >
                       {stat.label}
                     </Typography>
@@ -134,7 +150,10 @@ export default function RealDashboard() {
           {/* Row 2: MyGomgomi (5) + ApprovalStatusPie (7) */}
           <Grid size={{ xs: 12, lg: 5 }}>
             <DashboardCard delay={0.2} sx={{ minHeight: 400, height: '100%' }}>
-              <MyGomgomiCard fishTotal={MY_GOMGOMI.fishTotal} fishToNextLevel={MY_GOMGOMI.fishToNextLevel} />
+              <MyGomgomiCard
+                fishTotal={MY_GOMGOMI.fishTotal}
+                fishToNextLevel={MY_GOMGOMI.fishToNextLevel}
+              />
             </DashboardCard>
           </Grid>
 
@@ -166,19 +185,37 @@ export default function RealDashboard() {
 
           <Grid size={{ xs: 12, lg: 8 }}>
             <DashboardCard delay={0.45} sx={{ minHeight: 380, height: '100%' }}>
-              <Box sx={{ p: { xs: 2.5, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <Box
+                sx={{
+                  p: { xs: 2.5, md: 3 },
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
                 <Typography
                   variant="h6"
                   fontWeight={700}
-                  sx={{ color: dt.textPrimary, mb: 0.5, letterSpacing: '-0.01em' }}
+                  sx={{
+                    color: dt.textPrimary,
+                    mb: 0.5,
+                    letterSpacing: '-0.01em',
+                  }}
                 >
                   최근 활동
                 </Typography>
-                <Typography variant="caption" sx={{ color: dt.textSecondary, mb: 3, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: dt.textSecondary, mb: 3, display: 'block' }}
+                >
                   팀 내 최신 아이디어 활동 내역입니다
                 </Typography>
 
-                <Box role="list" aria-label="최근 활동 목록" sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                <Box
+                  role="list"
+                  aria-label="최근 활동 목록"
+                  sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}
+                >
                   {RECENT_ACTIVITIES.map((act, i) => (
                     <Box
                       key={i}
@@ -219,7 +256,11 @@ export default function RealDashboard() {
                         >
                           {act.user}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: dt.textSecondary }} noWrap>
+                        <Typography
+                          variant="caption"
+                          sx={{ color: dt.textSecondary }}
+                          noWrap
+                        >
                           {act.action}
                         </Typography>
                       </Box>

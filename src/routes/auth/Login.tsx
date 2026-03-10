@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   getLoginErrorMessage,
   useLoginMutation,
-} from '../api/queries/useLoginMutation'
+} from '../../api/queries/useLoginMutation'
 
 export default function Login() {
   const [employeeId, setEmployeeId] = useState('')
@@ -207,25 +207,62 @@ export default function Login() {
               mb: 4,
               p: 2,
               borderRadius: 2.5,
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+              bgcolor: isDarkMode
+                ? 'rgba(99,102,241,0.1)'
+                : 'rgba(99,102,241,0.06)',
               border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'}`,
             }}
           >
             <Typography
-              sx={{ fontSize: '0.72rem', fontWeight: 700, color: isDarkMode ? '#a5b4fc' : '#4338ca', mb: 0.75, letterSpacing: '0.04em', textTransform: 'uppercase' }}
+              sx={{
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                mb: 0.75,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+              }}
             >
               데모 계정
             </Typography>
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Box>
-                <Typography sx={{ fontSize: '0.72rem', color: isDarkMode ? '#94a3b8' : '#64748b' }}>사번</Typography>
-                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: isDarkMode ? '#e2e8f0' : '#1e293b', letterSpacing: '0.02em' }}>
+                <Typography
+                  sx={{
+                    fontSize: '0.72rem',
+                    color: isDarkMode ? '#94a3b8' : '#64748b',
+                  }}
+                >
+                  사번
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    color: isDarkMode ? '#e2e8f0' : '#1e293b',
+                    letterSpacing: '0.02em',
+                  }}
+                >
                   demo
                 </Typography>
               </Box>
               <Box>
-                <Typography sx={{ fontSize: '0.72rem', color: isDarkMode ? '#94a3b8' : '#64748b' }}>비밀번호</Typography>
-                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: isDarkMode ? '#e2e8f0' : '#1e293b', letterSpacing: '0.02em' }}>
+                <Typography
+                  sx={{
+                    fontSize: '0.72rem',
+                    color: isDarkMode ? '#94a3b8' : '#64748b',
+                  }}
+                >
+                  비밀번호
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    color: isDarkMode ? '#e2e8f0' : '#1e293b',
+                    letterSpacing: '0.02em',
+                  }}
+                >
                   demo1234
                 </Typography>
               </Box>
