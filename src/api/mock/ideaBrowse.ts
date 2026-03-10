@@ -1,32 +1,6 @@
-// src/routes/IdeaBrowse/ideaBrowseData.ts
+// src/api/mock/ideaBrowse.ts
 
-export type IdeaCategory = '절감' | '혁신' | '안전' | '복지' | '품질' | '환경' | '기타'
-export type IdeaStatus = '심사대기' | '심사중' | '승인' | '반려' | '실행중' | '완료'
-
-export interface IdeaItem {
-  id: number
-  title: string
-  category: IdeaCategory
-  problem: string
-  solution: string
-  author: string
-  division: string
-  department: string
-  status: IdeaStatus
-  submittedAt: string
-  likes: number
-  comments: number
-  views: number
-}
-
-export interface CategoryConfig {
-  id: IdeaCategory
-  label: string
-  emoji: string
-  color: string
-  bg: string
-  border: string
-}
+import type { CategoryConfig, IdeaItem } from '../types/ideaBrowse'
 
 export const CATEGORY_CONFIG: CategoryConfig[] = [
   { id: '절감', label: '절감', emoji: '💰', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)' },
@@ -47,7 +21,6 @@ export const DEPT_BY_DIVISION: Record<string, string[]> = {
   '경영지원': ['인사팀', '재무팀', '총무팀'],
 }
 
-// 현재 로그인 사용자의 제출 아이디어 (유사도 비교용)
 export const MY_IDEA_TITLES = [
   '사내 점심시간 30분 연장',
   '주 1회 재택근무 의무화',
