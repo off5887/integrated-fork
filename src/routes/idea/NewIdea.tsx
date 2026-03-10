@@ -33,7 +33,7 @@ const AUTO_SAVE_INTERVAL = 5 * 60 * 1000 // 5분
 
 interface DraftData {
   title: string
-  category: string
+  categories: string[]
   problem: string
   solution: string
   reviewer: string[]
@@ -69,7 +69,7 @@ export default function NewIdea() {
 
   // ─── 폼 상태 ───────────────────────────────────────────────────────────────
   const [title, setTitle] = useState('')
-  const [category, setCategory] = useState('')
+  const [categories, setCategories] = useState<string[]>([])
   const [problem, setProblem] = useState('')
   const [solution, setSolution] = useState('')
   const [reviewer, setReviewer] = useState<string[]>([])
@@ -95,15 +95,15 @@ export default function NewIdea() {
 
   // 항상 최신 폼 값을 참조하기 위한 ref
   const formRef = useRef({
-    title, category, problem, solution,
+    title, categories, problem, solution,
     reviewer, coProposers, startDate, endDate, security, plan,
   })
   useEffect(() => {
     formRef.current = {
-      title, category, problem, solution,
+      title, categories, problem, solution,
       reviewer, coProposers, startDate, endDate, security, plan,
     }
-  }, [title, category, problem, solution, reviewer, coProposers, startDate, endDate, security, plan])
+  }, [title, categories, problem, solution, reviewer, coProposers, startDate, endDate, security, plan])
 
   // ─── 마운트: 임시저장 불러오기 확인 ─────────────────────────────────────
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function NewIdea() {
   const handleRestoreDraft = () => {
     if (!savedDraft) return
     setTitle(savedDraft.title ?? '')
-    setCategory(savedDraft.category ?? '')
+    setCategories(savedDraft.categories ?? [])
     setProblem(savedDraft.problem ?? '')
     setSolution(savedDraft.solution ?? '')
     setReviewer(savedDraft.reviewer ?? [])
@@ -182,7 +182,7 @@ export default function NewIdea() {
 
   // ─── 제출 ────────────────────────────────────────────────────────────────
   const handleSubmit = () => {
-    if (!title.trim() || !problem.trim() || !solution.trim() || !startDate || !endDate) {
+    if (!title.trim() || categories.length === 0 || !problem.trim() || !solution.trim() || !startDate || !endDate) {
       alert('필수 항목을 모두 입력해주세요.')
       return
     }
@@ -451,8 +451,8 @@ export default function NewIdea() {
             <BasicInfoSection
               title={title}
               setTitle={setTitle}
-              category={category}
-              setCategory={setCategory}
+              categories={categories}
+              setCategories={setCategories}
               problem={problem}
               setProblem={setProblem}
               solution={solution}
