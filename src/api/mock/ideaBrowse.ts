@@ -2,6 +2,9 @@
 
 import type { CategoryConfig, IdeaItem } from '../types/ideaBrowse'
 
+/** 현재 로그인된 사용자 (mock) */
+export const MY_AUTHOR = '김개발'
+
 export const CATEGORY_CONFIG: CategoryConfig[] = [
   { id: '절감', label: '절감', emoji: '💰', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)' },
   { id: '혁신', label: '혁신', emoji: '🚀', color: '#6366f1', bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.35)' },
@@ -97,6 +100,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 98,
     comments: 22,
     views: 380,
+    ideaScore: 82,
+    mileageScore: 1500,
   },
   {
     id: 5,
@@ -112,6 +117,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 76,
     comments: 18,
     views: 290,
+    ideaScore: 78,
+    mileageScore: 1200,
   },
   {
     id: 6,
@@ -202,6 +209,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 38,
     comments: 14,
     views: 145,
+    ideaScore: 75,
+    mileageScore: 1000,
   },
   {
     id: 12,
@@ -217,6 +226,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 55,
     comments: 16,
     views: 210,
+    ideaScore: 88,
+    mileageScore: 3000,
   },
   {
     id: 13,
@@ -262,6 +273,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 72,
     comments: 20,
     views: 260,
+    ideaScore: 90,
+    mileageScore: 5000,
   },
   {
     id: 16,
@@ -292,6 +305,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 96,
     comments: 24,
     views: 380,
+    ideaScore: 85,
+    mileageScore: 1800,
   },
   {
     id: 18,
@@ -352,6 +367,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 28,
     comments: 7,
     views: 98,
+    ideaScore: 83,
+    mileageScore: 4200,
   },
   {
     id: 22,
@@ -397,6 +414,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 37,
     comments: 11,
     views: 130,
+    ideaScore: 80,
+    mileageScore: 1500,
   },
   {
     id: 25,
@@ -412,6 +431,8 @@ export const IDEAS: IdeaItem[] = [
     likes: 59,
     comments: 18,
     views: 215,
+    ideaScore: 91,
+    mileageScore: 3500,
   },
   {
     id: 26,

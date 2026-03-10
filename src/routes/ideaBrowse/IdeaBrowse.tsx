@@ -1,7 +1,7 @@
 // src/routes/ideaBrowse/IdeaBrowse.tsx
 import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
-import { DEPT_BY_DIVISION, IDEAS } from '../../api/mock/ideaBrowse'
+import { DEPT_BY_DIVISION, IDEAS, MY_AUTHOR } from '../../api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '../../api/types/ideaBrowse'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { useThemeMode } from '../../context/ThemeContext'
@@ -30,6 +30,7 @@ export default function IdeaBrowse() {
   const [selectedStatus,   setSelectedStatus]   = useState<IdeaStatus | ''>('')
   const [sortBy,           setSortBy]           = useState<SortKey>('latest')
   const [showSimilarOnly,  setShowSimilarOnly]  = useState(false)
+  const [showMyOnly,       setShowMyOnly]       = useState(false)
   const [selectedIdea,     setSelectedIdea]     = useState<IdeaItem | null>(null)
   const [isLoading,        setIsLoading]        = useState(true)
 
@@ -57,6 +58,7 @@ export default function IdeaBrowse() {
     const q = search.trim().toLowerCase()
 
     const filtered = IDEAS.filter((idea) => {
+      if (showMyOnly && idea.author !== MY_AUTHOR) return false
       if (selectedCategory && idea.category !== selectedCategory) return false
       if (selectedDivision && idea.division !== selectedDivision) return false
       if (selectedDept && idea.department !== selectedDept) return false
@@ -78,14 +80,19 @@ export default function IdeaBrowse() {
         default:         return 0
       }
     })
-  }, [search, selectedCategory, selectedDivision, selectedDept, selectedStatus, sortBy, showSimilarOnly, similarityMap])
+  }, [search, selectedCategory, selectedDivision, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap])
 
   const similarCount = useMemo(
     () => IDEAS.filter((i) => (similarityMap.get(i.id)?.length ?? 0) > 0).length,
     [similarityMap],
   )
 
-  const hasFilter = !!(search || selectedCategory || selectedDivision || selectedDept || selectedStatus || showSimilarOnly)
+  const myCount = useMemo(
+    () => IDEAS.filter((i) => i.author === MY_AUTHOR).length,
+    [],
+  )
+
+  const hasFilter = !!(search || selectedCategory || selectedDivision || selectedDept || selectedStatus || showSimilarOnly || showMyOnly)
 
   const clearAll = () => {
     setSearch('')
@@ -94,6 +101,7 @@ export default function IdeaBrowse() {
     setSelectedDept('')
     setSelectedStatus('')
     setShowSimilarOnly(false)
+    setShowMyOnly(false)
   }
 
   return (
@@ -143,6 +151,11 @@ export default function IdeaBrowse() {
               </Box>
               <Divider orientation="vertical" flexItem sx={{ borderColor }} />
               <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.success, lineHeight: 1 }}>{myCount}</Typography>
+                <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>내 상상</Typography>
+              </Box>
+              <Divider orientation="vertical" flexItem sx={{ borderColor }} />
+              <Box sx={{ textAlign: 'center' }}>
                 <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.similar, lineHeight: 1 }}>{similarCount}</Typography>
                 <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>내 유사</Typography>
               </Box>
@@ -157,7 +170,9 @@ export default function IdeaBrowse() {
             selectedDept={selectedDept}
             selectedStatus={selectedStatus}
             showSimilarOnly={showSimilarOnly}
+            showMyOnly={showMyOnly}
             similarCount={similarCount}
+            myCount={myCount}
             hasFilter={hasFilter}
             deptOptions={deptOptions}
             onSearchChange={setSearch}
@@ -166,6 +181,7 @@ export default function IdeaBrowse() {
             onDeptChange={setSelectedDept}
             onStatusChange={setSelectedStatus}
             onSimilarToggle={() => setShowSimilarOnly((v) => !v)}
+            onMyOnlyToggle={() => setShowMyOnly((v) => !v)}
             onClearAll={clearAll}
           />
         </Box>
@@ -182,6 +198,19 @@ export default function IdeaBrowse() {
               </Box>
               건
             </Typography>
+            {showMyOnly && (
+              <Chip
+                label="내 상상만"
+                size="small"
+                onDelete={() => setShowMyOnly(false)}
+                sx={{
+                  bgcolor: isDarkMode ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.1)',
+                  color: ideaAccent.success,
+                  border: `1px solid rgba(16,185,129,0.35)`, fontSize: '0.72rem', fontWeight: 600,
+                  '& .MuiChip-deleteIcon': { color: ideaAccent.success, '&:hover': { color: ideaAccent.danger } },
+                }}
+              />
+            )}
             {showSimilarOnly && (
               <Chip
                 label="내 유사 아이디어"

@@ -27,7 +27,9 @@ interface IdeaFiltersProps {
   selectedDept: string
   selectedStatus: IdeaStatus | ''
   showSimilarOnly: boolean
+  showMyOnly: boolean
   similarCount: number
+  myCount: number
   hasFilter: boolean
   deptOptions: string[]
   onSearchChange: (v: string) => void
@@ -36,6 +38,7 @@ interface IdeaFiltersProps {
   onDeptChange: (v: string) => void
   onStatusChange: (v: IdeaStatus | '') => void
   onSimilarToggle: () => void
+  onMyOnlyToggle: () => void
   onClearAll: () => void
 }
 
@@ -47,7 +50,9 @@ export default function IdeaFilters({
   selectedDept,
   selectedStatus,
   showSimilarOnly,
+  showMyOnly,
   similarCount,
+  myCount,
   hasFilter,
   deptOptions,
   onSearchChange,
@@ -56,6 +61,7 @@ export default function IdeaFilters({
   onDeptChange,
   onStatusChange,
   onSimilarToggle,
+  onMyOnlyToggle,
   onClearAll,
 }: IdeaFiltersProps) {
   const { textPrimary, textSecondary, borderColor, filterActiveBg, filterActiveBorder, filterChipBg, similar } = getIdeaTheme(isDarkMode)
@@ -240,6 +246,44 @@ export default function IdeaFilters({
             ))}
           </Select>
         </FormControl>
+
+        {/* 내 상상만 토글 */}
+        <Tooltip title={`내가 제출한 아이디어 ${myCount}건만 보기`} arrow>
+          <Box
+            onClick={onMyOnlyToggle}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onMyOnlyToggle() }}
+            aria-pressed={showMyOnly}
+            sx={{
+              display: 'inline-flex', alignItems: 'center', gap: 0.75,
+              px: 1.5, py: 0.7, borderRadius: 2, cursor: 'pointer', userSelect: 'none',
+              border: `1px solid ${showMyOnly ? 'rgba(16,185,129,0.45)' : borderColor}`,
+              bgcolor: showMyOnly ? (isDarkMode ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.1)') : filterChipBg,
+              transition: 'all 0.15s ease', outline: 'none',
+              '&:hover': { borderColor: 'rgba(16,185,129,0.45)', bgcolor: isDarkMode ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.1)' },
+              '&:focus-visible': { outline: `2px solid ${ideaAccent.success}`, outlineOffset: 2 },
+            }}
+          >
+            <Box component="span" sx={{ fontSize: '0.85rem', lineHeight: 1 }}>✨</Box>
+            <Typography sx={{ fontSize: '0.78rem', fontWeight: showMyOnly ? 700 : 500, color: showMyOnly ? ideaAccent.success : textSecondary, whiteSpace: 'nowrap' }}>
+              내 상상만
+            </Typography>
+            {myCount > 0 && (
+              <Box
+                sx={{
+                  minWidth: 18, height: 18, borderRadius: '50%',
+                  bgcolor: showMyOnly ? ideaAccent.success : (isDarkMode ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.12)'),
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <Typography sx={{ fontSize: '0.65rem', fontWeight: 800, color: showMyOnly ? '#fff' : ideaAccent.success, lineHeight: 1 }}>
+                  {myCount}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Tooltip>
 
         {/* 내 유사 아이디어 토글 */}
         <Tooltip title={`내가 제출한 아이디어와 유사한 건 ${similarCount}개`} arrow>

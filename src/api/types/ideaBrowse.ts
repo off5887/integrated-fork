@@ -18,6 +18,10 @@ export interface IdeaItem {
   likes: number
   comments: number
   views: number
+  /** 승인·실행중·완료 상태일 때만 존재. 100점 만점 아이디어 평가 점수 */
+  ideaScore?: number
+  /** 승인·실행중·완료 상태일 때만 존재. 지급된 마일리지 포인트 */
+  mileageScore?: number
 }
 
 export interface CategoryConfig {
