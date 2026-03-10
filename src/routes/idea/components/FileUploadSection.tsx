@@ -64,7 +64,7 @@ export default function FileUploadSection({
               fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
             }}
           >
-            5
+            4
           </Box>
           <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
             첨부 자료

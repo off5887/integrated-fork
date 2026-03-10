@@ -268,11 +268,12 @@ export default function SimilarIdeaSearchModal({ open, onClose, isDarkMode, init
 
   const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
 
-  // 검색 결과 (점수 기반 정렬, 점수 0 제외)
+  // 검색 결과 (점수 기반 정렬, 점수 0 제외, 비공개 제외)
   const results = useMemo(() => {
     const q = query.trim()
     if (!q || q.length < 2) return []
     return IDEAS
+      .filter((idea) => idea.security !== 'private')
       .map((idea) => ({ idea, score: scoreIdea(idea, q) }))
       .filter(({ score }) => score > 0)
       .sort((a, b) => b.score - a.score)

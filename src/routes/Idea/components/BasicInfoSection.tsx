@@ -228,12 +228,12 @@ export default function BasicInfoSection({
           fullWidth
           label="문제점 도출"
           multiline
-          rows={5}
+          minRows={3}
           value={problem}
           onChange={(e) => setProblem(e.target.value)}
           required
           slotProps={{
-            input: { sx: inputSx },
+            input: { sx: { ...inputSx, '& textarea': { resize: 'vertical', minHeight: '76px' } } },
             inputLabel: { sx: labelSx },
           }}
         />
@@ -243,12 +243,12 @@ export default function BasicInfoSection({
           fullWidth
           label="해결 대안"
           multiline
-          rows={5}
+          minRows={3}
           value={solution}
           onChange={(e) => setSolution(e.target.value)}
           required
           slotProps={{
-            input: { sx: inputSx },
+            input: { sx: { ...inputSx, '& textarea': { resize: 'vertical', minHeight: '76px' } } },
             inputLabel: { sx: labelSx },
           }}
         />

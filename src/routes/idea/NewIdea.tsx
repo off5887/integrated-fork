@@ -22,9 +22,9 @@ import { getIdeaTheme } from '../../theme/ideaTheme'
 import BasicInfoSection from './components/BasicInfoSection'
 import FileUploadSection from './components/FileUploadSection'
 import ParticipantsSection from './components/ParticipantsSection'
-import ScheduleAndVisibilitySection from './components/ScheduleAndVisibilitySection'
+// import ScheduleAndVisibilitySection from './components/ScheduleAndVisibilitySection'
 
-import CoProposerSelectModal from './components/CoProposerSelectModal'
+// import CoProposerSelectModal from './components/CoProposerSelectModal'
 import ReviewerSelectModal from './components/ReviewerSelectModal'
 import SimilarIdeaSearchModal from './components/SimilarIdeaSearchModal'
 
@@ -37,9 +37,9 @@ interface DraftData {
   problem: string
   solution: string
   reviewer: string[]
-  coProposers: string[]
-  startDate: string
-  endDate: string
+  // coProposers: string[]
+  // startDate: string
+  // endDate: string
   security: 'public' | 'private'
   plan: string
   savedAt: string
@@ -73,9 +73,9 @@ export default function NewIdea() {
   const [problem, setProblem] = useState('')
   const [solution, setSolution] = useState('')
   const [reviewer, setReviewer] = useState<string[]>([])
-  const [coProposers, setCoProposers] = useState<string[]>([])
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
+  // const [coProposers, setCoProposers] = useState<string[]>([])
+  // const [startDate, setStartDate] = useState('')
+  // const [endDate, setEndDate] = useState('')
   const [security, setSecurity] = useState<'public' | 'private'>('public')
   const [plan, setPlan] = useState('')
   const [files, setFiles] = useState<File[]>([])
@@ -84,7 +84,7 @@ export default function NewIdea() {
 
   // ─── 모달 상태 ─────────────────────────────────────────────────────────────
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
-  const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
+  // const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
   const [similarSearchOpen, setSimilarSearchOpen] = useState(false)
 
   // ─── 자동저장 상태 ─────────────────────────────────────────────────────────
@@ -96,14 +96,16 @@ export default function NewIdea() {
   // 항상 최신 폼 값을 참조하기 위한 ref
   const formRef = useRef({
     title, categories, problem, solution,
-    reviewer, coProposers, startDate, endDate, security, plan,
+    reviewer, security, plan,
+    // coProposers, startDate, endDate,
   })
   useEffect(() => {
     formRef.current = {
       title, categories, problem, solution,
-      reviewer, coProposers, startDate, endDate, security, plan,
+      reviewer, security, plan,
+      // coProposers, startDate, endDate,
     }
-  }, [title, categories, problem, solution, reviewer, coProposers, startDate, endDate, security, plan])
+  }, [title, categories, problem, solution, reviewer, security, plan])
 
   // ─── 마운트: 임시저장 불러오기 확인 ─────────────────────────────────────
   useEffect(() => {
@@ -152,9 +154,9 @@ export default function NewIdea() {
     setProblem(savedDraft.problem ?? '')
     setSolution(savedDraft.solution ?? '')
     setReviewer(savedDraft.reviewer ?? [])
-    setCoProposers(savedDraft.coProposers ?? [])
-    setStartDate(savedDraft.startDate ?? '')
-    setEndDate(savedDraft.endDate ?? '')
+    // setCoProposers(savedDraft.coProposers ?? [])
+    // setStartDate(savedDraft.startDate ?? '')
+    // setEndDate(savedDraft.endDate ?? '')
     setSecurity(savedDraft.security ?? 'public')
     setPlan(savedDraft.plan ?? '')
     setSavedDraft(null)
@@ -174,15 +176,15 @@ export default function NewIdea() {
     )
   }
 
-  const handleToggleCoProposer = (name: string) => {
-    setCoProposers((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
-    )
-  }
+  // const handleToggleCoProposer = (name: string) => {
+  //   setCoProposers((prev) =>
+  //     prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
+  //   )
+  // }
 
   // ─── 제출 ────────────────────────────────────────────────────────────────
   const handleSubmit = () => {
-    if (!title.trim() || categories.length === 0 || !problem.trim() || !solution.trim() || !startDate || !endDate) {
+    if (!title.trim() || categories.length === 0 || !problem.trim() || !solution.trim()) {
       alert('필수 항목을 모두 입력해주세요.')
       return
     }
@@ -464,20 +466,21 @@ export default function NewIdea() {
 
             <SectionDivider isDarkMode={isDarkMode} />
 
-            {/* 섹션 2: 참여자 */}
+            {/* 섹션 2: 심사자 & 공개 범위 */}
             <ParticipantsSection
               reviewer={reviewer}
               setReviewer={setReviewer}
-              coProposers={coProposers}
-              setCoProposers={setCoProposers}
+              // coProposers={coProposers}
+              // setCoProposers={setCoProposers}
+              security={security}
+              setSecurity={setSecurity}
               isDarkMode={isDarkMode}
               onOpenReviewerModal={() => setReviewerModalOpen(true)}
-              onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
+              // onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
             />
 
-            <SectionDivider isDarkMode={isDarkMode} />
-
-            {/* 섹션 3: 실행 일정 & 공개 범위 */}
+            {/* 실행 일정 - 추후 사용 */}
+            {/* <SectionDivider isDarkMode={isDarkMode} />
             <ScheduleAndVisibilitySection
               startDate={startDate}
               setStartDate={setStartDate}
@@ -488,11 +491,11 @@ export default function NewIdea() {
               inputSx={inputSx}
               labelSx={labelSx}
               isDarkMode={isDarkMode}
-            />
+            /> */}
 
             <SectionDivider isDarkMode={isDarkMode} />
 
-            {/* 섹션 4: 실행 계획 */}
+            {/* 섹션 3: 실행 계획 */}
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
                 <Box
@@ -503,7 +506,7 @@ export default function NewIdea() {
                     fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
                   }}
                 >
-                  4
+                  3
                 </Box>
                 <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
                   실행 계획
@@ -545,7 +548,7 @@ export default function NewIdea() {
 
             <SectionDivider isDarkMode={isDarkMode} />
 
-            {/* 섹션 5: 첨부 파일 */}
+            {/* 섹션 4: 첨부 파일 */}
             <FileUploadSection
               files={files}
               filePreviews={filePreviews}
@@ -668,12 +671,12 @@ export default function NewIdea() {
         selected={reviewer}
         onToggle={handleToggleReviewer}
       />
-      <CoProposerSelectModal
+      {/* <CoProposerSelectModal
         open={coProposerModalOpen}
         onClose={() => setCoProposerModalOpen(false)}
         selected={coProposers}
         onToggle={handleToggleCoProposer}
-      />
+      /> */}
 
       {/* ─── 임시저장 스낵바 ─────────────────────────────────────────── */}
       <Snackbar
