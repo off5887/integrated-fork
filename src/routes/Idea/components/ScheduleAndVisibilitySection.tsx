@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
+import { getIdeaTheme } from '../../../theme/ideaTheme'
 
 interface Props {
   startDate: string
@@ -60,9 +61,7 @@ export default function ScheduleAndVisibilitySection({
   setSecurity,
   isDarkMode,
 }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
 
   // 기간 계산
   const start = startDate ? dayjs(startDate) : null

@@ -20,6 +20,7 @@ import {
 import { useMemo, useState } from 'react'
 import { useThemeMode } from '../../../context/ThemeContext'
 import { ORG_STRUCTURE } from '../../../api/mock/idea'
+import { getIdeaTheme } from '../../../theme/ideaTheme'
 
 // 검색을 위한 플랫 멤버 목록
 const allMembers = ORG_STRUCTURE.flatMap((div) =>
@@ -46,9 +47,7 @@ export default function CoProposerSelectModal({
   const [expandedDivs, setExpandedDivs] = useState<string[]>(['div1', 'div2'])
   const [expandedTeams, setExpandedTeams] = useState<string[]>(['team-a1', 'team-b1'])
 
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
 
   const handleClose = () => {
     setSearch('')

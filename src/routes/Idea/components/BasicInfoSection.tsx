@@ -1,6 +1,7 @@
 // src/routes/idea/BasicInfoSection.tsx
 import { Box, TextField, Typography } from '@mui/material'
 import { CATEGORIES } from '../../../api/mock/idea'
+import { getIdeaTheme } from '../../../theme/ideaTheme'
 
 interface Props {
   title: string
@@ -29,9 +30,7 @@ export default function BasicInfoSection({
   labelSx,
   isDarkMode,
 }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
 
   return (
     <Box sx={{ width: 1 }}>

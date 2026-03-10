@@ -2,6 +2,7 @@
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { Box, Button, Chip, Typography } from '@mui/material'
+import { getIdeaTheme } from '../../../theme/ideaTheme'
 
 interface Props {
   reviewer: string[]
@@ -22,8 +23,7 @@ export default function ParticipantsSection({
   onOpenReviewerModal,
   onOpenCoProposerModal,
 }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const { textPrimary, textSecondary } = getIdeaTheme(isDarkMode)
 
   return (
     <Box sx={{ width: '100%' }}>

@@ -17,6 +17,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '../../context/ThemeContext'
+import { getIdeaTheme } from '../../theme/ideaTheme'
 
 import BasicInfoSection from './components/BasicInfoSection'
 import FileUploadSection from './components/FileUploadSection'
@@ -197,38 +198,30 @@ export default function NewIdea() {
   const handleBack = () => navigate(-1)
 
   // ─── 스타일 ──────────────────────────────────────────────────────────────
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor } = it
 
   const inputSx = {
-    bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
+    bgcolor: it.inputBg,
     borderRadius: 2,
     color: textPrimary,
     '& .MuiInputBase-input': { color: textPrimary },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? 'rgba(148,163,184,0.18)' : 'rgba(203,213,225,0.7)',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.5)',
-    },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: '#6366f1',
-      borderWidth: '1.5px',
-    },
+    '& .MuiOutlinedInput-notchedOutline': { borderColor: it.inputBorder },
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: it.inputHoverBorder },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: it.accent.color, borderWidth: '1.5px' },
   }
 
   const labelSx = {
     color: textSecondary,
     fontSize: '0.875rem',
-    '&.Mui-focused': { color: '#6366f1' },
+    '&.Mui-focused': { color: it.accent.color },
   }
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: isDarkMode ? '#0a0f1e' : '#f1f5f9',
+        bgcolor: it.pageBg,
         pt: { xs: 9, md: 10 },
         pb: 14,
         px: { xs: 2, sm: 3 },
@@ -445,11 +438,9 @@ export default function NewIdea() {
         <Box
           sx={{
             borderRadius: 3,
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
+            bgcolor: it.cardBg,
             border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode
-              ? '0 8px 32px rgba(0,0,0,0.4)'
-              : '0 4px 24px rgba(0,0,0,0.06)',
+            boxShadow: it.cardShadow,
             overflow: 'hidden',
           }}
         >

@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import type { ChangeEvent } from 'react'
 import { useState } from 'react'
+import { getIdeaTheme } from '../../../theme/ideaTheme'
 
 interface FileUploadSectionProps {
   files: File[]
@@ -49,9 +50,7 @@ export default function FileUploadSection({
     setSelectedIndex(null)
   }
 
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
 
   return (
     <>

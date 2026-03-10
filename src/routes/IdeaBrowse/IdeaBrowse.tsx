@@ -28,16 +28,7 @@ import { useMemo, useState } from 'react'
 import { useThemeMode } from '../../context/ThemeContext'
 import type { CategoryConfig, IdeaCategory, IdeaItem, IdeaStatus } from '../../api/types/ideaBrowse'
 import { CATEGORY_CONFIG, DEPT_BY_DIVISION, DIVISIONS, IDEAS, MY_IDEA_KEYWORDS, MY_IDEA_TITLES } from '../../api/mock/ideaBrowse'
-
-// ─── 상태 색상 ───────────────────────────────────────────────
-const STATUS_CONFIG: Record<IdeaStatus, { color: string; bg: string; border: string }> = {
-  심사대기: { color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(100,116,139,0.25)' },
-  심사중:   { color: '#6366f1', bg: 'rgba(99,102,241,0.1)',  border: 'rgba(99,102,241,0.3)'   },
-  승인:     { color: '#10b981', bg: 'rgba(16,185,129,0.1)',  border: 'rgba(16,185,129,0.3)'   },
-  반려:     { color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.3)'    },
-  실행중:   { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  border: 'rgba(245,158,11,0.3)'   },
-  완료:     { color: '#14b8a6', bg: 'rgba(20,184,166,0.1)',  border: 'rgba(20,184,166,0.3)'   },
-}
+import { getIdeaTheme, IDEA_STATUS_CONFIG } from '../../theme/ideaTheme'
 
 type SortKey = 'latest' | 'likes' | 'views' | 'comments'
 
@@ -75,13 +66,11 @@ interface CardProps {
 }
 
 function IdeaCard({ idea, isDarkMode, similarTitles, showSimilar, onClick }: CardProps) {
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
   const cardBg        = isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff'
 
   const cat  = getCatConfig(idea.category)
-  const stat = STATUS_CONFIG[idea.status]
+  const stat = IDEA_STATUS_CONFIG[idea.status]
   const isSimilar = showSimilar && similarTitles.length > 0
 
   return (
@@ -263,13 +252,11 @@ interface DetailProps {
 }
 
 function DetailDialog({ idea, onClose, isDarkMode, similarTitles }: DetailProps) {
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
 
   if (!idea) return null
   const cat  = getCatConfig(idea.category)
-  const stat = STATUS_CONFIG[idea.status]
+  const stat = IDEA_STATUS_CONFIG[idea.status]
 
   return (
     <Dialog
@@ -417,9 +404,7 @@ function DetailDialog({ idea, onClose, isDarkMode, similarTitles }: DetailProps)
 export default function IdeaBrowse() {
   const { isDarkMode } = useThemeMode()
 
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
   const pageBg        = isDarkMode ? 'rgba(15,23,42,0.5)' : 'rgba(248,250,252,0.9)'
   const filterBg      = isDarkMode ? 'rgba(22,30,46,0.9)' : 'rgba(255,255,255,0.95)'
 
@@ -720,7 +705,7 @@ export default function IdeaBrowse() {
                 {(['심사대기', '심사중', '승인', '반려', '실행중', '완료'] as IdeaStatus[]).map((s) => (
                   <MenuItem key={s} value={s}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                      <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: STATUS_CONFIG[s].color, flexShrink: 0 }} />
+                      <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: IDEA_STATUS_CONFIG[s].color, flexShrink: 0 }} />
                       <Typography sx={{ fontSize: '0.83rem' }}>{s}</Typography>
                     </Box>
                   </MenuItem>

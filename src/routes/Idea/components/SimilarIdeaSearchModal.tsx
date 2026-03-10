@@ -19,16 +19,7 @@ import {
 import { useMemo, useState } from 'react'
 import type { CategoryConfig, IdeaItem, IdeaStatus } from '../../../api/types/ideaBrowse'
 import { CATEGORY_CONFIG, IDEAS } from '../../../api/mock/ideaBrowse'
-
-// ─── 상태 색상 ────────────────────────────────────────────────
-const STATUS_CONFIG: Record<IdeaStatus, { color: string; bg: string; border: string }> = {
-  심사대기: { color: '#64748b', bg: 'rgba(100,116,139,0.1)', border: 'rgba(100,116,139,0.25)' },
-  심사중:   { color: '#6366f1', bg: 'rgba(99,102,241,0.1)',  border: 'rgba(99,102,241,0.3)'   },
-  승인:     { color: '#10b981', bg: 'rgba(16,185,129,0.1)',  border: 'rgba(16,185,129,0.3)'   },
-  반려:     { color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.3)'    },
-  실행중:   { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  border: 'rgba(245,158,11,0.3)'   },
-  완료:     { color: '#14b8a6', bg: 'rgba(20,184,166,0.1)',  border: 'rgba(20,184,166,0.3)'   },
-}
+import { getIdeaTheme, IDEA_STATUS_CONFIG } from '../../../theme/ideaTheme'
 
 function getCatConfig(id: string): CategoryConfig {
   return CATEGORY_CONFIG.find((c) => c.id === id) ?? CATEGORY_CONFIG[CATEGORY_CONFIG.length - 1]
@@ -63,11 +54,9 @@ interface ResultCardProps {
 }
 
 function ResultCard({ idea, isDarkMode, score, onClick }: ResultCardProps) {
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
   const cat  = getCatConfig(idea.category)
-  const stat = STATUS_CONFIG[idea.status]
+  const stat = IDEA_STATUS_CONFIG[idea.status]
   const isHighSimilarity = score >= 4
 
   return (
@@ -168,11 +157,9 @@ interface DetailPanelProps {
 }
 
 function DetailPanel({ idea, isDarkMode, onBack }: DetailPanelProps) {
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
   const cat  = getCatConfig(idea.category)
-  const stat = STATUS_CONFIG[idea.status]
+  const stat = IDEA_STATUS_CONFIG[idea.status]
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
@@ -279,9 +266,7 @@ export default function SimilarIdeaSearchModal({ open, onClose, isDarkMode, init
   const [query, setQuery] = useState(initialQuery)
   const [detail, setDetail] = useState<IdeaItem | null>(null)
 
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
 
   // 검색 결과 (점수 기반 정렬, 점수 0 제외)
   const results = useMemo(() => {
