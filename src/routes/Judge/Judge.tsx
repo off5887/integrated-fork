@@ -19,8 +19,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useThemeMode } from '../../context/ThemeContext'
+import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { judgeData, Proposal } from './judgeData'
 import JudgeDetail from './JudgeDetail'
 import ReviewerChangeModal from './components/ReviewerChangeModal'
@@ -142,12 +143,18 @@ export default function Judge() {
   const { isDarkMode } = useThemeMode()
 
   // mutable proposals state (reviewer 변경을 위해)
+  const [isLoading, setIsLoading] = useState(true)
   const [proposals, setProposals] = useState<Proposal[]>(judgeData)
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null)
   const [reviewerChangeTarget, setReviewerChangeTarget] = useState<Proposal | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('전체')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
@@ -351,7 +358,11 @@ export default function Judge() {
           </Box>
         )}
 
-        {filteredProposals.length === 0 ? (
+        {isLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
+            <LoadingSpinner size={44} text="심사 목록을 불러오는 중..." />
+          </Box>
+        ) : filteredProposals.length === 0 ? (
           <Box
             sx={{
               p: 8,

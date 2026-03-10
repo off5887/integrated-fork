@@ -24,7 +24,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { useThemeMode } from '../../context/ThemeContext'
 import type { CategoryConfig, IdeaCategory, IdeaItem, IdeaStatus } from '../../api/types/ideaBrowse'
 import { CATEGORY_CONFIG, DEPT_BY_DIVISION, DIVISIONS, IDEAS, MY_IDEA_KEYWORDS, MY_IDEA_TITLES } from '../../api/mock/ideaBrowse'
@@ -417,6 +418,12 @@ export default function IdeaBrowse() {
   const [sortBy,           setSortBy]           = useState<SortKey>('latest')
   const [showSimilarOnly,  setShowSimilarOnly]  = useState(false)
   const [selectedIdea,     setSelectedIdea]     = useState<IdeaItem | null>(null)
+  const [isLoading,        setIsLoading]        = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   // 부서 목록 (부문 선택에 따라 변동)
   const deptOptions = selectedDivision ? DEPT_BY_DIVISION[selectedDivision] ?? [] : []
@@ -838,7 +845,11 @@ export default function IdeaBrowse() {
 
       {/* ── 카드 그리드 ─────────────────────────────────── */}
       <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, maxWidth: 1280, mx: 'auto' }}>
-        {filteredIdeas.length === 0 ? (
+        {isLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
+            <LoadingSpinner size={44} text="아이디어를 불러오는 중..." />
+          </Box>
+        ) : filteredIdeas.length === 0 ? (
           /* 빈 상태 */
           <Box
             sx={{
