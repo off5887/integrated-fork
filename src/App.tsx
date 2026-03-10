@@ -10,20 +10,20 @@ import ProtectedRoute from './components/common/ProtectedRoute'
 import AuthLayout from './layouts/AuthLayout'
 import MainLayout from './layouts/MainLayout'
 
-import Dashboard from './routes/Dashboard/Dashboard'
-import IdeaBrowse from './routes/IdeaBrowse/IdeaBrowse'
-import NewIdea from './routes/Idea/NewIdea'
-import Judge from './routes/Judge/Judge'
-import RqMileage from './routes/Mileage/MileagePage'
-import Stats from './routes/Stats/Stats'
+import Dashboard from './routes/dashboard/Dashboard'
+import NewIdea from './routes/idea/NewIdea'
+import IdeaBrowse from './routes/ideaBrowse/IdeaBrowse'
+import Judge from './routes/judge/Judge'
+import RqMileage from './routes/mileage/MileagePage'
+import Stats from './routes/stats/Stats'
 
-import Login from './routes/Login'
-import Settings from './routes/Settings/Settings'
-import Welcome from './routes/Welcome/Welcome'
+import Login from './routes/auth/Login'
+import Settings from './routes/settings/Settings'
+import Welcome from './routes/welcome/Welcome'
 
 // ─────────────── 새로 추가 ───────────────
-import MercenaryManagementPage from './routes/TF/MercenaryManagementPage'
-import MercenarySupportPage from './routes/TF/MercenarySupportPage'
+import MercenaryManagementPage from './routes/tf/MercenaryManagementPage'
+import MercenarySupportPage from './routes/tf/MercenarySupportPage'
 // ────────────────────────────────────────
 
 export default function App() {
