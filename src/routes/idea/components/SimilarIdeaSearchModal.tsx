@@ -1,4 +1,4 @@
-// src/routes/Idea/Components/SimilarIdeaSearchModal.tsx
+// src/routes/idea/Components/SimilarIdeaSearchModal.tsx
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import CloseIcon from '@mui/icons-material/Close'
@@ -17,12 +17,15 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import type { CategoryConfig, IdeaItem, IdeaStatus } from '../../../api/types/ideaBrowse'
 import { CATEGORY_CONFIG, IDEAS } from '../../../api/mock/ideaBrowse'
+import type { CategoryConfig, IdeaItem } from '../../../api/types/ideaBrowse'
 import { getIdeaTheme, IDEA_STATUS_CONFIG } from '../../../theme/ideaTheme'
 
 function getCatConfig(id: string): CategoryConfig {
-  return CATEGORY_CONFIG.find((c) => c.id === id) ?? CATEGORY_CONFIG[CATEGORY_CONFIG.length - 1]
+  return (
+    CATEGORY_CONFIG.find((c) => c.id === id) ??
+    CATEGORY_CONFIG[CATEGORY_CONFIG.length - 1]
+  )
 }
 
 function fmtDate(s: string) {
@@ -32,12 +35,17 @@ function fmtDate(s: string) {
 // ─── 유사도 점수 계산 (검색어 기반) ─────────────────────────
 function scoreIdea(idea: IdeaItem, query: string): number {
   if (!query.trim()) return 0
-  const tokens = query.trim().toLowerCase().split(/\s+/).filter((t) => t.length >= 2)
+  const tokens = query
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((t) => t.length >= 2)
   if (tokens.length === 0) return 0
   const text = `${idea.title} ${idea.problem} ${idea.solution}`.toLowerCase()
   let score = 0
   tokens.forEach((t) => {
-    if (idea.title.toLowerCase().includes(t)) score += 3      // 제목 매칭 가중치 높음
+    if (idea.title.toLowerCase().includes(t))
+      score += 3 // 제목 매칭 가중치 높음
     else if (idea.problem.toLowerCase().includes(t)) score += 1
     else if (idea.solution.toLowerCase().includes(t)) score += 1
     if (text.includes(t)) score += 0 // 이미 위에서 처리됨
@@ -55,7 +63,7 @@ interface ResultCardProps {
 
 function ResultCard({ idea, isDarkMode, score, onClick }: ResultCardProps) {
   const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
-  const cat  = getCatConfig(idea.category)
+  const cat = getCatConfig(idea.category)
   const stat = IDEA_STATUS_CONFIG[idea.status]
   const isHighSimilarity = score >= 4
 
@@ -64,40 +72,137 @@ function ResultCard({ idea, isDarkMode, score, onClick }: ResultCardProps) {
       onClick={onClick}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick()
+        }
+      }}
       sx={{
-        p: 1.75, borderRadius: 2, cursor: 'pointer', outline: 'none',
-        border: `1px solid ${isHighSimilarity
-          ? isDarkMode ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.25)'
-          : borderColor}`,
+        p: 1.75,
+        borderRadius: 2,
+        cursor: 'pointer',
+        outline: 'none',
+        border: `1px solid ${
+          isHighSimilarity
+            ? isDarkMode
+              ? 'rgba(245,158,11,0.3)'
+              : 'rgba(245,158,11,0.25)'
+            : borderColor
+        }`,
         bgcolor: isHighSimilarity
-          ? isDarkMode ? 'rgba(245,158,11,0.05)' : 'rgba(245,158,11,0.03)'
-          : isDarkMode ? 'rgba(30,41,59,0.5)' : 'rgba(248,250,252,0.7)',
+          ? isDarkMode
+            ? 'rgba(245,158,11,0.05)'
+            : 'rgba(245,158,11,0.03)'
+          : isDarkMode
+            ? 'rgba(30,41,59,0.5)'
+            : 'rgba(248,250,252,0.7)',
         transition: 'all 0.15s ease',
         '&:hover': {
-          borderColor: isHighSimilarity ? 'rgba(245,158,11,0.5)' : 'rgba(99,102,241,0.3)',
+          borderColor: isHighSimilarity
+            ? 'rgba(245,158,11,0.5)'
+            : 'rgba(99,102,241,0.3)',
           bgcolor: isHighSimilarity
-            ? isDarkMode ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.06)'
-            : isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)',
+            ? isDarkMode
+              ? 'rgba(245,158,11,0.08)'
+              : 'rgba(245,158,11,0.06)'
+            : isDarkMode
+              ? 'rgba(99,102,241,0.06)'
+              : 'rgba(99,102,241,0.04)',
         },
         '&:focus-visible': { outline: '2px solid #6366f1', outlineOffset: 2 },
       }}
     >
       {/* 뱃지 행 */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1, flexWrap: 'wrap' }}>
-        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.4, px: 0.8, py: 0.25, borderRadius: 1, bgcolor: cat.bg, border: `1px solid ${cat.border}` }}>
-          <Box component="span" sx={{ fontSize: '0.7rem' }}>{cat.emoji}</Box>
-          <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: cat.color, lineHeight: 1 }}>{idea.category}</Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.75,
+          mb: 1,
+          flexWrap: 'wrap',
+        }}
+      >
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 0.4,
+            px: 0.8,
+            py: 0.25,
+            borderRadius: 1,
+            bgcolor: cat.bg,
+            border: `1px solid ${cat.border}`,
+          }}
+        >
+          <Box component="span" sx={{ fontSize: '0.7rem' }}>
+            {cat.emoji}
+          </Box>
+          <Typography
+            sx={{
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              color: cat.color,
+              lineHeight: 1,
+            }}
+          >
+            {idea.category}
+          </Typography>
         </Box>
-        <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 0.8, py: 0.25, borderRadius: 1, bgcolor: stat.bg, border: `1px solid ${stat.border}` }}>
-          <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: stat.color, lineHeight: 1 }}>{idea.status}</Typography>
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            px: 0.8,
+            py: 0.25,
+            borderRadius: 1,
+            bgcolor: stat.bg,
+            border: `1px solid ${stat.border}`,
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              color: stat.color,
+              lineHeight: 1,
+            }}
+          >
+            {idea.status}
+          </Typography>
         </Box>
         {isHighSimilarity && (
-          <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 0.8, py: 0.25, borderRadius: 1, bgcolor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)' }}>
-            <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: '#f59e0b', lineHeight: 1 }}>⚠ 유사도 높음</Typography>
+          <Box
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              px: 0.8,
+              py: 0.25,
+              borderRadius: 1,
+              bgcolor: 'rgba(245,158,11,0.1)',
+              border: '1px solid rgba(245,158,11,0.3)',
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: '0.68rem',
+                fontWeight: 700,
+                color: '#f59e0b',
+                lineHeight: 1,
+              }}
+            >
+              ⚠ 유사도 높음
+            </Typography>
           </Box>
         )}
-        <Typography sx={{ fontSize: '0.68rem', color: textSecondary, ml: 'auto', whiteSpace: 'nowrap' }}>
+        <Typography
+          sx={{
+            fontSize: '0.68rem',
+            color: textSecondary,
+            ml: 'auto',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {idea.department}
         </Typography>
       </Box>
@@ -105,9 +210,15 @@ function ResultCard({ idea, isDarkMode, score, onClick }: ResultCardProps) {
       {/* 제목 */}
       <Typography
         sx={{
-          fontSize: '0.85rem', fontWeight: 700, color: textPrimary,
-          lineHeight: 1.4, mb: 0.6,
-          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+          fontSize: '0.85rem',
+          fontWeight: 700,
+          color: textPrimary,
+          lineHeight: 1.4,
+          mb: 0.6,
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
         }}
       >
         {idea.title}
@@ -116,8 +227,13 @@ function ResultCard({ idea, isDarkMode, score, onClick }: ResultCardProps) {
       {/* 문제점 요약 */}
       <Typography
         sx={{
-          fontSize: '0.78rem', color: textSecondary, lineHeight: 1.55,
-          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+          fontSize: '0.78rem',
+          color: textSecondary,
+          lineHeight: 1.55,
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
           mb: 1.25,
         }}
       >
@@ -127,22 +243,46 @@ function ResultCard({ idea, isDarkMode, score, onClick }: ResultCardProps) {
       {/* 메타 */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Avatar sx={{ width: 18, height: 18, fontSize: '0.6rem', fontWeight: 700, bgcolor: isDarkMode ? '#4f46e5' : '#6366f1' }}>
+          <Avatar
+            sx={{
+              width: 18,
+              height: 18,
+              fontSize: '0.6rem',
+              fontWeight: 700,
+              bgcolor: isDarkMode ? '#4f46e5' : '#6366f1',
+            }}
+          >
             {idea.author[0]}
           </Avatar>
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.author}</Typography>
+          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+            {idea.author}
+          </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-          <ThumbUpOutlinedIcon sx={{ fontSize: '0.7rem', color: textSecondary }} />
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.likes}</Typography>
+          <ThumbUpOutlinedIcon
+            sx={{ fontSize: '0.7rem', color: textSecondary }}
+          />
+          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+            {idea.likes}
+          </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-          <ChatBubbleOutlineIcon sx={{ fontSize: '0.7rem', color: textSecondary }} />
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.comments}</Typography>
+          <ChatBubbleOutlineIcon
+            sx={{ fontSize: '0.7rem', color: textSecondary }}
+          />
+          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+            {idea.comments}
+          </Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3, ml: 'auto' }}>
-          <CalendarTodayIcon sx={{ fontSize: '0.68rem', color: textSecondary }} />
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{fmtDate(idea.submittedAt)}</Typography>
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', gap: 0.3, ml: 'auto' }}
+        >
+          <CalendarTodayIcon
+            sx={{ fontSize: '0.68rem', color: textSecondary }}
+          />
+          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+            {fmtDate(idea.submittedAt)}
+          </Typography>
         </Box>
       </Box>
     </Box>
@@ -158,7 +298,7 @@ interface DetailPanelProps {
 
 function DetailPanel({ idea, isDarkMode, onBack }: DetailPanelProps) {
   const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
-  const cat  = getCatConfig(idea.category)
+  const cat = getCatConfig(idea.category)
   const stat = IDEA_STATUS_CONFIG[idea.status]
 
   return (
@@ -168,11 +308,19 @@ function DetailPanel({ idea, isDarkMode, onBack }: DetailPanelProps) {
         onClick={onBack}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onBack() }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') onBack()
+        }}
         sx={{
-          display: 'inline-flex', alignItems: 'center', gap: 0.6,
-          cursor: 'pointer', color: '#6366f1', fontSize: '0.82rem', fontWeight: 600,
-          width: 'fit-content', outline: 'none',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 0.6,
+          cursor: 'pointer',
+          color: '#6366f1',
+          fontSize: '0.82rem',
+          fontWeight: 600,
+          width: 'fit-content',
+          outline: 'none',
           '&:hover': { opacity: 0.75 },
           '&:focus-visible': { outline: '2px solid #6366f1', outlineOffset: 2 },
         }}
@@ -182,32 +330,96 @@ function DetailPanel({ idea, isDarkMode, onBack }: DetailPanelProps) {
 
       {/* 뱃지 */}
       <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, px: 1, py: 0.35, borderRadius: 1.5, bgcolor: cat.bg, border: `1px solid ${cat.border}` }}>
-          <Box component="span" sx={{ fontSize: '0.8rem' }}>{cat.emoji}</Box>
-          <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: cat.color }}>{idea.category}</Typography>
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 0.5,
+            px: 1,
+            py: 0.35,
+            borderRadius: 1.5,
+            bgcolor: cat.bg,
+            border: `1px solid ${cat.border}`,
+          }}
+        >
+          <Box component="span" sx={{ fontSize: '0.8rem' }}>
+            {cat.emoji}
+          </Box>
+          <Typography
+            sx={{ fontSize: '0.75rem', fontWeight: 700, color: cat.color }}
+          >
+            {idea.category}
+          </Typography>
         </Box>
-        <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1, py: 0.35, borderRadius: 1.5, bgcolor: stat.bg, border: `1px solid ${stat.border}` }}>
-          <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: stat.color }}>{idea.status}</Typography>
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            px: 1,
+            py: 0.35,
+            borderRadius: 1.5,
+            bgcolor: stat.bg,
+            border: `1px solid ${stat.border}`,
+          }}
+        >
+          <Typography
+            sx={{ fontSize: '0.75rem', fontWeight: 700, color: stat.color }}
+          >
+            {idea.status}
+          </Typography>
         </Box>
       </Box>
 
       {/* 제목 */}
-      <Typography sx={{ fontSize: '1.05rem', fontWeight: 700, color: textPrimary, lineHeight: 1.45, letterSpacing: '-0.01em' }}>
+      <Typography
+        sx={{
+          fontSize: '1.05rem',
+          fontWeight: 700,
+          color: textPrimary,
+          lineHeight: 1.45,
+          letterSpacing: '-0.01em',
+        }}
+      >
         {idea.title}
       </Typography>
 
       {/* 작성자 */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-        <Avatar sx={{ width: 32, height: 32, bgcolor: isDarkMode ? '#4f46e5' : '#6366f1', fontSize: '0.8rem', fontWeight: 700 }}>
+        <Avatar
+          sx={{
+            width: 32,
+            height: 32,
+            bgcolor: isDarkMode ? '#4f46e5' : '#6366f1',
+            fontSize: '0.8rem',
+            fontWeight: 700,
+          }}
+        >
           {idea.author[0]}
         </Avatar>
         <Box>
-          <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: textPrimary, lineHeight: 1.3 }}>{idea.author}</Typography>
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.division} · {idea.department}</Typography>
+          <Typography
+            sx={{
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              color: textPrimary,
+              lineHeight: 1.3,
+            }}
+          >
+            {idea.author}
+          </Typography>
+          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+            {idea.division} · {idea.department}
+          </Typography>
         </Box>
-        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <CalendarTodayIcon sx={{ fontSize: '0.78rem', color: textSecondary }} />
-          <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>{idea.submittedAt}</Typography>
+        <Box
+          sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 0.5 }}
+        >
+          <CalendarTodayIcon
+            sx={{ fontSize: '0.78rem', color: textSecondary }}
+          />
+          <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
+            {idea.submittedAt}
+          </Typography>
         </Box>
       </Box>
 
@@ -215,20 +427,46 @@ function DetailPanel({ idea, isDarkMode, onBack }: DetailPanelProps) {
 
       {/* 문제점 */}
       <Box>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: textSecondary, mb: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <Typography
+          sx={{
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            color: textSecondary,
+            mb: 0.75,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}
+        >
           문제점 도출
         </Typography>
-        <Typography sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}>{idea.problem}</Typography>
+        <Typography
+          sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}
+        >
+          {idea.problem}
+        </Typography>
       </Box>
 
       <Divider sx={{ borderColor }} />
 
       {/* 해결 대안 */}
       <Box>
-        <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: textSecondary, mb: 0.75, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <Typography
+          sx={{
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            color: textSecondary,
+            mb: 0.75,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+          }}
+        >
           해결 대안
         </Typography>
-        <Typography sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}>{idea.solution}</Typography>
+        <Typography
+          sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}
+        >
+          {idea.solution}
+        </Typography>
       </Box>
 
       <Divider sx={{ borderColor }} />
@@ -236,14 +474,35 @@ function DetailPanel({ idea, isDarkMode, onBack }: DetailPanelProps) {
       {/* 통계 */}
       <Box sx={{ display: 'flex', gap: 3 }}>
         {[
-          { icon: <ThumbUpOutlinedIcon sx={{ fontSize: '0.88rem' }} />, label: '좋아요', value: idea.likes },
-          { icon: <ChatBubbleOutlineIcon sx={{ fontSize: '0.88rem' }} />, label: '댓글', value: idea.comments },
-          { icon: <VisibilityOutlinedIcon sx={{ fontSize: '0.88rem' }} />, label: '조회수', value: idea.views },
+          {
+            icon: <ThumbUpOutlinedIcon sx={{ fontSize: '0.88rem' }} />,
+            label: '좋아요',
+            value: idea.likes,
+          },
+          {
+            icon: <ChatBubbleOutlineIcon sx={{ fontSize: '0.88rem' }} />,
+            label: '댓글',
+            value: idea.comments,
+          },
+          {
+            icon: <VisibilityOutlinedIcon sx={{ fontSize: '0.88rem' }} />,
+            label: '조회수',
+            value: idea.views,
+          },
         ].map(({ icon, label, value }) => (
-          <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+          <Box
+            key={label}
+            sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}
+          >
             <Box sx={{ color: textSecondary }}>{icon}</Box>
-            <Typography sx={{ fontSize: '0.8rem', color: textSecondary }}>{label}</Typography>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}>{value}</Typography>
+            <Typography sx={{ fontSize: '0.8rem', color: textSecondary }}>
+              {label}
+            </Typography>
+            <Typography
+              sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}
+            >
+              {value}
+            </Typography>
           </Box>
         ))}
       </Box>
@@ -262,7 +521,12 @@ interface Props {
   initialQuery?: string
 }
 
-export default function SimilarIdeaSearchModal({ open, onClose, isDarkMode, initialQuery = '' }: Props) {
+export default function SimilarIdeaSearchModal({
+  open,
+  onClose,
+  isDarkMode,
+  initialQuery = '',
+}: Props) {
   const [query, setQuery] = useState(initialQuery)
   const [detail, setDetail] = useState<IdeaItem | null>(null)
 
@@ -272,8 +536,7 @@ export default function SimilarIdeaSearchModal({ open, onClose, isDarkMode, init
   const results = useMemo(() => {
     const q = query.trim()
     if (!q || q.length < 2) return []
-    return IDEAS
-      .filter((idea) => idea.security !== 'private')
+    return IDEAS.filter((idea) => idea.security !== 'private')
       .map((idea) => ({ idea, score: scoreIdea(idea, q) }))
       .filter(({ score }) => score > 0)
       .sort((a, b) => b.score - a.score)
@@ -297,40 +560,79 @@ export default function SimilarIdeaSearchModal({ open, onClose, isDarkMode, init
             borderRadius: 3,
             bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
             border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode ? '0 24px 64px rgba(0,0,0,0.6)' : '0 24px 64px rgba(0,0,0,0.12)',
+            boxShadow: isDarkMode
+              ? '0 24px 64px rgba(0,0,0,0.6)'
+              : '0 24px 64px rgba(0,0,0,0.12)',
             overflow: 'hidden',
             m: { xs: 2, sm: 3 },
             maxHeight: { xs: '90vh', sm: '80vh' },
           },
         },
         backdrop: {
-          sx: { backdropFilter: 'blur(6px)', backgroundColor: isDarkMode ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.3)' },
+          sx: {
+            backdropFilter: 'blur(6px)',
+            backgroundColor: isDarkMode
+              ? 'rgba(0,0,0,0.55)'
+              : 'rgba(0,0,0,0.3)',
+          },
         },
       }}
     >
       {/* 상단 그라디언트 */}
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+      <Box
+        sx={{
+          height: 3,
+          background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+        }}
+      />
 
       {/* 헤더 */}
-      <Box sx={{ px: 2.5, pt: 2, pb: 1.75, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: `1px solid ${borderColor}` }}>
+      <Box
+        sx={{
+          px: 2.5,
+          pt: 2,
+          pb: 1.75,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          borderBottom: `1px solid ${borderColor}`,
+        }}
+      >
         <Box
           sx={{
-            width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-            bgcolor: '#6366f1', color: '#fff',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            flexShrink: 0,
+            bgcolor: '#6366f1',
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <SearchIcon sx={{ fontSize: '1rem' }} />
         </Box>
         <Box flex={1}>
-          <Typography sx={{ fontSize: '0.95rem', fontWeight: 700, color: textPrimary, lineHeight: 1.3 }}>
+          <Typography
+            sx={{
+              fontSize: '0.95rem',
+              fontWeight: 700,
+              color: textPrimary,
+              lineHeight: 1.3,
+            }}
+          >
             유사 아이디어 검색
           </Typography>
           <Typography sx={{ fontSize: '0.75rem', color: textSecondary }}>
             제안 전 유사한 아이디어가 있는지 확인해 보세요
           </Typography>
         </Box>
-        <IconButton size="small" onClick={handleClose} sx={{ color: textSecondary, flexShrink: 0 }}>
+        <IconButton
+          size="small"
+          onClick={handleClose}
+          sx={{ color: textSecondary, flexShrink: 0 }}
+        >
           <CloseIcon sx={{ fontSize: '1.1rem' }} />
         </IconButton>
       </Box>
@@ -350,12 +652,18 @@ export default function SimilarIdeaSearchModal({ open, onClose, isDarkMode, init
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
+                      <SearchIcon
+                        sx={{ fontSize: '1rem', color: textSecondary }}
+                      />
                     </InputAdornment>
                   ),
                   endAdornment: query ? (
                     <InputAdornment position="end">
-                      <IconButton size="small" onClick={() => setQuery('')} sx={{ color: textSecondary }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => setQuery('')}
+                        sx={{ color: textSecondary }}
+                      >
                         <CloseIcon sx={{ fontSize: '0.9rem' }} />
                       </IconButton>
                     </InputAdornment>
@@ -366,27 +674,43 @@ export default function SimilarIdeaSearchModal({ open, onClose, isDarkMode, init
                 mb: 1.5,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
-                  backgroundColor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+                  backgroundColor: isDarkMode
+                    ? 'rgba(15,23,42,0.5)'
+                    : '#f8fafc',
                   fontSize: '0.875rem',
                   '& fieldset': { borderColor },
                   '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
                   '&.Mui-focused fieldset': { borderColor: '#6366f1' },
                 },
-                '& .MuiInputBase-input': { color: textPrimary, WebkitTextFillColor: textPrimary },
+                '& .MuiInputBase-input': {
+                  color: textPrimary,
+                  WebkitTextFillColor: textPrimary,
+                },
               }}
             />
           )}
 
           {/* 상세 보기 */}
           {detail ? (
-            <DetailPanel idea={detail} isDarkMode={isDarkMode} onBack={() => setDetail(null)} />
+            <DetailPanel
+              idea={detail}
+              isDarkMode={isDarkMode}
+              onBack={() => setDetail(null)}
+            />
           ) : (
             <>
               {/* 결과 목록 */}
               {query.trim().length >= 2 && results.length === 0 && (
                 <Box sx={{ py: 5, textAlign: 'center' }}>
                   <Box sx={{ fontSize: '2.5rem', mb: 1.5 }}>🔍</Box>
-                  <Typography sx={{ fontSize: '0.9rem', fontWeight: 700, color: textPrimary, mb: 0.5 }}>
+                  <Typography
+                    sx={{
+                      fontSize: '0.9rem',
+                      fontWeight: 700,
+                      color: textPrimary,
+                      mb: 0.5,
+                    }}
+                  >
                     유사한 아이디어가 없습니다
                   </Typography>
                   <Typography sx={{ fontSize: '0.8rem', color: textSecondary }}>
@@ -398,27 +722,68 @@ export default function SimilarIdeaSearchModal({ open, onClose, isDarkMode, init
               {query.trim().length < 2 && (
                 <Box sx={{ py: 4, textAlign: 'center' }}>
                   <Box sx={{ fontSize: '2.5rem', mb: 1.5 }}>💡</Box>
-                  <Typography sx={{ fontSize: '0.88rem', color: textSecondary, lineHeight: 1.6 }}>
-                    아이디어 키워드를 입력하면<br />기존에 유사한 제안이 있는지 확인할 수 있습니다
+                  <Typography
+                    sx={{
+                      fontSize: '0.88rem',
+                      color: textSecondary,
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    아이디어 키워드를 입력하면
+                    <br />
+                    기존에 유사한 제안이 있는지 확인할 수 있습니다
                   </Typography>
                 </Box>
               )}
 
               {results.length > 0 && (
                 <>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.25 }}>
-                    <Typography sx={{ fontSize: '0.8rem', color: textSecondary }}>
-                      <Box component="span" sx={{ fontWeight: 700, color: '#6366f1' }}>{results.length}건</Box>의 유사 아이디어
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      mb: 1.25,
+                    }}
+                  >
+                    <Typography
+                      sx={{ fontSize: '0.8rem', color: textSecondary }}
+                    >
+                      <Box
+                        component="span"
+                        sx={{ fontWeight: 700, color: '#6366f1' }}
+                      >
+                        {results.length}건
+                      </Box>
+                      의 유사 아이디어
                     </Typography>
-                    {results.some(r => r.score >= 4) && (
-                      <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 0.8, py: 0.2, borderRadius: 1, bgcolor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)' }}>
-                        <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: '#f59e0b' }}>
+                    {results.some((r) => r.score >= 4) && (
+                      <Box
+                        sx={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          px: 0.8,
+                          py: 0.2,
+                          borderRadius: 1,
+                          bgcolor: 'rgba(245,158,11,0.1)',
+                          border: '1px solid rgba(245,158,11,0.25)',
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            color: '#f59e0b',
+                          }}
+                        >
                           ⚠ 유사도 높은 건 포함
                         </Typography>
                       </Box>
                     )}
                   </Box>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Box
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
+                  >
                     {results.map(({ idea, score }) => (
                       <ResultCard
                         key={idea.id}
