@@ -31,6 +31,11 @@ declare module '@mui/material/styles' {
       color: string
     }
     holographicGlow: string
+    level: {
+      1: { accent: string; bg: string; border: string; avatarBg: string; avatarColor: string; badgeBg: string; badgeColor: string }
+      2: { accent: string; bg: string; border: string; avatarBg: string; avatarColor: string; badgeBg: string; badgeColor: string }
+      3: { accent: string; bg: string; border: string; avatarBg: string; avatarColor: string; badgeBg: string; badgeColor: string }
+    }
   }
 
   interface PaletteOptions {
@@ -63,5 +68,10 @@ declare module '@mui/material/styles' {
       color: string
     }
     holographicGlow?: string
+    level?: {
+      1: { accent: string; bg: string; border: string; avatarBg: string; avatarColor: string; badgeBg: string; badgeColor: string }
+      2: { accent: string; bg: string; border: string; avatarBg: string; avatarColor: string; badgeBg: string; badgeColor: string }
+      3: { accent: string; bg: string; border: string; avatarBg: string; avatarColor: string; badgeBg: string; badgeColor: string }
+    }
   }
 }
