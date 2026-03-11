@@ -133,7 +133,7 @@ export default function MercenarySupportPage() {
         {/* 카드 그리드 */}
         <Grid container spacing={{ xs: 2.5, md: 3 }}>
           {ideas.map((idea) => (
-            <Grid item xs={12} sm={6} lg={4} key={idea.id}>
+            <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={idea.id}>
               <IdeaCard idea={idea} onApply={handleApply} isDarkMode={isDarkMode} />
             </Grid>
           ))}

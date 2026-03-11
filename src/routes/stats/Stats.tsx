@@ -347,7 +347,6 @@ export default function RealDashboard() {
                         itemHeight: 24,
                         symbolSize: 20,
                         symbolShape: 'circle',
-                        textColor: textPrimary,
                         effects: [
                           {
                             on: 'hover',

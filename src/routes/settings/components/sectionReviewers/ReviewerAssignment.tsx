@@ -144,7 +144,7 @@ const ReviewerAssignment: React.FC<Props> = ({ isDarkMode }) => {
       </Box>
 
       <Grid container spacing={{ xs: 2, sm: 3 }}>
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <OrgPanel
             members={mockOrganization}
             searchTerm={searchTerm}
@@ -152,7 +152,7 @@ const ReviewerAssignment: React.FC<Props> = ({ isDarkMode }) => {
             isDarkMode={isDarkMode}
           />
         </Grid>
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <SelectedReviewersPanel
             selected={selected}
             onLevelChange={handleLevelChange}
