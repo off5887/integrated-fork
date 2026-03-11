@@ -11,7 +11,6 @@ interface Props {
 
 export default function BasicInfoSection({ problem, solution, isDarkMode }: Props) {
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
   const textBody = isDarkMode ? '#cbd5e1' : '#334155'
 
   return (

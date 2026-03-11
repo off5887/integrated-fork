@@ -1,11 +1,10 @@
 // src/layouts/MainLayout.tsx
-import { Box, useTheme } from '@mui/material'
+import { Box } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import Header from '../components/common/Header'
 import { useThemeMode } from '../context/ThemeContext'
 
 export default function MainLayout() {
-  const theme = useTheme()
   const { isDarkMode } = useThemeMode()
 
   return (

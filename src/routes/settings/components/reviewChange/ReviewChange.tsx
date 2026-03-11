@@ -89,10 +89,7 @@ const statusConfig: Record<
     bg: (d) => (d ? 'rgba(20,184,166,0.12)' : 'rgba(20,184,166,0.07)'),
     border: (d) => (d ? 'rgba(20,184,166,0.3)' : 'rgba(20,184,166,0.2)'),
   },
-} as unknown as Record<
-  IdeaStatus,
-  { color: string; bg: (d: boolean) => string; border: (d: boolean) => string }
->
+}
 
 const levelConfig = {
   1: {
