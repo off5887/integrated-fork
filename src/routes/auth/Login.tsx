@@ -10,38 +10,23 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   getLoginErrorMessage,
   useLoginMutation,
 } from '../../api/queries/useLoginMutation'
+import { useThemeMode } from '../../context/ThemeContext'
 
 export default function Login() {
   const [employeeId, setEmployeeId] = useState('')
   const [password, setPassword] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return (
-      localStorage.theme === 'dark' ||
-      (!('theme' in localStorage) &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches)
-    )
-  })
+  const { isDarkMode, toggleTheme } = useThemeMode()
 
   const mutation = useLoginMutation()
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark')
-      localStorage.theme = 'dark'
-    } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.theme = 'light'
-    }
-  }, [isDarkMode])
 
   // 데모용 우회 계정
   const DEMO_ID = 'demo'
@@ -91,7 +76,7 @@ export default function Login() {
     >
       {/* 다크모드 토글 버튼 */}
       <IconButton
-        onClick={() => setIsDarkMode(!isDarkMode)}
+        onClick={toggleTheme}
         size="medium"
         sx={{
           position: 'fixed',

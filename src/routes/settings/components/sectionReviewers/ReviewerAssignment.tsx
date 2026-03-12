@@ -4,7 +4,7 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import { Box, Button, Grid, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { OrgMember, SelectedReviewer } from '../../../../api/types/reviewer'
-import { mockOrganization } from './Organization'
+import { mockOrganization } from '../../data/mockOrganization'
 import OrgPanel from './OrgPanel'
 import SelectedReviewersPanel from './SelectedReviewersPanel'
 

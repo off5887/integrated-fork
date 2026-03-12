@@ -5,8 +5,8 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
 import { Box, Chip, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useThemeMode } from '../../context/ThemeContext'
-import IdeaCard from './components/IdeaCard'
-import { mockIdeas } from './mocks/mercenaryData'
+import TFIdeaCard from './components/TFIdeaCard'
+import { mockIdeas } from '../../api/mock/mercenary'
 
 const FISH_COUNT = 12480
 
@@ -134,7 +134,7 @@ export default function MercenarySupportPage() {
         <Grid container spacing={{ xs: 2.5, md: 3 }}>
           {ideas.map((idea) => (
             <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={idea.id}>
-              <IdeaCard idea={idea} onApply={handleApply} isDarkMode={isDarkMode} />
+              <TFIdeaCard idea={idea} onApply={handleApply} isDarkMode={isDarkMode} />
             </Grid>
           ))}
         </Grid>

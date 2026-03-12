@@ -1,21 +1,20 @@
 // src/components/CommonHeader.tsx
 import { AppBar, Box, Toolbar, Typography } from '@mui/material'
-import { useThemeMode } from '../ThemeContext' // mode만 가져와서 배경/색상 적용용
+import { useThemeMode } from '../../../context/ThemeContext'
 
 export default function CommonHeader({ fishCount = 12480 }) {
-  const { mode } = useThemeMode() // 토글 함수는 안 쓰고 mode만 사용
+  const { isDarkMode } = useThemeMode()
 
   return (
     <AppBar
       position="sticky"
       elevation={0}
       sx={{
-        backgroundColor: mode === 'dark' ? '#0f172a' : '#ffffff',
-        borderBottom:
-          mode === 'dark'
-            ? '1px solid rgba(226,232,240,0.08)'
-            : '1px solid rgba(15,23,42,0.06)',
-        color: mode === 'dark' ? '#e2e8f0' : '#0f172a',
+        backgroundColor: isDarkMode ? '#0f172a' : '#ffffff',
+        borderBottom: isDarkMode
+          ? '1px solid rgba(226,232,240,0.08)'
+          : '1px solid rgba(15,23,42,0.06)',
+        color: isDarkMode ? '#e2e8f0' : '#0f172a',
       }}
     >
       <Toolbar

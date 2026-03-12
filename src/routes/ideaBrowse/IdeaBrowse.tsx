@@ -9,7 +9,7 @@ import { getIdeaTheme, ideaAccent } from '../../theme/ideaBrowseTheme'
 import IdeaCard from './components/IdeaCard'
 import IdeaDetailDialog from './components/IdeaDetailDialog'
 import IdeaFilters from './components/IdeaFilters'
-import { getSimilarity } from './utils'
+import { getSimilarity } from '../../utils/ideaBrowse'
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'latest',   label: '최신순'   },

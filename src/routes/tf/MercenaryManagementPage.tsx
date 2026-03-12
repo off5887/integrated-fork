@@ -25,10 +25,12 @@ import {
   mockApplicants,
   mockEmployees,
   mockIdeas,
+} from '../../api/mock/mercenary'
+import {
   type Applicant,
   type Employee,
   type Idea,
-} from './mocks/mercenaryData'
+} from '../../api/types/mercenary'
 
 interface ExtendedIdea extends Idea {
   mercenaries: Employee[]

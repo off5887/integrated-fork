@@ -1,21 +1,4 @@
-// src/data/judgeData.ts
-export interface Proposal {
-  id: number
-  title: string
-  problem: string
-  solution: string
-  proposers: string[]
-  reviewer: string
-  /** 결재자 변경 이전 담당자 (이관된 경우에만 존재) */
-  transferredFrom?: string
-  startDate: string
-  endDate: string
-  scope: string
-  executionPlan: string
-  attachments: { name: string; url: string }[]
-  status: '심사대기' | '심사중' | '승인' | '반려'
-  submittedAt: string
-}
+import { Proposal } from '../types/judge'
 
 export const judgeData: Proposal[] = [
   {
@@ -97,8 +80,6 @@ export const judgeData: Proposal[] = [
     status: '반려',
     submittedAt: '2026-02-18',
   },
-
-  // 새로 추가된 테스트 데이터 6개
   {
     id: 106,
     title: '사내 도서관 디지털화 프로젝트',
