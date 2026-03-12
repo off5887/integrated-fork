@@ -1,18 +1,4 @@
-export interface AwardItem {
-  id: number
-  paymentDate: string
-  detail: string
-  fish: number
-  status: string
-}
-
-export interface ExchangeItem {
-  id: number
-  requestDate: string
-  amount: number
-  cashAmount: number
-  status: string
-}
+import type { AwardItem, ExchangeItem } from '@/api/types/mileage'
 
 // 마일리지 수상내역
 export const awardData: AwardItem[] = [
