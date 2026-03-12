@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import { motion } from 'framer-motion'
 import { useThemeMode } from '@/context/ThemeContext'
+import { fishTotal, fishToNextLevel, topIdeas, pieChartData, barChartData } from '@/api/mock/stats'
 
 // Nivo 그래프 임포트
 import { ResponsiveBar } from '@nivo/bar'

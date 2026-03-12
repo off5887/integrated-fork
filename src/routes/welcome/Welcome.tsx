@@ -5,6 +5,7 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '@/context/ThemeContext'
+import { fishCount } from '@/api/mock/welcome'
 import GomEvolutionSection from './components/GomEvolutionSection'
 import IntroSection from './components/IntroSection'
 

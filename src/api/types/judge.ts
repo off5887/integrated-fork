@@ -1,3 +1,15 @@
+export interface Attachment {
+  name: string
+  url: string
+}
+
+export interface ReviewerCandidate {
+  id: string
+  name: string
+  position: string
+  department: string
+}
+
 export interface Proposal {
   id: number
   title: string
@@ -11,7 +23,7 @@ export interface Proposal {
   endDate: string
   scope: string
   executionPlan: string
-  attachments: { name: string; url: string }[]
+  attachments: Attachment[]
   status: '심사대기' | '심사중' | '승인' | '반려'
   submittedAt: string
 }

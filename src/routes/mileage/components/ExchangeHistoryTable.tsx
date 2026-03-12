@@ -1,14 +1,7 @@
 // src/routes/Mileage/ExchangeHistoryTable.tsx
 import { Box, Card, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
-
-interface ExchangeItem {
-  id: number
-  requestDate: string
-  amount: number
-  cashAmount: number
-  status: string
-}
+import type { ExchangeItem } from '@/api/types/mileage'
 
 interface Props {
   data: ExchangeItem[]
