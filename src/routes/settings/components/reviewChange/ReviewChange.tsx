@@ -26,7 +26,7 @@ import { OrgMember } from '@/api/types/reviewer'
 import { levelConfig } from '../../config/levelConfig'
 import { statusConfig, ALL_STATUSES } from '../../config/statusConfig'
 import type { IdeaStatus, Idea } from '../../types'
-import { mockReviewerPools, mockIdeas } from '@/api/mock/settingsReviewChange'
+import { mockReviewerPools, mockIdeas } from '@/api/mock/settings'
 
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 

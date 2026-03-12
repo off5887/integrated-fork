@@ -5,7 +5,7 @@ import { Box, Button, Grid, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { OrgMember, SelectedReviewer } from '@/api/types/reviewer'
 import { usePageColors } from '@/theme/pageColors'
-import { mockOrganization } from '@/api/mock/settingsOrganization'
+import { mockOrganization } from '@/api/mock/settings'
 import OrgPanel from './OrgPanel'
 import SelectedReviewersPanel from './SelectedReviewersPanel'
 
