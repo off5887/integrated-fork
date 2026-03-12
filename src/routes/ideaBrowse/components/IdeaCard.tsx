@@ -6,7 +6,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Avatar, Box, Tooltip, Typography } from '@mui/material'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
-import { fmtDate, getCatConfig } from '@/utils/ideaBrowse'
+import { fmtDate, getCatConfig } from '../utils'
 
 interface IdeaCardProps {
   idea: IdeaItem
