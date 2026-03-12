@@ -1,5 +1,5 @@
 import type { OrgMember } from '@/api/types/reviewer'
-import type { Idea } from '../types'
+import type { Idea } from '@/routes/settings/types'
 
 export const mockReviewerPools: Record<1 | 2 | 3, OrgMember[]> = {
   1: [

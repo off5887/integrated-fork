@@ -1,4 +1,4 @@
-import type { User } from '../types'
+import type { User } from '@/routes/settings/types'
 
 export const mockUsers: User[] = [
   { id: 1, name: '김개발', employeeNumber: 'DEV001', email: 'dev1@company.com',   role: '팀장',    department: '개발1팀', active: true  },

@@ -29,7 +29,7 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { mockMileageMembers } from '../../data/mockMileageMembers'
+import { mockMileageMembers } from '@/api/mock/settingsMileage'
 import type { MileageMember, MileageEntry } from '../../types'
 
 export default function SpecialMileage() {

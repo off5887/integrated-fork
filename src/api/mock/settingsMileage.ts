@@ -1,4 +1,4 @@
-import type { MileageMember } from '../types'
+import type { MileageMember } from '@/routes/settings/types'
 
 export const mockMileageMembers: MileageMember[] = [
   { id: '1',  name: '김개발',  position: '개발팀장',  department: '개발1팀',    division: '디지털전략부문', employeeNumber: 'DEV001'  },

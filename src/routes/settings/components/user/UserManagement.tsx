@@ -31,7 +31,7 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { mockUsers as initialUsers, mockDepartments } from '../../data/mockUsers'
+import { mockUsers as initialUsers, mockDepartments } from '@/api/mock/settingsUsers'
 import type { User } from '../../types'
 
 export default function UserManagement() {
