@@ -1,17 +1,15 @@
-// src/components/common/Header/Header.tsx
 import { AppBar, Box, Toolbar, useMediaQuery, useTheme } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '@/context/ThemeContext'
 import DesktopNavigation from './DesktopNavigation'
-import { menuItems, settingsItem } from './headerConfig'
 import MobileNavigationDrawer from './MobileNavigationDrawer'
 import MobileToolbar from './MobileToolbar'
 
 export default function Header() {
   const theme = useTheme()
   const navigate = useNavigate()
-  const { isDarkMode, toggleTheme } = useThemeMode()
+  const { isDarkMode } = useThemeMode()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -21,11 +19,6 @@ export default function Header() {
   const borderBottomColor = isDarkMode
     ? 'rgba(148,163,184,0.08)'
     : 'rgba(203,213,225,0.4)'
-
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken')
-    window.location.href = '/login'
-  }
 
   return (
     <>
@@ -76,38 +69,16 @@ export default function Header() {
             />
           </Box>
 
-          {/* PC 네비게이션 */}
-          {!isMobile && (
-            <DesktopNavigation
-              menuItems={menuItems}
-              settingsItem={settingsItem}
-              isDarkMode={isDarkMode}
-              toggleTheme={toggleTheme}
-              onLogout={handleLogout}
-            />
-          )}
+          {!isMobile && <DesktopNavigation />}
 
-          {/* 모바일 툴바 액션 */}
-          {isMobile && (
-            <MobileToolbar
-              isDarkMode={isDarkMode}
-              toggleTheme={toggleTheme}
-              onOpenDrawer={() => setDrawerOpen(true)}
-            />
-          )}
+          {isMobile && <MobileToolbar onOpenDrawer={() => setDrawerOpen(true)} />}
         </Toolbar>
       </AppBar>
 
-      {/* 모바일 Drawer */}
       {isMobile && (
         <MobileNavigationDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
-          menuItems={menuItems}
-          settingsItem={settingsItem}
-          isDarkMode={isDarkMode}
-          toggleTheme={toggleTheme}
-          onLogout={handleLogout}
         />
       )}
 
