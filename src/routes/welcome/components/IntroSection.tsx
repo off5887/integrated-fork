@@ -3,7 +3,7 @@ import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined'
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined'
 import PetsIcon from '@mui/icons-material/Pets'
 import { Box, Grid, Typography } from '@mui/material'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '../../../context/ThemeContext'
 
 const features = [
   {

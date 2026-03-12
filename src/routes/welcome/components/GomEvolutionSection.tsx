@@ -2,7 +2,7 @@
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { Box, Button, LinearProgress, Typography } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '../../../context/ThemeContext'
 import GomEvolutionModal from './GomEvolutionModal'
 
 const GOM_LEVELS = [

@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '../../../context/ThemeContext'
 
 interface Props {
   open: boolean

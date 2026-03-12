@@ -1,6 +1,6 @@
 // src/routes/Mileage/ExchangeHistoryTable.tsx
 import { Box, Card, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '../../../context/ThemeContext'
 
 interface ExchangeItem {
   id: number
