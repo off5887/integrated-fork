@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { statusConfig } from '../../config/statusConfig'
-import type { Idea } from '../../types'
+import type { Idea } from '@/api/types/settings'
 
 interface Props {
   ideas: Idea[]

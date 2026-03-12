@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
-import type { MileageEntry } from '../../types'
+import type { MileageEntry } from '@/api/types/settings'
 
 interface Props {
   selected: MileageEntry[]

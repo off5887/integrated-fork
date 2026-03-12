@@ -1,5 +1,5 @@
 import type { OrgMember } from '@/api/types/reviewer'
-import type { User, MileageMember, Idea } from '@/routes/settings/types'
+import type { User, MileageMember, Idea } from '@/api/types/settings'
 
 // ── 조직도 ───────────────────────────────────────────────────────────────────
 export const mockOrganization: OrgMember[] = [

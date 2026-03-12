@@ -20,7 +20,7 @@ import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { mockMileageMembers } from '@/api/mock/settings'
-import type { MileageMember } from '../../types'
+import type { MileageMember } from '@/api/types/settings'
 
 interface Props {
   searchTerm: string

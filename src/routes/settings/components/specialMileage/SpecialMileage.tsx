@@ -10,7 +10,7 @@ import {
 import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
-import type { MileageMember, MileageEntry } from '../../types'
+import type { MileageMember, MileageEntry } from '@/api/types/settings'
 import MileageOrgPanel from './MileageOrgPanel'
 import MileageRecipientPanel from './MileageRecipientPanel'
 

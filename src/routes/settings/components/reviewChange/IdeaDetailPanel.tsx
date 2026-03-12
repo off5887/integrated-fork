@@ -17,7 +17,7 @@ import { useThemeMode } from '@/context/ThemeContext'
 import { OrgMember } from '@/api/types/reviewer'
 import { levelConfig } from '../../config/levelConfig'
 import { statusConfig, ALL_STATUSES } from '../../config/statusConfig'
-import type { Idea, IdeaStatus } from '../../types'
+import type { Idea, IdeaStatus } from '@/api/types/settings'
 import { mockReviewerPools } from '@/api/mock/settings'
 
 interface Props {

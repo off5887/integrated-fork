@@ -1,4 +1,4 @@
-import type { IdeaStatus } from '../types'
+import type { IdeaStatus } from '@/api/types/settings'
 
 export const statusConfig: Record<
   IdeaStatus,

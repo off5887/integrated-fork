@@ -19,7 +19,7 @@ import {
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { mockDepartments } from '@/api/mock/settings'
-import type { User } from '../../types'
+import type { User } from '@/api/types/settings'
 
 interface Props {
   open: boolean

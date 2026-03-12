@@ -22,7 +22,7 @@ import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { mockUsers as initialUsers } from '@/api/mock/settings'
-import type { User } from '../../types'
+import type { User } from '@/api/types/settings'
 import UserFormDialog from './UserFormDialog'
 
 export default function UserManagement() {
