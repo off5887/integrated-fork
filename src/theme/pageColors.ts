@@ -17,7 +17,6 @@ export function getPageColors(isDarkMode: boolean) {
     // ── 배경 ────────────────────────────────────────────────────────────────
     bgBase:   isDarkMode ? '#0a0f1e' : '#f1f5f9',
     cardBg:   isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
-    headerBg: isDarkMode ? 'rgba(15,23,42,0.8)'  : 'rgba(248,250,252,0.9)',
 
     // ── 테두리 ──────────────────────────────────────────────────────────────
     borderColor: isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)',
@@ -31,6 +30,10 @@ export function getPageColors(isDarkMode: boolean) {
     accentBg:     isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
     accentBorder: isDarkMode ? 'rgba(99,102,241,0.3)'  : 'rgba(99,102,241,0.2)',
     rowHoverBg:   isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)',
+
+    // ── 테이블/목록 행 ──────────────────────────────────────────────────────
+    headerBg: isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)',
+    rowBg:    isDarkMode ? 'rgba(30,41,59,0.4)'    : '#ffffff',
   }
 }
 

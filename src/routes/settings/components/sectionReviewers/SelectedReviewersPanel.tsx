@@ -9,7 +9,8 @@ import {
 } from '@mui/material'
 import React from 'react'
 import { SelectedReviewer } from '@/api/types/reviewer'
-import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { levelConfig } from '../../config/levelConfig'
 
 interface Props {
   selected: SelectedReviewer[]
@@ -18,49 +19,13 @@ interface Props {
   onDrop: (e: React.DragEvent<HTMLDivElement>, targetLevel: 1 | 2 | 3) => void
 }
 
-const levelConfig = {
-  1: {
-    label: '1차 심사자',
-    accent: '#6366f1',
-    bg: (dark: boolean) => dark ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
-    border: (dark: boolean) => dark ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)',
-    avatarBg: (dark: boolean) => dark ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.12)',
-    avatarColor: (dark: boolean) => dark ? '#c7d2fe' : '#4338ca',
-    badgeBg: (dark: boolean) => dark ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-    badgeColor: (dark: boolean) => dark ? '#a5b4fc' : '#4338ca',
-  },
-  2: {
-    label: '2차 심사자',
-    accent: '#8b5cf6',
-    bg: (dark: boolean) => dark ? 'rgba(139,92,246,0.08)' : 'rgba(139,92,246,0.04)',
-    border: (dark: boolean) => dark ? 'rgba(139,92,246,0.3)' : 'rgba(139,92,246,0.2)',
-    avatarBg: (dark: boolean) => dark ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.12)',
-    avatarColor: (dark: boolean) => dark ? '#ddd6fe' : '#6d28d9',
-    badgeBg: (dark: boolean) => dark ? 'rgba(139,92,246,0.15)' : 'rgba(139,92,246,0.08)',
-    badgeColor: (dark: boolean) => dark ? '#c4b5fd' : '#6d28d9',
-  },
-  3: {
-    label: '3차 심사자',
-    accent: '#f59e0b',
-    bg: (dark: boolean) => dark ? 'rgba(245,158,11,0.08)' : 'rgba(245,158,11,0.04)',
-    border: (dark: boolean) => dark ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.2)',
-    avatarBg: (dark: boolean) => dark ? 'rgba(245,158,11,0.15)' : 'rgba(245,158,11,0.1)',
-    avatarColor: (dark: boolean) => dark ? '#fde68a' : '#92400e',
-    badgeBg: (dark: boolean) => dark ? 'rgba(245,158,11,0.12)' : 'rgba(245,158,11,0.07)',
-    badgeColor: (dark: boolean) => dark ? '#fbbf24' : '#92400e',
-  },
-} as const
-
 const SelectedReviewersPanel: React.FC<Props> = ({
   selected,
   onLevelChange,
   onDelete,
   onDrop,
 }) => {
-  const { isDarkMode } = useThemeMode()
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { isDarkMode, textPrimary, textSecondary, borderColor } = usePageColors()
 
   const byLevel = (level: 1 | 2 | 3) => selected.filter((r) => r.level === level)
 
@@ -110,8 +75,8 @@ const SelectedReviewersPanel: React.FC<Props> = ({
               <Typography
                 variant="caption"
                 sx={{
-                  color: cfg.badgeColor(isDarkMode),
-                  bgcolor: cfg.badgeBg(isDarkMode),
+                  color: cfg.chipColor(isDarkMode),
+                  bgcolor: cfg.chipBg(isDarkMode),
                   border: `1px solid ${cfg.border(isDarkMode)}`,
                   px: 1.25, py: 0.3,
                   borderRadius: 9999,
@@ -207,8 +172,8 @@ const SelectedReviewersPanel: React.FC<Props> = ({
                         width: 80,
                         fontSize: '0.78rem',
                         fontWeight: 600,
-                        color: cfg.badgeColor(isDarkMode),
-                        bgcolor: cfg.badgeBg(isDarkMode),
+                        color: cfg.chipColor(isDarkMode),
+                        bgcolor: cfg.chipBg(isDarkMode),
                         borderRadius: 1.5,
                         '& .MuiOutlinedInput-notchedOutline': {
                           borderColor: cfg.border(isDarkMode),
@@ -216,7 +181,7 @@ const SelectedReviewersPanel: React.FC<Props> = ({
                         '&:hover .MuiOutlinedInput-notchedOutline': {
                           borderColor: cfg.accent,
                         },
-                        '& .MuiSelect-icon': { color: cfg.badgeColor(isDarkMode) },
+                        '& .MuiSelect-icon': { color: cfg.chipColor(isDarkMode) },
                       }}
                     >
                       <MenuItem value={1}>1차</MenuItem>

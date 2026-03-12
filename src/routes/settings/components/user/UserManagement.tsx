@@ -30,74 +30,14 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
-
-// mock 사용자 데이터
-const mockUsers = [
-  {
-    id: 1,
-    name: '김개발',
-    employeeNumber: 'DEV001',
-    email: 'dev1@company.com',
-    role: '팀장',
-    department: '개발1팀',
-    active: true,
-  },
-  {
-    id: 2,
-    name: '이코딩',
-    employeeNumber: 'DEV002',
-    email: 'front@company.com',
-    role: '사원',
-    department: '개발1팀',
-    active: true,
-  },
-  {
-    id: 3,
-    name: '박기획',
-    employeeNumber: 'PLAN001',
-    email: 'plan@company.com',
-    role: '팀장',
-    department: '기획팀',
-    active: true,
-  },
-  {
-    id: 4,
-    name: '최디자인',
-    employeeNumber: 'DES001',
-    email: 'design@company.com',
-    role: '디자이너',
-    department: '기획팀',
-    active: false,
-  },
-]
-
-const mockDepartments = [
-  '개발1팀', '개발2팀', '기획팀', '디자인팀',
-  '영업1팀', '마케팅팀', '인사팀', '재무팀', '총무팀',
-]
-
-interface User {
-  id: number
-  name: string
-  employeeNumber: string
-  email: string
-  role: string
-  department: string
-  active: boolean
-}
+import { usePageColors } from '@/theme/pageColors'
+import { mockUsers as initialUsers, mockDepartments } from '../../data/mockUsers'
+import type { User } from '../../types'
 
 export default function UserManagement() {
-  const { isDarkMode } = useThemeMode()
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
-  const rowBg = isDarkMode ? 'rgba(30,41,59,0.4)' : '#ffffff'
-  const rowHoverBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
-  const headerBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
-  const cardBg = isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff'
+  const { isDarkMode, textPrimary, textSecondary, borderColor, cardBg, rowBg, rowHoverBg, headerBg } = usePageColors()
 
-  const [users, setUsers] = useState<User[]>(mockUsers)
+  const [users, setUsers] = useState<User[]>(initialUsers)
   const [open, setOpen] = useState(false)
   const [editUser, setEditUser] = useState<User | null>(null)
   const [formData, setFormData] = useState<Partial<User & { password: string }>>({})

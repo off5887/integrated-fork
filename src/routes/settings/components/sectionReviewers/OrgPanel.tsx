@@ -12,7 +12,7 @@ import {
 } from '@mui/material'
 import React, { useMemo } from 'react'
 import { OrgMember } from '@/api/types/reviewer'
-import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
 
 interface Props {
   members: OrgMember[]
@@ -21,10 +21,7 @@ interface Props {
 }
 
 const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
-  const { isDarkMode } = useThemeMode()
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { isDarkMode, textPrimary, textSecondary, borderColor, accentColor } = usePageColors()
 
   const grouped = useMemo(() => {
     const filtered = members.filter(

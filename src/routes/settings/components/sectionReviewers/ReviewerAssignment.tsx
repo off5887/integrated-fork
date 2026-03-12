@@ -4,16 +4,13 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import { Box, Button, Grid, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { OrgMember, SelectedReviewer } from '@/api/types/reviewer'
-import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
 import { mockOrganization } from '@/routes/settings/data/mockOrganization'
 import OrgPanel from './OrgPanel'
 import SelectedReviewersPanel from './SelectedReviewersPanel'
 
 const ReviewerAssignment: React.FC = () => {
-  const { isDarkMode } = useThemeMode()
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { isDarkMode, textPrimary, textSecondary, borderColor, accentColor, accentBg, accentBorder } = usePageColors()
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<SelectedReviewer[]>([])
@@ -104,9 +101,9 @@ const ReviewerAssignment: React.FC = () => {
               fontSize: '0.82rem',
               textTransform: 'none',
               borderColor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.35)',
-              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              color: accentColor,
               '&:hover': {
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+                bgcolor: accentBg,
                 borderColor: '#6366f1',
               },
               transition: 'all 0.15s ease',

@@ -28,45 +28,12 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
-import { OrgMember } from '@/api/types/reviewer'
-
-// 사번 포함 확장 타입
-interface MileageMember extends OrgMember {
-  employeeNumber: string
-}
-
-interface MileageEntry extends MileageMember {
-  score: string
-  mileage: string
-  reason: string
-}
-
-// Mock 데이터 (실제 구현 시 API 연동)
-const mockMembers: MileageMember[] = [
-  { id: '1', name: '김개발', position: '개발팀장', department: '개발1팀', division: '디지털전략부문', employeeNumber: 'DEV001' },
-  { id: '2', name: '이코딩', position: '수석개발자', department: '개발1팀', division: '디지털전략부문', employeeNumber: 'DEV002' },
-  { id: '3', name: '박프론트', position: '프론트엔드', department: '개발1팀', division: '디지털전략부문', employeeNumber: 'DEV003' },
-  { id: '4', name: '최기획', position: '기획팀장', department: '기획팀', division: '디지털전략부문', employeeNumber: 'PLAN001' },
-  { id: '5', name: '정디자인', position: '디자이너', department: '기획팀', division: '디지털전략부문', employeeNumber: 'PLAN002' },
-  { id: '6', name: '윤영업', position: '영업팀장', department: '영업1팀', division: '영업부문', employeeNumber: 'SALE001' },
-  { id: '7', name: '송세일', position: '영업사원', department: '영업1팀', division: '영업부문', employeeNumber: 'SALE002' },
-  { id: '8', name: '한마케팅', position: '마케팅팀장', department: '마케팅팀', division: '영업부문', employeeNumber: 'MKT001' },
-  { id: '9', name: '오인사', position: '인사팀장', department: '인사팀', division: '경영지원부문', employeeNumber: 'HR001' },
-  { id: '10', name: '백재무', position: '재무팀장', department: '재무팀', division: '경영지원부문', employeeNumber: 'FIN001' },
-  { id: '11', name: '남총무', position: '총무', department: '총무팀', division: '경영지원부문', employeeNumber: 'GEN001' },
-  { id: '12', name: '서부문장', position: '부문장', department: '전략기획실', division: '디지털전략부문', employeeNumber: 'STR001' },
-  { id: '13', name: '장임원', position: '상무', department: '경영지원부문', division: '경영지원부문', employeeNumber: 'EXE001' },
-]
+import { usePageColors } from '@/theme/pageColors'
+import { mockMileageMembers } from '../../data/mockMileageMembers'
+import type { MileageMember, MileageEntry } from '../../types'
 
 export default function SpecialMileage() {
-  const { isDarkMode } = useThemeMode()
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
-  const headerBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
-  const rowBg = isDarkMode ? 'rgba(30,41,59,0.4)' : '#ffffff'
-  const rowHoverBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
+  const { isDarkMode, textPrimary, textSecondary, borderColor, rowBg, rowHoverBg, headerBg } = usePageColors()
   const panelBg = isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(99,102,241,0.02)'
 
   const isMobile = useMediaQuery('(max-width: 1199px)')
@@ -80,7 +47,7 @@ export default function SpecialMileage() {
   const grouped = useMemo(() => {
     const q = searchTerm.trim().toLowerCase()
     const filtered = q
-      ? mockMembers.filter(
+      ? mockMileageMembers.filter(
           (m) =>
             m.name.toLowerCase().includes(q) ||
             m.employeeNumber.toLowerCase().includes(q) ||
@@ -88,7 +55,7 @@ export default function SpecialMileage() {
             m.division.toLowerCase().includes(q) ||
             m.position.toLowerCase().includes(q),
         )
-      : mockMembers
+      : mockMileageMembers
 
     // 부문 → 팀 → 사람 2단계 Map
     const divisionMap = new Map<string, Map<string, MileageMember[]>>()
@@ -246,7 +213,7 @@ export default function SpecialMileage() {
                 조직도 인원
               </Typography>
               <Chip
-                label={`${mockMembers.length}명`}
+                label={`${mockMileageMembers.length}명`}
                 size="small"
                 sx={{
                   ml: 'auto', height: 18, fontSize: '0.65rem', fontWeight: 700,
