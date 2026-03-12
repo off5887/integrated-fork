@@ -15,9 +15,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { CATEGORY_CONFIG, DIVISIONS } from '../../../api/mock/ideaBrowse'
-import type { IdeaCategory, IdeaStatus } from '../../../api/types/ideaBrowse'
-import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '../../../theme/ideaBrowseTheme'
+import { CATEGORY_CONFIG, DIVISIONS } from '@/api/mock/ideaBrowse'
+import type { IdeaCategory, IdeaStatus } from '@/api/types/ideaBrowse'
+import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 
 interface IdeaFiltersProps {
   isDarkMode: boolean

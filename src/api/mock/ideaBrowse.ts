@@ -1,6 +1,6 @@
 // src/api/mock/ideaBrowse.ts
 
-import type { CategoryConfig, IdeaItem } from '../types/ideaBrowse'
+import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
 
 /** 현재 로그인된 사용자 (mock) */
 export const MY_AUTHOR = '김개발'

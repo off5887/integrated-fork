@@ -18,9 +18,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { useThemeMode } from '../../../context/ThemeContext'
-import { ORG_STRUCTURE } from '../../../api/mock/idea'
-import { getIdeaTheme } from '../../../theme/ideaTheme'
+import { useThemeMode } from '@/context/ThemeContext'
+import { ORG_STRUCTURE } from '@/api/mock/idea'
+import { getIdeaTheme } from '@/theme/ideaTheme'
 
 // 검색을 위한 플랫 멤버 목록
 const allMembers = ORG_STRUCTURE.flatMap((div) =>

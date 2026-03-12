@@ -1,6 +1,6 @@
 // src/components/CommonHeader.tsx
 import { AppBar, Box, Toolbar, Typography } from '@mui/material'
-import { useThemeMode } from '../../../context/ThemeContext'
+import { useThemeMode } from '@/context/ThemeContext'
 
 export default function CommonHeader({ fishCount = 12480 }) {
   const { isDarkMode } = useThemeMode()

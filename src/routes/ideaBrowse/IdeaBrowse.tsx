@@ -1,15 +1,15 @@
 // src/routes/ideaBrowse/IdeaBrowse.tsx
 import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
-import { DEPT_BY_DIVISION, IDEAS, MY_AUTHOR } from '../../api/mock/ideaBrowse'
-import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '../../api/types/ideaBrowse'
-import LoadingSpinner from '../../components/ui/LoadingSpinner'
-import { useThemeMode } from '../../context/ThemeContext'
-import { getIdeaTheme, ideaAccent } from '../../theme/ideaBrowseTheme'
+import { DEPT_BY_DIVISION, IDEAS, MY_AUTHOR } from '@/api/mock/ideaBrowse'
+import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getIdeaTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
 import IdeaCard from './components/IdeaCard'
 import IdeaDetailDialog from './components/IdeaDetailDialog'
 import IdeaFilters from './components/IdeaFilters'
-import { getSimilarity } from '../../utils/ideaBrowse'
+import { getSimilarity } from '@/utils/ideaBrowse'
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'latest',   label: '최신순'   },

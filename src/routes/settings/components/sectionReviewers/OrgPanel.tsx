@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import React, { useMemo } from 'react'
-import { OrgMember } from '../../../../api/types/reviewer'
+import { OrgMember } from '@/api/types/reviewer'
 
 interface Props {
   members: OrgMember[]

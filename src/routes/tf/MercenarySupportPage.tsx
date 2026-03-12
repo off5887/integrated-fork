@@ -4,9 +4,9 @@ import GroupsIcon from '@mui/icons-material/Groups'
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
 import { Box, Chip, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '@/context/ThemeContext'
 import TFIdeaCard from './components/TFIdeaCard'
-import { mockIdeas } from '../../api/mock/mercenary'
+import { mockIdeas } from '@/api/mock/mercenary'
 
 const FISH_COUNT = 12480
 

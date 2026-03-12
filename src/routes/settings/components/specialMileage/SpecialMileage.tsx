@@ -28,7 +28,7 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { OrgMember } from '../../../../api/types/reviewer'
+import { OrgMember } from '@/api/types/reviewer'
 
 // 사번 포함 확장 타입
 interface MileageMember extends OrgMember {

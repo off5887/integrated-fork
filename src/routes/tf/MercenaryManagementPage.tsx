@@ -20,17 +20,17 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '@/context/ThemeContext'
 import {
   mockApplicants,
   mockEmployees,
   mockIdeas,
-} from '../../api/mock/mercenary'
+} from '@/api/mock/mercenary'
 import {
   type Applicant,
   type Employee,
   type Idea,
-} from '../../api/types/mercenary'
+} from '@/api/types/mercenary'
 
 interface ExtendedIdea extends Idea {
   mercenaries: Employee[]

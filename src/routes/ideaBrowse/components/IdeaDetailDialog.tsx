@@ -14,9 +14,9 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
-import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '../../../theme/ideaBrowseTheme'
-import type { IdeaItem } from '../../../api/types/ideaBrowse'
-import { getCatConfig } from '../../../utils/ideaBrowse'
+import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
+import type { IdeaItem } from '@/api/types/ideaBrowse'
+import { getCatConfig } from '@/utils/ideaBrowse'
 
 interface IdeaDetailDialogProps {
   idea: IdeaItem | null

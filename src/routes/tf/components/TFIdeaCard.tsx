@@ -2,7 +2,7 @@
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { Box, Button, Chip, Typography } from '@mui/material'
-import { Idea } from '../../../api/types/mercenary'
+import { Idea } from '@/api/types/mercenary'
 
 interface Props {
   idea: Idea

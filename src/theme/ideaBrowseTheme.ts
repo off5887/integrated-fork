@@ -1,6 +1,6 @@
 // src/theme/ideaBrowseTheme.ts
 // 아이디어 브라우즈 페이지 전용 라이트/다크 팔레트
-import type { IdeaStatus } from '../api/types/ideaBrowse'
+import type { IdeaStatus } from '@/api/types/ideaBrowse'
 
 const ideaLight = {
   // ── 배경 ──

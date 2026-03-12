@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '@/context/ThemeContext'
 import GomEvolutionSection from './components/GomEvolutionSection'
 import IntroSection from './components/IntroSection'
 

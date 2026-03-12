@@ -20,10 +20,10 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
-import { useThemeMode } from '../../context/ThemeContext'
-import LoadingSpinner from '../../components/ui/LoadingSpinner'
-import { judgeData } from '../../api/mock/judge'
-import { Proposal } from '../../api/types/judge'
+import { useThemeMode } from '@/context/ThemeContext'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { judgeData } from '@/api/mock/judge'
+import { Proposal } from '@/api/types/judge'
 import JudgeDetail from './JudgeDetail'
 import ReviewerChangeModal from './components/ReviewerChangeModal'
 

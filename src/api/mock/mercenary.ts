@@ -1,4 +1,4 @@
-import { Applicant, Employee, Idea } from '../types/mercenary'
+import { Applicant, Employee, Idea } from '@/api/types/mercenary'
 
 export const mockIdeas: Idea[] = [
   {

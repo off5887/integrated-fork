@@ -2,7 +2,7 @@
 import { AppBar, Box, Toolbar, useMediaQuery, useTheme } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '@/context/ThemeContext'
 import DesktopNavigation from './DesktopNavigation'
 import { menuItems, settingsItem } from './headerConfig'
 import MobileNavigationDrawer from './MobileNavigationDrawer'

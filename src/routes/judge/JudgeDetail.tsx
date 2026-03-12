@@ -7,7 +7,7 @@ import JudgeDetailActions from './components/JudgeDetailActions'
 import JudgeDetailHeader from './components/JudgeDetailHeader'
 import ParticipantsSection from './components/ParticipantsSection'
 import ScheduleSection from './components/ScheduleSection'
-import { Proposal } from '../../api/types/judge'
+import { Proposal } from '@/api/types/judge'
 
 interface Props {
   proposal: Proposal

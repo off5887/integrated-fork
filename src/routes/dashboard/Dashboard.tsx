@@ -1,7 +1,7 @@
 // src/routes/dashboard/Dashboard.tsx
 import { Box, Container, Grid, Typography, alpha } from '@mui/material'
-import { useThemeMode } from '../../context/ThemeContext'
-import { dashboardAccent, getDashboardTheme } from '../../theme/dashboardTheme'
+import { useThemeMode } from '@/context/ThemeContext'
+import { dashboardAccent, getDashboardTheme } from '@/theme/dashboardTheme'
 
 import ApprovalStatusPie from './components/ApprovalStatusPie'
 import DepartmentTop5Bar from './components/DepartmentTop5Bar'
@@ -14,7 +14,7 @@ import {
   KPI_STATS,
   MY_GOMGOMI,
   RECENT_ACTIVITIES,
-} from '../../api/mock/dashboard'
+} from '@/api/mock/dashboard'
 import DashboardCard from './components/DashboardCard'
 
 export default function RealDashboard() {

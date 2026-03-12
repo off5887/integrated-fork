@@ -15,8 +15,8 @@ import { useNavigate } from 'react-router-dom'
 import {
   getLoginErrorMessage,
   useLoginMutation,
-} from '../../api/queries/useLoginMutation'
-import { useThemeMode } from '../../context/ThemeContext'
+} from '@/api/queries/useLoginMutation'
+import { useThemeMode } from '@/context/ThemeContext'
 
 export default function Login() {
   const [employeeId, setEmployeeId] = useState('')

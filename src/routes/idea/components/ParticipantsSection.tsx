@@ -7,7 +7,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PublicIcon from '@mui/icons-material/Public'
 import { Box, Button, IconButton, Typography } from '@mui/material'
-import { getIdeaTheme } from '../../../theme/ideaTheme'
+import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface Props {
   reviewer: string[]

@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { motion } from 'framer-motion'
-import { useThemeMode } from '../../context/ThemeContext'
+import { useThemeMode } from '@/context/ThemeContext'
 
 // Nivo 그래프 임포트
 import { ResponsiveBar } from '@nivo/bar'

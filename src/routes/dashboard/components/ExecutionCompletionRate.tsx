@@ -1,9 +1,9 @@
 // src/routes/Dashboard/Components/ExecutionCompletionRate.tsx
 import { Box, Typography } from '@mui/material'
 import Chart from 'react-apexcharts'
-import { useThemeMode } from '../../../context/ThemeContext'
-import { getDashboardTheme } from '../../../theme/dashboardTheme'
-import type { ExecutionCompletionRateProps } from '../../../api/types/dashboard'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getDashboardTheme } from '@/theme/dashboardTheme'
+import type { ExecutionCompletionRateProps } from '@/api/types/dashboard'
 
 const getStatus = (rate: number) => {
   if (rate >= 80) return { label: '우수', color: '#10b981', gradTo: '#34d399', bg: '#10b98118', border: '#10b98130' }

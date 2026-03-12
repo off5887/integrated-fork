@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import { useThemeMode } from '../../../context/ThemeContext'
-import type { DashboardCardProps } from '../../../api/types/dashboard'
+import { useThemeMode } from '@/context/ThemeContext'
+import type { DashboardCardProps } from '@/api/types/dashboard'
 
 export default function DashboardCard({
   children,

@@ -1,7 +1,7 @@
 // src/routes/idea/BasicInfoSection.tsx
 import { Box, TextField, Typography } from '@mui/material'
-import { CATEGORIES } from '../../../api/mock/idea'
-import { getIdeaTheme } from '../../../theme/ideaTheme'
+import { CATEGORIES } from '@/api/mock/idea'
+import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface Props {
   title: string

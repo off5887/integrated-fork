@@ -17,9 +17,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { CATEGORY_CONFIG, IDEAS } from '../../../api/mock/ideaBrowse'
-import type { CategoryConfig, IdeaItem } from '../../../api/types/ideaBrowse'
-import { getIdeaTheme, IDEA_STATUS_CONFIG } from '../../../theme/ideaTheme'
+import { CATEGORY_CONFIG, IDEAS } from '@/api/mock/ideaBrowse'
+import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
+import { getIdeaTheme, IDEA_STATUS_CONFIG } from '@/theme/ideaTheme'
 
 function getCatConfig(id: string): CategoryConfig {
   return (

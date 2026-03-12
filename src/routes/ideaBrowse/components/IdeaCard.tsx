@@ -4,9 +4,9 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Avatar, Box, Tooltip, Typography } from '@mui/material'
-import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '../../../theme/ideaBrowseTheme'
-import type { IdeaItem } from '../../../api/types/ideaBrowse'
-import { fmtDate, getCatConfig } from '../../../utils/ideaBrowse'
+import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
+import type { IdeaItem } from '@/api/types/ideaBrowse'
+import { fmtDate, getCatConfig } from '@/utils/ideaBrowse'
 
 interface IdeaCardProps {
   idea: IdeaItem

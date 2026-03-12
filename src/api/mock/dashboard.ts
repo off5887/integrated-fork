@@ -1,7 +1,7 @@
 // src/api/mock/dashboard.ts
 // 대시보드 가상 데이터
 
-import type { KpiStat, RecentActivity, ApprovalStage, DepartmentData, PopularItem, MyGomgomi } from '../types/dashboard'
+import type { KpiStat, RecentActivity, ApprovalStage, DepartmentData, PopularItem, MyGomgomi } from '@/api/types/dashboard'
 
 export const KPI_STATS: KpiStat[] = [
   { label: '전체 아이디어', value: '150건', icon: '💡', color: '#3b82f6' },

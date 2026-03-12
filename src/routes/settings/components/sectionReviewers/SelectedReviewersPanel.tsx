@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material'
 import React from 'react'
-import { SelectedReviewer } from '../../../../api/types/reviewer'
+import { SelectedReviewer } from '@/api/types/reviewer'
 
 interface Props {
   selected: SelectedReviewer[]

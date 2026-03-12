@@ -1,7 +1,7 @@
 // src/theme/ideaTheme.ts
 // 상상하기(NewIdea) / 아이디어 브라우징 전용 라이트/다크 팔레트
 
-import type { IdeaStatus } from '../api/types/ideaBrowse'
+import type { IdeaStatus } from '@/api/types/ideaBrowse'
 
 const ideaLight = {
   // ── 텍스트 ──

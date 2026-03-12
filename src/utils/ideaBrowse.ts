@@ -1,5 +1,5 @@
-import { CATEGORY_CONFIG, MY_IDEA_KEYWORDS, MY_IDEA_TITLES } from '../api/mock/ideaBrowse'
-import type { CategoryConfig, IdeaItem } from '../api/types/ideaBrowse'
+import { CATEGORY_CONFIG, MY_IDEA_KEYWORDS, MY_IDEA_TITLES } from '@/api/mock/ideaBrowse'
+import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
 
 /** idea 텍스트와 내 아이디어 키워드를 비교해 유사한 내 아이디어 제목 목록을 반환합니다. */
 export function getSimilarity(idea: IdeaItem): string[] {

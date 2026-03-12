@@ -21,7 +21,7 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { OrgMember } from '../../../../api/types/reviewer'
+import { OrgMember } from '@/api/types/reviewer'
 
 // ─── 타입 ────────────────────────────────────────────────────────────────────
 

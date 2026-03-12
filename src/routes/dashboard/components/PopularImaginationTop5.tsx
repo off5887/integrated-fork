@@ -1,8 +1,8 @@
 // src/pages/Dashboard/components/PopularImaginationTop5.tsx
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '../../../context/ThemeContext'
-import { getDashboardTheme, dashboardAccent } from '../../../theme/dashboardTheme'
-import { POPULAR_ITEMS as ITEMS } from '../../../api/mock/dashboard'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
+import { POPULAR_ITEMS as ITEMS } from '@/api/mock/dashboard'
 
 const RANK_COLORS = dashboardAccent.rank
 

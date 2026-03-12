@@ -1,4 +1,4 @@
-import { OrgMember } from '../../../api/types/reviewer'
+import { OrgMember } from '@/api/types/reviewer'
 
 export const mockOrganization: OrgMember[] = [
   // 디지털전략부문

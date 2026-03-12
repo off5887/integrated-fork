@@ -1,6 +1,6 @@
 // src/api/mock/idea.ts
 
-import type { CategoryOption, OrgDivision, Reviewer } from '../types/idea'
+import type { CategoryOption, OrgDivision, Reviewer } from '@/api/types/idea'
 
 export const CATEGORIES: CategoryOption[] = [
   { id: '절감', label: '절감 아이디어', emoji: '💰', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)' },

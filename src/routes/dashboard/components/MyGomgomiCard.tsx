@@ -1,9 +1,9 @@
 // src/pages/Dashboard/components/MyGomgomiCard.tsx
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '../../../context/ThemeContext'
-import { getDashboardTheme } from '../../../theme/dashboardTheme'
-import { MY_GOMGOMI } from '../../../api/mock/dashboard'
-import type { MyGomgomiCardProps } from '../../../api/types/dashboard'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getDashboardTheme } from '@/theme/dashboardTheme'
+import { MY_GOMGOMI } from '@/api/mock/dashboard'
+import type { MyGomgomiCardProps } from '@/api/types/dashboard'
 
 const MINI_STATS = MY_GOMGOMI.miniStats
 

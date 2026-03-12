@@ -1,4 +1,4 @@
-import { Proposal } from '../types/judge'
+import { Proposal } from '@/api/types/judge'
 
 export const judgeData: Proposal[] = [
   {

@@ -1,6 +1,6 @@
 // src/routes/MileageStatsCards.tsx
 import { Box, Grid, Typography } from '@mui/material'
-import { useThemeMode } from '../../../context/ThemeContext'
+import { useThemeMode } from '@/context/ThemeContext'
 
 interface Props {
   totalFish: number

@@ -1,6 +1,6 @@
 // src/routes/Mileage/MileageMobileCards.tsx
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '../../../context/ThemeContext'
+import { useThemeMode } from '@/context/ThemeContext'
 
 interface Props {
   data: any[]

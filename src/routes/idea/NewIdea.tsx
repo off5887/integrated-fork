@@ -16,8 +16,8 @@ import {
 } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useThemeMode } from '../../context/ThemeContext'
-import { getIdeaTheme } from '../../theme/ideaTheme'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getIdeaTheme } from '@/theme/ideaTheme'
 
 import BasicInfoSection from './components/BasicInfoSection'
 import FileUploadSection from './components/FileUploadSection'

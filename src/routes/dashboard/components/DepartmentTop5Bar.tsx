@@ -1,9 +1,9 @@
 // src/routes/dashboard/components/DepartmentTop5Bar.tsx
 import { Box, Typography } from '@mui/material'
 import Chart from 'react-apexcharts'
-import { useThemeMode } from '../../../context/ThemeContext'
-import { getDashboardTheme } from '../../../theme/dashboardTheme'
-import { DEPARTMENT_DATA as DATA } from '../../../api/mock/dashboard'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getDashboardTheme } from '@/theme/dashboardTheme'
+import { DEPARTMENT_DATA as DATA } from '@/api/mock/dashboard'
 
 const BAR_COLORS = DATA.map((d) => d.color)
 const GRADIENT_TO = DATA.map(() => '#ffffff')

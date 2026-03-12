@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 import type { ChangeEvent } from 'react'
 import { useState } from 'react'
-import { getIdeaTheme } from '../../../theme/ideaTheme'
+import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface FileUploadSectionProps {
   files: File[]

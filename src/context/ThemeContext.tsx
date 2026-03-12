@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { darkTheme, lightTheme } from '../theme'
+import { darkTheme, lightTheme } from '@/theme'
 
 interface ThemeContextType {
   isDarkMode: boolean
