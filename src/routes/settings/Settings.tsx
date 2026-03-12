@@ -1,19 +1,39 @@
-// src/pages/Settings.tsx
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { Box, Chip, Container, Tab, Tabs, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { type ComponentType, type ReactNode, useState } from 'react'
+import { type SvgIconProps } from '@mui/material/SvgIcon'
+import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import ReviewChange from './components/reviewChange/ReviewChange'
 import ReviewerAssignment from './components/sectionReviewers/ReviewerAssignment'
 import SpecialMileage from './components/specialMileage/SpecialMileage'
 import UserManagement from './components/user/UserManagement'
 
+// ─── 탭 설정 ──────────────────────────────────────────────────────────────────
+// 새 탭 추가 시 이 배열에만 항목을 추가하면 됩니다.
+
+interface TabConfig {
+  id: string
+  label: string
+  Icon: ComponentType<SvgIconProps>
+  Component: ComponentType
+}
+
+const TABS: TabConfig[] = [
+  { id: 'reviewers',      label: '심사자 배정',   Icon: SupervisorAccountIcon, Component: ReviewerAssignment },
+  { id: 'users',          label: '사용자 관리',   Icon: ManageAccountsIcon,   Component: UserManagement },
+  { id: 'special-mile',   label: '특별 마일리지', Icon: CardGiftcardIcon,     Component: SpecialMileage },
+  { id: 'review-change',  label: '심사변경',      Icon: SwapHorizIcon,        Component: ReviewChange },
+]
+
+// ─── TabPanel ─────────────────────────────────────────────────────────────────
+
 interface TabPanelProps {
-  children?: React.ReactNode
+  children: ReactNode
   index: number
   value: number
 }
@@ -31,13 +51,12 @@ function TabPanel({ children, value, index }: TabPanelProps) {
   )
 }
 
+// ─── Settings ─────────────────────────────────────────────────────────────────
+
 export default function Settings() {
   const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor } = usePageColors()
   const [tabValue, setTabValue] = useState(0)
-
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
 
   return (
     <Box
@@ -86,9 +105,9 @@ export default function Settings() {
                 label="ADMIN"
                 size="small"
                 sx={{
-                  bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
+                  bgcolor: 'rgba(99,102,241,0.1)',
                   color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                  border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'}`,
+                  border: `1px solid rgba(99,102,241,0.25)`,
                   fontWeight: 800,
                   fontSize: '0.65rem',
                   letterSpacing: '0.08em',
@@ -109,7 +128,9 @@ export default function Settings() {
             bgcolor: isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
             borderRadius: 3,
             border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 4px 24px rgba(0,0,0,0.06)',
+            boxShadow: isDarkMode
+              ? '0 8px 32px rgba(0,0,0,0.4)'
+              : '0 4px 24px rgba(0,0,0,0.06)',
             overflow: 'hidden',
           }}
         >
@@ -152,50 +173,25 @@ export default function Settings() {
                 },
               }}
             >
-              <Tab
-                label="심사자 배정"
-                id="settings-tab-0"
-                aria-controls="settings-tabpanel-0"
-                icon={<SupervisorAccountIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
-                iconPosition="start"
-              />
-              <Tab
-                label="사용자 관리"
-                id="settings-tab-1"
-                aria-controls="settings-tabpanel-1"
-                icon={<ManageAccountsIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
-                iconPosition="start"
-              />
-              <Tab
-                label="특별 마일리지"
-                id="settings-tab-2"
-                aria-controls="settings-tabpanel-2"
-                icon={<CardGiftcardIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
-                iconPosition="start"
-              />
-              <Tab
-                label="심사변경"
-                id="settings-tab-3"
-                aria-controls="settings-tabpanel-3"
-                icon={<SwapHorizIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
-                iconPosition="start"
-              />
+              {TABS.map((tab, index) => (
+                <Tab
+                  key={tab.id}
+                  label={tab.label}
+                  id={`settings-tab-${index}`}
+                  aria-controls={`settings-tabpanel-${index}`}
+                  icon={<tab.Icon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
+                  iconPosition="start"
+                />
+              ))}
             </Tabs>
           </Box>
 
           <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-            <TabPanel value={tabValue} index={0}>
-              <ReviewerAssignment isDarkMode={isDarkMode} />
-            </TabPanel>
-            <TabPanel value={tabValue} index={1}>
-              <UserManagement isDarkMode={isDarkMode} />
-            </TabPanel>
-            <TabPanel value={tabValue} index={2}>
-              <SpecialMileage isDarkMode={isDarkMode} />
-            </TabPanel>
-            <TabPanel value={tabValue} index={3}>
-              <ReviewChange isDarkMode={isDarkMode} />
-            </TabPanel>
+            {TABS.map((tab, index) => (
+              <TabPanel key={tab.id} value={tabValue} index={index}>
+                <tab.Component />
+              </TabPanel>
+            ))}
           </Box>
         </Box>
       </Container>

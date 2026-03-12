@@ -21,6 +21,7 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
+import { useThemeMode } from '@/context/ThemeContext'
 import { OrgMember } from '@/api/types/reviewer'
 
 // ─── 타입 ────────────────────────────────────────────────────────────────────
@@ -258,11 +259,8 @@ const ALL_STATUSES: IdeaStatus[] = [
 
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
-interface Props {
-  isDarkMode: boolean
-}
-
-export default function ReviewChange({ isDarkMode }: Props) {
+export default function ReviewChange() {
+  const { isDarkMode } = useThemeMode()
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
   const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'

@@ -28,6 +28,7 @@ import {
   useMediaQuery,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
+import { useThemeMode } from '@/context/ThemeContext'
 import { OrgMember } from '@/api/types/reviewer'
 
 // 사번 포함 확장 타입
@@ -58,11 +59,8 @@ const mockMembers: MileageMember[] = [
   { id: '13', name: '장임원', position: '상무', department: '경영지원부문', division: '경영지원부문', employeeNumber: 'EXE001' },
 ]
 
-interface Props {
-  isDarkMode: boolean
-}
-
-export default function SpecialMileage({ isDarkMode }: Props) {
+export default function SpecialMileage() {
+  const { isDarkMode } = useThemeMode()
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
   const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'

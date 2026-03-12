@@ -30,6 +30,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
+import { useThemeMode } from '@/context/ThemeContext'
 
 // mock 사용자 데이터
 const mockUsers = [
@@ -86,11 +87,8 @@ interface User {
   active: boolean
 }
 
-interface Props {
-  isDarkMode: boolean
-}
-
-export default function UserManagement({ isDarkMode }: Props) {
+export default function UserManagement() {
+  const { isDarkMode } = useThemeMode()
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
   const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'

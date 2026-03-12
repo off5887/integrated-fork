@@ -4,15 +4,13 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import { Box, Button, Grid, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { OrgMember, SelectedReviewer } from '@/api/types/reviewer'
+import { useThemeMode } from '@/context/ThemeContext'
 import { mockOrganization } from '@/routes/settings/data/mockOrganization'
 import OrgPanel from './OrgPanel'
 import SelectedReviewersPanel from './SelectedReviewersPanel'
 
-interface Props {
-  isDarkMode: boolean
-}
-
-const ReviewerAssignment: React.FC<Props> = ({ isDarkMode }) => {
+const ReviewerAssignment: React.FC = () => {
+  const { isDarkMode } = useThemeMode()
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
   const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
@@ -149,7 +147,6 @@ const ReviewerAssignment: React.FC<Props> = ({ isDarkMode }) => {
             members={mockOrganization}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-            isDarkMode={isDarkMode}
           />
         </Grid>
         <Grid size={{ xs: 12, lg: 8 }}>
@@ -158,7 +155,6 @@ const ReviewerAssignment: React.FC<Props> = ({ isDarkMode }) => {
             onLevelChange={handleLevelChange}
             onDelete={handleDelete}
             onDrop={handleDrop}
-            isDarkMode={isDarkMode}
           />
         </Grid>
       </Grid>

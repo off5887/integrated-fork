@@ -1,5 +1,6 @@
 // src/context/ThemeContext.tsx (추천 최종 버전)
-import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles' // ← 여기 import
+import { darkTheme, lightTheme } from '@/theme'
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 import {
   createContext,
   ReactNode,
@@ -7,7 +8,6 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { darkTheme, lightTheme } from '@/theme'
 
 interface ThemeContextType {
   isDarkMode: boolean

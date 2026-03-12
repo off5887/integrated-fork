@@ -9,13 +9,13 @@ import {
 } from '@mui/material'
 import React from 'react'
 import { SelectedReviewer } from '@/api/types/reviewer'
+import { useThemeMode } from '@/context/ThemeContext'
 
 interface Props {
   selected: SelectedReviewer[]
   onLevelChange: (id: string, newLevel: 1 | 2 | 3) => void
   onDelete: (id: string) => void
   onDrop: (e: React.DragEvent<HTMLDivElement>, targetLevel: 1 | 2 | 3) => void
-  isDarkMode: boolean
 }
 
 const levelConfig = {
@@ -56,8 +56,8 @@ const SelectedReviewersPanel: React.FC<Props> = ({
   onLevelChange,
   onDelete,
   onDrop,
-  isDarkMode,
 }) => {
+  const { isDarkMode } = useThemeMode()
   const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
   const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
   const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
