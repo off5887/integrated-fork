@@ -31,15 +31,17 @@ src/
 │   ├── common/       # 레이아웃에 공통으로 쓰이는 컴포넌트 (Header, Nav 등)
 │   └── ui/           # 재사용 가능한 UI 원자 컴포넌트 (Button, LoadingSpinner 등)
 ├── context/          # React Context (ThemeContext 등)
-├── features/         # 피처 단위 폴더 (복잡한 도메인 로직)
+├── features/         # 피처(도메인) 단위 폴더 — 실제 비즈니스 로직
+│   └── {피처}/
+│       ├── {Page}.tsx          # 피처 루트 컴포넌트
+│       ├── utils.ts            # 피처 전용 유틸
+│       ├── config/             # 피처 전용 설정 (statusConfig 등)
+│       └── components/         # 피처 전용 서브 컴포넌트
 ├── layouts/          # 페이지 레이아웃 래퍼 (AuthLayout, MainLayout)
-├── routes/           # 페이지 단위 컴포넌트
-│   └── {페이지}/
-│       ├── {Page}.tsx          # 페이지 루트 컴포넌트
-│       ├── utils.ts            # 페이지 전용 유틸
-│       ├── config/             # 페이지 전용 설정 (statusConfig 등)
-│       └── components/         # 페이지 전용 서브 컴포넌트
-├── theme/            # 테마 파일 (페이지별 팔레트, MUI 타입 확장)
+├── routes/
+│   └── index.tsx     # Route 선언만 (얇은 라우팅 레이어)
+├── theme/            # 테마 파일 (피처별 팔레트)
+├── types/            # 전역 타입 선언 (.d.ts, 모듈 augmentation)
 └── utils/            # 전역 유틸 함수
 ```
 
@@ -58,7 +60,7 @@ src/
 export const mockCandidates: ReviewerCandidate[] = [...]
 
 // ❌ 잘못된 위치
-// src/routes/judge/components/ReviewerChangeModal.tsx
+// src/features/judge/components/ReviewerChangeModal.tsx
 const mockCandidates = [...]
 ```
 
@@ -74,14 +76,14 @@ export interface ReviewerCandidate { ... }
 export interface Attachment { ... }
 
 // ❌ 잘못된 위치
-// src/routes/judge/components/AttachmentsSection.tsx
+// src/features/judge/components/AttachmentsSection.tsx
 interface Attachment { ... }
 ```
 
 ### 테마/색상 토큰 → `src/theme/`
 - 다크/라이트 분기 색상값(`isDarkMode ? '#xxx' : '#yyy'`)을 컴포넌트 내부에 하드코딩하지 않는다.
 - 페이지 전용 팔레트는 `src/theme/{페이지}Theme.ts` 파일에 토큰으로 정의한다.
-- MUI 테마 타입 확장 `.d.ts` 파일은 `src/theme/`에 유지한다 (이동 대상 아님).
+- MUI 테마 타입 확장 등 `.d.ts` 선언 파일은 `src/types/`에 둔다.
 
 ```ts
 // ✅ 올바른 방식
@@ -91,12 +93,12 @@ const ideaDark  = { avatarBg: '#4f46e5', dialogShadow: '...', ... }
 export const getIdeaTheme = (isDarkMode: boolean) => isDarkMode ? ideaDark : ideaLight
 
 // ❌ 잘못된 방식
-// src/routes/ideaBrowse/components/IdeaCard.tsx
+// src/features/ideaBrowse/components/IdeaCard.tsx
 bgcolor: isDarkMode ? '#4f46e5' : '#6366f1'
 ```
 
-### 페이지 전용 유틸 → `routes/{페이지}/utils.ts`
-- 페이지 내에서만 사용하는 유틸 함수는 해당 페이지 폴더의 `utils.ts`에 둔다.
+### 피처 전용 유틸 → `features/{피처}/utils.ts`
+- 피처 내에서만 사용하는 유틸 함수는 해당 피처 폴더의 `utils.ts`에 둔다.
 - 전역에서 재사용되는 유틸은 `src/utils/`에 둔다.
 
 ---
