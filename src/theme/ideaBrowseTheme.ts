@@ -45,6 +45,28 @@ const ideaLight = {
   // ── 상태 뱃지 (승인/반려 등) ──
   statusBadgeOpacity: 0.08,
   statusBorderOpacity: 0.3,
+
+  // ── 아바타 ──
+  avatarBg: '#6366f1',
+
+  // ── 유사 카드 그림자 ──
+  similarCardShadow: '0 0 0 1px rgba(245,158,11,0.2), 0 2px 12px rgba(0,0,0,0.05)',
+
+  // ── 상세 다이얼로그 ──
+  dialogShadow: '0 24px 64px rgba(0,0,0,0.12)',
+  backdropBg: 'rgba(0,0,0,0.35)',
+  similarListColor: '#92400e',
+
+  // ── 입력/셀렉트 배경 ──
+  inputBg: '#f8fafc',
+
+  // ── 내 상상만 토글 ──
+  myOnlyActiveBg: 'rgba(16,185,129,0.1)',
+  myOnlyCountBg: 'rgba(16,185,129,0.12)',
+
+  // ── 통계 박스 ──
+  statsBg: 'rgba(99,102,241,0.05)',
+  statsBorder: 'rgba(99,102,241,0.15)',
 } as const
 
 const ideaDark = {
@@ -90,6 +112,28 @@ const ideaDark = {
   // ── 상태 뱃지 (승인/반려 등) ──
   statusBadgeOpacity: 0.08,
   statusBorderOpacity: 0.3,
+
+  // ── 아바타 ──
+  avatarBg: '#4f46e5',
+
+  // ── 유사 카드 그림자 ──
+  similarCardShadow: '0 0 0 1px rgba(245,158,11,0.25), 0 4px 20px rgba(0,0,0,0.3)',
+
+  // ── 상세 다이얼로그 ──
+  dialogShadow: '0 24px 64px rgba(0,0,0,0.6)',
+  backdropBg: 'rgba(0,0,0,0.6)',
+  similarListColor: '#fbbf24',
+
+  // ── 입력/셀렉트 배경 ──
+  inputBg: 'rgba(15,23,42,0.5)',
+
+  // ── 내 상상만 토글 ──
+  myOnlyActiveBg: 'rgba(16,185,129,0.15)',
+  myOnlyCountBg: 'rgba(16,185,129,0.2)',
+
+  // ── 통계 박스 ──
+  statsBg: 'rgba(99,102,241,0.08)',
+  statsBorder: 'rgba(99,102,241,0.2)',
 } as const
 
 // ── 공통 액센트 컬러 (라이트/다크 동일하게 사용) ──

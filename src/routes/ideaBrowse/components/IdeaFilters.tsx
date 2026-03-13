@@ -15,12 +15,12 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
 import { CATEGORY_CONFIG, DIVISIONS } from '@/api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaStatus } from '@/api/types/ideaBrowse'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 
 interface IdeaFiltersProps {
-  isDarkMode: boolean
   search: string
   selectedCategory: IdeaCategory | ''
   selectedDivision: string
@@ -43,7 +43,6 @@ interface IdeaFiltersProps {
 }
 
 export default function IdeaFilters({
-  isDarkMode,
   search,
   selectedCategory,
   selectedDivision,
@@ -64,13 +63,14 @@ export default function IdeaFilters({
   onMyOnlyToggle,
   onClearAll,
 }: IdeaFiltersProps) {
-  const { textPrimary, textSecondary, borderColor, filterActiveBg, filterActiveBorder, filterChipBg, similar } = getIdeaTheme(isDarkMode)
+  const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor, filterActiveBg, filterActiveBorder, filterChipBg, similar, inputBg, myOnlyActiveBg, myOnlyCountBg } = getIdeaTheme(isDarkMode)
 
   const selectSx = {
     borderRadius: 2,
     fontSize: '0.83rem',
     color: textPrimary,
-    bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+    bgcolor: inputBg,
     '& .MuiOutlinedInput-notchedOutline': { borderColor },
     '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(99,102,241,0.35)' },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: ideaAccent.primary },
@@ -107,7 +107,7 @@ export default function IdeaFilters({
           mb: 2,
           '& .MuiOutlinedInput-root': {
             borderRadius: 2.5,
-            backgroundColor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+            backgroundColor: inputBg,
             fontSize: '0.875rem',
             height: 44,
             '& fieldset': { borderColor },
@@ -259,9 +259,9 @@ export default function IdeaFilters({
               display: 'inline-flex', alignItems: 'center', gap: 0.75,
               px: 1.5, py: 0.7, borderRadius: 2, cursor: 'pointer', userSelect: 'none',
               border: `1px solid ${showMyOnly ? 'rgba(16,185,129,0.45)' : borderColor}`,
-              bgcolor: showMyOnly ? (isDarkMode ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.1)') : filterChipBg,
+              bgcolor: showMyOnly ? myOnlyActiveBg : filterChipBg,
               transition: 'all 0.15s ease', outline: 'none',
-              '&:hover': { borderColor: 'rgba(16,185,129,0.45)', bgcolor: isDarkMode ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.1)' },
+              '&:hover': { borderColor: 'rgba(16,185,129,0.45)', bgcolor: myOnlyActiveBg },
               '&:focus-visible': { outline: `2px solid ${ideaAccent.success}`, outlineOffset: 2 },
             }}
           >
@@ -273,7 +273,7 @@ export default function IdeaFilters({
               <Box
                 sx={{
                   minWidth: 18, height: 18, borderRadius: '50%',
-                  bgcolor: showMyOnly ? ideaAccent.success : (isDarkMode ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.12)'),
+                  bgcolor: showMyOnly ? ideaAccent.success : myOnlyCountBg,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >

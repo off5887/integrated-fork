@@ -4,20 +4,21 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Avatar, Box, Tooltip, Typography } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { fmtDate, getCatConfig } from '../utils'
 
 interface IdeaCardProps {
   idea: IdeaItem
-  isDarkMode: boolean
   similarTitles: string[]
   showSimilar: boolean
   onClick: () => void
 }
 
-export default function IdeaCard({ idea, isDarkMode, similarTitles, showSimilar, onClick }: IdeaCardProps) {
-  const { textPrimary, textSecondary, borderColor, cardBg, similar, dividerColor, cardShadow, cardHoverShadow } = getIdeaTheme(isDarkMode)
+export default function IdeaCard({ idea, similarTitles, showSimilar, onClick }: IdeaCardProps) {
+  const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor, cardBg, similar, dividerColor, cardShadow, cardHoverShadow, avatarBg, similarCardShadow } = getIdeaTheme(isDarkMode)
 
   const cat = getCatConfig(idea.category)
   const stat = IDEA_STATUS_CONFIG[idea.status]
@@ -41,11 +42,7 @@ export default function IdeaCard({ idea, isDarkMode, similarTitles, showSimilar,
         cursor: 'pointer',
         outline: 'none',
         transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',
-        boxShadow: isSimilar
-          ? isDarkMode
-            ? `0 0 0 1px rgba(245,158,11,0.25), 0 4px 20px rgba(0,0,0,0.3)`
-            : `0 0 0 1px rgba(245,158,11,0.2), 0 2px 12px rgba(0,0,0,0.05)`
-          : cardShadow,
+        boxShadow: isSimilar ? similarCardShadow : cardShadow,
         '&:hover': {
           transform: 'translateY(-5px)',
           boxShadow: cardHoverShadow,
@@ -156,7 +153,7 @@ export default function IdeaCard({ idea, isDarkMode, similarTitles, showSimilar,
             <Avatar
               sx={{
                 width: 22, height: 22, fontSize: '0.65rem', fontWeight: 700,
-                bgcolor: isDarkMode ? '#4f46e5' : ideaAccent.primary, flexShrink: 0,
+                bgcolor: avatarBg, flexShrink: 0,
               }}
             >
               {idea.author[0]}

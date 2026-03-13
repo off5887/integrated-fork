@@ -14,6 +14,7 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { getCatConfig } from '../utils'
@@ -21,12 +22,12 @@ import { getCatConfig } from '../utils'
 interface IdeaDetailDialogProps {
   idea: IdeaItem | null
   onClose: () => void
-  isDarkMode: boolean
   similarTitles: string[]
 }
 
-export default function IdeaDetailDialog({ idea, onClose, isDarkMode, similarTitles }: IdeaDetailDialogProps) {
-  const { textPrimary, textSecondary, borderColor, cardBg, similar } = getIdeaTheme(isDarkMode)
+export default function IdeaDetailDialog({ idea, onClose, similarTitles }: IdeaDetailDialogProps) {
+  const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor, cardBg, similar, avatarBg, dialogShadow, backdropBg, similarListColor } = getIdeaTheme(isDarkMode)
 
   if (!idea) return null
   const cat = getCatConfig(idea.category)
@@ -44,13 +45,13 @@ export default function IdeaDetailDialog({ idea, onClose, isDarkMode, similarTit
             borderRadius: 3,
             bgcolor: cardBg,
             border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode ? '0 24px 64px rgba(0,0,0,0.6)' : '0 24px 64px rgba(0,0,0,0.12)',
+            boxShadow: dialogShadow,
             overflow: 'hidden',
             m: { xs: 2, sm: 3 },
           },
         },
         backdrop: {
-          sx: { backdropFilter: 'blur(6px)', backgroundColor: isDarkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)' },
+          sx: { backdropFilter: 'blur(6px)', backgroundColor: backdropBg },
         },
       }}
     >
@@ -96,7 +97,7 @@ export default function IdeaDetailDialog({ idea, onClose, isDarkMode, similarTit
                   내 아이디어와 유사한 건이 있습니다
                 </Typography>
                 {similarTitles.map((t) => (
-                  <Typography key={t} sx={{ fontSize: '0.78rem', color: isDarkMode ? similar.gradientTo : '#92400e', lineHeight: 1.6 }}>
+                  <Typography key={t} sx={{ fontSize: '0.78rem', color: similarListColor, lineHeight: 1.6 }}>
                     • {t}
                   </Typography>
                 ))}
@@ -109,7 +110,7 @@ export default function IdeaDetailDialog({ idea, onClose, isDarkMode, similarTit
 
           {/* 작성자 정보 */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Avatar sx={{ width: 36, height: 36, bgcolor: isDarkMode ? '#4f46e5' : ideaAccent.primary, fontSize: '0.85rem', fontWeight: 700 }}>
+            <Avatar sx={{ width: 36, height: 36, bgcolor: avatarBg, fontSize: '0.85rem', fontWeight: 700 }}>
               {idea.author[0]}
             </Avatar>
             <Box>

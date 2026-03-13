@@ -20,7 +20,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 
 export default function IdeaBrowse() {
   const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg, similar } = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg, similar, statsBg, statsBorder, myOnlyActiveBg } = getIdeaTheme(isDarkMode)
 
   // ─── 필터 상태 ──────────────────────────────────────────────
   const [search,           setSearch]           = useState('')
@@ -141,8 +141,8 @@ export default function IdeaBrowse() {
               sx={{
                 display: 'flex', alignItems: 'center', gap: 1.5,
                 px: 2, py: 1, borderRadius: 2,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)',
-                border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.15)'}`,
+                bgcolor: statsBg,
+                border: `1px solid ${statsBorder}`,
               }}
             >
               <Box sx={{ textAlign: 'center' }}>
@@ -163,7 +163,6 @@ export default function IdeaBrowse() {
           </Box>
 
           <IdeaFilters
-            isDarkMode={isDarkMode}
             search={search}
             selectedCategory={selectedCategory}
             selectedDivision={selectedDivision}
@@ -204,7 +203,7 @@ export default function IdeaBrowse() {
                 size="small"
                 onDelete={() => setShowMyOnly(false)}
                 sx={{
-                  bgcolor: isDarkMode ? 'rgba(16,185,129,0.15)' : 'rgba(16,185,129,0.1)',
+                  bgcolor: myOnlyActiveBg,
                   color: ideaAccent.success,
                   border: `1px solid rgba(16,185,129,0.35)`, fontSize: '0.72rem', fontWeight: 600,
                   '& .MuiChip-deleteIcon': { color: ideaAccent.success, '&:hover': { color: ideaAccent.danger } },
@@ -296,7 +295,6 @@ export default function IdeaBrowse() {
               <IdeaCard
                 key={idea.id}
                 idea={idea}
-                isDarkMode={isDarkMode}
                 similarTitles={similarityMap.get(idea.id) ?? []}
                 showSimilar={showSimilarOnly || true}
                 onClick={() => setSelectedIdea(idea)}
@@ -310,7 +308,6 @@ export default function IdeaBrowse() {
       <IdeaDetailDialog
         idea={selectedIdea}
         onClose={() => setSelectedIdea(null)}
-        isDarkMode={isDarkMode}
         similarTitles={selectedIdea ? (similarityMap.get(selectedIdea.id) ?? []) : []}
       />
     </Box>
