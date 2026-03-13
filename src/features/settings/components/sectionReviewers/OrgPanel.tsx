@@ -21,7 +21,7 @@ interface Props {
 }
 
 const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
-  const { isDarkMode, textPrimary, textSecondary, borderColor, accentColor } = usePageColors()
+  const { isDarkMode, textPrimary, textSecondary, borderColor } = usePageColors()
 
   const grouped = useMemo(() => {
     const filtered = members.filter(

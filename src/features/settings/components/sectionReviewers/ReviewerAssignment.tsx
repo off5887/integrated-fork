@@ -10,7 +10,7 @@ import OrgPanel from './OrgPanel'
 import SelectedReviewersPanel from './SelectedReviewersPanel'
 
 const ReviewerAssignment: React.FC = () => {
-  const { isDarkMode, textPrimary, textSecondary, borderColor, accentColor, accentBg, accentBorder } = usePageColors()
+  const { isDarkMode, textPrimary, textSecondary, borderColor, accentColor, accentBg } = usePageColors()
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<SelectedReviewer[]>([])

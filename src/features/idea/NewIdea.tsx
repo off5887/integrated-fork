@@ -91,7 +91,16 @@ export default function NewIdea() {
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
   const [snackOpen, setSnackOpen] = useState(false)
   const [snackMsg, setSnackMsg] = useState('')
-  const [savedDraft, setSavedDraft] = useState<DraftData | null>(null)
+  const [savedDraft, setSavedDraft] = useState<DraftData | null>(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY)
+      if (!raw) return null
+      const draft: DraftData = JSON.parse(raw)
+      return draft.savedAt ? draft : null
+    } catch {
+      return null
+    }
+  })
 
   // 항상 최신 폼 값을 참조하기 위한 ref
   const formRef = useRef({
@@ -106,18 +115,6 @@ export default function NewIdea() {
       // coProposers, startDate, endDate,
     }
   }, [title, categories, problem, solution, reviewer, security, plan])
-
-  // ─── 마운트: 임시저장 불러오기 확인 ─────────────────────────────────────
-  useEffect(() => {
-    const raw = localStorage.getItem(DRAFT_KEY)
-    if (!raw) return
-    try {
-      const draft: DraftData = JSON.parse(raw)
-      if (draft.savedAt) setSavedDraft(draft)
-    } catch {
-      // 손상된 데이터 무시
-    }
-  }, [])
 
   // ─── 5분 자동저장 인터벌 ─────────────────────────────────────────────────
   useEffect(() => {

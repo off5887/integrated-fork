@@ -12,7 +12,7 @@ export default function DepartmentTop5Bar() {
   const { isDarkMode } = useThemeMode()
   const dt = getDashboardTheme(isDarkMode)
 
-  const options: any = {
+  const options: ApexCharts.ApexOptions = {
     chart: {
       type: 'bar',
       fontFamily: 'inherit',

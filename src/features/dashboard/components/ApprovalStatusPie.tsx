@@ -9,7 +9,7 @@ export default function ApprovalStatusPie() {
   const { isDarkMode } = useThemeMode()
   const dt = getDashboardTheme(isDarkMode)
 
-  const options: any = {
+  const options: ApexCharts.ApexOptions = {
     chart: {
       type: 'donut',
       fontFamily: 'inherit',
