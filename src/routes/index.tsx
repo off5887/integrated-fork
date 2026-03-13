@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from '@/components/common/ProtectedRoute'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
+import { isAuthenticated } from '@/utils/auth'
 
 import Login from '@/features/auth/Login'
 import Dashboard from '@/features/dashboard/Dashboard'
@@ -16,6 +17,7 @@ import Settings from '@/features/settings/Settings'
 import Welcome from '@/features/welcome/Welcome'
 import MercenaryManagementPage from '@/features/tf/MercenaryManagementPage'
 import MercenarySupportPage from '@/features/tf/MercenarySupportPage'
+import NotFoundPage from '@/features/error/NotFoundPage'
 
 export default function AppRoutes() {
   return (
@@ -23,7 +25,7 @@ export default function AppRoutes() {
       <Route
         path="/"
         element={
-          localStorage.getItem('accessToken') ? (
+          isAuthenticated() ? (
             <Navigate to="/dashboard" replace />
           ) : (
             <Navigate to="/login" replace />
@@ -50,7 +52,7 @@ export default function AppRoutes() {
         </Route>
       </Route>
 
-      <Route path="*" element={<div>404 Not Found</div>} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

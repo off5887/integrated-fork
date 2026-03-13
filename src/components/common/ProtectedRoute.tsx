@@ -1,10 +1,8 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { isAuthenticated } from '@/utils/auth'
 
 export default function ProtectedRoute() {
-  const token = localStorage.getItem('accessToken')
-
-  // 토큰이 없으면 로그인 페이지로 리다이렉트
-  if (!token) {
+  if (!isAuthenticated()) {
     return <Navigate to="/login" replace />
   }
 
