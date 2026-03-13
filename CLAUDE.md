@@ -25,6 +25,7 @@ src/
 │   ├── mock/         # 가상 데이터 (도메인별 파일)
 │   ├── types/        # 도메인 타입 정의 (도메인별 파일)
 │   ├── queries/      # TanStack Query hooks
+│   ├── queryKeys.ts  # 쿼리 키 중앙 관리
 │   └── client.ts     # axios 클라이언트
 ├── assets/           # 이미지, SVG 등 정적 자원
 ├── components/
@@ -95,6 +96,33 @@ export const getIdeaTheme = (isDarkMode: boolean) => isDarkMode ? ideaDark : ide
 // ❌ 잘못된 방식
 // src/features/ideaBrowse/components/IdeaCard.tsx
 bgcolor: isDarkMode ? '#4f46e5' : '#6366f1'
+```
+
+### 쿼리 키 → `src/api/queryKeys.ts`
+- TanStack Query의 `queryKey` / `mutationKey`를 컴포넌트나 훅 내부에 인라인 문자열로 하드코딩하지 않는다.
+- 모든 키는 `src/api/queryKeys.ts`에서 중앙 관리한다.
+
+```ts
+// ✅ 올바른 방식
+// src/api/queryKeys.ts
+export const queryKeys = {
+  ideas: {
+    all:    () => ['ideas']                    as const,
+    list:   (filters?: object) => ['ideas', 'list', filters] as const,
+    detail: (id: string)       => ['ideas', 'detail', id]    as const,
+  },
+  auth: {
+    login: () => ['auth', 'login'] as const,
+  },
+}
+
+// src/api/queries/useIdeas.ts
+import { queryKeys } from '@/api/queryKeys'
+useQuery({ queryKey: queryKeys.ideas.list(filters), ... })
+
+// ❌ 잘못된 방식
+mutationKey: ['auth', 'login']  // 인라인 하드코딩
+queryKey: ['ideas', id]
 ```
 
 ### 피처 전용 유틸 → `features/{피처}/utils.ts`
