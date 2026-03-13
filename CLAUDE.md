@@ -12,7 +12,8 @@ Claude Code가 이 프로젝트에서 작업할 때 반드시 따라야 할 규�
 - **State**: TanStack React Query v5
 - **Routing**: React Router DOM v7
 - **Forms**: React Hook Form + Zod
-- **Charts**: Recharts, ApexCharts, Nivo
+- **Charts**: ApexCharts (react-apexcharts)
+- **Testing**: Vitest + Testing Library + MSW
 - **Path alias**: `@/` → `src/`
 
 ---
@@ -41,6 +42,10 @@ src/
 ├── layouts/          # 페이지 레이아웃 래퍼 (AuthLayout, MainLayout)
 ├── routes/
 │   └── index.tsx     # Route 선언만 (얇은 라우팅 레이어)
+├── tests/
+│   ├── setup.ts      # jest-dom, matchMedia mock, MSW 생명주기
+│   ├── utils.tsx     # Provider 포함 커스텀 render 헬퍼
+│   └── mocks/        # MSW server + handlers (도메인별)
 ├── theme/            # 테마 파일 (피처별 팔레트)
 ├── types/            # 전역 타입 선언 (.d.ts, 모듈 augmentation)
 └── utils/            # 전역 유틸 함수
@@ -186,12 +191,50 @@ export const mockUsers: User[] = [...]
 
 ---
 
+## 테스트 규칙
+
+### 테스트 위치
+- 테스트 파일은 대상 파일과 **나란히** 배치한다: `Foo.tsx` → `Foo.test.tsx`
+- 단, 공용 인프라(setup, render helper, MSW server)는 `src/tests/`에 둔다.
+
+### 테스트 작성 방법
+- **render 헬퍼**: `@testing-library/react` 대신 `src/tests/utils.tsx`의 `render`를 사용한다.
+  (QueryClient, ThemeProvider, MemoryRouter가 자동 포함됨)
+- **API mocking**: MSW handler를 `src/tests/mocks/handlers/{도메인}.ts`에 추가한다.
+- **MUI icons-material mock**: Windows EMFILE 방지를 위해 icons를 사용하는 컴포넌트 테스트 최상단에 추가한다.
+
+```ts
+// ✅ MUI icons 사용 컴포넌트 테스트 최상단에 필수
+vi.mock('@mui/icons-material', () => ({
+  DarkModeOutlined: () => null,
+  LightModeOutlined: () => null,
+  // ... 해당 파일에서 사용하는 아이콘만
+}))
+```
+
+```tsx
+// ✅ 올바른 render import
+import { render, screen } from '@/tests/utils'
+
+// ❌ 잘못된 render import
+import { render } from '@testing-library/react'  // Provider 없음
+```
+
+### 테스트 실행
+```bash
+npm test            # 전체 테스트 1회 실행
+npm run test:watch  # 파일 변경 감지 모드
+```
+
+---
+
 ## 커밋 규칙
 
 - 커밋 메시지 형식: `{스코프}: {변경 내용 요약}`
 - 예시: `ideaBrowse: prop drilling 제거 및 인라인 테마값 토큰화`
 - 작업 단위를 작게 유지하고 관련 파일을 함께 커밋한다.
-- 작업 완료 후 `npx tsc --noEmit`으로 타입 에러 없음을 확인한 뒤 커밋한다.
+- 작업 완료 후 `npx tsc --noEmit`으로 타입 에러 없음을 확인한다.
+- 새 로직/유틸 추가 시 `npm test`로 기존 테스트가 깨지지 않는지 확인한 뒤 커밋한다.
 
 ---
 
@@ -204,3 +247,4 @@ export const mockUsers: User[] = [...]
 - [ ] 컴포넌트 파일이 500줄 이하인가?
 - [ ] 크로스 모듈 import에 `@/` alias를 사용하는가?
 - [ ] `npx tsc --noEmit` 통과 여부 확인했는가?
+- [ ] `npm test` 통과 여부 확인했는가?
