@@ -1,15 +1,18 @@
 // src/routes/Judge/components/ExecutionPlanSection.tsx
 import DescriptionIcon from '@mui/icons-material/Description'
 import { Box, Typography } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   executionPlan: string
-  isDarkMode: boolean
 }
 
-export default function ExecutionPlanSection({ executionPlan, isDarkMode }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textBody = isDarkMode ? '#cbd5e1' : '#334155'
+export default function ExecutionPlanSection({ executionPlan }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
 
   return (
     <Box>
@@ -24,7 +27,7 @@ export default function ExecutionPlanSection({ executionPlan, isDarkMode }: Prop
         >
           4
         </Box>
-        <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
+        <Typography variant="h6" fontWeight={700} sx={{ color: colors.textPrimary, letterSpacing: '-0.01em' }}>
           실행 계획
         </Typography>
       </Box>
@@ -32,13 +35,13 @@ export default function ExecutionPlanSection({ executionPlan, isDarkMode }: Prop
       <Box
         sx={{
           p: 3, borderRadius: 2.5,
-          bgcolor: isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(99,102,241,0.03)',
-          border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.09)'}`,
+          bgcolor: theme.panelBg,
+          border: `1px solid ${theme.panelBorder}`,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
           <DescriptionIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
-          <Typography variant="body2" fontWeight={600} sx={{ color: isDarkMode ? '#a5b4fc' : '#4338ca' }}>
+          <Typography variant="body2" fontWeight={600} sx={{ color: theme.solutionLabelColor }}>
             실행 단계
           </Typography>
         </Box>
@@ -46,7 +49,7 @@ export default function ExecutionPlanSection({ executionPlan, isDarkMode }: Prop
           sx={{
             lineHeight: 1.9,
             fontSize: '0.9rem',
-            color: textBody,
+            color: theme.textBody,
             whiteSpace: 'pre-line',
           }}
         >

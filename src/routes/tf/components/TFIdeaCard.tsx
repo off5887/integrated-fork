@@ -1,20 +1,19 @@
-// src/routes/TF/components/IdeaCard.tsx
+// src/routes/tf/components/TFIdeaCard.tsx
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { Box, Button, Chip, Typography } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
 import { Idea } from '@/api/types/mercenary'
 
 interface Props {
   idea: Idea
   onApply: (id: number) => void
-  isDarkMode: boolean
 }
 
-export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
-  const cardBg = isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff'
+export default function TFIdeaCard({ idea, onApply }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
 
   const isUrgent = idea.remainingDays <= 7
 
@@ -24,18 +23,18 @@ export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: cardBg,
-        border: `1px solid ${borderColor}`,
+        bgcolor: colors.cardBg,
+        border: `1px solid ${colors.borderColor}`,
         borderRadius: 3,
         overflow: 'hidden',
         transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        boxShadow: isDarkMode ? '0 4px 20px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.05)',
+        boxShadow: colors.shadowSmall,
         '&:hover': {
           transform: 'translateY(-6px)',
           boxShadow: isDarkMode
             ? '0 20px 40px rgba(0,0,0,0.5), 0 8px 16px rgba(99,102,241,0.3)'
             : '0 20px 40px rgba(0,0,0,0.09), 0 8px 16px rgba(99,102,241,0.12)',
-          borderColor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)',
+          borderColor: colors.accentBorder,
         },
       }}
     >
@@ -55,9 +54,9 @@ export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
             label={idea.field}
             size="small"
             sx={{
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-              color: isDarkMode ? '#a5b4fc' : '#4338ca',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.18)'}`,
+              bgcolor: colors.accentBg,
+              color: colors.accentColor,
+              border: `1px solid ${colors.accentBorder}`,
               fontWeight: 700,
               fontSize: '0.72rem',
               letterSpacing: '0.01em',
@@ -81,8 +80,8 @@ export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
               +{idea.reward.toLocaleString()}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, justifyContent: 'flex-end', mt: 0.3 }}>
-              <EmojiEventsIcon sx={{ fontSize: '0.75rem', color: textSecondary }} />
-              <Typography variant="caption" sx={{ color: textSecondary, fontSize: '0.7rem' }}>
+              <EmojiEventsIcon sx={{ fontSize: '0.75rem', color: colors.textSecondary }} />
+              <Typography variant="caption" sx={{ color: colors.textSecondary, fontSize: '0.7rem' }}>
                 마일리지
               </Typography>
             </Box>
@@ -94,7 +93,7 @@ export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
           variant="subtitle1"
           fontWeight={700}
           sx={{
-            color: textPrimary,
+            color: colors.textPrimary,
             lineHeight: 1.45,
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -110,7 +109,7 @@ export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
         <Typography
           variant="body2"
           sx={{
-            color: textSecondary,
+            color: colors.textSecondary,
             lineHeight: 1.65,
             flexGrow: 1,
             display: '-webkit-box',
@@ -132,7 +131,7 @@ export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
             alignItems: 'center',
             gap: 1.5,
             pt: 2,
-            borderTop: `1px solid ${borderColor}`,
+            borderTop: `1px solid ${colors.borderColor}`,
           }}
         >
           <Chip
@@ -143,10 +142,10 @@ export default function IdeaCard({ idea, onApply, isDarkMode }: Props) {
               bgcolor: isUrgent
                 ? (isDarkMode ? 'rgba(245,158,11,0.12)' : 'rgba(245,158,11,0.08)')
                 : 'transparent',
-              color: isUrgent ? (isDarkMode ? '#fbbf24' : '#92400e') : textSecondary,
+              color: isUrgent ? (isDarkMode ? '#fbbf24' : '#92400e') : colors.textSecondary,
               border: `1px solid ${isUrgent
                 ? (isDarkMode ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.2)')
-                : borderColor}`,
+                : colors.borderColor}`,
               fontWeight: isUrgent ? 700 : 500,
               fontSize: '0.75rem',
               '& .MuiChip-icon': { color: 'inherit' },

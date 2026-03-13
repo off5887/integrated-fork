@@ -1,36 +1,22 @@
-// src/routes/idea/Components/SimilarIdeaSearchModal.tsx
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
+// src/routes/idea/components/SimilarIdeaSearchModal.tsx
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
-import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import {
-  Avatar,
   Box,
   Dialog,
   DialogContent,
-  Divider,
   IconButton,
   InputAdornment,
   TextField,
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { CATEGORY_CONFIG, IDEAS } from '@/api/mock/ideaBrowse'
-import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
-import { getIdeaTheme, IDEA_STATUS_CONFIG } from '@/theme/ideaTheme'
-
-function getCatConfig(id: string): CategoryConfig {
-  return (
-    CATEGORY_CONFIG.find((c) => c.id === id) ??
-    CATEGORY_CONFIG[CATEGORY_CONFIG.length - 1]
-  )
-}
-
-function fmtDate(s: string) {
-  return s.replace(/-/g, '.').slice(2) // "26.02.20"
-}
+import { useThemeMode } from '@/context/ThemeContext'
+import { IDEAS } from '@/api/mock/ideaBrowse'
+import type { IdeaItem } from '@/api/types/ideaBrowse'
+import { getIdeaTheme } from '@/theme/ideaTheme'
+import SimilarIdeaDetailPanel from './SimilarIdeaDetailPanel'
+import SimilarIdeaResultCard from './SimilarIdeaResultCard'
 
 // ─── 유사도 점수 계산 (검색어 기반) ─────────────────────────
 function scoreIdea(idea: IdeaItem, query: string): number {
@@ -41,482 +27,18 @@ function scoreIdea(idea: IdeaItem, query: string): number {
     .split(/\s+/)
     .filter((t) => t.length >= 2)
   if (tokens.length === 0) return 0
-  const text = `${idea.title} ${idea.problem} ${idea.solution}`.toLowerCase()
   let score = 0
   tokens.forEach((t) => {
-    if (idea.title.toLowerCase().includes(t))
-      score += 3 // 제목 매칭 가중치 높음
+    if (idea.title.toLowerCase().includes(t)) score += 3
     else if (idea.problem.toLowerCase().includes(t)) score += 1
     else if (idea.solution.toLowerCase().includes(t)) score += 1
-    if (text.includes(t)) score += 0 // 이미 위에서 처리됨
   })
   return score
 }
 
-// ─── 결과 카드 ────────────────────────────────────────────────
-interface ResultCardProps {
-  idea: IdeaItem
-  isDarkMode: boolean
-  score: number
-  onClick: () => void
-}
-
-function ResultCard({ idea, isDarkMode, score, onClick }: ResultCardProps) {
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
-  const cat = getCatConfig(idea.category)
-  const stat = IDEA_STATUS_CONFIG[idea.status]
-  const isHighSimilarity = score >= 4
-
-  return (
-    <Box
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onClick()
-        }
-      }}
-      sx={{
-        p: 1.75,
-        borderRadius: 2,
-        cursor: 'pointer',
-        outline: 'none',
-        border: `1px solid ${
-          isHighSimilarity
-            ? isDarkMode
-              ? 'rgba(245,158,11,0.3)'
-              : 'rgba(245,158,11,0.25)'
-            : borderColor
-        }`,
-        bgcolor: isHighSimilarity
-          ? isDarkMode
-            ? 'rgba(245,158,11,0.05)'
-            : 'rgba(245,158,11,0.03)'
-          : isDarkMode
-            ? 'rgba(30,41,59,0.5)'
-            : 'rgba(248,250,252,0.7)',
-        transition: 'all 0.15s ease',
-        '&:hover': {
-          borderColor: isHighSimilarity
-            ? 'rgba(245,158,11,0.5)'
-            : 'rgba(99,102,241,0.3)',
-          bgcolor: isHighSimilarity
-            ? isDarkMode
-              ? 'rgba(245,158,11,0.08)'
-              : 'rgba(245,158,11,0.06)'
-            : isDarkMode
-              ? 'rgba(99,102,241,0.06)'
-              : 'rgba(99,102,241,0.04)',
-        },
-        '&:focus-visible': { outline: '2px solid #6366f1', outlineOffset: 2 },
-      }}
-    >
-      {/* 뱃지 행 */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.75,
-          mb: 1,
-          flexWrap: 'wrap',
-        }}
-      >
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.4,
-            px: 0.8,
-            py: 0.25,
-            borderRadius: 1,
-            bgcolor: cat.bg,
-            border: `1px solid ${cat.border}`,
-          }}
-        >
-          <Box component="span" sx={{ fontSize: '0.7rem' }}>
-            {cat.emoji}
-          </Box>
-          <Typography
-            sx={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              color: cat.color,
-              lineHeight: 1,
-            }}
-          >
-            {idea.category}
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            px: 0.8,
-            py: 0.25,
-            borderRadius: 1,
-            bgcolor: stat.bg,
-            border: `1px solid ${stat.border}`,
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              color: stat.color,
-              lineHeight: 1,
-            }}
-          >
-            {idea.status}
-          </Typography>
-        </Box>
-        {isHighSimilarity && (
-          <Box
-            sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              px: 0.8,
-              py: 0.25,
-              borderRadius: 1,
-              bgcolor: 'rgba(245,158,11,0.1)',
-              border: '1px solid rgba(245,158,11,0.3)',
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: '0.68rem',
-                fontWeight: 700,
-                color: '#f59e0b',
-                lineHeight: 1,
-              }}
-            >
-              ⚠ 유사도 높음
-            </Typography>
-          </Box>
-        )}
-        <Typography
-          sx={{
-            fontSize: '0.68rem',
-            color: textSecondary,
-            ml: 'auto',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {idea.department}
-        </Typography>
-      </Box>
-
-      {/* 제목 */}
-      <Typography
-        sx={{
-          fontSize: '0.85rem',
-          fontWeight: 700,
-          color: textPrimary,
-          lineHeight: 1.4,
-          mb: 0.6,
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-        }}
-      >
-        {idea.title}
-      </Typography>
-
-      {/* 문제점 요약 */}
-      <Typography
-        sx={{
-          fontSize: '0.78rem',
-          color: textSecondary,
-          lineHeight: 1.55,
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-          mb: 1.25,
-        }}
-      >
-        {idea.problem}
-      </Typography>
-
-      {/* 메타 */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Avatar
-            sx={{
-              width: 18,
-              height: 18,
-              fontSize: '0.6rem',
-              fontWeight: 700,
-              bgcolor: isDarkMode ? '#4f46e5' : '#6366f1',
-            }}
-          >
-            {idea.author[0]}
-          </Avatar>
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-            {idea.author}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-          <ThumbUpOutlinedIcon
-            sx={{ fontSize: '0.7rem', color: textSecondary }}
-          />
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-            {idea.likes}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-          <ChatBubbleOutlineIcon
-            sx={{ fontSize: '0.7rem', color: textSecondary }}
-          />
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-            {idea.comments}
-          </Typography>
-        </Box>
-        <Box
-          sx={{ display: 'flex', alignItems: 'center', gap: 0.3, ml: 'auto' }}
-        >
-          <CalendarTodayIcon
-            sx={{ fontSize: '0.68rem', color: textSecondary }}
-          />
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-            {fmtDate(idea.submittedAt)}
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
-  )
-}
-
-// ─── 상세 보기 패널 (Dialog 안에서 슬라이드) ─────────────────
-interface DetailPanelProps {
-  idea: IdeaItem
-  isDarkMode: boolean
-  onBack: () => void
-}
-
-function DetailPanel({ idea, isDarkMode, onBack }: DetailPanelProps) {
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
-  const cat = getCatConfig(idea.category)
-  const stat = IDEA_STATUS_CONFIG[idea.status]
-
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-      {/* 뒤로 */}
-      <Box
-        onClick={onBack}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') onBack()
-        }}
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 0.6,
-          cursor: 'pointer',
-          color: '#6366f1',
-          fontSize: '0.82rem',
-          fontWeight: 600,
-          width: 'fit-content',
-          outline: 'none',
-          '&:hover': { opacity: 0.75 },
-          '&:focus-visible': { outline: '2px solid #6366f1', outlineOffset: 2 },
-        }}
-      >
-        ← 목록으로
-      </Box>
-
-      {/* 뱃지 */}
-      <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 0.5,
-            px: 1,
-            py: 0.35,
-            borderRadius: 1.5,
-            bgcolor: cat.bg,
-            border: `1px solid ${cat.border}`,
-          }}
-        >
-          <Box component="span" sx={{ fontSize: '0.8rem' }}>
-            {cat.emoji}
-          </Box>
-          <Typography
-            sx={{ fontSize: '0.75rem', fontWeight: 700, color: cat.color }}
-          >
-            {idea.category}
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            px: 1,
-            py: 0.35,
-            borderRadius: 1.5,
-            bgcolor: stat.bg,
-            border: `1px solid ${stat.border}`,
-          }}
-        >
-          <Typography
-            sx={{ fontSize: '0.75rem', fontWeight: 700, color: stat.color }}
-          >
-            {idea.status}
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* 제목 */}
-      <Typography
-        sx={{
-          fontSize: '1.05rem',
-          fontWeight: 700,
-          color: textPrimary,
-          lineHeight: 1.45,
-          letterSpacing: '-0.01em',
-        }}
-      >
-        {idea.title}
-      </Typography>
-
-      {/* 작성자 */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-        <Avatar
-          sx={{
-            width: 32,
-            height: 32,
-            bgcolor: isDarkMode ? '#4f46e5' : '#6366f1',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-          }}
-        >
-          {idea.author[0]}
-        </Avatar>
-        <Box>
-          <Typography
-            sx={{
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              color: textPrimary,
-              lineHeight: 1.3,
-            }}
-          >
-            {idea.author}
-          </Typography>
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-            {idea.division} · {idea.department}
-          </Typography>
-        </Box>
-        <Box
-          sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 0.5 }}
-        >
-          <CalendarTodayIcon
-            sx={{ fontSize: '0.78rem', color: textSecondary }}
-          />
-          <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
-            {idea.submittedAt}
-          </Typography>
-        </Box>
-      </Box>
-
-      <Divider sx={{ borderColor }} />
-
-      {/* 문제점 */}
-      <Box>
-        <Typography
-          sx={{
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            color: textSecondary,
-            mb: 0.75,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-          }}
-        >
-          문제점 도출
-        </Typography>
-        <Typography
-          sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}
-        >
-          {idea.problem}
-        </Typography>
-      </Box>
-
-      <Divider sx={{ borderColor }} />
-
-      {/* 해결 대안 */}
-      <Box>
-        <Typography
-          sx={{
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            color: textSecondary,
-            mb: 0.75,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-          }}
-        >
-          해결 대안
-        </Typography>
-        <Typography
-          sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}
-        >
-          {idea.solution}
-        </Typography>
-      </Box>
-
-      <Divider sx={{ borderColor }} />
-
-      {/* 통계 */}
-      <Box sx={{ display: 'flex', gap: 3 }}>
-        {[
-          {
-            icon: <ThumbUpOutlinedIcon sx={{ fontSize: '0.88rem' }} />,
-            label: '좋아요',
-            value: idea.likes,
-          },
-          {
-            icon: <ChatBubbleOutlineIcon sx={{ fontSize: '0.88rem' }} />,
-            label: '댓글',
-            value: idea.comments,
-          },
-          {
-            icon: <VisibilityOutlinedIcon sx={{ fontSize: '0.88rem' }} />,
-            label: '조회수',
-            value: idea.views,
-          },
-        ].map(({ icon, label, value }) => (
-          <Box
-            key={label}
-            sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}
-          >
-            <Box sx={{ color: textSecondary }}>{icon}</Box>
-            <Typography sx={{ fontSize: '0.8rem', color: textSecondary }}>
-              {label}
-            </Typography>
-            <Typography
-              sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}
-            >
-              {value}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-    </Box>
-  )
-}
-
-// ════════════════════════════════════════════════════════════
-// SimilarIdeaSearchModal
-// ════════════════════════════════════════════════════════════
 interface Props {
   open: boolean
   onClose: () => void
-  isDarkMode: boolean
   /** 제목 필드 값을 미리 채워 검색 시작 (선택) */
   initialQuery?: string
 }
@@ -524,13 +46,14 @@ interface Props {
 export default function SimilarIdeaSearchModal({
   open,
   onClose,
-  isDarkMode,
   initialQuery = '',
 }: Props) {
+  const { isDarkMode } = useThemeMode()
   const [query, setQuery] = useState(initialQuery)
   const [detail, setDetail] = useState<IdeaItem | null>(null)
 
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor } = it
 
   // 검색 결과 (점수 기반 정렬, 점수 0 제외, 비공개 제외)
   const results = useMemo(() => {
@@ -558,7 +81,7 @@ export default function SimilarIdeaSearchModal({
         paper: {
           sx: {
             borderRadius: 3,
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
+            bgcolor: it.modalBg,
             border: `1px solid ${borderColor}`,
             boxShadow: isDarkMode
               ? '0 24px 64px rgba(0,0,0,0.6)'
@@ -571,9 +94,7 @@ export default function SimilarIdeaSearchModal({
         backdrop: {
           sx: {
             backdropFilter: 'blur(6px)',
-            backgroundColor: isDarkMode
-              ? 'rgba(0,0,0,0.55)'
-              : 'rgba(0,0,0,0.3)',
+            backgroundColor: it.backdropBg,
           },
         },
       }}
@@ -674,12 +195,10 @@ export default function SimilarIdeaSearchModal({
                 mb: 1.5,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
-                  backgroundColor: isDarkMode
-                    ? 'rgba(15,23,42,0.5)'
-                    : '#f8fafc',
+                  backgroundColor: it.searchInputBg,
                   fontSize: '0.875rem',
                   '& fieldset': { borderColor },
-                  '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
+                  '&:hover fieldset': { borderColor: it.accent.borderHover },
                   '&.Mui-focused fieldset': { borderColor: '#6366f1' },
                 },
                 '& .MuiInputBase-input': {
@@ -692,14 +211,13 @@ export default function SimilarIdeaSearchModal({
 
           {/* 상세 보기 */}
           {detail ? (
-            <DetailPanel
+            <SimilarIdeaDetailPanel
               idea={detail}
-              isDarkMode={isDarkMode}
               onBack={() => setDetail(null)}
             />
           ) : (
             <>
-              {/* 결과 목록 */}
+              {/* 결과 없음 */}
               {query.trim().length >= 2 && results.length === 0 && (
                 <Box sx={{ py: 5, textAlign: 'center' }}>
                   <Box sx={{ fontSize: '2.5rem', mb: 1.5 }}>🔍</Box>
@@ -719,6 +237,7 @@ export default function SimilarIdeaSearchModal({
                 </Box>
               )}
 
+              {/* 입력 안내 */}
               {query.trim().length < 2 && (
                 <Box sx={{ py: 4, textAlign: 'center' }}>
                   <Box sx={{ fontSize: '2.5rem', mb: 1.5 }}>💡</Box>
@@ -736,6 +255,7 @@ export default function SimilarIdeaSearchModal({
                 </Box>
               )}
 
+              {/* 결과 목록 */}
               {results.length > 0 && (
                 <>
                   <Box
@@ -785,10 +305,9 @@ export default function SimilarIdeaSearchModal({
                     sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
                   >
                     {results.map(({ idea, score }) => (
-                      <ResultCard
+                      <SimilarIdeaResultCard
                         key={idea.id}
                         idea={idea}
-                        isDarkMode={isDarkMode}
                         score={score}
                         onClick={() => setDetail(idea)}
                       />

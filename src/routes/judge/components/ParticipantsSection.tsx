@@ -2,16 +2,19 @@
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { Box, Chip, Typography } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   reviewer: string
   proposers: string[]
-  isDarkMode: boolean
 }
 
-export default function ParticipantsSection({ reviewer, proposers, isDarkMode }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+export default function ParticipantsSection({ reviewer, proposers }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
 
   return (
     <Box>
@@ -26,7 +29,7 @@ export default function ParticipantsSection({ reviewer, proposers, isDarkMode }:
         >
           2
         </Box>
-        <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
+        <Typography variant="h6" fontWeight={700} sx={{ color: colors.textPrimary, letterSpacing: '-0.01em' }}>
           참여자
         </Typography>
       </Box>
@@ -36,13 +39,13 @@ export default function ParticipantsSection({ reviewer, proposers, isDarkMode }:
         <Box
           sx={{
             flex: 1, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.05)' : 'rgba(99,102,241,0.03)',
-            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.14)' : 'rgba(99,102,241,0.1)'}`,
+            bgcolor: theme.reviewerPanelBg,
+            border: `1px solid ${theme.reviewerPanelBorder}`,
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <PersonAddIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
-            <Typography variant="body1" fontWeight={700} sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b', fontSize: '0.875rem' }}>
+            <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
               심사자
             </Typography>
           </Box>
@@ -50,9 +53,9 @@ export default function ParticipantsSection({ reviewer, proposers, isDarkMode }:
             label={reviewer}
             size="medium"
             sx={{
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
-              color: isDarkMode ? '#c7d2fe' : '#4338ca',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.18)'}`,
+              bgcolor: theme.reviewerChipBg,
+              color: theme.reviewerChipColor,
+              border: `1px solid ${theme.reviewerChipBorder}`,
               fontWeight: 600,
               fontSize: '0.875rem',
             }}
@@ -63,13 +66,13 @@ export default function ParticipantsSection({ reviewer, proposers, isDarkMode }:
         <Box
           sx={{
             flex: 1, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
-            bgcolor: isDarkMode ? 'rgba(139,92,246,0.05)' : 'rgba(139,92,246,0.03)',
-            border: `1px solid ${isDarkMode ? 'rgba(139,92,246,0.14)' : 'rgba(139,92,246,0.1)'}`,
+            bgcolor: theme.proposerPanelBg,
+            border: `1px solid ${theme.proposerPanelBorder}`,
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <GroupAddIcon sx={{ color: '#8b5cf6', fontSize: '1.1rem' }} />
-            <Typography variant="body1" fontWeight={700} sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b', fontSize: '0.875rem' }}>
+            <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
               공동제안자
             </Typography>
           </Box>
@@ -81,16 +84,16 @@ export default function ParticipantsSection({ reviewer, proposers, isDarkMode }:
                   label={name}
                   size="medium"
                   sx={{
-                    bgcolor: isDarkMode ? 'rgba(139,92,246,0.12)' : 'rgba(139,92,246,0.07)',
-                    color: isDarkMode ? '#c4b5fd' : '#6d28d9',
-                    border: `1px solid ${isDarkMode ? 'rgba(139,92,246,0.25)' : 'rgba(139,92,246,0.18)'}`,
+                    bgcolor: theme.proposerChipBg,
+                    color: theme.proposerChipColor,
+                    border: `1px solid ${theme.proposerChipBorder}`,
                     fontWeight: 600,
                     fontSize: '0.875rem',
                   }}
                 />
               ))
             ) : (
-              <Typography variant="body2" sx={{ color: textSecondary, fontStyle: 'italic' }}>
+              <Typography variant="body2" sx={{ color: colors.textSecondary, fontStyle: 'italic' }}>
                 공동제안자가 없습니다
               </Typography>
             )}

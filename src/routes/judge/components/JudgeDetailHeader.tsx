@@ -2,16 +2,19 @@
 import CloseIcon from '@mui/icons-material/Close'
 import GavelIcon from '@mui/icons-material/Gavel'
 import { Box, IconButton, Typography } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   title: string
   onClose: () => void
-  isDarkMode: boolean
 }
 
-export default function JudgeDetailHeader({ title, onClose, isDarkMode }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+export default function JudgeDetailHeader({ title, onClose }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
 
   return (
     <>
@@ -23,7 +26,7 @@ export default function JudgeDetailHeader({ title, onClose, isDarkMode }: Props)
           display: 'flex',
           alignItems: 'center',
           gap: 2,
-          borderBottom: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)'}`,
+          borderBottom: `1px solid ${theme.sectionDividerBg}`,
         }}
       >
         <Box
@@ -40,7 +43,7 @@ export default function JudgeDetailHeader({ title, onClose, isDarkMode }: Props)
         <Typography
           variant="h6"
           fontWeight={700}
-          sx={{ color: textPrimary, letterSpacing: '-0.01em', lineHeight: 1.3 }}
+          sx={{ color: colors.textPrimary, letterSpacing: '-0.01em', lineHeight: 1.3 }}
         >
           {title}
         </Typography>
@@ -49,10 +52,10 @@ export default function JudgeDetailHeader({ title, onClose, isDarkMode }: Props)
           size="small"
           sx={{
             ml: 'auto',
-            color: textSecondary,
+            color: colors.textSecondary,
             width: 32, height: 32,
             '&:hover': {
-              bgcolor: isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.08)',
+              bgcolor: theme.closeIconHoverBg,
               color: '#ef4444',
             },
             transition: 'all 0.15s ease',

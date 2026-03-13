@@ -12,6 +12,7 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getMileageTheme } from '@/theme/mileageTheme'
 
 interface Props {
   open: boolean
@@ -22,11 +23,8 @@ interface Props {
 
 export default function MileageExchangeDialog({ open, onClose, totalMileage, onConfirm }: Props) {
   const { isDarkMode } = useThemeMode()
+  const t = getMileageTheme(isDarkMode)
   const [inputValue, setInputValue] = useState('')
-
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.5)'
 
   const parsed  = parseInt(inputValue, 10)
   const amount  = isNaN(parsed) ? 0 : parsed
@@ -66,16 +64,16 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
         paper: {
           sx: {
             borderRadius: 3,
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
-            border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode ? '0 24px 48px rgba(0,0,0,0.5)' : '0 24px 48px rgba(0,0,0,0.12)',
+            bgcolor: t.dialogBg,
+            border: `1px solid ${t.borderColorStrict}`,
+            boxShadow: t.dialogShadow,
             overflow: 'hidden',
           },
         },
         backdrop: {
           sx: {
             backdropFilter: 'blur(6px)',
-            backgroundColor: isDarkMode ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.3)',
+            backgroundColor: t.backdropBg,
           },
         },
       }}
@@ -84,7 +82,7 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
       <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
 
       {/* 헤더 */}
-      <Box sx={{ px: 3, pt: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 1.25, borderBottom: `1px solid ${borderColor}` }}>
+      <Box sx={{ px: 3, pt: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 1.25, borderBottom: `1px solid ${t.borderColorStrict}` }}>
         <Box
           sx={{
             width: 32, height: 32, borderRadius: '50%',
@@ -95,14 +93,14 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
           <SwapHorizIcon sx={{ fontSize: '1.1rem' }} />
         </Box>
         <Box flex={1}>
-          <Typography fontWeight={700} sx={{ color: textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
+          <Typography fontWeight={700} sx={{ color: t.textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
             현금 전환 신청
           </Typography>
-          <Typography variant="caption" sx={{ color: textSecondary }}>
+          <Typography variant="caption" sx={{ color: t.textSecondary }}>
             마일리지를 현금으로 전환합니다
           </Typography>
         </Box>
-        <IconButton size="small" onClick={handleClose} sx={{ color: textSecondary }}>
+        <IconButton size="small" onClick={handleClose} sx={{ color: t.textSecondary }}>
           <CloseIcon sx={{ fontSize: '1.1rem' }} />
         </IconButton>
       </Box>
@@ -113,16 +111,16 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
           sx={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             px: 2, py: 1.5, mb: 3, borderRadius: 2,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)',
-            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.14)'}`,
+            bgcolor: t.mileageBoxBg,
+            border: `1px solid ${t.mileageBoxBorder}`,
           }}
         >
-          <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>보유 마일리지</Typography>
+          <Typography variant="body2" sx={{ color: t.textSecondary, fontWeight: 500 }}>보유 마일리지</Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
             <Typography fontWeight={800} sx={{ fontSize: '1.15rem', color: '#6366f1' }}>
               {totalMileage.toLocaleString()}
             </Typography>
-            <Typography variant="caption" sx={{ color: textSecondary }}>마리</Typography>
+            <Typography variant="caption" sx={{ color: t.textSecondary }}>마리</Typography>
           </Box>
         </Box>
 
@@ -138,7 +136,7 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
           slotProps={{
             input: {
               endAdornment: <InputAdornment position="end">
-                <Typography variant="caption" sx={{ color: textSecondary }}>마리</Typography>
+                <Typography variant="caption" sx={{ color: t.textSecondary }}>마리</Typography>
               </InputAdornment>,
             },
           }}
@@ -146,18 +144,18 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
             mb: 1,
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
-              backgroundColor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+              backgroundColor: t.inputBg,
               fontSize: '1rem',
               fontWeight: 700,
-              '& fieldset': { borderColor },
+              '& fieldset': { borderColor: t.borderColorStrict },
               '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
               '&.Mui-focused fieldset': { borderColor: '#6366f1' },
             },
             '& .MuiInputBase-input': {
-              color: textPrimary,
-              WebkitTextFillColor: textPrimary,
+              color: t.textPrimary,
+              WebkitTextFillColor: t.textPrimary,
             },
-            '& .MuiInputLabel-root': { color: textSecondary, '&.Mui-focused': { color: '#6366f1' } },
+            '& .MuiInputLabel-root': { color: t.textSecondary, '&.Mui-focused': { color: '#6366f1' } },
             '& .MuiFormHelperText-root': {
               color: isValid ? '#10b981' : undefined,
               fontWeight: isValid ? 600 : undefined,
@@ -183,11 +181,11 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
         <Box
           sx={{
             py: 1.25, px: 2, mb: 3, borderRadius: 2,
-            bgcolor: isDarkMode ? 'rgba(239,68,68,0.07)' : 'rgba(239,68,68,0.04)',
-            border: `1px solid ${isDarkMode ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)'}`,
+            bgcolor: t.warningBoxBg,
+            border: `1px solid ${t.warningBoxBorder}`,
           }}
         >
-          <Typography variant="caption" sx={{ color: isDarkMode ? '#fca5a5' : '#dc2626', fontWeight: 600 }}>
+          <Typography variant="caption" sx={{ color: t.warningTextColor, fontWeight: 600 }}>
             전환 신청 후에는 취소할 수 없습니다
           </Typography>
         </Box>
@@ -200,8 +198,8 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
             fullWidth
             sx={{
               borderRadius: 2, py: 1, fontWeight: 600,
-              borderColor: borderColor, color: textSecondary,
-              '&:hover': { borderColor: isDarkMode ? 'rgba(148,163,184,0.3)' : 'rgba(148,163,184,0.6)', bgcolor: 'transparent' },
+              borderColor: t.borderColorStrict, color: t.textSecondary,
+              '&:hover': { borderColor: t.inputHoverBorder, bgcolor: 'transparent' },
             }}
           >
             취소
@@ -216,8 +214,8 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
               bgcolor: '#6366f1', boxShadow: 'none',
               '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 16px rgba(99,102,241,0.3)' },
               '&.Mui-disabled': {
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
-                color: isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(99,102,241,0.35)',
+                bgcolor: t.disabledBtnBg,
+                color: t.disabledBtnColor,
               },
             }}
           >

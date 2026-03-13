@@ -16,6 +16,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 import { Proposal } from '@/api/types/judge'
 
 // ─── 결재 후보 목록 (실제 환경에서는 API로 받아옴) ───────────────────────────
@@ -47,7 +50,6 @@ interface Props {
   proposal: Proposal | null
   onClose: () => void
   onConfirm: (proposalId: number, newReviewer: string) => void
-  isDarkMode: boolean
 }
 
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
@@ -57,11 +59,10 @@ export default function ReviewerChangeModal({
   proposal,
   onClose,
   onConfirm,
-  isDarkMode,
 }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -104,18 +105,16 @@ export default function ReviewerChangeModal({
         paper: {
           sx: {
             borderRadius: 3,
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
-            border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode
-              ? '0 24px 64px rgba(0,0,0,0.6)'
-              : '0 24px 64px rgba(0,0,0,0.12)',
+            bgcolor: theme.dialogBg,
+            border: `1px solid ${colors.borderColor}`,
+            boxShadow: theme.dialogShadow,
             overflow: 'hidden',
           },
         },
         backdrop: {
           sx: {
             backdropFilter: 'blur(6px)',
-            backgroundColor: isDarkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)',
+            backgroundColor: theme.backdropBg,
           },
         },
       }}
@@ -132,7 +131,7 @@ export default function ReviewerChangeModal({
           display: 'flex',
           alignItems: 'flex-start',
           gap: 1.25,
-          borderBottom: `1px solid ${borderColor}`,
+          borderBottom: `1px solid ${colors.borderColor}`,
         }}
       >
         <Box
@@ -152,13 +151,13 @@ export default function ReviewerChangeModal({
           <SwapHorizIcon sx={{ fontSize: '1rem' }} />
         </Box>
         <Box flex={1} minWidth={0}>
-          <Typography fontWeight={700} sx={{ color: textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
+          <Typography fontWeight={700} sx={{ color: colors.textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
             결재자 변경
           </Typography>
           <Typography
             variant="caption"
             sx={{
-              color: textSecondary,
+              color: colors.textSecondary,
               display: 'block',
               mt: 0.25,
               overflow: 'hidden',
@@ -169,7 +168,7 @@ export default function ReviewerChangeModal({
             {proposal.title}
           </Typography>
         </Box>
-        <IconButton size="small" onClick={handleClose} sx={{ color: textSecondary, flexShrink: 0 }}>
+        <IconButton size="small" onClick={handleClose} sx={{ color: colors.textSecondary, flexShrink: 0 }}>
           <CloseIcon sx={{ fontSize: '1.1rem' }} />
         </IconButton>
       </Box>
@@ -181,15 +180,15 @@ export default function ReviewerChangeModal({
             p: 1.5,
             mb: 2,
             borderRadius: 2,
-            border: `1px solid ${borderColor}`,
-            bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
+            border: `1px solid ${colors.borderColor}`,
+            bgcolor: theme.previewBg,
             display: 'flex',
             alignItems: 'center',
             gap: 1,
             flexWrap: 'wrap',
           }}
         >
-          <Typography variant="caption" sx={{ color: textSecondary, flexShrink: 0 }}>
+          <Typography variant="caption" sx={{ color: colors.textSecondary, flexShrink: 0 }}>
             현재
           </Typography>
           <Chip
@@ -198,15 +197,15 @@ export default function ReviewerChangeModal({
             sx={{
               fontWeight: 700,
               fontSize: '0.78rem',
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
-              color: isDarkMode ? '#a5b4fc' : '#4338ca',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+              bgcolor: colors.accentBg,
+              color: colors.accentColor,
+              border: `1px solid ${colors.accentBorder}`,
             }}
           />
           {selectedCandidate && canConfirm && (
             <>
-              <SwapHorizIcon sx={{ fontSize: '1rem', color: textSecondary, opacity: 0.5, flexShrink: 0 }} />
-              <Typography variant="caption" sx={{ color: textSecondary, flexShrink: 0 }}>
+              <SwapHorizIcon sx={{ fontSize: '1rem', color: colors.textSecondary, opacity: 0.5, flexShrink: 0 }} />
+              <Typography variant="caption" sx={{ color: colors.textSecondary, flexShrink: 0 }}>
                 변경
               </Typography>
               <Chip
@@ -215,9 +214,9 @@ export default function ReviewerChangeModal({
                 sx={{
                   fontWeight: 700,
                   fontSize: '0.78rem',
-                  bgcolor: isDarkMode ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.07)',
-                  color: isDarkMode ? '#6ee7b7' : '#047857',
-                  border: `1px solid ${isDarkMode ? 'rgba(16,185,129,0.25)' : 'rgba(16,185,129,0.2)'}`,
+                  bgcolor: theme.changeChipBg,
+                  color: theme.changeChipColor,
+                  border: `1px solid ${theme.changeChipBorder}`,
                 }}
               />
             </>
@@ -236,7 +235,7 @@ export default function ReviewerChangeModal({
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
+                  <SearchIcon sx={{ fontSize: '1rem', color: colors.textSecondary }} />
                 </InputAdornment>
               ),
             },
@@ -245,17 +244,17 @@ export default function ReviewerChangeModal({
             mb: 1.5,
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
-              bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+              bgcolor: theme.searchBg,
               fontSize: '0.875rem',
-              '& fieldset': { borderColor },
+              '& fieldset': { borderColor: colors.borderColor },
               '&:hover fieldset': {
-                borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
+                borderColor: theme.searchHoverBorder,
               },
               '&.Mui-focused fieldset': { borderColor: '#6366f1' },
             },
             '& .MuiInputBase-input': {
-              color: textPrimary,
-              '&::placeholder': { color: textSecondary, opacity: 1 },
+              color: colors.textPrimary,
+              '&::placeholder': { color: colors.textSecondary, opacity: 1 },
             },
           }}
         />
@@ -273,18 +272,16 @@ export default function ReviewerChangeModal({
             '&::-webkit-scrollbar': { width: 4 },
             '&::-webkit-scrollbar-track': { background: 'transparent' },
             '&::-webkit-scrollbar-thumb': {
-              background: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+              background: theme.scrollbarThumb,
               borderRadius: 9999,
             },
             scrollbarWidth: 'thin',
-            scrollbarColor: isDarkMode
-              ? 'rgba(99,102,241,0.25) transparent'
-              : 'rgba(99,102,241,0.2) transparent',
+            scrollbarColor: theme.scrollbarColor,
           }}
         >
           {filtered.length === 0 ? (
             <Box sx={{ py: 4, textAlign: 'center' }}>
-              <Typography variant="caption" sx={{ color: textSecondary }}>
+              <Typography variant="caption" sx={{ color: colors.textSecondary }}>
                 검색 결과가 없습니다
               </Typography>
             </Box>
@@ -304,22 +301,22 @@ export default function ReviewerChangeModal({
                     borderRadius: 1.5,
                     border: `1px solid ${
                       isSelected
-                        ? isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)'
-                        : borderColor
+                        ? theme.candidateSelectedBorder
+                        : colors.borderColor
                     }`,
                     bgcolor: isSelected
-                      ? isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.05)'
+                      ? theme.candidateSelectedBg
                       : isCurrent
-                      ? isDarkMode ? 'rgba(148,163,184,0.05)' : 'rgba(248,250,252,0.8)'
-                      : isDarkMode ? 'rgba(30,41,59,0.5)' : '#ffffff',
+                      ? theme.candidateCurrentBg
+                      : theme.candidateBg,
                     cursor: isCurrent ? 'default' : 'pointer',
                     opacity: isCurrent ? 0.55 : 1,
                     transition: 'all 0.12s ease',
                     '&:hover': isCurrent
                       ? {}
                       : {
-                          bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
-                          borderColor: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+                          bgcolor: theme.candidateHoverBg,
+                          borderColor: theme.candidateHoverBorder,
                         },
                   }}
                 >
@@ -328,17 +325,17 @@ export default function ReviewerChangeModal({
                       width: 30,
                       height: 30,
                       bgcolor: isSelected
-                        ? isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.12)'
-                        : isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(241,245,249,0.9)',
+                        ? theme.candidateAvatarSelectedBg
+                        : theme.candidateAvatarBg,
                       color: isSelected
-                        ? isDarkMode ? '#a5b4fc' : '#4338ca'
-                        : textSecondary,
+                        ? theme.candidateSelectedAvatarColor
+                        : colors.textSecondary,
                       fontSize: '0.75rem',
                       fontWeight: 700,
                       border: `1px solid ${
                         isSelected
-                          ? isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'
-                          : borderColor
+                          ? theme.candidateSelectedAvatarBorder
+                          : colors.borderColor
                       }`,
                       flexShrink: 0,
                     }}
@@ -353,8 +350,8 @@ export default function ReviewerChangeModal({
                           fontSize: '0.82rem',
                           fontWeight: isSelected ? 700 : 600,
                           color: isSelected
-                            ? isDarkMode ? '#a5b4fc' : '#4338ca'
-                            : textPrimary,
+                            ? theme.candidateSelectedTextColor
+                            : colors.textPrimary,
                           lineHeight: 1.3,
                         }}
                       >
@@ -368,15 +365,15 @@ export default function ReviewerChangeModal({
                             height: 14,
                             fontSize: '0.55rem',
                             fontWeight: 700,
-                            bgcolor: isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(148,163,184,0.08)',
-                            color: textSecondary,
+                            bgcolor: theme.currentChipBg,
+                            color: colors.textSecondary,
                             '& .MuiChip-label': { px: 0.5 },
                           }}
                         />
                       )}
                     </Box>
                     <Typography
-                      sx={{ fontSize: '0.68rem', color: textSecondary, fontFamily: 'monospace' }}
+                      sx={{ fontSize: '0.68rem', color: colors.textSecondary, fontFamily: 'monospace' }}
                     >
                       {candidate.position} · {candidate.department}
                     </Typography>
@@ -384,7 +381,7 @@ export default function ReviewerChangeModal({
 
                   {isSelected && (
                     <CheckIcon
-                      sx={{ fontSize: '1rem', color: isDarkMode ? '#a5b4fc' : '#4338ca', flexShrink: 0 }}
+                      sx={{ fontSize: '1rem', color: theme.candidateSelectedTextColor, flexShrink: 0 }}
                     />
                   )}
                 </Box>
@@ -399,11 +396,11 @@ export default function ReviewerChangeModal({
         sx={{
           px: 2.5,
           py: 2,
-          borderTop: `1px solid ${borderColor}`,
+          borderTop: `1px solid ${colors.borderColor}`,
           display: 'flex',
           gap: 1.5,
           justifyContent: 'flex-end',
-          bgcolor: isDarkMode ? 'rgba(15,23,42,0.3)' : 'rgba(248,250,252,0.8)',
+          bgcolor: theme.footerBg,
         }}
       >
         <Button
@@ -417,9 +414,9 @@ export default function ReviewerChangeModal({
             fontWeight: 600,
             fontSize: '0.82rem',
             textTransform: 'none',
-            borderColor: isDarkMode ? 'rgba(148,163,184,0.25)' : 'rgba(203,213,225,0.7)',
-            color: textSecondary,
-            '&:hover': { borderColor: textSecondary, bgcolor: 'transparent' },
+            borderColor: theme.decisionCancelBorder,
+            color: colors.textSecondary,
+            '&:hover': { borderColor: colors.textSecondary, bgcolor: 'transparent' },
           }}
         >
           취소

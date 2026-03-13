@@ -4,6 +4,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Dayjs } from 'dayjs'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getMileageTheme } from '@/theme/mileageTheme'
 
 interface Props {
   startDate: Dayjs | null
@@ -23,31 +24,26 @@ export default function MileageFilter({
   setSearchTerm,
 }: Props) {
   const { isDarkMode } = useThemeMode()
-
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.5)'
-  const inputBg = isDarkMode ? 'rgba(22,30,46,0.8)' : '#ffffff'
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const focusBorder = '#6366f1'
+  const t = getMileageTheme(isDarkMode)
 
   const inputSx = {
     '& .MuiInputBase-root': {
-      bgcolor: inputBg,
+      bgcolor: t.inputBg,
       borderRadius: 2,
     },
-    '& .MuiInputBase-input': { color: textPrimary, fontSize: '0.875rem' },
-    '& .MuiInputLabel-root': { color: textSecondary, fontSize: '0.875rem' },
+    '& .MuiInputBase-input': { color: t.textPrimary, fontSize: '0.875rem' },
+    '& .MuiInputLabel-root': { color: t.textSecondary, fontSize: '0.875rem' },
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? 'rgba(148,163,184,0.18)' : 'rgba(203,213,225,0.7)',
+      borderColor: t.inputBorderColor,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.5)',
+      borderColor: t.inputHoverBorder,
     },
     '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: focusBorder,
+      borderColor: '#6366f1',
       borderWidth: '1.5px',
     },
-    '& .MuiSvgIcon-root': { color: textSecondary },
+    '& .MuiSvgIcon-root': { color: t.textSecondary },
   }
 
   return (
@@ -56,14 +52,14 @@ export default function MileageFilter({
         mb: 4,
         p: 2.5,
         borderRadius: 2.5,
-        bgcolor: isDarkMode ? 'rgba(148,163,184,0.04)' : 'rgba(248,250,252,0.9)',
-        border: `1px solid ${borderColor}`,
+        bgcolor: t.filterBg,
+        border: `1px solid ${t.borderColorStrict}`,
       }}
     >
       <Typography
         variant="caption"
         sx={{
-          color: textSecondary,
+          color: t.textSecondary,
           fontWeight: 600,
           textTransform: 'uppercase',
           letterSpacing: '0.07em',
@@ -101,7 +97,7 @@ export default function MileageFilter({
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon sx={{ fontSize: '1.1rem', color: textSecondary }} />
+                  <SearchIcon sx={{ fontSize: '1.1rem', color: t.textSecondary }} />
                 </InputAdornment>
               ),
             },

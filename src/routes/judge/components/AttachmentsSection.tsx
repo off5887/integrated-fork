@@ -2,6 +2,9 @@
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
 import { Box, Button, Typography } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 
 interface Attachment {
   name: string
@@ -10,12 +13,12 @@ interface Attachment {
 
 interface Props {
   attachments: Attachment[]
-  isDarkMode: boolean
 }
 
-export default function AttachmentsSection({ attachments, isDarkMode }: Props) {
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+export default function AttachmentsSection({ attachments }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
 
   return (
     <Box>
@@ -30,7 +33,7 @@ export default function AttachmentsSection({ attachments, isDarkMode }: Props) {
         >
           5
         </Box>
-        <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
+        <Typography variant="h6" fontWeight={700} sx={{ color: colors.textPrimary, letterSpacing: '-0.01em' }}>
           첨부 자료
         </Typography>
       </Box>
@@ -38,8 +41,8 @@ export default function AttachmentsSection({ attachments, isDarkMode }: Props) {
       <Box
         sx={{
           p: 3, borderRadius: 2.5,
-          bgcolor: isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(99,102,241,0.03)',
-          border: `1px dashed ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.18)'}`,
+          bgcolor: theme.attachmentPanelBg,
+          border: `1px dashed ${theme.attachmentPanelBorder}`,
         }}
       >
         {attachments.length > 0 ? (
@@ -57,11 +60,11 @@ export default function AttachmentsSection({ attachments, isDarkMode }: Props) {
                   py: 0.9, px: 2,
                   fontSize: '0.82rem',
                   fontWeight: 600,
-                  borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
-                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                  borderColor: theme.attachmentBtnBorder,
+                  color: theme.attachmentBtnColor,
                   '&:hover': {
                     borderColor: '#6366f1',
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+                    bgcolor: theme.attachmentBtnHoverBg,
                   },
                   transition: 'all 0.15s ease',
                 }}
@@ -72,8 +75,8 @@ export default function AttachmentsSection({ attachments, isDarkMode }: Props) {
           </Box>
         ) : (
           <Box sx={{ textAlign: 'center', py: 2 }}>
-            <AttachFileIcon sx={{ color: textSecondary, fontSize: '1.75rem', mb: 1, opacity: 0.4 }} />
-            <Typography variant="body2" sx={{ color: textSecondary }}>
+            <AttachFileIcon sx={{ color: colors.textSecondary, fontSize: '1.75rem', mb: 1, opacity: 0.4 }} />
+            <Typography variant="body2" sx={{ color: colors.textSecondary }}>
               첨부된 자료가 없습니다
             </Typography>
           </Box>

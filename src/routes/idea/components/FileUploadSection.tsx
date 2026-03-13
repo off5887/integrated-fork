@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import type { ChangeEvent } from 'react'
 import { useState } from 'react'
+import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface FileUploadSectionProps {
@@ -20,7 +21,6 @@ interface FileUploadSectionProps {
   filePreviews: string[]
   onFilesChange: (newFiles: File[]) => void
   onRemoveFile: (index: number) => void
-  isDarkMode: boolean
 }
 
 export default function FileUploadSection({
@@ -28,8 +28,8 @@ export default function FileUploadSection({
   filePreviews,
   onFilesChange,
   onRemoveFile,
-  isDarkMode,
 }: FileUploadSectionProps) {
+  const { isDarkMode } = useThemeMode()
   const [previewOpen, setPreviewOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
@@ -50,7 +50,8 @@ export default function FileUploadSection({
     setSelectedIndex(null)
   }
 
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor, fileItemBg } = it
 
   return (
     <>
@@ -76,8 +77,8 @@ export default function FileUploadSection({
           sx={{
             p: 3,
             borderRadius: 2.5,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(99,102,241,0.03)',
-            border: `1px dashed ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.18)'}`,
+            bgcolor: it.accent.bg,
+            border: `1px dashed ${it.accent.border}`,
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: files.length > 0 ? 3 : 0 }}>
@@ -91,11 +92,11 @@ export default function FileUploadSection({
                 px: 2.5, py: 0.9,
                 fontWeight: 600,
                 fontSize: '0.82rem',
-                borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
-                color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                borderColor: it.accent.borderHover,
+                color: it.accent.text,
                 '&:hover': {
                   borderColor: '#6366f1',
-                  bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+                  bgcolor: it.accent.bgStrong,
                 },
               }}
             >
@@ -123,7 +124,7 @@ export default function FileUploadSection({
                       borderRadius: 2,
                       overflow: 'hidden',
                       border: `1px solid ${borderColor}`,
-                      bgcolor: isDarkMode ? 'rgba(22,30,46,0.8)' : '#f8fafc',
+                      bgcolor: fileItemBg,
                       boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
                       transition: 'all 0.2s ease',
                       cursor: isImage ? 'zoom-in' : 'default',

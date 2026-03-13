@@ -13,6 +13,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 
 export type DecisionType = '승인' | '반려'
 
@@ -22,7 +25,6 @@ interface Props {
   proposalTitle: string
   onClose: () => void
   onConfirm: (type: DecisionType, reason: string) => void
-  isDarkMode: boolean
 }
 
 const MAX_CHARS = 500
@@ -33,8 +35,11 @@ export default function JudgeDecisionModal({
   proposalTitle,
   onClose,
   onConfirm,
-  isDarkMode,
 }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
+
   const [reason, setReason] = useState('')
   const [touched, setTouched] = useState(false)
 
@@ -43,11 +48,6 @@ export default function JudgeDecisionModal({
   const accentBg = isApprove ? 'rgba(99,102,241,0.1)' : 'rgba(239,68,68,0.1)'
   const accentBorder = isApprove ? 'rgba(99,102,241,0.3)' : 'rgba(239,68,68,0.3)'
   const accentBgLight = isApprove ? 'rgba(99,102,241,0.06)' : 'rgba(239,68,68,0.06)'
-
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
-  const inputBg = isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc'
 
   const isError = touched && reason.trim().length === 0
   const charCount = reason.length
@@ -79,11 +79,9 @@ export default function JudgeDecisionModal({
         paper: {
           sx: {
             borderRadius: 3,
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
-            border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode
-              ? '0 24px 64px rgba(0,0,0,0.6)'
-              : '0 24px 64px rgba(0,0,0,0.12)',
+            bgcolor: theme.dialogBg,
+            border: `1px solid ${colors.borderColor}`,
+            boxShadow: theme.dialogShadow,
             overflow: 'hidden',
             m: { xs: 2, sm: 3 },
           },
@@ -91,7 +89,7 @@ export default function JudgeDecisionModal({
         backdrop: {
           sx: {
             backdropFilter: 'blur(6px)',
-            backgroundColor: isDarkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)',
+            backgroundColor: theme.backdropBg,
           },
         },
       }}
@@ -115,7 +113,7 @@ export default function JudgeDecisionModal({
           display: 'flex',
           alignItems: 'flex-start',
           gap: 1.5,
-          borderBottom: `1px solid ${borderColor}`,
+          borderBottom: `1px solid ${colors.borderColor}`,
         }}
       >
         <Box
@@ -149,7 +147,7 @@ export default function JudgeDecisionModal({
           <Typography
             variant="caption"
             sx={{
-              color: textSecondary,
+              color: colors.textSecondary,
               display: 'block',
               mt: 0.3,
               overflow: 'hidden',
@@ -161,7 +159,7 @@ export default function JudgeDecisionModal({
           </Typography>
         </Box>
 
-        <IconButton size="small" onClick={handleClose} sx={{ color: textSecondary, flexShrink: 0 }}>
+        <IconButton size="small" onClick={handleClose} sx={{ color: colors.textSecondary, flexShrink: 0 }}>
           <CloseIcon sx={{ fontSize: '1.1rem' }} />
         </IconButton>
       </Box>
@@ -181,7 +179,7 @@ export default function JudgeDecisionModal({
           }}
         >
           <WarningAmberIcon sx={{ fontSize: '1rem', color: accentColor, flexShrink: 0, mt: 0.1 }} />
-          <Typography variant="caption" sx={{ color: isDarkMode ? '#cbd5e1' : '#334155', lineHeight: 1.6 }}>
+          <Typography variant="caption" sx={{ color: theme.decisionBannerText, lineHeight: 1.6 }}>
             {isApprove
               ? '승인 후에는 취소가 어렵습니다. 승인 사유를 명확하게 작성해 주세요. 작성된 사유는 제안자에게 전달됩니다.'
               : '반려 후에는 제안자가 내용을 수정하여 재제출할 수 있습니다. 반려 사유를 구체적으로 작성해 주세요. 작성된 사유는 제안자에게 전달됩니다.'}
@@ -193,7 +191,7 @@ export default function JudgeDecisionModal({
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
             <Typography
               variant="caption"
-              sx={{ fontWeight: 700, color: textPrimary, fontSize: '0.8rem' }}
+              sx={{ fontWeight: 700, color: colors.textPrimary, fontSize: '0.8rem' }}
             >
               {isApprove ? '승인 사유' : '반려 사유'}
               <Box component="span" sx={{ color: accentColor, ml: 0.5 }}>*</Box>
@@ -201,7 +199,7 @@ export default function JudgeDecisionModal({
             <Typography
               variant="caption"
               sx={{
-                color: isOverLimit ? '#ef4444' : textSecondary,
+                color: isOverLimit ? '#ef4444' : colors.textSecondary,
                 fontSize: '0.72rem',
                 fontVariantNumeric: 'tabular-nums',
               }}
@@ -235,12 +233,12 @@ export default function JudgeDecisionModal({
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
-                bgcolor: inputBg,
+                bgcolor: theme.decisionInputBg,
                 fontSize: '0.875rem',
-                color: textPrimary,
+                color: colors.textPrimary,
                 alignItems: 'flex-start',
                 '& fieldset': {
-                  borderColor: isError || isOverLimit ? '#ef4444' : borderColor,
+                  borderColor: isError || isOverLimit ? '#ef4444' : colors.borderColor,
                 },
                 '&:hover fieldset': {
                   borderColor: isError || isOverLimit ? '#ef4444' : accentColor + '66',
@@ -250,9 +248,9 @@ export default function JudgeDecisionModal({
                 },
               },
               '& .MuiInputBase-input': {
-                color: textPrimary,
+                color: colors.textPrimary,
                 lineHeight: 1.65,
-                '&::placeholder': { color: textSecondary, opacity: 1 },
+                '&::placeholder': { color: colors.textSecondary, opacity: 1 },
               },
               '& .MuiFormHelperText-root': {
                 fontSize: '0.75rem',
@@ -269,12 +267,12 @@ export default function JudgeDecisionModal({
         sx={{
           px: { xs: 2.5, sm: 3 },
           py: 2,
-          borderTop: `1px solid ${borderColor}`,
+          borderTop: `1px solid ${colors.borderColor}`,
           display: 'flex',
           gap: 1.5,
           justifyContent: 'flex-end',
           flexWrap: 'wrap',
-          bgcolor: isDarkMode ? 'rgba(15,23,42,0.3)' : 'rgba(248,250,252,0.8)',
+          bgcolor: theme.decisionModalFooterBg,
         }}
       >
         <Button
@@ -288,9 +286,9 @@ export default function JudgeDecisionModal({
             fontWeight: 600,
             fontSize: '0.82rem',
             textTransform: 'none',
-            borderColor: isDarkMode ? 'rgba(148,163,184,0.25)' : 'rgba(203,213,225,0.7)',
-            color: textSecondary,
-            '&:hover': { borderColor: textSecondary, bgcolor: 'transparent' },
+            borderColor: theme.decisionCancelBorder,
+            color: colors.textSecondary,
+            '&:hover': { borderColor: colors.textSecondary, bgcolor: 'transparent' },
           }}
         >
           취소
@@ -324,9 +322,9 @@ export default function JudgeDecisionModal({
                   },
                 }
               : {
-                  bgcolor: isDarkMode ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.08)',
+                  bgcolor: theme.rejectBtnBg,
                   color: '#ef4444',
-                  border: `1px solid ${isDarkMode ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.2)'}`,
+                  border: `1px solid ${theme.rejectBtnBorder}`,
                   '&:hover': {
                     bgcolor: '#ef4444',
                     color: '#fff',

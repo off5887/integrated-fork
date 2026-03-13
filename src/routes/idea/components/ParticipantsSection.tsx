@@ -7,6 +7,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PublicIcon from '@mui/icons-material/Public'
 import { Box, Button, IconButton, Typography } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface Props {
@@ -16,7 +17,6 @@ interface Props {
   // setCoProposers: (v: string[]) => void
   security: 'public' | 'private'
   setSecurity: (v: 'public' | 'private') => void
-  isDarkMode: boolean
   onOpenReviewerModal: () => void
   // onOpenCoProposerModal: () => void
 }
@@ -53,11 +53,12 @@ export default function ParticipantsSection({
   // setCoProposers,
   security,
   setSecurity,
-  isDarkMode,
   onOpenReviewerModal,
   // onOpenCoProposerModal,
 }: Props) {
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
+  const { isDarkMode } = useThemeMode()
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor } = it
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -82,15 +83,15 @@ export default function ParticipantsSection({
         <Box
           sx={{
             flex: 1, minWidth: 0, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.05)' : 'rgba(99,102,241,0.03)',
-            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.14)' : 'rgba(99,102,241,0.1)'}`,
+            bgcolor: it.accent.bg,
+            border: `1px solid ${it.accent.border}`,
           }}
         >
           {/* 헤더 + 추가 버튼 한 줄 */}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PersonAddIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
-              <Typography variant="body1" fontWeight={700} sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}>
+              <Typography variant="body1" fontWeight={700} sx={{ color: textPrimary }}>
                 심사자
               </Typography>
               {reviewer.length > 0 && (
@@ -114,9 +115,9 @@ export default function ParticipantsSection({
               onClick={onOpenReviewerModal}
               sx={{
                 borderRadius: 1.5, px: 1.5, py: 0.45, fontWeight: 600, fontSize: '0.76rem',
-                borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
-                color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                '&:hover': { borderColor: '#6366f1', bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)' },
+                borderColor: it.accent.borderHover,
+                color: it.accent.text,
+                '&:hover': { borderColor: '#6366f1', bgcolor: it.accent.bgStrong },
               }}
             >
               추가
@@ -129,18 +130,18 @@ export default function ParticipantsSection({
               sx={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 py: 3, gap: 1, borderRadius: 2,
-                border: `1px dashed ${isDarkMode ? 'rgba(148,163,184,0.2)' : 'rgba(203,213,225,0.9)'}`,
-                bgcolor: isDarkMode ? 'rgba(15,23,42,0.2)' : 'rgba(248,250,252,0.6)',
+                border: `1px dashed ${borderColor}`,
+                bgcolor: it.emptyStateBg,
               }}
             >
               <Box
                 sx={{
                   width: 36, height: 36, borderRadius: '50%', mb: 0.5,
-                  bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.08)',
+                  bgcolor: it.accent.bgStrong,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >
-                <PersonAddIcon sx={{ fontSize: '1.1rem', color: isDarkMode ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.4)' }} />
+                <PersonAddIcon sx={{ fontSize: '1.1rem', color: it.accent.borderHover }} />
               </Box>
               <Typography sx={{ fontSize: '0.82rem', fontWeight: 600, color: textSecondary }}>
                 심사자를 추가해주세요
@@ -166,8 +167,8 @@ export default function ParticipantsSection({
                     sx={{
                       display: 'flex', alignItems: 'center', gap: 1.5,
                       px: 1.5, py: 1, borderRadius: 2,
-                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
-                      border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.15)'}`,
+                      bgcolor: it.accent.bgStrong,
+                      border: `1px solid ${it.accent.border}`,
                     }}
                   >
                     {/* 아바타 */}
@@ -184,7 +185,7 @@ export default function ParticipantsSection({
                     </Box>
                     {/* 이름 + 부서 */}
                     <Box flex={1} minWidth={0}>
-                      <Typography sx={{ fontSize: '0.83rem', fontWeight: 600, color: isDarkMode ? '#e2e8f0' : '#1e293b', lineHeight: 1.2 }}>
+                      <Typography sx={{ fontSize: '0.83rem', fontWeight: 600, color: textPrimary, lineHeight: 1.2 }}>
                         {displayName.trim()}
                       </Typography>
                       {dept && (
@@ -216,8 +217,8 @@ export default function ParticipantsSection({
             sx={{
               mt: 2, display: 'flex', alignItems: 'flex-start', gap: 0.75,
               px: 1.5, py: 1.25, borderRadius: 1.5,
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.12)'}`,
+              bgcolor: it.accent.bgHover,
+              border: `1px solid ${it.accent.border}`,
             }}
           >
             <InfoOutlinedIcon sx={{ fontSize: '0.85rem', color: '#6366f1', mt: '1px', flexShrink: 0 }} />
@@ -286,7 +287,7 @@ export default function ParticipantsSection({
           sx={{
             flex: 1, minWidth: 0, borderRadius: 2.5,
             border: `1px solid ${borderColor}`,
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.6)' : '#fafbfc',
+            bgcolor: it.panelBg,
             overflow: 'hidden',
           }}
         >
@@ -296,7 +297,7 @@ export default function ParticipantsSection({
               px: 2.5, py: 1.75,
               display: 'flex', alignItems: 'center', gap: 1,
               borderBottom: `1px solid ${borderColor}`,
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.05)' : 'rgba(99,102,241,0.03)',
+              bgcolor: it.accent.bg,
             }}
           >
             <PublicIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
@@ -314,6 +315,8 @@ export default function ParticipantsSection({
             {VISIBILITY_OPTIONS.map((opt) => {
               const isSelected = security === opt.value
               const IconComp = opt.icon
+              const accentBg = isDarkMode ? opt.accentBgDark : opt.accentBg
+              const accentBorder = isDarkMode ? opt.accentBorderDark : opt.accentBorder
               return (
                 <Box
                   key={opt.value}
@@ -330,18 +333,14 @@ export default function ParticipantsSection({
                   sx={{
                     display: 'flex', alignItems: 'center', gap: 2,
                     p: 2, borderRadius: 2.5,
-                    border: `1.5px solid ${isSelected
-                      ? isDarkMode ? opt.accentBorderDark : opt.accentBorder
-                      : borderColor}`,
-                    bgcolor: isSelected
-                      ? isDarkMode ? opt.accentBgDark : opt.accentBg
-                      : isDarkMode ? 'rgba(30,41,59,0.4)' : '#ffffff',
+                    border: `1.5px solid ${isSelected ? accentBorder : borderColor}`,
+                    bgcolor: isSelected ? accentBg : it.itemBg,
                     cursor: 'pointer', outline: 'none',
                     transition: 'all 0.18s ease',
                     boxShadow: isSelected ? `0 4px 16px ${opt.accentBg}` : 'none',
                     '&:hover': {
-                      bgcolor: isDarkMode ? opt.accentBgDark : opt.accentBg,
-                      borderColor: isDarkMode ? opt.accentBorderDark : opt.accentBorder,
+                      bgcolor: accentBg,
+                      borderColor: accentBorder,
                     },
                     '&:focus-visible': { outline: `2px solid ${opt.accentColor}`, outlineOffset: 2 },
                   }}
@@ -349,12 +348,8 @@ export default function ParticipantsSection({
                   <Box
                     sx={{
                       width: 40, height: 40, borderRadius: 2,
-                      bgcolor: isSelected
-                        ? isDarkMode ? opt.accentBgDark : opt.accentBg
-                        : isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(241,245,249,0.9)',
-                      border: `1px solid ${isSelected
-                        ? isDarkMode ? opt.accentBorderDark : opt.accentBorder
-                        : borderColor}`,
+                      bgcolor: isSelected ? accentBg : it.avatarBg,
+                      border: `1px solid ${isSelected ? accentBorder : borderColor}`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0, transition: 'all 0.18s ease',
                     }}
@@ -365,7 +360,7 @@ export default function ParticipantsSection({
                     <Typography sx={{ fontSize: '0.88rem', fontWeight: isSelected ? 700 : 600, color: isSelected ? opt.accentColor : textPrimary, lineHeight: 1.3, mb: 0.3, transition: 'color 0.18s ease' }}>
                       {opt.label}
                     </Typography>
-                    <Typography sx={{ fontSize: '0.73rem', color: isSelected ? (isDarkMode ? `${opt.accentColor}cc` : `${opt.accentColor}aa`) : textSecondary, lineHeight: 1.4, transition: 'color 0.18s ease' }}>
+                    <Typography sx={{ fontSize: '0.73rem', color: isSelected ? `${opt.accentColor}bb` : textSecondary, lineHeight: 1.4, transition: 'color 0.18s ease' }}>
                       {opt.description}
                     </Typography>
                   </Box>
@@ -388,7 +383,7 @@ export default function ParticipantsSection({
             <Box
               sx={{
                 mt: 0.5, px: 1.75, py: 1.25, borderRadius: 2,
-                bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
+                bgcolor: it.subtleBg,
                 border: `1px dashed ${borderColor}`,
                 display: 'flex', alignItems: 'center', gap: 1,
               }}

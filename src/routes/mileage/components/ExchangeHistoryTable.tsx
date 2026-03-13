@@ -1,6 +1,7 @@
 // src/routes/Mileage/ExchangeHistoryTable.tsx
 import { Box, Card, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getMileageTheme } from '@/theme/mileageTheme'
 import type { ExchangeItem } from '@/api/types/mileage'
 
 interface Props {
@@ -27,33 +28,28 @@ const HEAD_COLS = ['번호', '신청일', '신청 마일리지', '현금 환산'
 
 export default function ExchangeHistoryTable({ data }: Props) {
   const { isDarkMode } = useThemeMode()
-
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
-  const headBg        = isDarkMode ? 'rgba(148,163,184,0.06)' : 'rgba(248,250,252,0.9)'
-  const hoverBg       = isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(248,250,252,0.8)'
+  const t = getMileageTheme(isDarkMode)
 
   return (
     <Card
       elevation={0}
       sx={{
         borderRadius: 3, overflow: 'hidden',
-        bgcolor: isDarkMode ? 'rgba(22,30,46,0.92)' : '#ffffff',
-        border: `1px solid ${borderColor}`,
-        boxShadow: isDarkMode ? '0 2px 16px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.05)',
+        bgcolor: t.cardBg,
+        border: `1px solid ${t.borderColor}`,
+        boxShadow: t.cardShadowLarge,
       }}
     >
       <Table>
         <TableHead>
-          <TableRow sx={{ bgcolor: headBg }}>
+          <TableRow sx={{ bgcolor: t.headBg }}>
             {HEAD_COLS.map((col) => (
               <TableCell
                 key={col}
                 sx={{
-                  color: textSecondary, fontWeight: 600,
+                  color: t.textSecondary, fontWeight: 600,
                   fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em',
-                  borderBottom: `1px solid ${borderColor}`, py: 1.75,
+                  borderBottom: `1px solid ${t.borderColor}`, py: 1.75,
                 }}
               >
                 {col}
@@ -68,28 +64,28 @@ export default function ExchangeHistoryTable({ data }: Props) {
               key={item.id}
               sx={{
                 transition: 'background-color 0.15s',
-                '&:hover': { bgcolor: hoverBg },
+                '&:hover': { bgcolor: t.rowHoverBg },
                 '& .MuiTableCell-root': {
-                  borderBottom: `1px solid ${borderColor}`,
-                  color: textPrimary, py: 1.75, fontSize: '0.875rem',
+                  borderBottom: `1px solid ${t.borderColor}`,
+                  color: t.textPrimary, py: 1.75, fontSize: '0.875rem',
                 },
                 '&:last-child .MuiTableCell-root': { borderBottom: 'none' },
               }}
             >
               <TableCell>
-                <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>#{item.id}</Typography>
+                <Typography variant="body2" sx={{ color: t.textSecondary, fontWeight: 500 }}>#{item.id}</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: textPrimary }}>{item.requestDate}</Typography>
+                <Typography variant="body2" sx={{ color: t.textPrimary }}>{item.requestDate}</Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="body2" fontWeight={700} sx={{ color: '#6366f1' }}>
                   {item.amount.toLocaleString()}
-                  <Box component="span" sx={{ fontWeight: 500, color: textSecondary, ml: 0.5 }}>마리</Box>
+                  <Box component="span" sx={{ fontWeight: 500, color: t.textSecondary, ml: 0.5 }}>마리</Box>
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" fontWeight={600} sx={{ color: isDarkMode ? '#c4b5fd' : '#7c3aed' }}>
+                <Typography variant="body2" fontWeight={600} sx={{ color: t.cashAmountColor }}>
                   {item.cashAmount.toLocaleString()}원
                 </Typography>
               </TableCell>
@@ -102,7 +98,7 @@ export default function ExchangeHistoryTable({ data }: Props) {
           {data.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} sx={{ textAlign: 'center', py: 8, border: 'none' }}>
-                <Typography variant="body2" sx={{ color: textSecondary }}>환전 신청 내역이 없습니다</Typography>
+                <Typography variant="body2" sx={{ color: t.textSecondary }}>환전 신청 내역이 없습니다</Typography>
               </TableCell>
             </TableRow>
           )}

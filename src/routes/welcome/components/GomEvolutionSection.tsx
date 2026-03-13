@@ -3,23 +3,9 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { Box, Button, LinearProgress, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getWelcomeTheme } from '@/theme/welcomeTheme'
+import { GOM_LEVELS } from '@/api/mock/welcome'
 import GomEvolutionModal from './GomEvolutionModal'
-
-const GOM_LEVELS = [
-  { min: 0, name: '아기 곰곰이', image: '/src/assets/tarot/baby_bear.png' },
-  { min: 500, name: '꼬마 곰곰이', image: '/src/assets/tarot/kid_bear.png' },
-  {
-    min: 2000,
-    name: '곰곰 워리어',
-    image: '/src/assets/tarot/warrior_bear.png',
-  },
-  {
-    min: 5000,
-    name: '곰곰 마스터',
-    image: '/src/assets/tarot/master_bear.png',
-  },
-  { min: 10000, name: '곰신', image: '/src/assets/tarot/god_bear.png' },
-] as const
 
 function getGomLevel(fishCount: number) {
   return GOM_LEVELS.reduce((prev, curr) =>
@@ -35,6 +21,7 @@ export default function GomEvolutionSection({
   fishCount,
 }: GomEvolutionSectionProps) {
   const { isDarkMode } = useThemeMode()
+  const t = getWelcomeTheme(isDarkMode)
   const [openModal, setOpenModal] = useState(false)
 
   const currentLevel = getGomLevel(fishCount)
@@ -46,12 +33,6 @@ export default function GomEvolutionSection({
       ? Math.min(100, Math.round((fishCount / nextLevel.min) * 100))
       : 100
 
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode
-    ? 'rgba(148,163,184,0.1)'
-    : 'rgba(203,213,225,0.5)'
-
   return (
     <Box
       component="section"
@@ -61,7 +42,7 @@ export default function GomEvolutionSection({
         width: '100%',
         scrollSnapAlign: 'start',
         scrollSnapStop: 'always',
-        bgcolor: isDarkMode ? '#0a0f1e' : '#f1f5f9',
+        bgcolor: t.bgBase,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -81,9 +62,7 @@ export default function GomEvolutionSection({
           width: '45vw',
           height: '45vw',
           borderRadius: '50%',
-          background: isDarkMode
-            ? 'radial-gradient(circle, rgba(99,102,241,0.16) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+          background: t.orb4,
           pointerEvents: 'none',
         }}
       />
@@ -95,9 +74,7 @@ export default function GomEvolutionSection({
           width: '35vw',
           height: '35vw',
           borderRadius: '50%',
-          background: isDarkMode
-            ? 'radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(167,139,250,0.07) 0%, transparent 70%)',
+          background: t.orb5,
           pointerEvents: 'none',
         }}
       />
@@ -107,13 +84,11 @@ export default function GomEvolutionSection({
           width: '100%',
           maxWidth: 520,
           mx: 'auto',
-          bgcolor: isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
-          border: `1px solid ${borderColor}`,
+          bgcolor: t.cardBg,
+          border: `1px solid ${t.borderColor}`,
           borderRadius: 4,
           overflow: 'hidden',
-          boxShadow: isDarkMode
-            ? '0 8px 40px rgba(0,0,0,0.5)'
-            : '0 4px 32px rgba(0,0,0,0.08)',
+          boxShadow: t.cardShadowLarge,
           position: 'relative',
           zIndex: 1,
         }}
@@ -144,7 +119,7 @@ export default function GomEvolutionSection({
             >
               곰곰이 진화
             </Typography>
-            <Typography sx={{ fontSize: '0.9rem', color: textSecondary }}>
+            <Typography sx={{ fontSize: '0.9rem', color: t.textSecondary }}>
               생선을 모을수록 성장하는 나만의 곰곰이
             </Typography>
           </Box>
@@ -159,10 +134,8 @@ export default function GomEvolutionSection({
                 width: { xs: 130, md: 150 },
                 height: { xs: 130, md: 150 },
                 borderRadius: '50%',
-                bgcolor: isDarkMode
-                  ? 'rgba(99,102,241,0.12)'
-                  : 'rgba(99,102,241,0.06)',
-                border: `2px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                bgcolor: t.accentBgLight,
+                border: `2px solid ${t.accentBorderSubtle}`,
                 mb: 2,
                 mx: 'auto',
               }}
@@ -183,7 +156,7 @@ export default function GomEvolutionSection({
             <Typography
               variant="h5"
               fontWeight={700}
-              sx={{ color: textPrimary, mb: 0.5, fontSize: '1.3rem' }}
+              sx={{ color: t.textPrimary, mb: 0.5, fontSize: '1.3rem' }}
             >
               {currentLevel.name}
             </Typography>
@@ -196,23 +169,21 @@ export default function GomEvolutionSection({
                 px: 2,
                 py: 0.6,
                 borderRadius: 9999,
-                bgcolor: isDarkMode
-                  ? 'rgba(99,102,241,0.12)'
-                  : 'rgba(99,102,241,0.07)',
-                border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                bgcolor: t.accentBgVerySubtle,
+                border: `1px solid ${t.accentBorderSubtle}`,
               }}
             >
               <EmojiEventsIcon
                 sx={{
                   fontSize: '0.9rem',
-                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                  color: t.accentColor,
                 }}
               />
               <Typography
                 sx={{
                   fontSize: '1rem',
                   fontWeight: 800,
-                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                  color: t.accentColor,
                 }}
               >
                 {fishCount.toLocaleString()} 마일리지
@@ -233,7 +204,7 @@ export default function GomEvolutionSection({
               <Typography
                 sx={{
                   fontSize: '0.82rem',
-                  color: textSecondary,
+                  color: t.textSecondary,
                   fontWeight: 600,
                 }}
               >
@@ -243,7 +214,7 @@ export default function GomEvolutionSection({
                 sx={{
                   fontSize: '0.82rem',
                   fontWeight: 700,
-                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                  color: t.accentColor,
                 }}
               >
                 {progress}%
@@ -256,9 +227,7 @@ export default function GomEvolutionSection({
               sx={{
                 height: 8,
                 borderRadius: 9999,
-                bgcolor: isDarkMode
-                  ? 'rgba(99,102,241,0.12)'
-                  : 'rgba(99,102,241,0.08)',
+                bgcolor: t.progressBg,
                 '& .MuiLinearProgress-bar': {
                   borderRadius: 9999,
                   background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
@@ -270,7 +239,7 @@ export default function GomEvolutionSection({
               <Typography
                 sx={{
                   fontSize: '0.8rem',
-                  color: textSecondary,
+                  color: t.textSecondary,
                   mt: 1,
                   textAlign: 'right',
                 }}
@@ -280,7 +249,7 @@ export default function GomEvolutionSection({
                   component="span"
                   sx={{
                     fontWeight: 700,
-                    color: isDarkMode ? '#c4b5fd' : '#6366f1',
+                    color: t.remainColor,
                   }}
                 >
                   {(nextLevel.min - fishCount).toLocaleString()}
@@ -324,7 +293,6 @@ export default function GomEvolutionSection({
         onClose={() => setOpenModal(false)}
         currentLevelMin={currentLevel.min}
         fishCount={fishCount}
-        isDarkMode={isDarkMode}
       />
     </Box>
   )

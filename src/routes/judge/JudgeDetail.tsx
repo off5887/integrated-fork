@@ -1,5 +1,8 @@
 // src/routes/Judge/JudgeDetail.tsx
 import { Box, Dialog, DialogContent } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 import AttachmentsSection from './components/AttachmentsSection'
 import BasicInfoSection from './components/BasicInfoSection'
 import ExecutionPlanSection from './components/ExecutionPlanSection'
@@ -18,31 +21,26 @@ interface Props {
   onReject: (reason: string) => void
   isFirst: boolean
   isLast: boolean
-  isDarkMode: boolean
 }
 
-function SectionDivider({ isDarkMode }: { isDarkMode: boolean }) {
+function SectionDivider() {
+  const { isDarkMode } = useThemeMode()
+  const theme = getJudgeTheme(isDarkMode)
   return (
     <Box
       sx={{
         height: '1px',
-        bgcolor: isDarkMode
-          ? 'rgba(148,163,184,0.08)'
-          : 'rgba(203,213,225,0.4)',
+        bgcolor: theme.sectionDividerBg,
         my: 4,
       }}
     />
   )
 }
 
-export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onApprove, onReject, isFirst, isLast, isDarkMode }: Props) {
-  const borderColor = isDarkMode
-    ? 'rgba(148,163,184,0.1)'
-    : 'rgba(203,213,225,0.5)'
-  const scrollThumbColor = isDarkMode ? '#6366f1' : '#d8c7ff'
-  const scrollTrackColor = isDarkMode
-    ? 'rgba(30,41,59,0.4)'
-    : 'rgba(241,245,249,0.7)'
+export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onApprove, onReject, isFirst, isLast }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
 
   return (
     <Dialog
@@ -50,26 +48,22 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      scroll="paper" // paper 스크롤 방식으로 변경 (더 자연스러운 스크롤)
+      scroll="paper"
       slotProps={{
         paper: {
           sx: {
             borderRadius: 3,
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
-            border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode
-              ? '0 24px 64px rgba(0,0,0,0.6)'
-              : '0 24px 64px rgba(0,0,0,0.12)',
+            bgcolor: theme.dialogBg,
+            border: `1px solid ${colors.borderColor}`,
+            boxShadow: theme.dialogShadow,
             overflow: 'hidden',
-            maxHeight: '92vh', // 너무 크지 않게 제한
+            maxHeight: '92vh',
           },
         },
         backdrop: {
           sx: {
             backdropFilter: 'blur(8px)',
-            backgroundColor: isDarkMode
-              ? 'rgba(0,0,0,0.65)'
-              : 'rgba(0,0,0,0.45)',
+            backgroundColor: theme.backdropDetail,
           },
         },
       }}
@@ -77,7 +71,6 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
       <JudgeDetailHeader
         title={proposal.title}
         onClose={onClose}
-        isDarkMode={isDarkMode}
       />
 
       <DialogContent
@@ -85,28 +78,26 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
           p: { xs: 3, md: 5 },
           pt: 2,
           pb: 6,
-          // 현대적인 스크롤바 스타일 적용
           overflowY: 'auto',
           '&::-webkit-scrollbar': {
-            width: '8px', // 아주 얇게
+            width: '8px',
             height: '8px',
           },
           '&::-webkit-scrollbar-track': {
-            background: scrollTrackColor,
+            background: theme.scrollTrackColor,
             borderRadius: '10px',
             margin: '4px',
           },
           '&::-webkit-scrollbar-thumb': {
-            background: scrollThumbColor,
+            background: theme.scrollThumbColor,
             borderRadius: '10px',
-            border: `2px solid ${scrollTrackColor}`, // 테두리로 깔끔하게
+            border: `2px solid ${theme.scrollTrackColor}`,
             minHeight: '40px',
             transition: 'background 0.2s ease',
             '&:hover': {
-              background: isDarkMode ? '#7c7ff2' : '#a78bfa',
+              background: theme.scrollThumbHover,
             },
           },
-          // 모바일 터치 스크롤 최적화
           WebkitOverflowScrolling: 'touch',
           scrollBehavior: 'smooth',
         }}
@@ -115,38 +106,33 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
           <BasicInfoSection
             problem={proposal.problem}
             solution={proposal.solution}
-            isDarkMode={isDarkMode}
           />
 
-          <SectionDivider isDarkMode={isDarkMode} />
+          <SectionDivider />
 
           <ParticipantsSection
             reviewer={proposal.reviewer}
             proposers={proposal.proposers}
-            isDarkMode={isDarkMode}
           />
 
-          <SectionDivider isDarkMode={isDarkMode} />
+          <SectionDivider />
 
           <ScheduleSection
             startDate={proposal.startDate}
             endDate={proposal.endDate}
             scope={proposal.scope}
-            isDarkMode={isDarkMode}
           />
 
-          <SectionDivider isDarkMode={isDarkMode} />
+          <SectionDivider />
 
           <ExecutionPlanSection
             executionPlan={proposal.executionPlan}
-            isDarkMode={isDarkMode}
           />
 
-          <SectionDivider isDarkMode={isDarkMode} />
+          <SectionDivider />
 
           <AttachmentsSection
             attachments={proposal.attachments}
-            isDarkMode={isDarkMode}
           />
         </Box>
       </DialogContent>
@@ -160,7 +146,6 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
         onNext={onNext}
         onApprove={onApprove}
         onReject={onReject}
-        isDarkMode={isDarkMode}
       />
     </Dialog>
   )

@@ -1,5 +1,6 @@
 // src/routes/idea/BasicInfoSection.tsx
 import { Box, TextField, Typography } from '@mui/material'
+import { useThemeMode } from '@/context/ThemeContext'
 import { CATEGORIES } from '@/api/mock/idea'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 
@@ -14,7 +15,6 @@ interface Props {
   setSolution: (v: string) => void
   inputSx: any
   labelSx: any
-  isDarkMode: boolean
 }
 
 export default function BasicInfoSection({
@@ -28,9 +28,9 @@ export default function BasicInfoSection({
   setSolution,
   inputSx,
   labelSx,
-  isDarkMode,
 }: Props) {
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
+  const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor, categoryCardBg } = getIdeaTheme(isDarkMode)
 
   const handleToggle = (id: string) => {
     if (categories.includes(id)) {
@@ -87,7 +87,7 @@ export default function BasicInfoSection({
               sx={{
                 fontSize: '0.68rem',
                 color: '#ef4444',
-                bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.07)',
+                bgcolor: 'rgba(239,68,68,0.08)',
                 border: '1px solid rgba(239,68,68,0.3)',
                 borderRadius: 1,
                 px: 0.75, py: 0.2,
@@ -140,7 +140,7 @@ export default function BasicInfoSection({
                     border: `1.5px solid ${isSelected ? cat.border : borderColor}`,
                     bgcolor: isSelected
                       ? cat.bg
-                      : isDarkMode ? 'rgba(30,41,59,0.5)' : 'rgba(248,250,252,0.8)',
+                      : categoryCardBg,
                     cursor: 'pointer',
                     userSelect: 'none',
                     transition: 'all 0.18s ease',

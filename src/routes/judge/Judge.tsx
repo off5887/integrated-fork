@@ -21,6 +21,8 @@ import {
 } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { judgeData } from '@/api/mock/judge'
 import { Proposal } from '@/api/types/judge'
@@ -65,12 +67,14 @@ interface StatCardProps {
   bg: string
   border: string
   icon: React.ReactNode
-  isDarkMode: boolean
   active: boolean
   onClick: () => void
 }
 
-function StatCard({ label, count, color, bg, border, icon, isDarkMode, active, onClick }: StatCardProps) {
+function StatCard({ label, count, color, bg, border, icon, active, onClick }: StatCardProps) {
+  const { isDarkMode } = useThemeMode()
+  const theme = getJudgeTheme(isDarkMode)
+
   return (
     <Box
       onClick={onClick}
@@ -78,10 +82,8 @@ function StatCard({ label, count, color, bg, border, icon, isDarkMode, active, o
         flex: '1 1 120px',
         p: { xs: 1.5, sm: 2 },
         borderRadius: 2.5,
-        border: `1px solid ${active ? border : isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'}`,
-        bgcolor: active
-          ? bg
-          : isDarkMode ? 'rgba(22,30,46,0.6)' : '#ffffff',
+        border: `1px solid ${active ? border : theme.statCardInactiveBorder}`,
+        bgcolor: active ? bg : theme.statCardInactiveBg,
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
@@ -91,9 +93,7 @@ function StatCard({ label, count, color, bg, border, icon, isDarkMode, active, o
           bgcolor: bg,
           borderColor: border,
         },
-        boxShadow: active
-          ? isDarkMode ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.06)'
-          : 'none',
+        boxShadow: active ? theme.statCardActiveShadow : 'none',
       }}
     >
       <Box
@@ -127,7 +127,7 @@ function StatCard({ label, count, color, bg, border, icon, isDarkMode, active, o
         <Typography
           sx={{
             fontSize: '0.72rem',
-            color: active ? color : isDarkMode ? '#94a3b8' : '#64748b',
+            color: active ? color : theme.statCardLabelColor,
             fontWeight: active ? 700 : 500,
           }}
         >
@@ -142,6 +142,8 @@ function StatCard({ label, count, color, bg, border, icon, isDarkMode, active, o
 
 export default function Judge() {
   const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
 
   // mutable proposals state (reviewer 변경을 위해)
   const [isLoading, setIsLoading] = useState(true)
@@ -156,13 +158,6 @@ export default function Judge() {
     const timer = setTimeout(() => setIsLoading(false), 800)
     return () => clearTimeout(timer)
   }, [])
-
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
-  const cardBg = isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff'
-  const headerBg = isDarkMode ? 'rgba(15,23,42,0.8)' : 'rgba(248,250,252,0.9)'
-  const rowHoverBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)'
 
   // 통계
   const stats = useMemo(() => ({
@@ -235,7 +230,7 @@ export default function Judge() {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: isDarkMode ? '#0a0f1e' : '#f1f5f9',
+        bgcolor: colors.bgBase,
         pt: { xs: 9, md: 10 },
         pb: 14,
         px: { xs: 2, sm: 3 },
@@ -263,11 +258,11 @@ export default function Judge() {
             <Typography
               variant="h5"
               fontWeight={800}
-              sx={{ color: textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
+              sx={{ color: colors.textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
             >
               심사하기
             </Typography>
-            <Typography variant="caption" sx={{ color: textSecondary }}>
+            <Typography variant="caption" sx={{ color: colors.textSecondary }}>
               제출된 제안을 검토하고 심사 결과를 입력하세요
             </Typography>
           </Box>
@@ -276,11 +271,11 @@ export default function Judge() {
               label={`전체 ${proposals.length}건`}
               size="small"
               sx={{
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-                color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                bgcolor: theme.totalChipBg,
+                color: theme.totalChipColor,
                 fontWeight: 700,
                 fontSize: '0.8rem',
-                border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.18)'}`,
+                border: `1px solid ${theme.totalChipBorder}`,
               }}
             />
           </Box>
@@ -295,7 +290,6 @@ export default function Judge() {
             bg="rgba(245,158,11,0.08)"
             border="rgba(245,158,11,0.25)"
             icon={<HourglassEmptyIcon sx={{ fontSize: '1.1rem' }} />}
-            isDarkMode={isDarkMode}
             active={statusFilter === '심사대기'}
             onClick={() => handleFilterChange(statusFilter === '심사대기' ? '전체' : '심사대기')}
           />
@@ -306,7 +300,6 @@ export default function Judge() {
             bg="rgba(99,102,241,0.08)"
             border="rgba(99,102,241,0.25)"
             icon={<PendingActionsIcon sx={{ fontSize: '1.1rem' }} />}
-            isDarkMode={isDarkMode}
             active={statusFilter === '심사중'}
             onClick={() => handleFilterChange(statusFilter === '심사중' ? '전체' : '심사중')}
           />
@@ -317,7 +310,6 @@ export default function Judge() {
             bg="rgba(16,185,129,0.08)"
             border="rgba(16,185,129,0.25)"
             icon={<CheckCircleOutlineIcon sx={{ fontSize: '1.1rem' }} />}
-            isDarkMode={isDarkMode}
             active={statusFilter === '승인'}
             onClick={() => handleFilterChange(statusFilter === '승인' ? '전체' : '승인')}
           />
@@ -328,7 +320,6 @@ export default function Judge() {
             bg="rgba(239,68,68,0.08)"
             border="rgba(239,68,68,0.25)"
             icon={<DoNotDisturbIcon sx={{ fontSize: '1.1rem' }} />}
-            isDarkMode={isDarkMode}
             active={statusFilter === '반려'}
             onClick={() => handleFilterChange(statusFilter === '반려' ? '전체' : '반려')}
           />
@@ -337,7 +328,7 @@ export default function Judge() {
         {/* 필터 안내 */}
         {statusFilter !== '전체' && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <Typography variant="caption" sx={{ color: textSecondary }}>
+            <Typography variant="caption" sx={{ color: colors.textSecondary }}>
               필터:
             </Typography>
             <Chip
@@ -353,7 +344,7 @@ export default function Judge() {
                 '& .MuiChip-deleteIcon': { color: statusConfig[statusFilter].color, opacity: 0.7 },
               }}
             />
-            <Typography variant="caption" sx={{ color: textSecondary }}>
+            <Typography variant="caption" sx={{ color: colors.textSecondary }}>
               {filteredProposals.length}건 표시 중
             </Typography>
           </Box>
@@ -369,18 +360,18 @@ export default function Judge() {
               p: 8,
               textAlign: 'center',
               borderRadius: 3,
-              bgcolor: cardBg,
-              border: `1px solid ${borderColor}`,
-              boxShadow: isDarkMode ? '0 4px 24px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.05)',
+              bgcolor: colors.cardBg,
+              border: `1px solid ${colors.borderColor}`,
+              boxShadow: colors.shadowSmall,
             }}
           >
             <AssignmentTurnedInIcon
-              sx={{ fontSize: 48, color: textSecondary, mb: 2, opacity: 0.4 }}
+              sx={{ fontSize: 48, color: colors.textSecondary, mb: 2, opacity: 0.4 }}
             />
-            <Typography variant="h6" fontWeight={600} sx={{ color: textPrimary, mb: 0.75 }}>
+            <Typography variant="h6" fontWeight={600} sx={{ color: colors.textPrimary, mb: 0.75 }}>
               {statusFilter === '전체' ? '심사할 글이 없습니다' : `'${statusFilter}' 항목이 없습니다`}
             </Typography>
-            <Typography variant="body2" sx={{ color: textSecondary }}>
+            <Typography variant="body2" sx={{ color: colors.textSecondary }}>
               {statusFilter === '전체'
                 ? '현재 담당 부서의 제안이 모두 처리되었어요.'
                 : '다른 필터를 선택해보세요.'}
@@ -390,9 +381,9 @@ export default function Judge() {
           <Box
             sx={{
               borderRadius: 3,
-              bgcolor: cardBg,
-              border: `1px solid ${borderColor}`,
-              boxShadow: isDarkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 4px 24px rgba(0,0,0,0.06)',
+              bgcolor: colors.cardBg,
+              border: `1px solid ${colors.borderColor}`,
+              boxShadow: colors.cardShadow,
               overflow: 'hidden',
             }}
           >
@@ -402,7 +393,7 @@ export default function Judge() {
             <Box sx={{ overflowX: 'auto' }}>
               <Table sx={{ minWidth: 680 }}>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: headerBg }}>
+                  <TableRow sx={{ bgcolor: colors.headerBg }}>
                     {[
                       { label: '번호', sx: { display: { xs: 'none', sm: 'table-cell' } } },
                       { label: '제안 제목', sx: {} },
@@ -416,13 +407,13 @@ export default function Judge() {
                         key={col.label}
                         align={col.align}
                         sx={{
-                          color: textSecondary,
+                          color: colors.textSecondary,
                           fontWeight: 600,
                           fontSize: '0.75rem',
                           letterSpacing: '0.05em',
                           textTransform: 'uppercase',
                           py: 1.75,
-                          borderBottomColor: borderColor,
+                          borderBottomColor: colors.borderColor,
                           whiteSpace: 'nowrap',
                           ...col.sx,
                         }}
@@ -448,27 +439,23 @@ export default function Judge() {
                           // 이관된 항목: 좌측 amber 인디케이터 + 미세 배경
                           ...(item.transferredFrom && {
                             boxShadow: 'inset 3px 0 0 rgba(245,158,11,0.7)',
-                            bgcolor: isDarkMode
-                              ? 'rgba(245,158,11,0.03)'
-                              : 'rgba(245,158,11,0.02)',
+                            bgcolor: theme.transferredRowBg,
                           }),
                           '&:hover': {
                             bgcolor: item.transferredFrom
-                              ? isDarkMode
-                                ? 'rgba(245,158,11,0.06)'
-                                : 'rgba(245,158,11,0.04)'
-                              : rowHoverBg,
+                              ? theme.transferredRowHover
+                              : colors.rowHoverBg,
                           },
                           '& .MuiTableCell-root': {
-                            borderBottomColor: borderColor,
+                            borderBottomColor: colors.borderColor,
                             py: 1.75,
-                            color: textPrimary,
+                            color: colors.textPrimary,
                           },
                         }}
                       >
                         {/* 번호 */}
                         <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                          <Typography sx={{ fontSize: '0.8rem', color: textSecondary, fontWeight: 500 }}>
+                          <Typography sx={{ fontSize: '0.8rem', color: colors.textSecondary, fontWeight: 500 }}>
                             #{item.id}
                           </Typography>
                         </TableCell>
@@ -478,7 +465,7 @@ export default function Judge() {
                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.4 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                               <Typography
-                                sx={{ fontSize: '0.9rem', color: textPrimary, fontWeight: 500 }}
+                                sx={{ fontSize: '0.9rem', color: colors.textPrimary, fontWeight: 500 }}
                               >
                                 {item.title}
                               </Typography>
@@ -514,9 +501,7 @@ export default function Judge() {
                                     px: 0.8,
                                     py: 0.2,
                                     borderRadius: 1,
-                                    bgcolor: isDarkMode
-                                      ? 'rgba(245,158,11,0.12)'
-                                      : 'rgba(245,158,11,0.08)',
+                                    bgcolor: theme.transferredBadgeBg,
                                     border: '1px solid rgba(245,158,11,0.3)',
                                     cursor: 'default',
                                   }}
@@ -535,14 +520,14 @@ export default function Judge() {
 
                         {/* 제안자 */}
                         <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          <Typography sx={{ fontSize: '0.875rem', color: textSecondary }}>
+                          <Typography sx={{ fontSize: '0.875rem', color: colors.textSecondary }}>
                             {item.proposers.join(', ')}
                           </Typography>
                         </TableCell>
 
                         {/* 제출일 */}
                         <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>
-                          <Typography sx={{ fontSize: '0.875rem', color: textSecondary }}>
+                          <Typography sx={{ fontSize: '0.875rem', color: colors.textSecondary }}>
                             {item.submittedAt}
                           </Typography>
                         </TableCell>
@@ -585,19 +570,17 @@ export default function Judge() {
                                   width: 30,
                                   height: 30,
                                   color: isPending
-                                    ? isDarkMode ? '#a5b4fc' : '#6366f1'
-                                    : textSecondary,
+                                    ? theme.reviewerBtnColor
+                                    : colors.textSecondary,
                                   bgcolor: isPending
-                                    ? isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)'
+                                    ? theme.reviewerBtnBg
                                     : 'transparent',
                                   border: isPending
-                                    ? `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)'}`
+                                    ? `1px solid ${theme.reviewerBtnBorder}`
                                     : `1px solid transparent`,
                                   '&:hover': {
-                                    bgcolor: isDarkMode
-                                      ? 'rgba(99,102,241,0.18)'
-                                      : 'rgba(99,102,241,0.1)',
-                                    borderColor: '#6366f1',
+                                    bgcolor: theme.reviewerBtnHoverBg,
+                                    borderColor: theme.reviewerBtnHoverBorder,
                                     color: '#6366f1',
                                   },
                                   '&.Mui-disabled': { opacity: 0.28 },
@@ -620,13 +603,11 @@ export default function Judge() {
                                 setSelectedProposal(item)
                               }}
                               sx={{
-                                color: textSecondary,
+                                color: colors.textSecondary,
                                 width: 30,
                                 height: 30,
                                 '&:hover': {
-                                  bgcolor: isDarkMode
-                                    ? 'rgba(99,102,241,0.15)'
-                                    : 'rgba(99,102,241,0.08)',
+                                  bgcolor: theme.viewBtnHoverBg,
                                   color: '#6366f1',
                                 },
                                 transition: 'all 0.15s ease',
@@ -643,7 +624,7 @@ export default function Judge() {
               </Table>
             </Box>
 
-            <Box sx={{ borderTop: `1px solid ${borderColor}` }}>
+            <Box sx={{ borderTop: `1px solid ${colors.borderColor}` }}>
               <TablePagination
                 rowsPerPageOptions={[5, 10, 20]}
                 component="div"
@@ -656,14 +637,14 @@ export default function Judge() {
                   setPage(0)
                 }}
                 sx={{
-                  color: textSecondary,
+                  color: colors.textSecondary,
                   '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
-                    color: textSecondary,
+                    color: colors.textSecondary,
                     fontSize: '0.8rem',
                   },
-                  '.MuiTablePagination-select': { color: textPrimary },
-                  '.MuiTablePagination-selectIcon': { color: textSecondary },
-                  '.MuiTablePagination-actions button': { color: textSecondary },
+                  '.MuiTablePagination-select': { color: colors.textPrimary },
+                  '.MuiTablePagination-selectIcon': { color: colors.textSecondary },
+                  '.MuiTablePagination-actions button': { color: colors.textSecondary },
                 }}
               />
             </Box>
@@ -682,7 +663,6 @@ export default function Judge() {
           onReject={handleReject}
           isFirst={isFirst}
           isLast={isLast}
-          isDarkMode={isDarkMode}
         />
       )}
 
@@ -692,7 +672,6 @@ export default function Judge() {
         proposal={reviewerChangeTarget}
         onClose={() => setReviewerChangeTarget(null)}
         onConfirm={handleReviewerChange}
-        isDarkMode={isDarkMode}
       />
     </Box>
   )

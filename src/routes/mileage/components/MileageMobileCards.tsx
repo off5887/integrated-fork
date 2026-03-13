@@ -1,6 +1,7 @@
 // src/routes/Mileage/MileageMobileCards.tsx
 import { Box, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getMileageTheme } from '@/theme/mileageTheme'
 
 interface Props {
   data: any[]
@@ -14,17 +15,12 @@ const STATUS_MAP: Record<string, { color: string; bg: string; border: string }> 
 
 export default function MileageMobileCards({ data }: Props) {
   const { isDarkMode } = useThemeMode()
-
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
-  const cardBg        = isDarkMode ? 'rgba(22,30,46,0.92)' : '#ffffff'
-  const dividerColor  = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.4)'
+  const t = getMileageTheme(isDarkMode)
 
   if (data.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 10 }}>
-        <Typography variant="body2" sx={{ color: textSecondary }}>표시할 데이터가 없습니다</Typography>
+        <Typography variant="body2" sx={{ color: t.textSecondary }}>표시할 데이터가 없습니다</Typography>
       </Box>
     )
   }
@@ -39,14 +35,16 @@ export default function MileageMobileCards({ data }: Props) {
             key={item.id}
             sx={{
               p: 2.5, borderRadius: 3,
-              bgcolor: cardBg,
-              border: `1px solid ${borderColor}`,
-              boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.25)' : '0 2px 8px rgba(0,0,0,0.04)',
+              bgcolor: t.cardBgMobile,
+              border: `1px solid ${t.borderColor}`,
+              boxShadow: t.mobileShadow,
+              transition: 'box-shadow 0.2s ease',
+              '&:hover': { boxShadow: t.mobileShadowHover },
             }}
           >
             {/* 헤더 행 */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-              <Typography variant="caption" fontWeight={600} sx={{ color: textSecondary }}>
+              <Typography variant="caption" fontWeight={600} sx={{ color: t.textSecondary }}>
                 #{item.id}
               </Typography>
 
@@ -66,29 +64,29 @@ export default function MileageMobileCards({ data }: Props) {
             </Box>
 
             {/* 구분선 */}
-            <Box sx={{ height: '1px', bgcolor: dividerColor, mb: 2 }} />
+            <Box sx={{ height: '1px', bgcolor: t.borderColor, mb: 2 }} />
 
             {/* 내용 */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 500 }}>지급일</Typography>
-                <Typography variant="body2" sx={{ color: textPrimary }}>{item.paymentDate}</Typography>
+                <Typography variant="caption" sx={{ color: t.textSecondary, fontWeight: 500 }}>지급일</Typography>
+                <Typography variant="body2" sx={{ color: t.textPrimary }}>{item.paymentDate}</Typography>
               </Box>
 
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
-                <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 500, flexShrink: 0 }}>내역</Typography>
-                <Typography variant="body2" sx={{ color: textPrimary, textAlign: 'right', flex: 1 }}>
+                <Typography variant="caption" sx={{ color: t.textSecondary, fontWeight: 500, flexShrink: 0 }}>내역</Typography>
+                <Typography variant="body2" sx={{ color: t.textPrimary, textAlign: 'right', flex: 1 }}>
                   {item.detail}
                 </Typography>
               </Box>
 
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 500 }}>생선</Typography>
+                <Typography variant="caption" sx={{ color: t.textSecondary, fontWeight: 500 }}>생선</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
                   <Typography variant="body2" fontWeight={800} sx={{ color: '#6366f1' }}>
                     {item.fish.toLocaleString()}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 500 }}>마리</Typography>
+                  <Typography variant="caption" sx={{ color: t.textSecondary, fontWeight: 500 }}>마리</Typography>
                 </Box>
               </Box>
             </Box>

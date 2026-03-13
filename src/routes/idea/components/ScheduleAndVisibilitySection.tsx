@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
+import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface Props {
@@ -22,7 +23,6 @@ interface Props {
   setSecurity: (v: 'public' | 'private') => void
   inputSx: any
   labelSx: any
-  isDarkMode: boolean
 }
 
 const VISIBILITY_OPTIONS = [
@@ -59,9 +59,10 @@ export default function ScheduleAndVisibilitySection({
   setEndDate,
   security,
   setSecurity,
-  isDarkMode,
 }: Props) {
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
+  const { isDarkMode } = useThemeMode()
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor } = it
 
   // 기간 계산
   const start = startDate ? dayjs(startDate) : null
@@ -72,7 +73,7 @@ export default function ScheduleAndVisibilitySection({
   const dateFieldSx = {
     '& .MuiInputBase-root': {
       borderRadius: 2,
-      backgroundColor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+      backgroundColor: it.searchInputBg,
       height: 50,
     },
     // MUI X v7 DatePicker 날짜 섹션 텍스트 색상
@@ -107,10 +108,10 @@ export default function ScheduleAndVisibilitySection({
       '&.MuiInputLabel-shrink': { color: '#6366f1', fontWeight: 600 },
     },
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? 'rgba(148,163,184,0.18)' : 'rgba(203,213,225,0.7)',
+      borderColor: it.inputBorder,
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.35)',
+      borderColor: it.accent.borderHover,
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
       borderColor: '#6366f1',
@@ -125,7 +126,7 @@ export default function ScheduleAndVisibilitySection({
     minWidth: 0,
     borderRadius: 2.5,
     border: `1px solid ${borderColor}`,
-    bgcolor: isDarkMode ? 'rgba(22,30,46,0.6)' : '#fafbfc',
+    bgcolor: it.panelBg,
     overflow: 'hidden',
   }
 
@@ -167,7 +168,7 @@ export default function ScheduleAndVisibilitySection({
                 alignItems: 'center',
                 gap: 1,
                 borderBottom: `1px solid ${borderColor}`,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.05)' : 'rgba(99,102,241,0.03)',
+                bgcolor: it.accent.bg,
               }}
             >
               <CalendarMonthIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
@@ -184,8 +185,8 @@ export default function ScheduleAndVisibilitySection({
                       px: 1.25,
                       py: 0.3,
                       borderRadius: 99,
-                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-                      border: '1px solid rgba(99,102,241,0.25)',
+                      bgcolor: it.accent.bgStrong,
+                      border: `1px solid ${it.accent.border}`,
                     }}
                   >
                     <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: '#6366f1' }}>
@@ -212,8 +213,8 @@ export default function ScheduleAndVisibilitySection({
                 <Box
                   sx={{
                     width: 28, height: 28, borderRadius: '50%',
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.08)',
-                    border: '1px solid rgba(99,102,241,0.2)',
+                    bgcolor: it.accent.bgStrong,
+                    border: `1px solid ${it.accent.border}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
                   }}
@@ -274,8 +275,8 @@ export default function ScheduleAndVisibilitySection({
                     gap: 1,
                     py: 1.25,
                     borderRadius: 2,
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.07)' : 'rgba(99,102,241,0.04)',
-                    border: '1px dashed rgba(99,102,241,0.2)',
+                    bgcolor: it.accent.bgHover,
+                    border: `1px dashed ${it.accent.border}`,
                   }}
                 >
                   <CalendarMonthIcon sx={{ fontSize: '0.9rem', color: '#6366f1' }} />
@@ -298,7 +299,7 @@ export default function ScheduleAndVisibilitySection({
                 alignItems: 'center',
                 gap: 1,
                 borderBottom: `1px solid ${borderColor}`,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.05)' : 'rgba(99,102,241,0.03)',
+                bgcolor: it.accent.bg,
               }}
             >
               <PublicIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
@@ -316,6 +317,8 @@ export default function ScheduleAndVisibilitySection({
               {VISIBILITY_OPTIONS.map((opt) => {
                 const isSelected = security === opt.value
                 const IconComp = opt.icon
+                const accentBg = isDarkMode ? opt.accentBgDark : opt.accentBg
+                const accentBorder = isDarkMode ? opt.accentBorderDark : opt.accentBorder
 
                 return (
                   <Box
@@ -336,14 +339,8 @@ export default function ScheduleAndVisibilitySection({
                       gap: 2,
                       p: 2,
                       borderRadius: 2.5,
-                      border: `1.5px solid ${
-                        isSelected
-                          ? isDarkMode ? opt.accentBorderDark : opt.accentBorder
-                          : borderColor
-                      }`,
-                      bgcolor: isSelected
-                        ? isDarkMode ? opt.accentBgDark : opt.accentBg
-                        : isDarkMode ? 'rgba(30,41,59,0.4)' : '#ffffff',
+                      border: `1.5px solid ${isSelected ? accentBorder : borderColor}`,
+                      bgcolor: isSelected ? accentBg : it.itemBg,
                       cursor: 'pointer',
                       outline: 'none',
                       transition: 'all 0.18s ease',
@@ -351,8 +348,8 @@ export default function ScheduleAndVisibilitySection({
                         ? `0 4px 16px ${opt.accentBg}`
                         : 'none',
                       '&:hover': {
-                        bgcolor: isDarkMode ? opt.accentBgDark : opt.accentBg,
-                        borderColor: isDarkMode ? opt.accentBorderDark : opt.accentBorder,
+                        bgcolor: accentBg,
+                        borderColor: accentBorder,
                       },
                       '&:focus-visible': {
                         outline: `2px solid ${opt.accentColor}`,
@@ -366,14 +363,8 @@ export default function ScheduleAndVisibilitySection({
                         width: 44,
                         height: 44,
                         borderRadius: 2,
-                        bgcolor: isSelected
-                          ? isDarkMode ? opt.accentBgDark : opt.accentBg
-                          : isDarkMode ? 'rgba(30,41,59,0.8)' : 'rgba(241,245,249,0.9)',
-                        border: `1px solid ${
-                          isSelected
-                            ? isDarkMode ? opt.accentBorderDark : opt.accentBorder
-                            : borderColor
-                        }`,
+                        bgcolor: isSelected ? accentBg : it.avatarBg,
+                        border: `1px solid ${isSelected ? accentBorder : borderColor}`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -407,9 +398,7 @@ export default function ScheduleAndVisibilitySection({
                       <Typography
                         sx={{
                           fontSize: '0.75rem',
-                          color: isSelected
-                            ? isDarkMode ? `${opt.accentColor}cc` : `${opt.accentColor}aa`
-                            : textSecondary,
+                          color: isSelected ? `${opt.accentColor}bb` : textSecondary,
                           lineHeight: 1.4,
                           transition: 'color 0.18s ease',
                         }}
@@ -455,7 +444,7 @@ export default function ScheduleAndVisibilitySection({
                   px: 1.75,
                   py: 1.25,
                   borderRadius: 2,
-                  bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
+                  bgcolor: it.subtleBg,
                   border: `1px dashed ${borderColor}`,
                   display: 'flex',
                   alignItems: 'center',

@@ -6,15 +6,14 @@ import { Box, Button, IconButton, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '@/context/ThemeContext'
 import { fishCount } from '@/api/mock/welcome'
+import { getWelcomeTheme } from '@/theme/welcomeTheme'
 import GomEvolutionSection from './components/GomEvolutionSection'
 import IntroSection from './components/IntroSection'
 
 export default function Welcome() {
   const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useThemeMode()
-  const fishCount = 3200
-
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
+  const t = getWelcomeTheme(isDarkMode)
 
   return (
     <Box
@@ -37,19 +36,15 @@ export default function Welcome() {
           top: { xs: 16, md: 24 },
           right: { xs: 16, md: 24 },
           zIndex: 1300,
-          bgcolor: isDarkMode ? 'rgba(22,30,46,0.85)' : 'rgba(255,255,255,0.9)',
+          bgcolor: t.toggleBg,
           backdropFilter: 'blur(12px)',
-          border: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.15)' : 'rgba(203,213,225,0.6)'}`,
+          border: `1px solid ${t.toggleBorder}`,
           borderRadius: '50%',
-          boxShadow: isDarkMode
-            ? '0 4px 16px rgba(0,0,0,0.3)'
-            : '0 2px 12px rgba(0,0,0,0.1)',
+          boxShadow: t.toggleShadow,
           transition: 'all 0.25s ease',
           '&:hover': {
             transform: 'scale(1.1)',
-            bgcolor: isDarkMode
-              ? 'rgba(22,30,46,0.95)'
-              : 'rgba(255,255,255,0.98)',
+            bgcolor: t.toggleHoverBg,
           },
         }}
       >
@@ -69,7 +64,7 @@ export default function Welcome() {
           width: '100vw',
           scrollSnapAlign: 'start',
           scrollSnapStop: 'always',
-          bgcolor: isDarkMode ? '#0a0f1e' : '#f1f5f9',
+          bgcolor: t.bgBase,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -90,9 +85,7 @@ export default function Welcome() {
             width: '55vw',
             height: '55vw',
             borderRadius: '50%',
-            background: isDarkMode
-              ? 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)',
+            background: t.orb1,
             pointerEvents: 'none',
           }}
         />
@@ -104,9 +97,7 @@ export default function Welcome() {
             width: '50vw',
             height: '50vw',
             borderRadius: '50%',
-            background: isDarkMode
-              ? 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)',
+            background: t.orb2,
             pointerEvents: 'none',
           }}
         />
@@ -118,9 +109,7 @@ export default function Welcome() {
             width: '30vw',
             height: '30vw',
             borderRadius: '50%',
-            background: isDarkMode
-              ? 'radial-gradient(circle, rgba(167,139,250,0.1) 0%, transparent 70%)'
-              : 'radial-gradient(circle, rgba(167,139,250,0.06) 0%, transparent 70%)',
+            background: t.orb3,
             pointerEvents: 'none',
           }}
         />
@@ -150,7 +139,7 @@ export default function Welcome() {
               objectFit: 'contain',
               borderRadius: '32px',
               boxShadow: '0 12px 40px rgba(99,102,241,0.5)',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.45)' : 'rgba(99,102,241,0.35)'}`,
+              border: `1px solid ${t.logoBorder}`,
               transition: 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)',
               animation: 'float 7s ease-in-out infinite',
               '&:hover': {
@@ -173,10 +162,8 @@ export default function Welcome() {
               px: 2,
               py: 0.75,
               borderRadius: 9999,
-              bgcolor: isDarkMode
-                ? 'rgba(99,102,241,0.15)'
-                : 'rgba(99,102,241,0.08)',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'}`,
+              bgcolor: t.accentBg,
+              border: `1px solid ${t.accentBorder}`,
               mb: 3,
             }}
           >
@@ -197,7 +184,7 @@ export default function Welcome() {
               sx={{
                 fontSize: '0.75rem',
                 fontWeight: 700,
-                color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                color: t.accentBadgeText,
                 letterSpacing: '0.1em',
                 fontFamily: 'monospace',
               }}
@@ -228,7 +215,7 @@ export default function Welcome() {
           <Typography
             sx={{
               fontSize: { xs: '.9rem', md: '1rem' },
-              color: textSecondary,
+              color: t.textSecondary,
               lineHeight: 1.75,
               mb: 5,
               maxWidth: 540,
@@ -287,10 +274,8 @@ export default function Welcome() {
                 borderRadius: 9999,
                 fontWeight: 700,
                 fontSize: '0.95rem',
-                borderColor: isDarkMode
-                  ? 'rgba(99,102,241,0.4)'
-                  : 'rgba(99,102,241,0.3)',
-                color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                borderColor: t.outlineButtonBorder,
+                color: t.outlineButtonColor,
                 '&:hover': {
                   borderColor: '#6366f1',
                   bgcolor: 'rgba(99,102,241,0.08)',
@@ -322,7 +307,7 @@ export default function Welcome() {
                 fontSize: '0.7rem',
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                color: textSecondary,
+                color: t.textSecondary,
                 opacity: 0.7,
               }}
             >

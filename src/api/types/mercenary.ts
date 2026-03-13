@@ -19,3 +19,7 @@ export interface Employee {
   dept: string
   position: string
 }
+
+export interface ExtendedIdea extends Idea {
+  mercenaries: Employee[]
+}

@@ -1,6 +1,7 @@
 // src/routes/MileageStatsCards.tsx
 import { Box, Grid, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getMileageTheme } from '@/theme/mileageTheme'
 
 interface Props {
   totalFish: number
@@ -37,11 +38,8 @@ const CARDS = (totalFish: number, thisMonthFish: number, thisMonthExchanged: num
 
 export default function MileageStatsCards({ totalFish, thisMonthFish, thisMonthExchanged }: Props) {
   const { isDarkMode } = useThemeMode()
+  const t = getMileageTheme(isDarkMode)
   const cards = CARDS(totalFish, thisMonthFish, thisMonthExchanged)
-
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const cardBg = isDarkMode ? 'rgba(22,30,46,0.92)' : 'rgba(255,255,255,0.97)'
-  const cardBorder = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(226,232,240,0.8)'
 
   return (
     <Grid container spacing={2.5} sx={{ mb: 5 }}>
@@ -51,17 +49,13 @@ export default function MileageStatsCards({ totalFish, thisMonthFish, thisMonthE
             sx={{
               p: 2.5,
               borderRadius: 3,
-              bgcolor: cardBg,
-              border: `1px solid ${cardBorder}`,
-              boxShadow: isDarkMode
-                ? '0 2px 16px rgba(0,0,0,0.3)'
-                : '0 2px 12px rgba(0,0,0,0.05)',
+              bgcolor: t.statCardBg,
+              border: `1px solid ${t.statCardBorder}`,
+              boxShadow: t.statCardShadow,
               transition: 'transform 0.2s ease, box-shadow 0.2s ease',
               '&:hover': {
                 transform: 'translateY(-2px)',
-                boxShadow: isDarkMode
-                  ? `0 8px 24px rgba(0,0,0,0.4)`
-                  : `0 8px 24px rgba(0,0,0,0.08)`,
+                boxShadow: t.statCardHoverShadow,
               },
             }}
           >
@@ -86,7 +80,7 @@ export default function MileageStatsCards({ totalFish, thisMonthFish, thisMonthE
               <Typography
                 variant="body2"
                 fontWeight={600}
-                sx={{ color: textSecondary, letterSpacing: '0.01em' }}
+                sx={{ color: t.textSecondary, letterSpacing: '0.01em' }}
               >
                 {card.label}
               </Typography>
@@ -105,13 +99,13 @@ export default function MileageStatsCards({ totalFish, thisMonthFish, thisMonthE
               >
                 {card.value.toLocaleString()}
               </Typography>
-              <Typography variant="body2" fontWeight={600} sx={{ color: textSecondary }}>
+              <Typography variant="body2" fontWeight={600} sx={{ color: t.textSecondary }}>
                 {card.unit}
               </Typography>
             </Box>
 
             {/* 서브텍스트 */}
-            <Typography variant="caption" sx={{ color: textSecondary }}>
+            <Typography variant="caption" sx={{ color: t.textSecondary }}>
               {card.sub}
             </Typography>
 

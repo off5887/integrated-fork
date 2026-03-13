@@ -4,6 +4,7 @@ import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlin
 import PetsIcon from '@mui/icons-material/Pets'
 import { Box, Grid, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getWelcomeTheme } from '@/theme/welcomeTheme'
 
 const features = [
   {
@@ -28,10 +29,7 @@ const features = [
 
 export default function IntroSection() {
   const { isDarkMode } = useThemeMode()
-
-  const textPrimary = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const t = getWelcomeTheme(isDarkMode)
 
   return (
     <Box
@@ -42,7 +40,7 @@ export default function IntroSection() {
         width: '100%',
         scrollSnapAlign: 'start',
         scrollSnapStop: 'always',
-        bgcolor: isDarkMode ? '#0a0f1e' : '#f1f5f9',
+        bgcolor: t.bgBase,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -62,9 +60,7 @@ export default function IntroSection() {
           width: '42vw',
           height: '42vw',
           borderRadius: '50%',
-          background: isDarkMode
-            ? 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)',
+          background: t.orb6,
           pointerEvents: 'none',
         }}
       />
@@ -74,13 +70,11 @@ export default function IntroSection() {
           width: '100%',
           maxWidth: 980,
           mx: 'auto',
-          bgcolor: isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
-          border: `1px solid ${borderColor}`,
+          bgcolor: t.cardBg,
+          border: `1px solid ${t.borderColor}`,
           borderRadius: 4,
           overflow: 'hidden',
-          boxShadow: isDarkMode
-            ? '0 8px 40px rgba(0,0,0,0.5)'
-            : '0 4px 32px rgba(0,0,0,0.08)',
+          boxShadow: t.cardShadowLarge,
           position: 'relative',
           zIndex: 1,
         }}
@@ -109,7 +103,7 @@ export default function IntroSection() {
             <Typography
               sx={{
                 fontSize: { xs: '0.98rem', md: '1.05rem' },
-                color: textSecondary,
+                color: t.textSecondary,
                 maxWidth: 580,
                 mx: 'auto',
                 lineHeight: 1.75,
@@ -133,18 +127,16 @@ export default function IntroSection() {
                   sx={{
                     p: { xs: 2.5, md: 3 },
                     borderRadius: 3,
-                    border: `1px solid ${borderColor}`,
-                    bgcolor: isDarkMode ? 'rgba(15,23,42,0.6)' : '#f8fafc',
+                    border: `1px solid ${t.borderColor}`,
+                    bgcolor: t.featureCardBg,
                     position: 'relative',
                     overflow: 'hidden',
                     height: '100%',
                     transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
                     '&:hover': {
-                      borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)',
+                      borderColor: t.featureHoverBorder,
                       transform: 'translateY(-5px)',
-                      boxShadow: isDarkMode
-                        ? '0 16px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.15)'
-                        : '0 16px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(99,102,241,0.1)',
+                      boxShadow: t.featureHoverShadow,
                     },
                   }}
                 >
@@ -156,7 +148,7 @@ export default function IntroSection() {
                       right: 14,
                       fontSize: '3.2rem',
                       fontWeight: 900,
-                      color: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.07)',
+                      color: t.numberWatermark,
                       lineHeight: 1,
                       userSelect: 'none',
                       fontFamily: 'monospace',
@@ -171,27 +163,27 @@ export default function IntroSection() {
                       width: 40,
                       height: 40,
                       borderRadius: 2.5,
-                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
+                      bgcolor: t.iconBg,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       mb: 2,
                     }}
                   >
-                    <Icon sx={{ fontSize: '1.25rem', color: isDarkMode ? '#a5b4fc' : '#4338ca' }} />
+                    <Icon sx={{ fontSize: '1.25rem', color: t.accentColor }} />
                   </Box>
 
                   <Typography
                     variant="h6"
                     fontWeight={800}
-                    sx={{ color: textPrimary, mb: 1, fontSize: '1rem', letterSpacing: '-0.01em' }}
+                    sx={{ color: t.textPrimary, mb: 1, fontSize: '1rem', letterSpacing: '-0.01em' }}
                   >
                     {title}
                   </Typography>
 
                   <Typography
                     variant="body2"
-                    sx={{ color: textSecondary, lineHeight: 1.65, fontSize: '0.88rem' }}
+                    sx={{ color: t.textSecondary, lineHeight: 1.65, fontSize: '0.88rem' }}
                   >
                     {desc}
                   </Typography>

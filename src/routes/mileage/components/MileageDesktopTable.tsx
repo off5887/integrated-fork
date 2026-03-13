@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getMileageTheme } from '@/theme/mileageTheme'
 
 interface Props {
   data: any[]
@@ -49,33 +50,28 @@ export default function MileageDesktopTable({
   data, page, rowsPerPage, total, onPageChange, onRowsPerPageChange,
 }: Props) {
   const { isDarkMode } = useThemeMode()
-
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
-  const headBg        = isDarkMode ? 'rgba(148,163,184,0.06)' : 'rgba(248,250,252,0.9)'
-  const hoverBg       = isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(248,250,252,0.8)'
+  const t = getMileageTheme(isDarkMode)
 
   return (
     <Card
       elevation={0}
       sx={{
         borderRadius: 3, overflow: 'hidden',
-        bgcolor: isDarkMode ? 'rgba(22,30,46,0.92)' : '#ffffff',
-        border: `1px solid ${borderColor}`,
-        boxShadow: isDarkMode ? '0 2px 16px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.05)',
+        bgcolor: t.cardBg,
+        border: `1px solid ${t.borderColor}`,
+        boxShadow: t.cardShadow,
       }}
     >
       <Table>
         <TableHead>
-          <TableRow sx={{ bgcolor: headBg }}>
+          <TableRow sx={{ bgcolor: t.headBg }}>
             {HEAD_COLS.map((col) => (
               <TableCell
                 key={col}
                 sx={{
-                  color: textSecondary, fontWeight: 600,
+                  color: t.textSecondary, fontWeight: 600,
                   fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em',
-                  borderBottom: `1px solid ${borderColor}`, py: 1.75,
+                  borderBottom: `1px solid ${t.borderColor}`, py: 1.75,
                 }}
               >
                 {col}
@@ -90,29 +86,29 @@ export default function MileageDesktopTable({
               key={item.id}
               sx={{
                 transition: 'background-color 0.15s',
-                '&:hover': { bgcolor: hoverBg },
+                '&:hover': { bgcolor: t.rowHoverBg },
                 '& .MuiTableCell-root': {
-                  borderBottom: `1px solid ${borderColor}`,
-                  color: textPrimary, py: 1.75, fontSize: '0.875rem',
+                  borderBottom: `1px solid ${t.borderColor}`,
+                  color: t.textPrimary, py: 1.75, fontSize: '0.875rem',
                 },
                 '&:last-child .MuiTableCell-root': { borderBottom: 'none' },
               }}
             >
               <TableCell>
-                <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>
+                <Typography variant="body2" sx={{ color: t.textSecondary, fontWeight: 500 }}>
                   #{item.id}
                 </Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: textPrimary }}>{item.paymentDate}</Typography>
+                <Typography variant="body2" sx={{ color: t.textPrimary }}>{item.paymentDate}</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" sx={{ color: textPrimary }}>{item.detail}</Typography>
+                <Typography variant="body2" sx={{ color: t.textPrimary }}>{item.detail}</Typography>
               </TableCell>
               <TableCell>
                 <Typography variant="body2" fontWeight={700} sx={{ color: '#6366f1' }}>
                   {item.fish.toLocaleString()}
-                  <Box component="span" sx={{ fontWeight: 500, color: textSecondary, ml: 0.5 }}>마리</Box>
+                  <Box component="span" sx={{ fontWeight: 500, color: t.textSecondary, ml: 0.5 }}>마리</Box>
                 </Typography>
               </TableCell>
               <TableCell>
@@ -124,7 +120,7 @@ export default function MileageDesktopTable({
           {data.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} sx={{ textAlign: 'center', py: 8, border: 'none' }}>
-                <Typography variant="body2" sx={{ color: textSecondary }}>표시할 데이터가 없습니다</Typography>
+                <Typography variant="body2" sx={{ color: t.textSecondary }}>표시할 데이터가 없습니다</Typography>
               </TableCell>
             </TableRow>
           )}
@@ -142,12 +138,12 @@ export default function MileageDesktopTable({
         labelRowsPerPage="페이지당:"
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} / ${count}`}
         sx={{
-          borderTop: `1px solid ${borderColor}`,
-          color: textSecondary, fontSize: '0.8rem',
-          '.MuiTablePagination-select, .MuiTablePagination-selectIcon': { color: textPrimary },
-          '.MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel': { color: textSecondary, fontSize: '0.8rem' },
-          '.MuiIconButton-root': { color: textSecondary },
-          '.MuiIconButton-root.Mui-disabled': { color: borderColor },
+          borderTop: `1px solid ${t.borderColor}`,
+          color: t.textSecondary, fontSize: '0.8rem',
+          '.MuiTablePagination-select, .MuiTablePagination-selectIcon': { color: t.textPrimary },
+          '.MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel': { color: t.textSecondary, fontSize: '0.8rem' },
+          '.MuiIconButton-root': { color: t.textSecondary },
+          '.MuiIconButton-root.Mui-disabled': { color: t.borderColor },
         }}
       />
     </Card>

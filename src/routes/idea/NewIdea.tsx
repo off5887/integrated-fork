@@ -45,14 +45,14 @@ interface DraftData {
   savedAt: string
 }
 
-function SectionDivider({ isDarkMode }: { isDarkMode: boolean }) {
+function SectionDivider() {
+  const { isDarkMode } = useThemeMode()
+  const { dividerBg } = getIdeaTheme(isDarkMode)
   return (
     <Box
       sx={{
         height: '1px',
-        bgcolor: isDarkMode
-          ? 'rgba(148,163,184,0.08)'
-          : 'rgba(203,213,225,0.4)',
+        bgcolor: dividerBg,
         my: 5,
       }}
     />
@@ -246,10 +246,10 @@ export default function NewIdea() {
             size="small"
             sx={{
               color: textSecondary,
-              bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)',
+              bgcolor: borderColor,
               borderRadius: 2,
               '&:hover': {
-                bgcolor: isDarkMode ? 'rgba(148,163,184,0.15)' : 'rgba(203,213,225,0.7)',
+                bgcolor: it.inputBorder,
               },
             }}
           >
@@ -280,7 +280,7 @@ export default function NewIdea() {
                   px: 1.25,
                   py: 0.5,
                   borderRadius: 1.5,
-                  bgcolor: isDarkMode ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.07)',
+                  bgcolor: 'rgba(16,185,129,0.08)',
                   border: '1px solid rgba(16,185,129,0.25)',
                 }}
               >
@@ -301,7 +301,7 @@ export default function NewIdea() {
                   width: 34,
                   height: 34,
                   '&:hover': {
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+                    bgcolor: it.accent.bgStrong,
                     borderColor: '#6366f1',
                     color: '#6366f1',
                   },
@@ -321,16 +321,16 @@ export default function NewIdea() {
             gap: { xs: 1.5, sm: 2 },
             px: 2.5, py: 1.75, mb: 2.5,
             borderRadius: 2.5,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)',
-            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.15)'}`,
+            bgcolor: it.accent.bgHover,
+            border: `1px solid ${it.accent.border}`,
             flexWrap: 'wrap',
           }}
         >
           <Box
             sx={{
               width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'}`,
+              bgcolor: it.accent.bgStrong,
+              border: `1px solid ${it.accent.borderHover}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '1rem',
             }}
@@ -353,11 +353,11 @@ export default function NewIdea() {
               borderRadius: 2, px: 2, py: 0.7,
               fontWeight: 700, fontSize: '0.8rem',
               textTransform: 'none', flexShrink: 0,
-              borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
-              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              borderColor: it.accent.borderHover,
+              color: it.accent.text,
               '&:hover': {
                 borderColor: '#6366f1',
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+                bgcolor: it.accent.bgStrong,
               },
             }}
           >
@@ -461,10 +461,9 @@ export default function NewIdea() {
               setSolution={setSolution}
               inputSx={inputSx}
               labelSx={labelSx}
-              isDarkMode={isDarkMode}
             />
 
-            <SectionDivider isDarkMode={isDarkMode} />
+            <SectionDivider />
 
             {/* 섹션 2: 심사자 & 공개 범위 */}
             <ParticipantsSection
@@ -474,13 +473,12 @@ export default function NewIdea() {
               // setCoProposers={setCoProposers}
               security={security}
               setSecurity={setSecurity}
-              isDarkMode={isDarkMode}
               onOpenReviewerModal={() => setReviewerModalOpen(true)}
               // onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
             />
 
             {/* 실행 일정 - 추후 사용 */}
-            {/* <SectionDivider isDarkMode={isDarkMode} />
+            {/* <SectionDivider />
             <ScheduleAndVisibilitySection
               startDate={startDate}
               setStartDate={setStartDate}
@@ -490,10 +488,9 @@ export default function NewIdea() {
               setSecurity={setSecurity}
               inputSx={inputSx}
               labelSx={labelSx}
-              isDarkMode={isDarkMode}
             /> */}
 
-            <SectionDivider isDarkMode={isDarkMode} />
+            <SectionDivider />
 
             {/* 섹션 3: 실행 계획 */}
             <Box>
@@ -546,7 +543,7 @@ export default function NewIdea() {
               />
             </Box>
 
-            <SectionDivider isDarkMode={isDarkMode} />
+            <SectionDivider />
 
             {/* 섹션 4: 첨부 파일 */}
             <FileUploadSection
@@ -567,7 +564,6 @@ export default function NewIdea() {
                 setFiles((prev) => prev.filter((_, i) => i !== index))
                 setFilePreviews((prev) => prev.filter((_, i) => i !== index))
               }}
-              isDarkMode={isDarkMode}
             />
 
             {/* ─── 하단 버튼 영역 ────────────────────────────────────── */}

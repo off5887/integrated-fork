@@ -5,6 +5,9 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import { Box, Button } from '@mui/material'
 import { useState } from 'react'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getJudgeTheme } from '@/theme/judgeTheme'
 import JudgeDecisionModal, { DecisionType } from './JudgeDecisionModal'
 
 interface Props {
@@ -16,7 +19,6 @@ interface Props {
   onNext: () => void
   onApprove: (reason: string) => void
   onReject: (reason: string) => void
-  isDarkMode: boolean
 }
 
 export default function JudgeDetailActions({
@@ -28,12 +30,12 @@ export default function JudgeDetailActions({
   onNext,
   onApprove,
   onReject,
-  isDarkMode,
 }: Props) {
-  const [decisionType, setDecisionType] = useState<DecisionType | null>(null)
+  const { isDarkMode } = useThemeMode()
+  const colors = usePageColors()
+  const theme = getJudgeTheme(isDarkMode)
 
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor = isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.5)'
+  const [decisionType, setDecisionType] = useState<DecisionType | null>(null)
 
   const handleConfirm = (type: DecisionType, reason: string) => {
     if (type === '승인') onApprove(reason)
@@ -47,13 +49,13 @@ export default function JudgeDetailActions({
         sx={{
           px: { xs: 3, md: 5 },
           py: 2.5,
-          borderTop: `1px solid ${borderColor}`,
+          borderTop: `1px solid ${colors.borderColor}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: 2,
-          bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : 'rgba(248,250,252,0.8)',
+          bgcolor: theme.footerBgActions,
         }}
       >
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -67,9 +69,9 @@ export default function JudgeDetailActions({
               px: 2, py: 0.9,
               fontWeight: 500,
               fontSize: '0.82rem',
-              color: textSecondary,
+              color: colors.textSecondary,
               '&:hover': {
-                bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)',
+                bgcolor: theme.navBtnHoverBg,
               },
               '&.Mui-disabled': { opacity: 0.35 },
             }}
@@ -86,9 +88,9 @@ export default function JudgeDetailActions({
               px: 2, py: 0.9,
               fontWeight: 500,
               fontSize: '0.82rem',
-              color: textSecondary,
+              color: colors.textSecondary,
               '&:hover': {
-                bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(203,213,225,0.4)',
+                bgcolor: theme.navBtnHoverBg,
               },
               '&.Mui-disabled': { opacity: 0.35 },
             }}
@@ -107,10 +109,10 @@ export default function JudgeDetailActions({
               px: 2.5, py: 0.9,
               fontWeight: 600,
               fontSize: '0.82rem',
-              borderColor: isDarkMode ? 'rgba(148,163,184,0.25)' : 'rgba(203,213,225,0.7)',
-              color: textSecondary,
+              borderColor: theme.closeBtnBorder,
+              color: colors.textSecondary,
               '&:hover': {
-                borderColor: isDarkMode ? 'rgba(148,163,184,0.4)' : 'rgba(148,163,184,0.5)',
+                borderColor: theme.closeBtnHoverBorder,
                 bgcolor: 'transparent',
               },
             }}
@@ -128,9 +130,9 @@ export default function JudgeDetailActions({
               px: 2.5, py: 0.9,
               fontWeight: 700,
               fontSize: '0.82rem',
-              bgcolor: isDarkMode ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.08)',
+              bgcolor: theme.rejectBtnBg,
               color: '#ef4444',
-              border: `1px solid ${isDarkMode ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.2)'}`,
+              border: `1px solid ${theme.rejectBtnBorder}`,
               boxShadow: 'none',
               textTransform: 'none',
               '&:hover': {
@@ -177,7 +179,6 @@ export default function JudgeDetailActions({
         proposalTitle={proposalTitle}
         onClose={() => setDecisionType(null)}
         onConfirm={handleConfirm}
-        isDarkMode={isDarkMode}
       />
     </>
   )

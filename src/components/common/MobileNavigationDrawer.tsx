@@ -17,6 +17,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems, settingsItem } from './headerConfig'
 import type { MenuItem, SubMenuItem } from './headerConfig'
+import { useThemeMode } from '@/context/ThemeContext'
 import { useLogout } from './hooks/useLogout'
 import { useNavColors } from './hooks/useNavColors'
 
@@ -98,7 +99,6 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
                   isGroupActive={isGroupActive(item.children)}
                   onToggle={() => handleGroupToggle(item.text)}
                   onNavigate={handleNavigate}
-                  isDarkMode={isDarkMode}
                   activeColor={activeColor}
                   drawerTextColor={drawerTextColor}
                   subItemBg={subItemBg}
@@ -244,7 +244,6 @@ interface GroupMenuItemProps {
   isGroupActive: boolean
   onToggle: () => void
   onNavigate: (path: string) => void
-  isDarkMode: boolean
   activeColor: string
   drawerTextColor: string
   subItemBg: string
@@ -257,12 +256,12 @@ function GroupMenuItem({
   isGroupActive,
   onToggle,
   onNavigate,
-  isDarkMode,
   activeColor,
   drawerTextColor,
   subItemBg,
   isActive,
 }: GroupMenuItemProps) {
+  const { isDarkMode } = useThemeMode()
   const Icon = MuiIcons[item.iconName] ?? MuiIcons.HelpOutline
 
   return (

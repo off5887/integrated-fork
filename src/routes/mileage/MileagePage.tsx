@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getMileageTheme } from '@/theme/mileageTheme'
 import { awardData, exchangeData } from '@/api/mock/mileage'
 
 import ExchangeHistoryTable from './components/ExchangeHistoryTable'
@@ -20,6 +21,7 @@ type TabValue = 'awards' | 'exchanges'
 export default function MileagePage() {
   const theme = useTheme()
   const { isDarkMode } = useThemeMode()
+  const t = getMileageTheme(isDarkMode)
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const [tab, setTab] = useState<TabValue>('awards')
@@ -30,10 +32,6 @@ export default function MileagePage() {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [exchangeHistory, setExchangeHistory] = useState(exchangeData)
-
-  const textPrimary   = isDarkMode ? '#f1f5f9' : '#0f172a'
-  const textSecondary = isDarkMode ? '#94a3b8' : '#64748b'
-  const borderColor   = isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.5)'
 
   const totalMileage = awardData.reduce((sum, item) => sum + item.fish, 0)
 
@@ -99,23 +97,23 @@ export default function MileagePage() {
           py: { xs: 3, md: 4 },
           maxWidth: 1440, mx: 'auto',
           minHeight: '100vh',
-          color: textPrimary,
+          color: t.textPrimary,
         }}
       >
         {/* 페이지 헤더 */}
         <Box
           sx={{
             mb: 5, pb: 4,
-            borderBottom: `1px solid ${borderColor}`,
+            borderBottom: `1px solid ${t.borderColorStrict}`,
             display: 'flex', alignItems: 'flex-end',
             justifyContent: 'space-between', flexWrap: 'wrap', gap: 2,
           }}
         >
           <Box>
-            <Typography variant="h5" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.02em', mb: 0.5 }}>
+            <Typography variant="h5" fontWeight={700} sx={{ color: t.textPrimary, letterSpacing: '-0.02em', mb: 0.5 }}>
               마일리지
             </Typography>
-            <Typography variant="caption" sx={{ color: textSecondary }}>
+            <Typography variant="caption" sx={{ color: t.textSecondary }}>
               보유 생선 현황 및 현금 전환을 관리합니다
             </Typography>
           </Box>
@@ -144,7 +142,7 @@ export default function MileagePage() {
         />
 
         {/* 탭 */}
-        <Box sx={{ mb: 3, borderBottom: `1px solid ${borderColor}` }}>
+        <Box sx={{ mb: 3, borderBottom: `1px solid ${t.borderColorStrict}` }}>
           <Tabs
             value={tab}
             onChange={handleTabChange}
@@ -152,7 +150,7 @@ export default function MileagePage() {
               minHeight: 44,
               '& .MuiTab-root': {
                 fontSize: '0.875rem', fontWeight: 600, textTransform: 'none',
-                minHeight: 44, color: textSecondary,
+                minHeight: 44, color: t.textSecondary,
                 '&.Mui-selected': { color: '#6366f1' },
               },
               '& .MuiTabs-indicator': { backgroundColor: '#6366f1', height: 2 },

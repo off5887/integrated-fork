@@ -23,11 +23,29 @@ const ideaLight = {
   inputHoverBorder: 'rgba(148,163,184,0.5)',
 
   // ── 모달 ──
-  modalBg:   '#ffffff',
-  listItemBg: '#ffffff',
+  modalBg:      '#ffffff',
+  modalFooterBg: 'rgba(248,250,252,0.8)',
+  listItemBg:   '#ffffff',
 
   // ── 패널 (일정/공개 범위 등) ──
   panelBg: '#fafbfc',
+
+  // ── 배경 변형 ──
+  searchInputBg:  '#f8fafc',
+  itemBg:         '#ffffff',
+  avatarBg:       'rgba(241,245,249,0.9)',
+  subtleBg:       'rgba(248,250,252,0.8)',
+  emptyStateBg:   'rgba(248,250,252,0.6)',
+  fileItemBg:     '#f8fafc',
+  dividerBg:      'rgba(203,213,225,0.4)',
+  categoryCardBg: 'rgba(248,250,252,0.8)',
+
+  // ── 백드롭 ──
+  backdropBg: 'rgba(0,0,0,0.35)',
+
+  // ── 스낵바 ──
+  snackbarBg:    '#ffffff',
+  snackbarColor: '#0f172a',
 
   // ── 인디고(primary) 액센트 ──
   accent: {
@@ -71,11 +89,29 @@ const ideaDark = {
   inputHoverBorder: 'rgba(148,163,184,0.35)',
 
   // ── 모달 ──
-  modalBg:   'rgba(22,30,46,0.98)',
-  listItemBg: 'rgba(30,41,59,0.5)',
+  modalBg:      'rgba(22,30,46,0.98)',
+  modalFooterBg: 'rgba(15,23,42,0.3)',
+  listItemBg:   'rgba(30,41,59,0.5)',
 
   // ── 패널 (일정/공개 범위 등) ──
   panelBg: 'rgba(22,30,46,0.6)',
+
+  // ── 배경 변형 ──
+  searchInputBg:  'rgba(15,23,42,0.5)',
+  itemBg:         'rgba(30,41,59,0.4)',
+  avatarBg:       'rgba(30,41,59,0.8)',
+  subtleBg:       'rgba(15,23,42,0.4)',
+  emptyStateBg:   'rgba(15,23,42,0.2)',
+  fileItemBg:     'rgba(22,30,46,0.8)',
+  dividerBg:      'rgba(148,163,184,0.08)',
+  categoryCardBg: 'rgba(30,41,59,0.5)',
+
+  // ── 백드롭 ──
+  backdropBg: 'rgba(0,0,0,0.6)',
+
+  // ── 스낵바 ──
+  snackbarBg:    'rgba(22,30,46,0.98)',
+  snackbarColor: '#f1f5f9',
 
   // ── 인디고(primary) 액센트 ──
   accent: {
