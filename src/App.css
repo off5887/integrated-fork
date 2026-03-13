@@ -145,7 +145,7 @@ body,
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* MUI와 Tailwind 충돌 방지용 기본 오버라이드 (필요 시) */
+/* MUI 기본 트랜지션 오버라이드 */
 .MuiTypography-root,
 .MuiButton-root,
 .MuiIconButton-root {

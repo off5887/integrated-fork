@@ -2,6 +2,7 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import ErrorBoundary from '@/components/common/ErrorBoundary'
 import ProtectedRoute from '@/components/common/ProtectedRoute'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import AuthLayout from '@/layouts/AuthLayout'
@@ -27,46 +28,48 @@ const NotFoundPage = lazy(() => import('@/features/error/NotFoundPage'))
 
 export default function AppRoutes() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            isAuthenticated() ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
+    <ErrorBoundary>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              isAuthenticated() ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
 
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/welcome" element={<Welcome />} />
-        </Route>
-
-        <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/newIdea" element={<NewIdea />} />
-            <Route path="/ideaBrowse" element={<IdeaBrowse />} />
-            <Route path="/rqMileage" element={<RqMileage />} />
-            <Route path="/judge" element={<Judge />} />
-            <Route path="/stats" element={<Stats />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route
-              path="/mercenary-support"
-              element={<MercenarySupportPage />}
-            />
-            <Route
-              path="/mercenary-management"
-              element={<MercenaryManagementPage />}
-            />
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/welcome" element={<Welcome />} />
           </Route>
-        </Route>
 
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Suspense>
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/newIdea" element={<NewIdea />} />
+              <Route path="/ideaBrowse" element={<IdeaBrowse />} />
+              <Route path="/rqMileage" element={<RqMileage />} />
+              <Route path="/judge" element={<Judge />} />
+              <Route path="/stats" element={<Stats />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route
+                path="/mercenary-support"
+                element={<MercenarySupportPage />}
+              />
+              <Route
+                path="/mercenary-management"
+                element={<MercenaryManagementPage />}
+              />
+            </Route>
+          </Route>
+
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   )
 }
