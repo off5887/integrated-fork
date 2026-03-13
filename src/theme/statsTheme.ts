@@ -19,11 +19,6 @@ const statsLight = {
   cardShadow: '0 6px 20px rgba(0,0,0,0.1)',
   cardHoverShadow: '0 16px 36px rgba(0,0,0,0.14)',
 
-  // ── Nivo 툴팁 ──
-  tooltipBg: '#ffffff',
-
-  // ── Labels text shadow ──
-  labelTextShadow: '0 1px 2px rgba(255,255,255,0.8)',
 } as const
 
 const statsDark = {
@@ -43,12 +38,6 @@ const statsDark = {
   cardBorder: 'rgba(255,255,255,0.12)',
   cardShadow: '0 6px 20px rgba(0,0,0,0.4)',
   cardHoverShadow: '0 16px 36px rgba(0,0,0,0.5)',
-
-  // ── Nivo 툴팁 ──
-  tooltipBg: '#1e293b',
-
-  // ── Labels text shadow ──
-  labelTextShadow: '0 1px 3px rgba(0,0,0,0.6)',
 } as const
 
 export type StatsTheme = typeof statsLight

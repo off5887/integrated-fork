@@ -1,23 +1,20 @@
-// src/routes/stats/components/StatsApprovalPie.tsx
-import { Box, Card, CardContent, Typography, alpha } from '@mui/material'
+// src/features/stats/components/StatsApprovalPie.tsx
+import { Card, CardContent, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
-import { ResponsivePie } from '@nivo/pie'
+import Chart from 'react-apexcharts'
+import { useThemeMode } from '@/context/ThemeContext'
 import type { StatsTheme } from '@/theme/statsTheme'
+import { pieChartData as PIE_DATA } from '@/api/mock/stats'
 
 const PIE_COLORS = ['#6366f1', '#a78bfa', '#f472b6', '#fb7185']
-
-const PIE_DATA = [
-  { id: '부문장', label: '부문장', value: 68, color: PIE_COLORS[0] },
-  { id: '팀장',  label: '팀장',  value: 15, color: PIE_COLORS[1] },
-  { id: '접수',  label: '접수',  value: 10, color: PIE_COLORS[2] },
-  { id: '실행요청', label: '실행요청', value: 7, color: PIE_COLORS[3] },
-]
 
 interface Props {
   t: StatsTheme
 }
 
 export default function StatsApprovalPie({ t }: Props) {
+  const { isDarkMode } = useThemeMode()
+
   const cardStyle = {
     borderRadius: 16,
     background: t.cardBg,
@@ -31,41 +28,81 @@ export default function StatsApprovalPie({ t }: Props) {
     },
   }
 
-  const nivoTheme = {
-    background: 'transparent',
-    textColor: t.textPrimary,
-    fontSize: 13,
-    fontFamily: 'inherit',
-    axis: {
-      domain: { line: { stroke: alpha(t.textPrimary, 0.18) } },
-      ticks: {
-        line: { stroke: alpha(t.textPrimary, 0.18) },
-        text: { fill: t.textSecondary, fontWeight: 500 },
+  const options: ApexCharts.ApexOptions = {
+    chart: {
+      type: 'donut',
+      fontFamily: 'inherit',
+      background: 'transparent',
+      toolbar: { show: false },
+      animations: {
+        enabled: true,
+        speed: 900,
+        animateGradually: { enabled: true, delay: 120 },
+        dynamicAnimation: { enabled: true, speed: 200 },
       },
-      legend: { text: { fill: t.textPrimary, fontWeight: 600 } },
     },
-    grid: { line: { stroke: alpha(t.textPrimary, 0.09) } },
-    legends: {
-      text: { fill: t.textSecondary, fontSize: 13, fontWeight: 500 },
+    colors: PIE_COLORS,
+    labels: PIE_DATA.map((d) => d.label),
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '55%',
+          labels: {
+            show: true,
+            name: {
+              show: true,
+              fontSize: '13px',
+              fontWeight: 600,
+              color: t.textSecondary,
+              offsetY: -4,
+            },
+            value: {
+              show: true,
+              fontSize: '24px',
+              fontWeight: 800,
+              color: t.textPrimary,
+              offsetY: 6,
+              formatter: (val: string) => val + '%',
+            },
+            total: {
+              show: true,
+              label: '전체',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: t.textSecondary,
+              formatter: () =>
+                PIE_DATA.reduce((acc, d) => acc + d.value, 0) + '%',
+            },
+          },
+        },
+        expandOnClick: false,
+      },
+    },
+    dataLabels: { enabled: false },
+    legend: {
+      show: true,
+      position: 'bottom',
+      labels: { colors: t.textSecondary },
+      fontSize: '13px',
+      fontWeight: 500,
+      itemMargin: { horizontal: 12, vertical: 4 },
+    },
+    stroke: {
+      width: 2,
+      colors: [isDarkMode ? '#1e293b' : '#ffffff'],
+    },
+    states: {
+      hover: { filter: { type: 'brighten', value: 0.08 } },
+      active: { filter: { type: 'none' } },
     },
     tooltip: {
-      container: {
-        background: t.tooltipBg,
-        color: t.textPrimary,
-        borderRadius: 12,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.28)',
-        padding: '12px 16px',
-        fontSize: 13,
-      },
-    },
-    labels: {
-      text: {
-        fontSize: 14,
-        fontWeight: 700,
-        textShadow: t.labelTextShadow,
-      },
+      theme: isDarkMode ? 'dark' : 'light',
+      style: { fontSize: '13px', fontFamily: 'inherit' },
+      y: { formatter: (val: number) => val + '%' },
     },
   }
+
+  const series = PIE_DATA.map((d) => d.value)
 
   return (
     <motion.div
@@ -85,43 +122,12 @@ export default function StatsApprovalPie({ t }: Props) {
           </Typography>
 
           <div style={{ height: '450px', width: '100%' }}>
-            <ResponsivePie
-              data={PIE_DATA}
-              margin={{ top: 40, right: 140, bottom: 140, left: 40 }}
-              innerRadius={0.48}
-              padAngle={1.5}
-              cornerRadius={12}
-              activeOuterRadiusOffset={14}
-              colors={PIE_COLORS}
-              borderWidth={2}
-              borderColor={{ from: 'color', modifiers: [['darker', 0.7]] }}
-              arcLinkLabelsSkipAngle={15}
-              arcLinkLabelsTextColor={t.textPrimary}
-              arcLinkLabelsThickness={3}
-              arcLinkLabelsColor={{ from: 'color', modifiers: [['darker', 0.8]] }}
-              arcLabelsSkipAngle={20}
-              arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 3]] }}
-              legends={[
-                {
-                  anchor: 'bottom',
-                  direction: 'row',
-                  translateY: 90,
-                  itemWidth: 110,
-                  itemHeight: 24,
-                  symbolSize: 20,
-                  symbolShape: 'circle',
-                  effects: [
-                    {
-                      on: 'hover',
-                      style: {
-                        itemTextColor: t.primaryColor,
-                        itemOpacity: 1,
-                      },
-                    },
-                  ],
-                },
-              ]}
-              theme={nivoTheme}
+            <Chart
+              options={options}
+              series={series}
+              type="donut"
+              height={450}
+              width="100%"
             />
           </div>
 

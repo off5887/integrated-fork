@@ -1,22 +1,20 @@
-// src/routes/stats/components/StatsTeamBar.tsx
-import { Box, Card, CardContent, Typography, alpha } from '@mui/material'
+// src/features/stats/components/StatsTeamBar.tsx
+import { Card, CardContent, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
-import { ResponsiveBar } from '@nivo/bar'
+import Chart from 'react-apexcharts'
+import { useThemeMode } from '@/context/ThemeContext'
 import type { StatsTheme } from '@/theme/statsTheme'
+import { barChartData as BAR_DATA } from '@/api/mock/stats'
 
-const BAR_DATA = [
-  { team: '개발1팀', value: 320 },
-  { team: '생산2부', value: 280 },
-  { team: '영업3팀', value: 210 },
-  { team: '품질팀',  value: 180 },
-  { team: 'R&D팀',  value: 150 },
-]
+const BAR_COLORS = ['#6366f1', '#a78bfa', '#38bdf8', '#34d399', '#fb923c']
 
 interface Props {
   t: StatsTheme
 }
 
 export default function StatsTeamBar({ t }: Props) {
+  const { isDarkMode } = useThemeMode()
+
   const cardStyle = {
     borderRadius: 16,
     background: t.cardBg,
@@ -30,41 +28,78 @@ export default function StatsTeamBar({ t }: Props) {
     },
   }
 
-  const nivoTheme = {
-    background: 'transparent',
-    textColor: t.textPrimary,
-    fontSize: 13,
-    fontFamily: 'inherit',
-    axis: {
-      domain: { line: { stroke: alpha(t.textPrimary, 0.18) } },
-      ticks: {
-        line: { stroke: alpha(t.textPrimary, 0.18) },
-        text: { fill: t.textSecondary, fontWeight: 500 },
+  const options: ApexCharts.ApexOptions = {
+    chart: {
+      type: 'bar',
+      fontFamily: 'inherit',
+      background: 'transparent',
+      toolbar: { show: false },
+      animations: {
+        enabled: true,
+        speed: 800,
+        animateGradually: { enabled: true, delay: 100 },
       },
-      legend: { text: { fill: t.textPrimary, fontWeight: 600 } },
     },
-    grid: { line: { stroke: alpha(t.textPrimary, 0.09) } },
-    legends: {
-      text: { fill: t.textSecondary, fontSize: 13, fontWeight: 500 },
+    colors: BAR_COLORS,
+    plotOptions: {
+      bar: {
+        distributed: true,
+        borderRadius: 8,
+        borderRadiusApplication: 'end',
+        dataLabels: { position: 'top' },
+      },
     },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shade: isDarkMode ? 'dark' : 'light',
+        type: 'vertical',
+        shadeIntensity: 0.2,
+        opacityFrom: 0.95,
+        opacityTo: 0.65,
+        stops: [0, 100],
+      },
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: (val: number) => val + '건',
+      offsetY: -6,
+      style: { fontSize: '12px', fontWeight: 700, colors: [t.textPrimary] },
+      background: { enabled: false },
+    },
+    xaxis: {
+      categories: BAR_DATA.map((d) => d.team),
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+      labels: {
+        style: { colors: t.textSecondary, fontSize: '13px', fontWeight: 500 },
+      },
+    },
+    yaxis: {
+      labels: {
+        style: { colors: t.textSecondary, fontSize: '12px', fontWeight: 500 },
+        formatter: (val: number) => val + '건',
+      },
+    },
+    grid: {
+      borderColor: isDarkMode ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)',
+      yaxis: { lines: { show: true } },
+      xaxis: { lines: { show: false } },
+      padding: { top: 10, bottom: 0 },
+    },
+    legend: { show: false },
     tooltip: {
-      container: {
-        background: t.tooltipBg,
-        color: t.textPrimary,
-        borderRadius: 12,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.28)',
-        padding: '12px 16px',
-        fontSize: 13,
-      },
+      theme: isDarkMode ? 'dark' : 'light',
+      style: { fontSize: '13px', fontFamily: 'inherit' },
+      y: { formatter: (val: number) => val + '건' },
     },
-    labels: {
-      text: {
-        fontSize: 14,
-        fontWeight: 700,
-        textShadow: t.labelTextShadow,
-      },
+    states: {
+      hover: { filter: { type: 'brighten', value: 0.08 } },
+      active: { filter: { type: 'none' } },
     },
   }
+
+  const series = [{ name: '실행 건수', data: BAR_DATA.map((d) => d.value) }]
 
   return (
     <motion.div
@@ -84,42 +119,12 @@ export default function StatsTeamBar({ t }: Props) {
           </Typography>
 
           <div style={{ height: '450px', width: '100%' }}>
-            <ResponsiveBar
-              data={BAR_DATA}
-              keys={['value']}
-              indexBy="team"
-              margin={{ top: 40, right: 40, bottom: 100, left: 80 }}
-              padding={0.32}
-              valueScale={{ type: 'linear' }}
-              indexScale={{ type: 'band', round: true }}
-              colors={{ scheme: 'pastel1' }}
-              borderWidth={1.5}
-              borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
-              axisBottom={{
-                tickSize: 5,
-                tickPadding: 8,
-                tickRotation: -40,
-                legend: '팀 / 부서',
-                legendPosition: 'middle',
-                legendOffset: 55,
-              }}
-              axisLeft={{
-                tickSize: 5,
-                tickPadding: 8,
-                tickRotation: 0,
-                legend: '실행 건수',
-                legendPosition: 'middle',
-                legendOffset: -60,
-              }}
-              labelSkipWidth={16}
-              labelSkipHeight={16}
-              labelTextColor={{ from: 'color', modifiers: [['darker', 2.2]] }}
-              role="application"
-              ariaLabel="팀별 실행 건수 바 차트"
-              barAriaLabel={(e) =>
-                `${e.id}: ${e.formattedValue} in team: ${e.indexValue}`
-              }
-              theme={nivoTheme}
+            <Chart
+              options={options}
+              series={series}
+              type="bar"
+              height={450}
+              width="100%"
             />
           </div>
         </CardContent>
