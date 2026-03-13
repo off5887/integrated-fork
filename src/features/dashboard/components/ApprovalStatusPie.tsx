@@ -19,8 +19,9 @@ export default function ApprovalStatusPie() {
         enabled: true,
         speed: 900,
         animateGradually: { enabled: true, delay: 120 },
-        dynamicAnimation: { enabled: true, speed: 200 },
+        dynamicAnimation: { enabled: false },
       },
+      redrawOnParentResize: false,
     },
     colors: STAGES.map((s) => s.color),
     plotOptions: {

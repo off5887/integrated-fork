@@ -18,7 +18,13 @@ export default function DepartmentTop5Bar() {
       fontFamily: 'inherit',
       toolbar: { show: false },
       background: 'transparent',
-      animations: { enabled: true, speed: 700, animateGradually: { enabled: true, delay: 100 } },
+      animations: {
+        enabled: true,
+        speed: 700,
+        animateGradually: { enabled: true, delay: 100 },
+        dynamicAnimation: { enabled: false },
+      },
+      redrawOnParentResize: false,
     },
     colors: BAR_COLORS,
     plotOptions: {

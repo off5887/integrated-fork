@@ -38,7 +38,9 @@ export default function StatsTeamBar({ t }: Props) {
         enabled: true,
         speed: 800,
         animateGradually: { enabled: true, delay: 100 },
+        dynamicAnimation: { enabled: false },
       },
+      redrawOnParentResize: false,
     },
     colors: BAR_COLORS,
     plotOptions: {
