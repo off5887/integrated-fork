@@ -63,9 +63,12 @@ const judgeLight = {
   statCardLabelColor:     '#64748b',
 
   // ── 이관 배지 ─────────────────────────────────────────────────────────────
-  transferredBadgeBg: 'rgba(245,158,11,0.08)',
-  transferredRowBg:   'rgba(245,158,11,0.02)',
-  transferredRowHover: 'rgba(245,158,11,0.04)',
+  transferredColor:      '#06b6d4',
+  transferredBadgeBg:    'rgba(6,182,212,0.08)',
+  transferredBadgeBorder: 'rgba(6,182,212,0.3)',
+  transferredRowBg:      'rgba(6,182,212,0.02)',
+  transferredRowHover:   'rgba(6,182,212,0.04)',
+  transferredRowShadow:  'inset 3px 0 0 rgba(6,182,212,0.7)',
 
   // ── 결재자 변경 버튼 ─────────────────────────────────────────────────────
   reviewerBtnColor:       '#6366f1',
@@ -118,9 +121,19 @@ const judgeLight = {
   decisionCancelBorder:  'rgba(203,213,225,0.7)',
   decisionBannerText:    '#334155',
 
+  // ── 1차 심사 점수/마일리지 입력 패널 ─────────────────────────────────────
+  scoreFieldsBg:     'rgba(99,102,241,0.04)',
+  scoreFieldsBorder: 'rgba(99,102,241,0.2)',
+
   // ── 반려(reject) 버튼 ─────────────────────────────────────────────────────
   rejectBtnBg:     'rgba(239,68,68,0.08)',
   rejectBtnBorder: 'rgba(239,68,68,0.2)',
+
+  // ── 회수(withdraw) 버튼 ───────────────────────────────────────────────────
+  withdrawApproveBtnBg:     'rgba(249,115,22,0.08)',
+  withdrawApproveBtnBorder: 'rgba(249,115,22,0.2)',
+  withdrawRejectBtnBg:      'rgba(13,148,136,0.08)',
+  withdrawRejectBtnBorder:  'rgba(13,148,136,0.2)',
 
   // ── 닫기 버튼 hover (JudgeDetailHeader) ──────────────────────────────────
   closeIconHoverBg: 'rgba(239,68,68,0.08)',
@@ -177,9 +190,12 @@ const judgeDark = {
   statCardActiveShadow:   '0 4px 16px rgba(0,0,0,0.3)',
   statCardLabelColor:     '#94a3b8',
 
-  transferredBadgeBg:  'rgba(245,158,11,0.12)',
-  transferredRowBg:    'rgba(245,158,11,0.03)',
-  transferredRowHover: 'rgba(245,158,11,0.06)',
+  transferredColor:      '#22d3ee',
+  transferredBadgeBg:    'rgba(6,182,212,0.15)',
+  transferredBadgeBorder: 'rgba(6,182,212,0.35)',
+  transferredRowBg:      'rgba(6,182,212,0.04)',
+  transferredRowHover:   'rgba(6,182,212,0.07)',
+  transferredRowShadow:  'inset 3px 0 0 rgba(6,182,212,0.7)',
 
   reviewerBtnColor:       '#a5b4fc',
   reviewerBtnBg:          'rgba(99,102,241,0.1)',
@@ -225,8 +241,16 @@ const judgeDark = {
   decisionCancelBorder:  'rgba(148,163,184,0.25)',
   decisionBannerText:    '#cbd5e1',
 
+  scoreFieldsBg:     'rgba(99,102,241,0.06)',
+  scoreFieldsBorder: 'rgba(99,102,241,0.25)',
+
   rejectBtnBg:     'rgba(239,68,68,0.15)',
   rejectBtnBorder: 'rgba(239,68,68,0.3)',
+
+  withdrawApproveBtnBg:     'rgba(249,115,22,0.15)',
+  withdrawApproveBtnBorder: 'rgba(249,115,22,0.3)',
+  withdrawRejectBtnBg:      'rgba(13,148,136,0.15)',
+  withdrawRejectBtnBorder:  'rgba(13,148,136,0.3)',
 
   closeIconHoverBg: 'rgba(239,68,68,0.12)',
 } as const

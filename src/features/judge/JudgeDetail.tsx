@@ -17,8 +17,10 @@ interface Props {
   onClose: () => void
   onPrev: () => void
   onNext: () => void
-  onApprove: (reason: string) => void
+  onApprove: (reason: string, score?: number, mileage?: number) => void
   onReject: (reason: string) => void
+  onWithdrawApprove: (reason: string) => void
+  onWithdrawReject: (reason: string) => void
   isFirst: boolean
   isLast: boolean
 }
@@ -37,7 +39,7 @@ function SectionDivider() {
   )
 }
 
-export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onApprove, onReject, isFirst, isLast }: Props) {
+export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onApprove, onReject, onWithdrawApprove, onWithdrawReject, isFirst, isLast }: Props) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
   const theme = getJudgeTheme(isDarkMode)
@@ -70,6 +72,7 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
     >
       <JudgeDetailHeader
         title={proposal.title}
+        reviewStage={proposal.reviewStage}
         onClose={onClose}
       />
 
@@ -111,7 +114,10 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
           <SectionDivider />
 
           <ParticipantsSection
-            reviewer={proposal.reviewer}
+            reviewer1={proposal.reviewer1}
+            reviewer2={proposal.reviewer2}
+            reviewer3={proposal.reviewer3}
+            reviewStage={proposal.reviewStage}
             proposers={proposal.proposers}
           />
 
@@ -139,6 +145,8 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
 
       <JudgeDetailActions
         proposalTitle={proposal.title}
+        reviewStage={proposal.reviewStage}
+        status={proposal.status}
         isFirst={isFirst}
         isLast={isLast}
         onClose={onClose}
@@ -146,6 +154,8 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
         onNext={onNext}
         onApprove={onApprove}
         onReject={onReject}
+        onWithdrawApprove={onWithdrawApprove}
+        onWithdrawReject={onWithdrawReject}
       />
     </Dialog>
   )

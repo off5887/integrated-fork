@@ -68,24 +68,49 @@ export default function Judge() {
     )
   }
 
-  const handleApprove = (reason: string) => {
+  const handleApprove = (_reason: string, score?: number, mileage?: number) => {
     if (!selectedProposal) return
     setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '승인' as const } : p)),
+      prev.map((p) =>
+        p.id === selectedProposal.id
+          ? {
+              ...p,
+              status: '승인' as const,
+              ...(score !== undefined && { score }),
+              ...(mileage !== undefined && { mileage }),
+            }
+          : p,
+      ),
     )
     setSelectedProposal(null)
-    // TODO: API 연동 시 reason과 함께 서버로 전송
-    console.log('승인 사유:', reason)
+    // TODO: API 연동 시 reason, score, mileage와 함께 서버로 전송
   }
 
-  const handleReject = (reason: string) => {
+  const handleReject = (_reason: string) => {
     if (!selectedProposal) return
     setProposals((prev) =>
       prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '반려' as const } : p)),
     )
     setSelectedProposal(null)
-    // TODO: API 연동 시 reason과 함께 서버로 전송
-    console.log('반려 사유:', reason)
+    // TODO: API 연동 시 _reason과 함께 서버로 전송
+  }
+
+  const handleWithdrawApprove = (_reason: string) => {
+    if (!selectedProposal) return
+    setProposals((prev) =>
+      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사중' as const } : p)),
+    )
+    setSelectedProposal(null)
+    // TODO: API 연동 시 _reason과 함께 서버로 전송
+  }
+
+  const handleWithdrawReject = (_reason: string) => {
+    if (!selectedProposal) return
+    setProposals((prev) =>
+      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사중' as const } : p)),
+    )
+    setSelectedProposal(null)
+    // TODO: API 연동 시 _reason과 함께 서버로 전송
   }
 
   const selectedIndex = selectedProposal
@@ -279,6 +304,8 @@ export default function Judge() {
           onNext={handleNext}
           onApprove={handleApprove}
           onReject={handleReject}
+          onWithdrawApprove={handleWithdrawApprove}
+          onWithdrawReject={handleWithdrawReject}
           isFirst={isFirst}
           isLast={isLast}
         />

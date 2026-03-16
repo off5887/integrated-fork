@@ -1,3 +1,5 @@
+export type DecisionType = '승인' | '반려' | '승인회수' | '반려회수'
+
 export interface Attachment {
   name: string
   url: string
@@ -17,6 +19,10 @@ export interface Proposal {
   solution: string
   proposers: string[]
   reviewer: string
+  reviewer1: string
+  reviewer2: string
+  reviewer3: string
+  reviewStage: 1 | 2 | 3
   /** 결재자 변경 이전 담당자 (이관된 경우에만 존재) */
   transferredFrom?: string
   startDate: string
@@ -26,4 +32,6 @@ export interface Proposal {
   attachments: Attachment[]
   status: '심사대기' | '심사중' | '승인' | '반려'
   submittedAt: string
+  score?: number
+  mileage?: number
 }
