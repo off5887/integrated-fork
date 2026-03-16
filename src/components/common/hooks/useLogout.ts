@@ -5,6 +5,7 @@
 export function useLogout() {
   return () => {
     localStorage.removeItem('accessToken')
+    localStorage.removeItem('userProfile')
     window.location.href = '/login'
   }
 }

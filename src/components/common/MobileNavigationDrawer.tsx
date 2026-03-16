@@ -1,6 +1,7 @@
 import * as MuiIcons from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
 import {
+  Avatar,
   Box,
   Collapse,
   Divider,
@@ -18,6 +19,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems, settingsItem } from './headerConfig'
 import type { MenuItem, SubMenuItem } from './headerConfig'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useCurrentUser } from './hooks/useCurrentUser'
 import { useLogout } from './hooks/useLogout'
 import { useNavColors } from './hooks/useNavColors'
 
@@ -31,6 +33,7 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
   const location = useLocation()
   const { isDarkMode, toggleTheme, activeColor, drawerTextColor } = useNavColors()
   const logout = useLogout()
+  const user = useCurrentUser()
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
 
   const subItemBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)'
@@ -86,6 +89,71 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
+
+        {/* 유저 프로필 */}
+        {user && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              mb: 2.5,
+              p: 1.5,
+              borderRadius: 2,
+              bgcolor: isDarkMode ? 'rgba(99,102,241,0.07)' : 'rgba(99,102,241,0.05)',
+              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.12)'}`,
+            }}
+          >
+            <Avatar
+              src={user.avatarUrl}
+              sx={{
+                width: 40,
+                height: 40,
+                fontSize: '1rem',
+                fontWeight: 700,
+                flexShrink: 0,
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.13)',
+                color: activeColor,
+                border: `1.5px solid ${isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)'}`,
+              }}
+            >
+              {user.name.charAt(0)}
+            </Avatar>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                sx={{
+                  fontSize: '0.875rem',
+                  fontWeight: 700,
+                  color: drawerTextColor,
+                  lineHeight: 1.3,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {user.name}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.75rem',
+                  color: isDarkMode ? '#94a3b8' : '#64748b',
+                  lineHeight: 1.3,
+                }}
+              >
+                {user.position}{user.department ? ` · ${user.department}` : ''}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.68rem',
+                  color: isDarkMode ? '#475569' : '#94a3b8',
+                  lineHeight: 1.3,
+                }}
+              >
+                {user.employeeId}
+              </Typography>
+            </Box>
+          </Box>
+        )}
 
         {/* 메인 메뉴 */}
         <List disablePadding sx={{ mb: 1 }}>

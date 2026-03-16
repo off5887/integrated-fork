@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { getLoginErrorMessage, useLoginMutation } from '@/api/queries/useLoginMutation'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getLoginColors, type LoginColors } from '@/theme/loginTheme'
-import { DEMO_CREDENTIALS } from '@/api/mock/auth'
+import { DEMO_CREDENTIALS, DEMO_USER_PROFILE } from '@/api/mock/auth'
 
 // ─── LoginField ───────────────────────────────────────────────────────────────
 
@@ -173,6 +173,7 @@ export default function Login() {
 
     if (employeeId === DEMO_CREDENTIALS.id && password === DEMO_CREDENTIALS.password) {
       localStorage.setItem('accessToken', 'demo-token')
+      localStorage.setItem('userProfile', JSON.stringify(DEMO_USER_PROFILE))
       navigate('/welcome')
       return
     }
@@ -180,6 +181,12 @@ export default function Login() {
     try {
       const data = await mutation.mutateAsync({ employeeId, password })
       localStorage.setItem('accessToken', data.token)
+      localStorage.setItem('userProfile', JSON.stringify({
+        employeeId: data.employeeId,
+        name: data.name,
+        position: (data.position as string) ?? '',
+        department: (data.department as string) ?? '',
+      }))
       navigate('/welcome')
     } catch (err: unknown) {
       setErrorMsg(getLoginErrorMessage(err))

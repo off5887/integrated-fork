@@ -1,9 +1,10 @@
 import * as MuiIcons from '@mui/icons-material'
-import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material'
+import { Avatar, Box, IconButton, Paper, Tooltip, Typography } from '@mui/material'
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems, settingsItem } from './headerConfig'
 import type { MenuItem, SubMenuItem } from './headerConfig'
+import { useCurrentUser } from './hooks/useCurrentUser'
 import { useLogout } from './hooks/useLogout'
 import { useNavColors } from './hooks/useNavColors'
 
@@ -236,6 +237,65 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
   )
 }
 
+// ─── UserChip ─────────────────────────────────────────────────────────────────
+
+function UserChip() {
+  const { isDarkMode, textColor, activeColor } = useNavColors()
+  const user = useCurrentUser()
+  if (!user) return null
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        pl: 1.5,
+        mr: 0.5,
+        borderLeft: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.5)'}`,
+      }}
+    >
+      <Avatar
+        src={user.avatarUrl}
+        sx={{
+          width: 28,
+          height: 28,
+          fontSize: '0.75rem',
+          fontWeight: 700,
+          bgcolor: isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.13)',
+          color: activeColor,
+          border: `1.5px solid ${isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)'}`,
+        }}
+      >
+        {user.name.charAt(0)}
+      </Avatar>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Typography
+          sx={{
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            color: isDarkMode ? '#e2e8f0' : '#1e293b',
+            lineHeight: 1.25,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {user.name}
+        </Typography>
+        <Typography
+          sx={{
+            fontSize: '0.68rem',
+            color: textColor,
+            lineHeight: 1.25,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {user.position}{user.department ? ` · ${user.department}` : ''}
+        </Typography>
+      </Box>
+    </Box>
+  )
+}
+
 // ─── HeaderActions ────────────────────────────────────────────────────────────
 
 function HeaderActions() {
@@ -332,6 +392,7 @@ export default function DesktopNavigation() {
 
       <Box sx={{ flexGrow: 1 }} />
 
+      <UserChip />
       <HeaderActions />
     </>
   )

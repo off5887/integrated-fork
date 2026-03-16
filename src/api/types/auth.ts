@@ -1,4 +1,12 @@
 // src/api/types/auth.ts
+export interface UserProfile {
+  employeeId: string
+  name: string
+  position: string
+  department: string
+  avatarUrl?: string
+}
+
 export interface LoginRequest {
   employeeId: string
   password: string
