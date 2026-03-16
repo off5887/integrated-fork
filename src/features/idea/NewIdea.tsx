@@ -17,6 +17,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 
 import BasicInfoSection from './components/BasicInfoSection'
@@ -65,6 +66,7 @@ function formatTime(date: Date) {
 
 export default function NewIdea() {
   const { isDarkMode } = useThemeMode()
+  const { showSnackbar } = useSnackbar()
   const navigate = useNavigate()
 
   // ─── 폼 상태 ───────────────────────────────────────────────────────────────
@@ -182,13 +184,13 @@ export default function NewIdea() {
   // ─── 제출 ────────────────────────────────────────────────────────────────
   const handleSubmit = () => {
     if (!title.trim() || categories.length === 0 || !problem.trim() || !solution.trim()) {
-      alert('필수 항목을 모두 입력해주세요.')
+      showSnackbar('필수 항목을 모두 입력해주세요.', 'warning')
       return
     }
     setLoading(true)
     setTimeout(() => {
       localStorage.removeItem(DRAFT_KEY)
-      alert('제안이 등록되었습니다!')
+      showSnackbar('제안이 등록되었습니다!', 'success')
       setLoading(false)
       navigate('/dashboard')
     }, 1500)

@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import { OrgMember, SelectedReviewer } from '@/api/types/reviewer'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
 import { mockOrganization } from '@/api/mock/settings'
 import OrgPanel from './OrgPanel'
@@ -15,6 +16,7 @@ const ReviewerAssignment: React.FC = () => {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, accentColor, accentBg } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
+  const { showSnackbar } = useSnackbar()
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<SelectedReviewer[]>([])
@@ -51,7 +53,7 @@ const ReviewerAssignment: React.FC = () => {
   }
 
   const handleSave = () => {
-    alert(`총 ${selected.length}명 심사자 저장 완료!`)
+    showSnackbar(`총 ${selected.length}명 심사자 저장 완료!`, 'success')
   }
 
   return (

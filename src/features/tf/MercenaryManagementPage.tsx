@@ -21,11 +21,13 @@ import {
   type ExtendedIdea,
 } from '@/api/types/mercenary'
 import { usePageColors } from '@/theme/pageColors'
+import { useSnackbar } from '@/context/SnackbarContext'
 import ApplicantList from './components/ApplicantList'
 import MercenaryInvitePanel from './components/MercenaryInvitePanel'
 
 export default function MercenaryManagementPage() {
   const colors = usePageColors()
+  const { showSnackbar } = useSnackbar()
   const [tab, setTab] = useState(0)
   const [applicants, setApplicants] = useState<Applicant[]>(mockApplicants)
   const [myIdeas, setMyIdeas] = useState<ExtendedIdea[]>(
@@ -35,12 +37,12 @@ export default function MercenaryManagementPage() {
   const [search, setSearch] = useState('')
 
   const handleAccept = (id: number) => {
-    alert('용병 수락 완료!')
+    showSnackbar('용병 수락 완료!', 'success')
     setApplicants((prev) => prev.filter((a) => a.id !== id))
   }
 
   const handleReject = (id: number) => {
-    alert('거절 완료')
+    showSnackbar('거절 완료', 'info')
     setApplicants((prev) => prev.filter((a) => a.id !== id))
   }
 

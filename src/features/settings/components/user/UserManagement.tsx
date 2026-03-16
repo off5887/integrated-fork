@@ -21,21 +21,25 @@ import {
 import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
 import { mockUsers as initialUsers } from '@/api/mock/settings'
 import type { User } from '@/api/types/settings'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import UserFormDialog from './UserFormDialog'
 
 export default function UserManagement() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg, rowBg, rowHoverBg, headerBg } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
+  const { showSnackbar } = useSnackbar()
 
   const [users, setUsers] = useState<User[]>(initialUsers)
   const [open, setOpen] = useState(false)
   const [editUser, setEditUser] = useState<User | null>(null)
   const [formData, setFormData] = useState<Partial<User & { password: string }>>({})
   const [showPassword, setShowPassword] = useState(false)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
 
   const isEditing = editUser !== null
 
@@ -61,14 +65,14 @@ export default function UserManagement() {
 
   const handleSave = () => {
     if (!formData.name || !formData.employeeNumber || !formData.email || !formData.role || !formData.department) {
-      alert('모든 필수 항목을 입력해주세요.')
+      showSnackbar('모든 필수 항목을 입력해주세요.', 'warning')
       return
     }
     if (isEditing) {
       setUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, ...formData } : u))
     } else {
       if (!formData.password) {
-        alert('비밀번호를 입력해주세요.')
+        showSnackbar('비밀번호를 입력해주세요.', 'warning')
         return
       }
       setUsers(prev => [
@@ -92,8 +96,13 @@ export default function UserManagement() {
   }
 
   const handleDelete = (id: number) => {
-    if (window.confirm('정말 이 사용자를 삭제하시겠습니까?')) {
-      setUsers(prev => prev.filter(u => u.id !== id))
+    setDeleteConfirmId(id)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (deleteConfirmId !== null) {
+      setUsers(prev => prev.filter(u => u.id !== deleteConfirmId))
+      setDeleteConfirmId(null)
     }
   }
 
@@ -417,6 +426,16 @@ export default function UserManagement() {
         onSave={handleSave}
         onFormChange={setFormData}
         onTogglePassword={() => setShowPassword(v => !v)}
+      />
+
+      {/* 삭제 확인 다이얼로그 */}
+      <ConfirmDialog
+        open={deleteConfirmId !== null}
+        title="사용자 삭제"
+        message="정말 이 사용자를 삭제하시겠습니까?"
+        confirmLabel="삭제"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteConfirmId(null)}
       />
     </Box>
   )

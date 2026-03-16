@@ -8,6 +8,7 @@ import {
 import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
 import type { OrgMember } from '@/api/types/reviewer'
 import type { IdeaStatus, Idea } from '@/api/types/settings'
@@ -21,6 +22,7 @@ export default function ReviewChange() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
+  const { showSnackbar } = useSnackbar()
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIdeaId, setSelectedIdeaId] = useState<string | null>(null)
@@ -63,7 +65,7 @@ export default function ReviewChange() {
   }
 
   const handleSave = () => {
-    alert('변경사항이 저장되었습니다.')
+    showSnackbar('변경사항이 저장되었습니다.', 'success')
   }
 
   return (

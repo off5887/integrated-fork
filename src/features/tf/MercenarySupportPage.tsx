@@ -5,6 +5,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
 import { Box, Chip, Grid, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { usePageColors } from '@/theme/pageColors'
 import TFIdeaCard from './components/TFIdeaCard'
 import { mockIdeas } from '@/api/mock/mercenary'
@@ -15,9 +16,10 @@ export default function MercenarySupportPage() {
   const [ideas] = useState(mockIdeas)
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
+  const { showSnackbar } = useSnackbar()
 
   const handleApply = (id: number) => {
-    alert(`아이디어 #${id}에 용병 지원 완료되었습니다!`)
+    showSnackbar(`아이디어 #${id}에 용병 지원 완료되었습니다!`, 'success')
   }
 
   return (

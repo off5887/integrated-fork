@@ -10,6 +10,7 @@ import {
 import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
 import type { MileageMember, MileageEntry } from '@/api/types/settings'
 import MileageOrgPanel from './MileageOrgPanel'
@@ -19,6 +20,7 @@ export default function SpecialMileage() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
+  const { showSnackbar } = useSnackbar()
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<MileageEntry[]>([])
@@ -50,10 +52,10 @@ export default function SpecialMileage() {
       (s) => s.score === '' && s.mileage === '',
     )
     if (incomplete.length > 0) {
-      alert('점수 또는 마일리지를 하나 이상 입력해주세요.')
+      showSnackbar('점수 또는 마일리지를 하나 이상 입력해주세요.', 'warning')
       return
     }
-    alert(`${selected.length}명에게 특별 마일리지/점수가 지급되었습니다.`)
+    showSnackbar(`${selected.length}명에게 특별 마일리지/점수가 지급되었습니다.`, 'success')
   }
 
   return (

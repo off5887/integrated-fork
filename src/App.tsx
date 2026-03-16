@@ -3,6 +3,7 @@ import { CssBaseline } from '@mui/material'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
 
 import { ThemeProvider } from './context/ThemeContext'
+import { SnackbarProvider } from './context/SnackbarContext'
 import { lightTheme } from './theme'
 import AppRoutes from './routes'
 
@@ -11,7 +12,9 @@ export default function App() {
     <ThemeProvider>
       <MuiThemeProvider theme={lightTheme}>
         <CssBaseline />
-        <AppRoutes />
+        <SnackbarProvider>
+          <AppRoutes />
+        </SnackbarProvider>
       </MuiThemeProvider>
     </ThemeProvider>
   )
