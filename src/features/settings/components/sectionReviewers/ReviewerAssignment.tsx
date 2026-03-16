@@ -42,6 +42,11 @@ const ReviewerAssignment: React.FC = () => {
     setSelected((prev) => prev.filter((r) => r.id !== id))
   }
 
+  const handleAdd = (member: OrgMember, level: 1 | 2 | 3) => {
+    if (selected.some((s) => s.id === member.id)) return
+    setSelected((prev) => [...prev, { ...member, level }])
+  }
+
   const handleAutoAssignTeamLeaders = () => {
     const teamLeaders = mockOrganization
       .filter(
@@ -87,7 +92,7 @@ const ReviewerAssignment: React.FC = () => {
               부문별 심사자 배정
             </Typography>
             <Typography variant="caption" sx={{ color: textSecondary }}>
-              조직도에서 드래그해 심사 단계별로 배정하세요
+              조직도에서 드래그하거나 탭해 심사 단계별로 배정하세요
             </Typography>
           </Box>
         </Box>
@@ -149,6 +154,8 @@ const ReviewerAssignment: React.FC = () => {
             members={mockOrganization}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            selectedIds={selected.map((s) => s.id)}
+            onAdd={handleAdd}
           />
         </Grid>
         <Grid size={{ xs: 12, lg: 8 }}>
