@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 *.md
+*.bak
 !CLAUDE.md
 !README.md
