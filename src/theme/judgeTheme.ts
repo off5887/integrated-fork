@@ -1,6 +1,45 @@
 // src/theme/judgeTheme.ts
 
 const judgeLight = {
+  // ── 그라디언트 (light/dark 동일) ──────────────────────────────────────────
+  accentGradient:          'linear-gradient(90deg, #6366f1, #8b5cf6)',
+  accentGradientExtended:  'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+  accentGradientDiag:      'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  rejectGradient:          'linear-gradient(90deg, #ef4444, #f97316)',
+  withdrawApproveGradient: 'linear-gradient(90deg, #f97316, #fb923c)',
+  withdrawRejectGradient:  'linear-gradient(90deg, #0d9488, #14b8a6)',
+
+  // ── 섹션 번호 뱃지 (light/dark 동일) ─────────────────────────────────────
+  sectionNumBg:    '#6366f1',
+  sectionNumColor: '#fff',
+
+  // ── Primary 버튼 (승인·변경 등, light/dark 동일) ──────────────────────────
+  primaryBtnBg:      '#6366f1',
+  primaryBtnHoverBg: '#4f46e5',
+  primaryBtnColor:   '#fff',
+
+  // ── 모달 헤더 아이콘 원형 (light/dark 동일) ────────────────────────────────
+  modalIconBg:    '#6366f1',
+  modalIconColor: '#fff',
+
+  // ── 시맨틱 아이콘 색상 (light/dark 동일) ─────────────────────────────────
+  primaryIconColor:  '#6366f1',
+  proposerIconColor: '#8b5cf6',
+  warningIconColor:  '#f59e0b',
+
+  // ── 시맨틱 액션 색상 (light/dark 동일) ───────────────────────────────────
+  withdrawApproveColor: '#f97316',
+  withdrawRejectColor:  '#0d9488',
+  rejectColor:          '#ef4444',
+
+  // ── 인풋 상호작용 색상 (light/dark 동일) ─────────────────────────────────
+  inputErrorColor:  '#ef4444',
+  inputFocusColor:  '#6366f1',
+  inputHoverBorder: '#6366f166',
+
+  // ── 닫기 아이콘 hover 텍스트 색 (light/dark 동일) ─────────────────────────
+  closeIconHoverColor: '#ef4444',
+
   // ── 텍스트 ────────────────────────────────────────────────────────────────
   textBody: '#334155',
 
@@ -140,6 +179,37 @@ const judgeLight = {
 } as const
 
 const judgeDark = {
+  accentGradient:          'linear-gradient(90deg, #6366f1, #8b5cf6)',
+  accentGradientExtended:  'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+  accentGradientDiag:      'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  rejectGradient:          'linear-gradient(90deg, #ef4444, #f97316)',
+  withdrawApproveGradient: 'linear-gradient(90deg, #f97316, #fb923c)',
+  withdrawRejectGradient:  'linear-gradient(90deg, #0d9488, #14b8a6)',
+
+  sectionNumBg:    '#6366f1',
+  sectionNumColor: '#fff',
+
+  primaryBtnBg:      '#6366f1',
+  primaryBtnHoverBg: '#4f46e5',
+  primaryBtnColor:   '#fff',
+
+  modalIconBg:    '#6366f1',
+  modalIconColor: '#fff',
+
+  primaryIconColor:  '#6366f1',
+  proposerIconColor: '#8b5cf6',
+  warningIconColor:  '#f59e0b',
+
+  withdrawApproveColor: '#f97316',
+  withdrawRejectColor:  '#0d9488',
+  rejectColor:          '#ef4444',
+
+  inputErrorColor:  '#ef4444',
+  inputFocusColor:  '#6366f1',
+  inputHoverBorder: '#6366f166',
+
+  closeIconHoverColor: '#ef4444',
+
   textBody: '#cbd5e1',
 
   dialogBg:        'rgba(22,30,46,0.98)',

@@ -20,7 +20,7 @@ export default function ExecutionPlanSection({ executionPlan }: Props) {
         <Box
           sx={{
             width: 26, height: 26, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: theme.sectionNumBg, color: theme.sectionNumColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
           }}
@@ -40,7 +40,7 @@ export default function ExecutionPlanSection({ executionPlan }: Props) {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <DescriptionIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+          <DescriptionIcon sx={{ color: theme.primaryIconColor, fontSize: '1.1rem' }} />
           <Typography variant="body2" fontWeight={600} sx={{ color: theme.solutionLabelColor }}>
             실행 단계
           </Typography>

@@ -29,7 +29,7 @@ export default function ScheduleSection({ startDate, endDate, scope }: Props) {
         <Box
           sx={{
             width: 26, height: 26, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: theme.sectionNumBg, color: theme.sectionNumColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
           }}
@@ -44,7 +44,7 @@ export default function ScheduleSection({ startDate, endDate, scope }: Props) {
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
         <Box sx={panelBase}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-            <CalendarTodayIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+            <CalendarTodayIcon sx={{ color: theme.primaryIconColor, fontSize: '1.1rem' }} />
             <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
               실행 기간
             </Typography>
@@ -56,7 +56,7 @@ export default function ScheduleSection({ startDate, endDate, scope }: Props) {
 
         <Box sx={panelBase}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-            <PublicIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+            <PublicIcon sx={{ color: theme.primaryIconColor, fontSize: '1.1rem' }} />
             <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
               공개 범위
             </Typography>

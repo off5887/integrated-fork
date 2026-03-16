@@ -99,7 +99,7 @@ export default function ReviewerChangeModal({
       }}
     >
       {/* 상단 그라디언트 스트립 */}
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
+      <Box sx={{ height: 3, background: theme.accentGradient }} />
 
       {/* 헤더 */}
       <Box
@@ -118,8 +118,8 @@ export default function ReviewerChangeModal({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            bgcolor: '#6366f1',
-            color: '#fff',
+            bgcolor: theme.modalIconBg,
+            color: theme.modalIconColor,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -229,7 +229,7 @@ export default function ReviewerChangeModal({
               '&:hover fieldset': {
                 borderColor: theme.searchHoverBorder,
               },
-              '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+              '&.Mui-focused fieldset': { borderColor: theme.inputFocusColor },
             },
             '& .MuiInputBase-input': {
               color: colors.textPrimary,
@@ -413,11 +413,11 @@ export default function ReviewerChangeModal({
             fontWeight: 700,
             fontSize: '0.82rem',
             textTransform: 'none',
-            bgcolor: '#6366f1',
-            color: '#fff',
+            bgcolor: theme.primaryBtnBg,
+            color: theme.primaryBtnColor,
             boxShadow: 'none',
             '&:hover': {
-              bgcolor: '#4f46e5',
+              bgcolor: theme.primaryBtnHoverBg,
               boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
             },
             '&.Mui-disabled': { opacity: 0.38 },

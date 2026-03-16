@@ -120,12 +120,12 @@ export default function JudgeDecisionModal({
         sx={{
           height: 3,
           background: isApprove
-            ? 'linear-gradient(90deg, #6366f1, #8b5cf6)'
+            ? theme.accentGradient
             : type === '반려'
-            ? 'linear-gradient(90deg, #ef4444, #f97316)'
+            ? theme.rejectGradient
             : type === '승인회수'
-            ? 'linear-gradient(90deg, #f97316, #fb923c)'
-            : 'linear-gradient(90deg, #0d9488, #14b8a6)',
+            ? theme.withdrawApproveGradient
+            : theme.withdrawRejectGradient,
         }}
       />
 
@@ -266,9 +266,9 @@ export default function JudgeDecisionModal({
                     bgcolor: theme.decisionInputBg,
                     fontSize: '0.875rem',
                     color: colors.textPrimary,
-                    '& fieldset': { borderColor: isScoreError ? '#ef4444' : colors.borderColor },
-                    '&:hover fieldset': { borderColor: isScoreError ? '#ef4444' : '#6366f166' },
-                    '&.Mui-focused fieldset': { borderColor: isScoreError ? '#ef4444' : '#6366f1' },
+                    '& fieldset': { borderColor: isScoreError ? theme.inputErrorColor : colors.borderColor },
+                    '&:hover fieldset': { borderColor: isScoreError ? theme.inputErrorColor : theme.inputHoverBorder },
+                    '&.Mui-focused fieldset': { borderColor: isScoreError ? theme.inputErrorColor : theme.inputFocusColor },
                   },
                   '& .MuiInputBase-input': { color: colors.textPrimary, '&::placeholder': { color: colors.textSecondary, opacity: 1 } },
                   '& .MuiFormHelperText-root': { fontSize: '0.72rem', mt: 0.5, mx: 0 },
@@ -298,9 +298,9 @@ export default function JudgeDecisionModal({
                     bgcolor: theme.decisionInputBg,
                     fontSize: '0.875rem',
                     color: colors.textPrimary,
-                    '& fieldset': { borderColor: isMileageError ? '#ef4444' : colors.borderColor },
-                    '&:hover fieldset': { borderColor: isMileageError ? '#ef4444' : '#6366f166' },
-                    '&.Mui-focused fieldset': { borderColor: isMileageError ? '#ef4444' : '#6366f1' },
+                    '& fieldset': { borderColor: isMileageError ? theme.inputErrorColor : colors.borderColor },
+                    '&:hover fieldset': { borderColor: isMileageError ? theme.inputErrorColor : theme.inputHoverBorder },
+                    '&.Mui-focused fieldset': { borderColor: isMileageError ? theme.inputErrorColor : theme.inputFocusColor },
                   },
                   '& .MuiInputBase-input': { color: colors.textPrimary, '&::placeholder': { color: colors.textSecondary, opacity: 1 } },
                   '& .MuiFormHelperText-root': { fontSize: '0.72rem', mt: 0.5, mx: 0 },
@@ -323,7 +323,7 @@ export default function JudgeDecisionModal({
             <Typography
               variant="caption"
               sx={{
-                color: isOverLimit ? '#ef4444' : colors.textSecondary,
+                color: isOverLimit ? theme.inputErrorColor : colors.textSecondary,
                 fontSize: '0.72rem',
                 fontVariantNumeric: 'tabular-nums',
               }}
@@ -364,13 +364,13 @@ export default function JudgeDecisionModal({
                 color: colors.textPrimary,
                 alignItems: 'flex-start',
                 '& fieldset': {
-                  borderColor: isError || isOverLimit ? '#ef4444' : colors.borderColor,
+                  borderColor: isError || isOverLimit ? theme.inputErrorColor : colors.borderColor,
                 },
                 '&:hover fieldset': {
-                  borderColor: isError || isOverLimit ? '#ef4444' : dc.color + '66',
+                  borderColor: isError || isOverLimit ? theme.inputErrorColor : dc.color + '66',
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: isError || isOverLimit ? '#ef4444' : dc.color,
+                  borderColor: isError || isOverLimit ? theme.inputErrorColor : dc.color,
                 },
               },
               '& .MuiInputBase-input': {
@@ -442,10 +442,10 @@ export default function JudgeDecisionModal({
             boxShadow: 'none',
             ...(isApprove
               ? {
-                  bgcolor: '#6366f1',
-                  color: '#fff',
+                  bgcolor: theme.primaryBtnBg,
+                  color: theme.primaryBtnColor,
                   '&:hover': {
-                    bgcolor: '#4f46e5',
+                    bgcolor: theme.primaryBtnHoverBg,
                     boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
                   },
                 }
@@ -456,19 +456,19 @@ export default function JudgeDecisionModal({
                   border: `1px solid ${dc.border}`,
                   '&:hover': {
                     bgcolor: dc.color,
-                    color: '#fff',
+                    color: theme.primaryBtnColor,
                     border: `1px solid ${dc.color}`,
                     boxShadow: `0 4px 14px ${dc.color}59`,
                   },
                 }
               : {
                   bgcolor: theme.rejectBtnBg,
-                  color: '#ef4444',
+                  color: theme.rejectColor,
                   border: `1px solid ${theme.rejectBtnBorder}`,
                   '&:hover': {
-                    bgcolor: '#ef4444',
-                    color: '#fff',
-                    border: '1px solid #ef4444',
+                    bgcolor: theme.rejectColor,
+                    color: theme.primaryBtnColor,
+                    border: `1px solid ${theme.rejectColor}`,
                     boxShadow: '0 4px 14px rgba(239,68,68,0.35)',
                   },
                 }),

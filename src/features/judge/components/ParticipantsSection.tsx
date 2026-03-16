@@ -32,7 +32,7 @@ export default function ParticipantsSection({ reviewer1, reviewer2, reviewer3, r
         <Box
           sx={{
             width: 26, height: 26, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: theme.sectionNumBg, color: theme.sectionNumColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
           }}
@@ -54,7 +54,7 @@ export default function ParticipantsSection({ reviewer1, reviewer2, reviewer3, r
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <PersonAddIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+            <PersonAddIcon sx={{ color: theme.primaryIconColor, fontSize: '1.1rem' }} />
             <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
               심사자
             </Typography>
@@ -129,7 +129,7 @@ export default function ParticipantsSection({ reviewer1, reviewer2, reviewer3, r
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <GroupAddIcon sx={{ color: '#8b5cf6', fontSize: '1.1rem' }} />
+            <GroupAddIcon sx={{ color: theme.proposerIconColor, fontSize: '1.1rem' }} />
             <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
               공동제안자
             </Typography>

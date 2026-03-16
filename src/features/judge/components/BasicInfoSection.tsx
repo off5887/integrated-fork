@@ -22,7 +22,7 @@ export default function BasicInfoSection({ problem, solution }: Props) {
         <Box
           sx={{
             width: 26, height: 26, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: theme.sectionNumBg, color: theme.sectionNumColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
           }}
@@ -43,7 +43,7 @@ export default function BasicInfoSection({ problem, solution }: Props) {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-            <WarningAmberIcon sx={{ color: '#f59e0b', fontSize: '1.1rem' }} />
+            <WarningAmberIcon sx={{ color: theme.warningIconColor, fontSize: '1.1rem' }} />
             <Typography variant="body1" fontWeight={700} sx={{ color: theme.problemLabelColor, fontSize: '0.875rem' }}>
               문제점 도출
             </Typography>
@@ -61,7 +61,7 @@ export default function BasicInfoSection({ problem, solution }: Props) {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-            <LightbulbIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+            <LightbulbIcon sx={{ color: theme.primaryIconColor, fontSize: '1.1rem' }} />
             <Typography variant="body1" fontWeight={700} sx={{ color: theme.solutionLabelColor, fontSize: '0.875rem' }}>
               해결 대안
             </Typography>

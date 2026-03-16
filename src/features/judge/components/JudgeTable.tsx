@@ -55,7 +55,7 @@ export default function JudgeTable({
         overflow: 'hidden',
       }}
     >
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+      <Box sx={{ height: 3, background: theme.accentGradientExtended }} />
 
       {/* 테이블 — 모바일 수평 스크롤 */}
       <Box sx={{ overflowX: 'auto' }}>
@@ -262,7 +262,7 @@ export default function JudgeTable({
                             '&:hover': {
                               bgcolor: theme.reviewerBtnHoverBg,
                               borderColor: theme.reviewerBtnHoverBorder,
-                              color: '#6366f1',
+                              color: theme.primaryIconColor,
                             },
                             '&.Mui-disabled': { opacity: 0.28 },
                             transition: 'all 0.15s ease',
@@ -289,7 +289,7 @@ export default function JudgeTable({
                           height: 30,
                           '&:hover': {
                             bgcolor: theme.viewBtnHoverBg,
-                            color: '#6366f1',
+                            color: theme.primaryIconColor,
                           },
                           transition: 'all 0.15s ease',
                         }}

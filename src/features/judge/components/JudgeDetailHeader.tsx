@@ -20,7 +20,7 @@ export default function JudgeDetailHeader({ title, reviewStage, onClose }: Props
 
   return (
     <>
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+      <Box sx={{ height: 3, background: theme.accentGradientExtended }} />
       <Box
         sx={{
           px: { xs: 3, md: 5 },
@@ -34,13 +34,13 @@ export default function JudgeDetailHeader({ title, reviewStage, onClose }: Props
         <Box
           sx={{
             width: 36, height: 36, borderRadius: 2,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: theme.accentGradientDiag,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
             boxShadow: '0 2px 8px rgba(99,102,241,0.3)',
           }}
         >
-          <GavelIcon sx={{ color: '#fff', fontSize: '1.1rem' }} />
+          <GavelIcon sx={{ color: theme.modalIconColor, fontSize: '1.1rem' }} />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
           <Typography
@@ -73,7 +73,7 @@ export default function JudgeDetailHeader({ title, reviewStage, onClose }: Props
             width: 32, height: 32,
             '&:hover': {
               bgcolor: theme.closeIconHoverBg,
-              color: '#ef4444',
+              color: theme.closeIconHoverColor,
             },
             transition: 'all 0.15s ease',
           }}

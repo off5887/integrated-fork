@@ -179,14 +179,14 @@ export default function Judge() {
               width: 44,
               height: 44,
               borderRadius: 2.5,
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              background: theme.accentGradientDiag,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
             }}
           >
-            <AssignmentTurnedInIcon sx={{ color: '#fff', fontSize: '1.4rem' }} />
+            <AssignmentTurnedInIcon sx={{ color: theme.primaryBtnColor, fontSize: '1.4rem' }} />
           </Box>
           <Box>
             <Typography
