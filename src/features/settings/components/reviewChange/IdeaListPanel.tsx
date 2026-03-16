@@ -13,6 +13,7 @@ import {
 import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import { statusConfig } from '../../config/statusConfig'
 import type { Idea } from '@/api/types/settings'
 
@@ -33,7 +34,7 @@ export default function IdeaListPanel({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const panelBg = isDarkMode ? 'rgba(22,30,46,0.6)' : '#fafbff'
+  const st = getSettingsTheme(isDarkMode)
 
   const isMobile = useMediaQuery('(max-width: 1199px)')
   const [listPanelOpen, setListPanelOpen] = useState(false)
@@ -42,7 +43,7 @@ export default function IdeaListPanel({
   return (
     <Box
       sx={{
-        bgcolor: panelBg,
+        bgcolor: st.panelBg,
         border: `1px solid ${borderColor}`,
         borderRadius: 2.5,
         overflow: 'hidden',
@@ -62,19 +63,17 @@ export default function IdeaListPanel({
           cursor: isMobile ? 'pointer' : 'default',
           userSelect: 'none',
           transition: 'background 0.15s ease',
-          '&:hover': isMobile
-            ? { bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)' }
-            : {},
+          '&:hover': isMobile ? { bgcolor: st.memberRowHoverBg } : {},
         }}
       >
         <LightbulbOutlinedIcon
-          sx={{ fontSize: '1rem', color: isDarkMode ? '#a5b4fc' : '#4338ca' }}
+          sx={{ fontSize: '1rem', color: st.primaryColor }}
         />
         <Typography
           variant="caption"
           fontWeight={700}
           sx={{
-            color: isDarkMode ? '#a5b4fc' : '#4338ca',
+            color: st.primaryColor,
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
             fontSize: '0.72rem',
@@ -90,9 +89,9 @@ export default function IdeaListPanel({
             height: 18,
             fontSize: '0.65rem',
             fontWeight: 700,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-            color: isDarkMode ? '#a5b4fc' : '#4338ca',
-            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+            bgcolor: st.chipBg,
+            color: st.primaryColor,
+            border: `1px solid ${st.avatarBorder}`,
             '& .MuiChip-label': { px: 0.75 },
           }}
         />
@@ -100,7 +99,7 @@ export default function IdeaListPanel({
           <ExpandMoreIcon
             sx={{
               fontSize: '1.1rem',
-              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              color: st.primaryColor,
               ml: 0.5,
               transition: 'transform 0.2s ease',
               transform: listPanelOpen ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -134,15 +133,11 @@ export default function IdeaListPanel({
             mb: 2,
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
-              bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+              bgcolor: st.inputBg,
               fontSize: '0.875rem',
               '& fieldset': { borderColor },
-              '&:hover fieldset': {
-                borderColor: isDarkMode
-                  ? 'rgba(99,102,241,0.35)'
-                  : 'rgba(99,102,241,0.3)',
-              },
-              '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+              '&:hover fieldset': { borderColor: st.inputHoverBorder },
+              '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
             },
             '& .MuiInputBase-input': {
               color: textPrimary,
@@ -163,15 +158,11 @@ export default function IdeaListPanel({
             '&::-webkit-scrollbar': { width: 4 },
             '&::-webkit-scrollbar-track': { background: 'transparent' },
             '&::-webkit-scrollbar-thumb': {
-              background: isDarkMode
-                ? 'rgba(99,102,241,0.25)'
-                : 'rgba(99,102,241,0.2)',
+              background: st.scrollbarThumb,
               borderRadius: 9999,
             },
             scrollbarWidth: 'thin',
-            scrollbarColor: isDarkMode
-              ? 'rgba(99,102,241,0.25) transparent'
-              : 'rgba(99,102,241,0.2) transparent',
+            scrollbarColor: `${st.scrollbarThumb} transparent`,
           }}
         >
           {ideas.length === 0 ? (
@@ -195,24 +186,12 @@ export default function IdeaListPanel({
                     p: 1.5,
                     borderRadius: 2,
                     border: `1px solid ${isSelected ? sc.border(isDarkMode) : borderColor}`,
-                    bgcolor: isSelected
-                      ? sc.bg(isDarkMode)
-                      : isDarkMode
-                      ? 'rgba(30,41,59,0.5)'
-                      : '#ffffff',
+                    bgcolor: isSelected ? sc.bg(isDarkMode) : st.memberRowBg,
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                     '&:hover': {
-                      bgcolor: isSelected
-                        ? sc.bg(isDarkMode)
-                        : isDarkMode
-                        ? 'rgba(99,102,241,0.07)'
-                        : 'rgba(99,102,241,0.04)',
-                      borderColor: isSelected
-                        ? sc.border(isDarkMode)
-                        : isDarkMode
-                        ? 'rgba(99,102,241,0.2)'
-                        : 'rgba(99,102,241,0.15)',
+                      bgcolor: isSelected ? sc.bg(isDarkMode) : st.memberRowHoverBg,
+                      borderColor: isSelected ? sc.border(isDarkMode) : st.memberRowHoverBorder,
                     },
                   }}
                 >

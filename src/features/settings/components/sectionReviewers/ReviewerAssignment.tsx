@@ -5,12 +5,16 @@ import { Box, Button, Grid, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { OrgMember, SelectedReviewer } from '@/api/types/reviewer'
 import { usePageColors } from '@/theme/pageColors'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import { mockOrganization } from '@/api/mock/settings'
 import OrgPanel from './OrgPanel'
 import SelectedReviewersPanel from './SelectedReviewersPanel'
 
 const ReviewerAssignment: React.FC = () => {
-  const { isDarkMode, textPrimary, textSecondary, borderColor, accentColor, accentBg } = usePageColors()
+  const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor, accentColor, accentBg } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<SelectedReviewer[]>([])
@@ -47,7 +51,6 @@ const ReviewerAssignment: React.FC = () => {
   }
 
   const handleSave = () => {
-    console.log('저장할 심사자:', selected)
     alert(`총 ${selected.length}명 심사자 저장 완료!`)
   }
 
@@ -70,7 +73,7 @@ const ReviewerAssignment: React.FC = () => {
           <Box
             sx={{
               width: 26, height: 26, borderRadius: '50%',
-              bgcolor: '#6366f1', color: '#fff',
+              bgcolor: st.primaryColor, color: st.primaryBtnColor,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}
@@ -100,11 +103,11 @@ const ReviewerAssignment: React.FC = () => {
               fontWeight: 700,
               fontSize: '0.82rem',
               textTransform: 'none',
-              borderColor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.35)',
+              borderColor: st.outlinedBtnBorder,
               color: accentColor,
               '&:hover': {
                 bgcolor: accentBg,
-                borderColor: '#6366f1',
+                borderColor: st.primaryColor,
               },
               transition: 'all 0.15s ease',
             }}
@@ -123,12 +126,12 @@ const ReviewerAssignment: React.FC = () => {
               fontWeight: 700,
               fontSize: '0.82rem',
               textTransform: 'none',
-              bgcolor: '#6366f1',
-              color: '#fff',
+              bgcolor: st.primaryColor,
+              color: st.primaryBtnColor,
               boxShadow: 'none',
               '&:hover': {
-                bgcolor: '#4f46e5',
-                boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+                bgcolor: st.primaryHoverBg,
+                boxShadow: st.primaryBtnHoverShadow,
               },
               transition: 'all 0.2s ease',
             }}

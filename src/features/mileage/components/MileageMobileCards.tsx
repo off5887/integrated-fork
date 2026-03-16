@@ -2,20 +2,21 @@
 import { Box, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getMileageTheme } from '@/theme/mileageTheme'
+import type { AwardItem } from '@/api/types/mileage'
 
 interface Props {
-  data: any[]
-}
-
-const STATUS_MAP: Record<string, { color: string; bg: string; border: string }> = {
-  전환완료:   { color: '#10b981', bg: '#10b98112', border: '#10b98128' },
-  전환요청중: { color: '#f59e0b', bg: '#f59e0b12', border: '#f59e0b28' },
-  default:   { color: '#ef4444', bg: '#ef444412', border: '#ef444428' },
+  data: AwardItem[]
 }
 
 export default function MileageMobileCards({ data }: Props) {
   const { isDarkMode } = useThemeMode()
   const t = getMileageTheme(isDarkMode)
+
+  const statusMap: Record<string, { color: string; bg: string; border: string }> = {
+    전환완료:   { color: t.statusSuccessColor, bg: t.statusSuccessBg, border: t.statusSuccessBorder },
+    전환요청중: { color: t.statusWarningColor, bg: t.statusWarningBg, border: t.statusWarningBorder },
+    default:   { color: t.statusErrorColor,   bg: t.statusErrorBg,   border: t.statusErrorBorder },
+  }
 
   if (data.length === 0) {
     return (
@@ -28,7 +29,7 @@ export default function MileageMobileCards({ data }: Props) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {data.map((item) => {
-        const statusStyle = STATUS_MAP[item.status] ?? STATUS_MAP.default
+        const statusStyle = statusMap[item.status] ?? statusMap.default
 
         return (
           <Box
@@ -83,7 +84,7 @@ export default function MileageMobileCards({ data }: Props) {
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="caption" sx={{ color: t.textSecondary, fontWeight: 500 }}>생선</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                  <Typography variant="body2" fontWeight={800} sx={{ color: '#6366f1' }}>
+                  <Typography variant="body2" fontWeight={800} sx={{ color: t.primaryColor }}>
                     {item.fish.toLocaleString()}
                   </Typography>
                   <Typography variant="caption" sx={{ color: t.textSecondary, fontWeight: 500 }}>마리</Typography>

@@ -18,6 +18,7 @@ import {
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import { mockDepartments } from '@/api/mock/settings'
 import type { User } from '@/api/types/settings'
 
@@ -44,18 +45,19 @@ export default function UserFormDialog({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
 
   const inputSx = {
     '& .MuiOutlinedInput-root': {
       borderRadius: 2,
-      bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+      bgcolor: st.inputBg,
       fontSize: '0.875rem',
       '& fieldset': { borderColor },
-      '&:hover fieldset': { borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)' },
-      '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+      '&:hover fieldset': { borderColor: st.inputHoverBorder },
+      '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
     },
     '& .MuiInputBase-input': { color: textPrimary },
-    '& .MuiInputLabel-root': { color: textSecondary, '&.Mui-focused': { color: '#6366f1' } },
+    '& .MuiInputLabel-root': { color: textSecondary, '&.Mui-focused': { color: st.inputFocusBorder } },
   }
 
   return (
@@ -67,7 +69,7 @@ export default function UserFormDialog({
       slotProps={{
         paper: {
           sx: {
-            bgcolor: isDarkMode ? 'rgba(15,23,42,0.98)' : '#ffffff',
+            bgcolor: st.dialogBg,
             border: `1px solid ${borderColor}`,
             borderRadius: 3,
             overflow: 'hidden',
@@ -76,16 +78,16 @@ export default function UserFormDialog({
         },
       }}
     >
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+      <Box sx={{ height: 3, background: st.headerGradient }} />
       <Box sx={{ px: 3.5, py: 2.5, display: 'flex', alignItems: 'center', gap: 1.5, borderBottom: `1px solid ${borderColor}` }}>
         <Box
           sx={{
             width: 32, height: 32, borderRadius: 2,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: st.iconGradient,
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}
         >
-          <ManageAccountsIcon sx={{ color: '#fff', fontSize: '1rem' }} />
+          <ManageAccountsIcon sx={{ color: st.primaryBtnColor, fontSize: '1rem' }} />
         </Box>
         <Typography variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, flex: 1 }}>
           {isEditing ? '사용자 수정' : '새 사용자 추가'}
@@ -95,7 +97,7 @@ export default function UserFormDialog({
           onClick={onClose}
           sx={{
             color: textSecondary,
-            '&:hover': { color: '#ef4444', bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)' },
+            '&:hover': { color: st.deleteHoverColor, bgcolor: st.deleteHoverBg },
             transition: 'all 0.15s ease',
           }}
         >
@@ -187,7 +189,7 @@ export default function UserFormDialog({
           px: 3.5, py: 2.5,
           display: 'flex', justifyContent: 'flex-end', gap: 1.5,
           borderTop: `1px solid ${borderColor}`,
-          bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : 'rgba(248,250,252,0.8)',
+          bgcolor: st.dialogFooterBg,
         }}
       >
         <Button
@@ -197,7 +199,7 @@ export default function UserFormDialog({
             borderRadius: 9999, px: 2.5, py: 0.8,
             fontWeight: 600, fontSize: '0.82rem', textTransform: 'none',
             color: textSecondary,
-            '&:hover': { bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(100,116,139,0.06)' },
+            '&:hover': { bgcolor: st.cancelBtnHoverBg },
           }}
         >
           취소
@@ -209,8 +211,8 @@ export default function UserFormDialog({
           sx={{
             borderRadius: 9999, px: 2.5, py: 0.8,
             fontWeight: 700, fontSize: '0.82rem', textTransform: 'none',
-            bgcolor: '#6366f1', color: '#fff', boxShadow: 'none',
-            '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 6px 20px rgba(99,102,241,0.4)' },
+            bgcolor: st.primaryColor, color: st.primaryBtnColor, boxShadow: 'none',
+            '&:hover': { bgcolor: st.primaryHoverBg, boxShadow: st.primaryBtnHoverShadow },
             transition: 'all 0.2s ease',
           }}
         >

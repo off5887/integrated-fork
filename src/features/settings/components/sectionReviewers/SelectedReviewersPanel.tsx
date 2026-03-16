@@ -10,6 +10,8 @@ import {
 import React from 'react'
 import { SelectedReviewer } from '@/api/types/reviewer'
 import { usePageColors } from '@/theme/pageColors'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import { levelConfig } from '../../config/levelConfig'
 
 interface Props {
@@ -25,7 +27,9 @@ const SelectedReviewersPanel: React.FC<Props> = ({
   onDelete,
   onDrop,
 }) => {
-  const { isDarkMode, textPrimary, textSecondary, borderColor } = usePageColors()
+  const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
 
   const byLevel = (level: 1 | 2 | 3) => selected.filter((r) => r.level === level)
 
@@ -61,7 +65,7 @@ const SelectedReviewersPanel: React.FC<Props> = ({
                 sx={{
                   width: 22, height: 22, borderRadius: '50%',
                   bgcolor: cfg.accent,
-                  color: '#fff',
+                  color: st.primaryBtnColor,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '0.65rem', fontWeight: 800, flexShrink: 0,
                   fontFamily: 'monospace',
@@ -96,7 +100,7 @@ const SelectedReviewersPanel: React.FC<Props> = ({
               sx={{
                 minHeight: 90,
                 p: 1.5,
-                bgcolor: isDarkMode ? 'rgba(15,23,42,0.3)' : '#fafafa',
+                bgcolor: st.dropZoneBg,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 1,
@@ -132,7 +136,7 @@ const SelectedReviewersPanel: React.FC<Props> = ({
                       alignItems: 'center',
                       gap: 1.5,
                       p: 1.5,
-                      bgcolor: isDarkMode ? 'rgba(30,41,59,0.5)' : '#ffffff',
+                      bgcolor: st.reviewerItemBg,
                       border: `1px solid ${borderColor}`,
                       borderRadius: 2,
                       transition: 'all 0.15s ease',
@@ -196,9 +200,9 @@ const SelectedReviewersPanel: React.FC<Props> = ({
                         color: textSecondary,
                         opacity: 0.6,
                         '&:hover': {
-                          color: '#ef4444',
+                          color: st.deleteHoverColor,
                           opacity: 1,
-                          bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)',
+                          bgcolor: st.deleteHoverBg,
                         },
                         transition: 'all 0.15s ease',
                       }}

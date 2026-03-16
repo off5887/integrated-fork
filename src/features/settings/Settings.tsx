@@ -8,6 +8,7 @@ import { type ComponentType, type ReactNode, useState } from 'react'
 import { type SvgIconProps } from '@mui/material/SvgIcon'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import ReviewChange from './components/reviewChange/ReviewChange'
 import ReviewerAssignment from './components/sectionReviewers/ReviewerAssignment'
 import SpecialMileage from './components/specialMileage/SpecialMileage'
@@ -55,14 +56,15 @@ function TabPanel({ children, value, index }: TabPanelProps) {
 
 export default function Settings() {
   const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor } = usePageColors()
+  const { textPrimary, textSecondary, borderColor, bgBase, cardBg, cardShadow, accentColor } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
   const [tabValue, setTabValue] = useState(0)
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: isDarkMode ? '#0a0f1e' : '#f1f5f9',
+        bgcolor: bgBase,
         pt: { xs: 6, md: 8 },
         pb: 14,
         px: { xs: 2, sm: 3, md: 4 },
@@ -83,13 +85,13 @@ export default function Settings() {
           <Box
             sx={{
               width: 48, height: 48, borderRadius: 3,
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              background: st.iconGradient,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 4px 18px rgba(99,102,241,0.38)',
               flexShrink: 0,
             }}
           >
-            <AdminPanelSettingsIcon sx={{ color: '#fff', fontSize: '1.6rem' }} />
+            <AdminPanelSettingsIcon sx={{ color: st.primaryBtnColor, fontSize: '1.6rem' }} />
           </Box>
 
           <Box>
@@ -105,9 +107,9 @@ export default function Settings() {
                 label="ADMIN"
                 size="small"
                 sx={{
-                  bgcolor: 'rgba(99,102,241,0.1)',
-                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                  border: `1px solid rgba(99,102,241,0.25)`,
+                  bgcolor: st.adminChipBg,
+                  color: accentColor,
+                  border: `1px solid ${st.adminChipBorder}`,
                   fontWeight: 800,
                   fontSize: '0.65rem',
                   letterSpacing: '0.08em',
@@ -125,17 +127,15 @@ export default function Settings() {
         {/* 탭 네비게이션 */}
         <Box
           sx={{
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.95)' : '#ffffff',
+            bgcolor: cardBg,
             borderRadius: 3,
             border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode
-              ? '0 8px 32px rgba(0,0,0,0.4)'
-              : '0 4px 24px rgba(0,0,0,0.06)',
+            boxShadow: cardShadow,
             overflow: 'hidden',
           }}
         >
           {/* 상단 그라디언트 스트립 */}
-          <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+          <Box sx={{ height: 3, background: st.headerGradient }} />
 
           <Box sx={{ borderBottom: `1px solid ${borderColor}` }}>
             <Tabs
@@ -156,12 +156,10 @@ export default function Settings() {
                   minWidth: { xs: 'auto', md: 120 },
                   px: { xs: 1.5, sm: 2, md: 3 },
                   gap: { xs: 0.5, md: 1 },
-                  '&.Mui-selected': {
-                    color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                  },
+                  '&.Mui-selected': { color: accentColor },
                 },
                 '& .MuiTabs-indicator': {
-                  backgroundColor: '#6366f1',
+                  backgroundColor: st.primaryColor,
                   height: 2,
                   borderRadius: 1,
                 },

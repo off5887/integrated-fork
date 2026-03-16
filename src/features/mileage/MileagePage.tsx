@@ -126,8 +126,8 @@ export default function MileagePage() {
             sx={{
               borderRadius: 2, px: 3, py: 1,
               fontWeight: 600, fontSize: '0.875rem',
-              bgcolor: '#6366f1', color: '#ffffff', boxShadow: 'none',
-              '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 16px rgba(99,102,241,0.3)' },
+              bgcolor: t.primaryColor, color: t.primaryBtnColor, boxShadow: 'none',
+              '&:hover': { bgcolor: t.primaryHoverBg, boxShadow: t.primaryBtnHoverShadow },
             }}
           >
             현금 전환 신청
@@ -151,9 +151,9 @@ export default function MileagePage() {
               '& .MuiTab-root': {
                 fontSize: '0.875rem', fontWeight: 600, textTransform: 'none',
                 minHeight: 44, color: t.textSecondary,
-                '&.Mui-selected': { color: '#6366f1' },
+                '&.Mui-selected': { color: t.primaryColor },
               },
-              '& .MuiTabs-indicator': { backgroundColor: '#6366f1', height: 2 },
+              '& .MuiTabs-indicator': { backgroundColor: t.primaryColor, height: 2 },
             }}
           >
             <Tab label={`마일리지 수상내역 (${awardData.length}건)`} value="awards" />

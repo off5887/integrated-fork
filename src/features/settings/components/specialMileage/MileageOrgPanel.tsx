@@ -19,6 +19,7 @@ import {
 import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import { mockMileageMembers } from '@/api/mock/settings'
 import type { MileageMember } from '@/api/types/settings'
 
@@ -37,7 +38,7 @@ export default function MileageOrgPanel({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const panelBg = isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(99,102,241,0.02)'
+  const st = getSettingsTheme(isDarkMode)
 
   const isMobile = useMediaQuery('(max-width: 1199px)')
   const [orgPanelOpen, setOrgPanelOpen] = useState(false)
@@ -78,7 +79,7 @@ export default function MileageOrgPanel({
   return (
     <Box
       sx={{
-        bgcolor: isDarkMode ? 'rgba(22,30,46,0.6)' : '#fafbff',
+        bgcolor: st.panelBg,
         border: `1px solid ${borderColor}`,
         borderRadius: 2.5,
         overflow: 'hidden',
@@ -95,11 +96,11 @@ export default function MileageOrgPanel({
           cursor: isMobile ? 'pointer' : 'default',
           userSelect: 'none',
           transition: 'background 0.15s ease',
-          '&:hover': isMobile ? { bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)' } : {},
+          '&:hover': isMobile ? { bgcolor: st.memberRowHoverBg } : {},
         }}
       >
-        <PersonSearchIcon sx={{ fontSize: '1rem', color: isDarkMode ? '#a5b4fc' : '#4338ca' }} />
-        <Typography variant="caption" fontWeight={700} sx={{ color: isDarkMode ? '#a5b4fc' : '#4338ca', letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
+        <PersonSearchIcon sx={{ fontSize: '1rem', color: st.primaryColor }} />
+        <Typography variant="caption" fontWeight={700} sx={{ color: st.primaryColor, letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
           조직도 인원
         </Typography>
         <Chip
@@ -107,9 +108,9 @@ export default function MileageOrgPanel({
           size="small"
           sx={{
             ml: 'auto', height: 18, fontSize: '0.65rem', fontWeight: 700,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-            color: isDarkMode ? '#a5b4fc' : '#4338ca',
-            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+            bgcolor: st.chipBg,
+            color: st.primaryColor,
+            border: `1px solid ${st.avatarBorder}`,
             '& .MuiChip-label': { px: 0.75 },
           }}
         />
@@ -117,7 +118,7 @@ export default function MileageOrgPanel({
           <ExpandMoreIcon
             sx={{
               fontSize: '1.1rem',
-              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              color: st.primaryColor,
               ml: 0.5,
               transition: 'transform 0.2s ease',
               transform: orgPanelOpen ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -156,11 +157,11 @@ export default function MileageOrgPanel({
             mb: 2,
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
-              bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+              bgcolor: st.inputBg,
               fontSize: '0.875rem',
               '& fieldset': { borderColor },
-              '&:hover fieldset': { borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)' },
-              '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+              '&:hover fieldset': { borderColor: st.inputHoverBorder },
+              '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
             },
             '& .MuiInputBase-input': {
               color: textPrimary,
@@ -177,13 +178,11 @@ export default function MileageOrgPanel({
             '&::-webkit-scrollbar': { width: 4 },
             '&::-webkit-scrollbar-track': { background: 'transparent' },
             '&::-webkit-scrollbar-thumb': {
-              background: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+              background: st.scrollbarThumb,
               borderRadius: 9999,
             },
             scrollbarWidth: 'thin',
-            scrollbarColor: isDarkMode
-              ? 'rgba(99,102,241,0.25) transparent'
-              : 'rgba(99,102,241,0.2) transparent',
+            scrollbarColor: `${st.scrollbarThumb} transparent`,
           }}
         >
           {grouped.length === 0 ? (
@@ -202,7 +201,7 @@ export default function MileageOrgPanel({
                 disableGutters
                 elevation={0}
                 sx={{
-                  bgcolor: panelBg,
+                  bgcolor: st.panelAccordionBg,
                   border: `1px solid ${borderColor}`,
                   borderRadius: '10px !important',
                   '&:before': { display: 'none' },
@@ -216,12 +215,12 @@ export default function MileageOrgPanel({
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon sx={{ fontSize: '1rem', color: textSecondary }} />}
                   sx={{
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)',
+                    bgcolor: st.accordionDivisionBg,
                     borderBottom: `1px solid ${borderColor}`,
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="caption" fontWeight={800} sx={{ color: isDarkMode ? '#a5b4fc' : '#4338ca', letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
+                    <Typography variant="caption" fontWeight={800} sx={{ color: st.primaryColor, letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
                       {division}
                     </Typography>
                     <Chip
@@ -229,8 +228,8 @@ export default function MileageOrgPanel({
                       size="small"
                       sx={{
                         height: 16, fontSize: '0.6rem', fontWeight: 700,
-                        bgcolor: isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.1)',
-                        color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                        bgcolor: st.avatarBg,
+                        color: st.primaryColor,
                         '& .MuiChip-label': { px: 0.6 },
                       }}
                     />
@@ -260,7 +259,7 @@ export default function MileageOrgPanel({
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon sx={{ fontSize: '0.9rem', color: textSecondary }} />}
                           sx={{
-                            bgcolor: isDarkMode ? 'rgba(30,41,59,0.5)' : 'rgba(241,245,249,0.8)',
+                            bgcolor: st.accordionTeamBg,
                             borderBottom: `1px solid ${borderColor}`,
                           }}
                         >
@@ -273,7 +272,7 @@ export default function MileageOrgPanel({
                               size="small"
                               sx={{
                                 height: 14, fontSize: '0.58rem', fontWeight: 700,
-                                bgcolor: isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(100,116,139,0.08)',
+                                bgcolor: st.scrollbarThumb,
                                 color: textSecondary,
                                 '& .MuiChip-label': { px: 0.5 },
                               }}
@@ -292,30 +291,24 @@ export default function MileageOrgPanel({
                                     p: 1.1,
                                     display: 'flex', alignItems: 'center', gap: 1.25,
                                     cursor: added ? 'default' : 'pointer',
-                                    bgcolor: added
-                                      ? isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)'
-                                      : isDarkMode ? 'rgba(30,41,59,0.6)' : '#ffffff',
-                                    border: `1px solid ${added
-                                      ? isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)'
-                                      : borderColor}`,
+                                    bgcolor: added ? st.chipBg : st.memberRowBg,
+                                    border: `1px solid ${added ? st.memberSelectedBorder : borderColor}`,
                                     borderRadius: 1.5,
                                     transition: 'all 0.15s ease',
                                     opacity: added ? 0.65 : 1,
                                     '&:hover': added ? {} : {
-                                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
-                                      borderColor: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+                                      bgcolor: st.memberRowHoverBg,
+                                      borderColor: st.memberRowHoverBorder,
                                     },
                                   }}
                                 >
                                   <Avatar
                                     sx={{
                                       width: 28, height: 28, flexShrink: 0,
-                                      bgcolor: added
-                                        ? isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.18)'
-                                        : isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-                                      color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                                      bgcolor: added ? st.avatarBg : st.avatarBgLight,
+                                      color: st.primaryColor,
                                       fontSize: '0.7rem', fontWeight: 700,
-                                      border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                                      border: `1px solid ${st.avatarBorder}`,
                                     }}
                                   >
                                     {member.name[0]}
@@ -335,9 +328,9 @@ export default function MileageOrgPanel({
                                         size="small"
                                         sx={{
                                           height: 15, fontSize: '0.58rem', fontWeight: 700,
-                                          bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
-                                          color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                                          border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.13)'}`,
+                                          bgcolor: st.chipBg,
+                                          color: st.primaryColor,
+                                          border: `1px solid ${st.avatarBorder}`,
                                           '& .MuiChip-label': { px: 0.5 },
                                         }}
                                       />
@@ -349,8 +342,8 @@ export default function MileageOrgPanel({
                                       size="small"
                                       sx={{
                                         height: 16, fontSize: '0.58rem', fontWeight: 700,
-                                        bgcolor: isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.1)',
-                                        color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                                        bgcolor: st.avatarBg,
+                                        color: st.primaryColor,
                                         '& .MuiChip-label': { px: 0.5 },
                                       }}
                                     />

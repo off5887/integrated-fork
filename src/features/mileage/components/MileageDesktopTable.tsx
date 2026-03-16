@@ -12,9 +12,10 @@ import {
 } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getMileageTheme } from '@/theme/mileageTheme'
+import type { AwardItem } from '@/api/types/mileage'
 
 interface Props {
-  data: any[]
+  data: AwardItem[]
   page: number
   rowsPerPage: number
   total: number
@@ -22,24 +23,17 @@ interface Props {
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const STATUS_MAP: Record<string, { color: string; bg: string; border: string }> = {
-  전환완료:   { color: '#10b981', bg: '#10b98112', border: '#10b98128' },
-  전환요청중: { color: '#f59e0b', bg: '#f59e0b12', border: '#f59e0b28' },
-  default:   { color: '#ef4444', bg: '#ef444412', border: '#ef444428' },
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_MAP[status] ?? STATUS_MAP.default
+function StatusBadge({ status, style }: { status: string; style: { color: string; bg: string; border: string } }) {
   return (
     <Box
       sx={{
         display: 'inline-flex', alignItems: 'center',
         px: 1.25, py: 0.35, borderRadius: '999px',
-        bgcolor: s.bg, border: `1px solid ${s.border}`,
+        bgcolor: style.bg, border: `1px solid ${style.border}`,
       }}
     >
-      <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: s.color, mr: 0.75, flexShrink: 0 }} />
-      <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: s.color }}>{status}</Typography>
+      <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: style.color, mr: 0.75, flexShrink: 0 }} />
+      <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: style.color }}>{status}</Typography>
     </Box>
   )
 }
@@ -51,6 +45,12 @@ export default function MileageDesktopTable({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const t = getMileageTheme(isDarkMode)
+
+  const statusMap: Record<string, { color: string; bg: string; border: string }> = {
+    전환완료:   { color: t.statusSuccessColor, bg: t.statusSuccessBg, border: t.statusSuccessBorder },
+    전환요청중: { color: t.statusWarningColor, bg: t.statusWarningBg, border: t.statusWarningBorder },
+    default:   { color: t.statusErrorColor,   bg: t.statusErrorBg,   border: t.statusErrorBorder },
+  }
 
   return (
     <Card
@@ -106,13 +106,13 @@ export default function MileageDesktopTable({
                 <Typography variant="body2" sx={{ color: t.textPrimary }}>{item.detail}</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" fontWeight={700} sx={{ color: '#6366f1' }}>
+                <Typography variant="body2" fontWeight={700} sx={{ color: t.primaryColor }}>
                   {item.fish.toLocaleString()}
                   <Box component="span" sx={{ fontWeight: 500, color: t.textSecondary, ml: 0.5 }}>마리</Box>
                 </Typography>
               </TableCell>
               <TableCell>
-                <StatusBadge status={item.status} />
+                <StatusBadge status={item.status} style={statusMap[item.status] ?? statusMap.default} />
               </TableCell>
             </TableRow>
           ))}

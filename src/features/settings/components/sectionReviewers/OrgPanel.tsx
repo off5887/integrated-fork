@@ -12,7 +12,9 @@ import {
 } from '@mui/material'
 import React, { useMemo } from 'react'
 import { OrgMember } from '@/api/types/reviewer'
+import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 
 interface Props {
   members: OrgMember[]
@@ -21,7 +23,9 @@ interface Props {
 }
 
 const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
-  const { isDarkMode, textPrimary, textSecondary, borderColor } = usePageColors()
+  const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
 
   const grouped = useMemo(() => {
     const filtered = members.filter(
@@ -52,13 +56,11 @@ const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
           mb: 2.5,
           '& .MuiOutlinedInput-root': {
             borderRadius: 2,
-            bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+            bgcolor: st.inputBg,
             fontSize: '0.875rem',
             '& fieldset': { borderColor },
-            '&:hover fieldset': {
-              borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
-            },
-            '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+            '&:hover fieldset': { borderColor: st.inputHoverBorder },
+            '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
           },
           '& .MuiInputBase-input': {
             color: textPrimary,
@@ -78,16 +80,12 @@ const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
           '&::-webkit-scrollbar': { width: 4 },
           '&::-webkit-scrollbar-track': { background: 'transparent' },
           '&::-webkit-scrollbar-thumb': {
-            background: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+            background: st.scrollbarThumb,
             borderRadius: 9999,
           },
-          '&::-webkit-scrollbar-thumb:hover': {
-            background: isDarkMode ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.4)',
-          },
+          '&::-webkit-scrollbar-thumb:hover': { background: st.scrollbarThumbHover },
           scrollbarWidth: 'thin',
-          scrollbarColor: isDarkMode
-            ? 'rgba(99,102,241,0.25) transparent'
-            : 'rgba(99,102,241,0.2) transparent',
+          scrollbarColor: `${st.scrollbarThumb} transparent`,
         }}
       >
         {grouped.map(([division, people]) => (
@@ -97,7 +95,7 @@ const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
             disableGutters
             elevation={0}
             sx={{
-              bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(99,102,241,0.02)',
+              bgcolor: st.panelAccordionBg,
               border: `1px solid ${borderColor}`,
               borderRadius: '10px !important',
               '&:before': { display: 'none' },
@@ -113,11 +111,11 @@ const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
             <AccordionSummary
               expandIcon={<ExpandMoreIcon sx={{ fontSize: '1rem', color: textSecondary }} />}
               sx={{
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)',
+                bgcolor: st.accordionDivisionBg,
                 borderBottom: `1px solid ${borderColor}`,
               }}
             >
-              <Typography variant="caption" fontWeight={700} sx={{ color: isDarkMode ? '#a5b4fc' : '#4338ca', letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
+              <Typography variant="caption" fontWeight={700} sx={{ color: st.primaryColor, letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
                 {division}
               </Typography>
             </AccordionSummary>
@@ -137,24 +135,24 @@ const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
                       gap: 1.5,
                       cursor: 'grab',
                       '&:active': { cursor: 'grabbing' },
-                      bgcolor: isDarkMode ? 'rgba(30,41,59,0.6)' : '#ffffff',
+                      bgcolor: st.memberRowBg,
                       border: `1px solid ${borderColor}`,
                       borderRadius: 2,
                       transition: 'all 0.15s ease',
                       '&:hover': {
-                        bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
-                        borderColor: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+                        bgcolor: st.memberRowHoverBg,
+                        borderColor: st.memberRowHoverBorder,
                       },
                     }}
                   >
                     <Avatar
                       sx={{
                         width: 32, height: 32,
-                        bgcolor: isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.1)',
-                        color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                        bgcolor: st.avatarBg,
+                        color: st.primaryColor,
                         fontSize: '0.8rem',
                         fontWeight: 700,
-                        border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                        border: `1px solid ${st.avatarBorder}`,
                         flexShrink: 0,
                       }}
                     >
@@ -172,9 +170,9 @@ const OrgPanel: React.FC<Props> = ({ members, searchTerm, setSearchTerm }) => {
                             height: 18,
                             fontSize: '0.65rem',
                             fontWeight: 700,
-                            bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
-                            color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.15)'}`,
+                            bgcolor: st.chipBg,
+                            color: st.primaryColor,
+                            border: `1px solid ${st.avatarBorder}`,
                             '& .MuiChip-label': { px: 0.75 },
                           }}
                         />

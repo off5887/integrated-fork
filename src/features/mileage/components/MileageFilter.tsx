@@ -40,7 +40,7 @@ export default function MileageFilter({
       borderColor: t.inputHoverBorder,
     },
     '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: '#6366f1',
+      borderColor: t.inputFocusColor,
       borderWidth: '1.5px',
     },
     '& .MuiSvgIcon-root': { color: t.textSecondary },

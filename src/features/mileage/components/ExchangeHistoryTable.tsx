@@ -8,18 +8,11 @@ interface Props {
   data: ExchangeItem[]
 }
 
-const STATUS_MAP: Record<string, { color: string; bg: string; border: string }> = {
-  완료:   { color: '#10b981', bg: '#10b98112', border: '#10b98128' },
-  신청중: { color: '#f59e0b', bg: '#f59e0b12', border: '#f59e0b28' },
-  반려:   { color: '#ef4444', bg: '#ef444412', border: '#ef444428' },
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_MAP[status] ?? STATUS_MAP.신청중
+function StatusBadge({ status, style }: { status: string; style: { color: string; bg: string; border: string } }) {
   return (
-    <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1.25, py: 0.35, borderRadius: '999px', bgcolor: s.bg, border: `1px solid ${s.border}` }}>
-      <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: s.color, mr: 0.75, flexShrink: 0 }} />
-      <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: s.color }}>{status}</Typography>
+    <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1.25, py: 0.35, borderRadius: '999px', bgcolor: style.bg, border: `1px solid ${style.border}` }}>
+      <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: style.color, mr: 0.75, flexShrink: 0 }} />
+      <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: style.color }}>{status}</Typography>
     </Box>
   )
 }
@@ -29,6 +22,12 @@ const HEAD_COLS = ['번호', '신청일', '신청 마일리지', '현금 환산'
 export default function ExchangeHistoryTable({ data }: Props) {
   const { isDarkMode } = useThemeMode()
   const t = getMileageTheme(isDarkMode)
+
+  const statusMap: Record<string, { color: string; bg: string; border: string }> = {
+    완료:   { color: t.statusSuccessColor, bg: t.statusSuccessBg, border: t.statusSuccessBorder },
+    신청중: { color: t.statusWarningColor, bg: t.statusWarningBg, border: t.statusWarningBorder },
+    반려:   { color: t.statusErrorColor,   bg: t.statusErrorBg,   border: t.statusErrorBorder },
+  }
 
   return (
     <Card
@@ -79,7 +78,7 @@ export default function ExchangeHistoryTable({ data }: Props) {
                 <Typography variant="body2" sx={{ color: t.textPrimary }}>{item.requestDate}</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="body2" fontWeight={700} sx={{ color: '#6366f1' }}>
+                <Typography variant="body2" fontWeight={700} sx={{ color: t.primaryColor }}>
                   {item.amount.toLocaleString()}
                   <Box component="span" sx={{ fontWeight: 500, color: t.textSecondary, ml: 0.5 }}>마리</Box>
                 </Typography>
@@ -90,7 +89,7 @@ export default function ExchangeHistoryTable({ data }: Props) {
                 </Typography>
               </TableCell>
               <TableCell>
-                <StatusBadge status={item.status} />
+                <StatusBadge status={item.status} style={statusMap[item.status] ?? statusMap['신청중']} />
               </TableCell>
             </TableRow>
           ))}

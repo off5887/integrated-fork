@@ -10,6 +10,7 @@ import {
 import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import type { MileageMember, MileageEntry } from '@/api/types/settings'
 import MileageOrgPanel from './MileageOrgPanel'
 import MileageRecipientPanel from './MileageRecipientPanel'
@@ -17,6 +18,7 @@ import MileageRecipientPanel from './MileageRecipientPanel'
 export default function SpecialMileage() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<MileageEntry[]>([])
@@ -51,7 +53,6 @@ export default function SpecialMileage() {
       alert('점수 또는 마일리지를 하나 이상 입력해주세요.')
       return
     }
-    console.log('특별 마일리지 저장:', selected)
     alert(`${selected.length}명에게 특별 마일리지/점수가 지급되었습니다.`)
   }
 
@@ -74,7 +75,7 @@ export default function SpecialMileage() {
           <Box
             sx={{
               width: 26, height: 26, borderRadius: '50%',
-              bgcolor: '#6366f1', color: '#fff',
+              bgcolor: st.primaryColor, color: st.primaryBtnColor,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}
@@ -100,9 +101,9 @@ export default function SpecialMileage() {
           sx={{
             borderRadius: 9999, px: 2.5, py: 0.8,
             fontWeight: 700, fontSize: '0.82rem', textTransform: 'none',
-            bgcolor: '#6366f1', color: '#fff', boxShadow: 'none', flexShrink: 0,
-            '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 6px 20px rgba(99,102,241,0.4)' },
-            '&.Mui-disabled': { bgcolor: isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.15)', color: isDarkMode ? 'rgba(165,180,252,0.4)' : 'rgba(67,56,202,0.3)' },
+            bgcolor: st.primaryColor, color: st.primaryBtnColor, boxShadow: 'none', flexShrink: 0,
+            '&:hover': { bgcolor: st.primaryHoverBg, boxShadow: st.primaryBtnHoverShadow },
+            '&.Mui-disabled': { bgcolor: st.chipBg, color: st.avatarBorder },
             transition: 'all 0.2s ease',
           }}
         >

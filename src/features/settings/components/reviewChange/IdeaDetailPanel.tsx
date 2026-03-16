@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import { OrgMember } from '@/api/types/reviewer'
 import { levelConfig } from '../../config/levelConfig'
 import { statusConfig, ALL_STATUSES } from '../../config/statusConfig'
@@ -39,12 +40,12 @@ export default function IdeaDetailPanel({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const panelBg = isDarkMode ? 'rgba(22,30,46,0.6)' : '#fafbff'
+  const st = getSettingsTheme(isDarkMode)
 
   return (
     <Box
       sx={{
-        bgcolor: panelBg,
+        bgcolor: st.panelBg,
         border: `1px solid ${borderColor}`,
         borderRadius: 2.5,
         overflow: 'hidden',
@@ -67,8 +68,8 @@ export default function IdeaDetailPanel({
             width: 36,
             height: 36,
             borderRadius: 2,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+            bgcolor: st.avatarBgLight,
+            border: `1px solid ${st.avatarBorder}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -76,7 +77,7 @@ export default function IdeaDetailPanel({
           }}
         >
           <LightbulbOutlinedIcon
-            sx={{ fontSize: '1.1rem', color: isDarkMode ? '#a5b4fc' : '#4338ca' }}
+            sx={{ fontSize: '1.1rem', color: st.primaryColor }}
           />
         </Box>
         <Box flex={1} minWidth={0}>
@@ -115,7 +116,7 @@ export default function IdeaDetailPanel({
             p: 2,
             borderRadius: 2,
             border: `1px solid ${borderColor}`,
-            bgcolor: isDarkMode ? 'rgba(15,23,42,0.3)' : '#ffffff',
+            bgcolor: st.contentBg,
           }}
         >
           <Typography
@@ -156,11 +157,11 @@ export default function IdeaDetailPanel({
                   fontSize: '0.82rem',
                   fontWeight: 600,
                   color: textPrimary,
-                  bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : '#f8fafc',
+                  bgcolor: st.inputBg,
                   borderRadius: 1.5,
                   '& .MuiOutlinedInput-notchedOutline': { borderColor },
                   '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#6366f1',
+                    borderColor: st.inputFocusBorder,
                   },
                   '& .MuiSelect-icon': { color: textSecondary },
                 }}
@@ -212,7 +213,7 @@ export default function IdeaDetailPanel({
                       height: 22,
                       borderRadius: '50%',
                       bgcolor: cfg.accent,
-                      color: '#fff',
+                      color: st.primaryBtnColor,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -255,7 +256,7 @@ export default function IdeaDetailPanel({
                       ...(isChanging
                         ? {
                             bgcolor: cfg.accent,
-                            color: '#fff',
+                            color: st.primaryBtnColor,
                             boxShadow: 'none',
                             '&:hover': { bgcolor: cfg.accent, opacity: 0.88, boxShadow: 'none' },
                           }
@@ -275,7 +276,7 @@ export default function IdeaDetailPanel({
                 </Box>
 
                 {/* 현재 심사자 */}
-                <Box sx={{ px: 2, py: 1.5, bgcolor: isDarkMode ? 'rgba(15,23,42,0.25)' : '#ffffff' }}>
+                <Box sx={{ px: 2, py: 1.5, bgcolor: st.contentBg }}>
                   {currentReviewer ? (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                       <Avatar
@@ -344,7 +345,7 @@ export default function IdeaDetailPanel({
                       borderTop: `1px dashed ${cfg.border(isDarkMode)}`,
                       px: 2,
                       py: 1.5,
-                      bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
+                      bgcolor: st.dialogFooterBg,
                     }}
                   >
                     <Typography
@@ -375,11 +376,7 @@ export default function IdeaDetailPanel({
                               p: 1.25,
                               borderRadius: 1.5,
                               border: `1px solid ${isCurrent ? cfg.border(isDarkMode) : borderColor}`,
-                              bgcolor: isCurrent
-                                ? cfg.bg(isDarkMode)
-                                : isDarkMode
-                                ? 'rgba(30,41,59,0.5)'
-                                : '#ffffff',
+                              bgcolor: isCurrent ? cfg.bg(isDarkMode) : st.reviewerItemBg,
                               cursor: 'pointer',
                               transition: 'all 0.12s ease',
                               '&:hover': {
@@ -392,14 +389,8 @@ export default function IdeaDetailPanel({
                               sx={{
                                 width: 28,
                                 height: 28,
-                                bgcolor: isCurrent
-                                  ? cfg.avatarBg(isDarkMode)
-                                  : isDarkMode
-                                  ? 'rgba(30,41,59,0.8)'
-                                  : 'rgba(241,245,249,0.9)',
-                                color: isCurrent
-                                  ? cfg.avatarColor(isDarkMode)
-                                  : textSecondary,
+                                bgcolor: isCurrent ? cfg.avatarBg(isDarkMode) : st.reviewerAvatarDefaultBg,
+                                color: isCurrent ? cfg.avatarColor(isDarkMode) : textSecondary,
                                 fontSize: '0.7rem',
                                 fontWeight: 700,
                                 border: `1px solid ${isCurrent ? cfg.border(isDarkMode) : borderColor}`,
@@ -465,12 +456,12 @@ export default function IdeaDetailPanel({
               fontWeight: 700,
               fontSize: '0.82rem',
               textTransform: 'none',
-              bgcolor: '#6366f1',
-              color: '#fff',
+              bgcolor: st.primaryColor,
+              color: st.primaryBtnColor,
               boxShadow: 'none',
               '&:hover': {
-                bgcolor: '#4f46e5',
-                boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+                bgcolor: st.primaryHoverBg,
+                boxShadow: st.primaryBtnHoverShadow,
               },
               transition: 'all 0.2s ease',
             }}

@@ -21,6 +21,7 @@ import {
 import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import { mockUsers as initialUsers } from '@/api/mock/settings'
 import type { User } from '@/api/types/settings'
 import UserFormDialog from './UserFormDialog'
@@ -28,6 +29,7 @@ import UserFormDialog from './UserFormDialog'
 export default function UserManagement() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg, rowBg, rowHoverBg, headerBg } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
 
   const [users, setUsers] = useState<User[]>(initialUsers)
   const [open, setOpen] = useState(false)
@@ -103,22 +105,14 @@ export default function UserManagement() {
         onClick={() => handleToggleActive(user.id)}
         sx={{
           cursor: 'pointer',
-          bgcolor: user.active
-            ? (isDarkMode ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.07)')
-            : (isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.07)'),
-          color: user.active
-            ? (isDarkMode ? '#34d399' : '#059669')
-            : (isDarkMode ? '#f87171' : '#dc2626'),
-          border: `1px solid ${user.active
-            ? (isDarkMode ? 'rgba(16,185,129,0.3)' : 'rgba(16,185,129,0.2)')
-            : (isDarkMode ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.2)')}`,
+          bgcolor: user.active ? st.activeChipBg : st.inactiveChipBg,
+          color: user.active ? st.activeChipColor : st.inactiveChipColor,
+          border: `1px solid ${user.active ? st.activeChipBorder : st.inactiveChipBorder}`,
           fontWeight: 700,
           fontSize: '0.7rem',
           transition: 'all 0.15s ease',
           '&:hover': {
-            bgcolor: user.active
-              ? (isDarkMode ? 'rgba(16,185,129,0.22)' : 'rgba(16,185,129,0.14)')
-              : (isDarkMode ? 'rgba(239,68,68,0.22)' : 'rgba(239,68,68,0.14)'),
+            bgcolor: user.active ? st.activeChipBgHover : st.inactiveChipBgHover,
           },
         }}
       />
@@ -130,7 +124,7 @@ export default function UserManagement() {
       {/* 상단 액션 */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, pb: 3, borderBottom: `1px solid ${borderColor}` }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box sx={{ width: 26, height: 26, borderRadius: '50%', bgcolor: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Box sx={{ width: 26, height: 26, borderRadius: '50%', bgcolor: st.primaryColor, color: st.primaryBtnColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <ManageAccountsIcon sx={{ fontSize: '0.9rem' }} />
           </Box>
           <Box>
@@ -149,8 +143,8 @@ export default function UserManagement() {
           sx={{
             borderRadius: 9999, px: 2.5, py: 0.9,
             fontWeight: 700, fontSize: '0.82rem', textTransform: 'none',
-            bgcolor: '#6366f1', color: '#fff', boxShadow: 'none',
-            '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 6px 20px rgba(99,102,241,0.4)' },
+            bgcolor: st.primaryColor, color: st.primaryBtnColor, boxShadow: 'none',
+            '&:hover': { bgcolor: st.primaryHoverBg, boxShadow: st.primaryBtnHoverShadow },
             transition: 'all 0.2s ease',
           }}
         >
@@ -176,10 +170,10 @@ export default function UserManagement() {
               <Avatar
                 sx={{
                   width: 36, height: 36,
-                  bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-                  color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                  bgcolor: st.avatarBgLight,
+                  color: st.primaryColor,
                   fontSize: '0.875rem', fontWeight: 700,
-                  border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.15)'}`,
+                  border: `1px solid ${st.avatarBorder}`,
                   flexShrink: 0,
                 }}
               >
@@ -203,9 +197,9 @@ export default function UserManagement() {
                   label={user.role}
                   size="small"
                   sx={{
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
-                    color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                    border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                    bgcolor: st.chipBg,
+                    color: st.primaryColor,
+                    border: `1px solid ${st.avatarBorder}`,
                     fontWeight: 600, fontSize: '0.72rem',
                   }}
                 />
@@ -225,7 +219,7 @@ export default function UserManagement() {
                 onClick={() => handleEditOpen(user)}
                 sx={{
                   color: textSecondary, opacity: 0.7,
-                  '&:hover': { color: isDarkMode ? '#a5b4fc' : '#4338ca', opacity: 1, bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)' },
+                  '&:hover': { color: st.primaryColor, opacity: 1, bgcolor: st.accentIconHoverBg },
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -235,9 +229,9 @@ export default function UserManagement() {
                 size="small"
                 onClick={() => handleToggleActive(user.id)}
                 sx={{
-                  color: user.active ? (isDarkMode ? '#34d399' : '#059669') : textSecondary,
+                  color: user.active ? st.activeChipColor : textSecondary,
                   opacity: 0.7,
-                  '&:hover': { opacity: 1, bgcolor: isDarkMode ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.06)' },
+                  '&:hover': { opacity: 1, bgcolor: st.activeChipBg },
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -248,7 +242,7 @@ export default function UserManagement() {
                 onClick={() => handleDelete(user.id)}
                 sx={{
                   color: textSecondary, opacity: 0.7,
-                  '&:hover': { color: '#ef4444', opacity: 1, bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)' },
+                  '&:hover': { color: st.deleteHoverColor, opacity: 1, bgcolor: st.deleteHoverBg },
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -311,10 +305,10 @@ export default function UserManagement() {
                     <Avatar
                       sx={{
                         width: 30, height: 30,
-                        bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-                        color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                        bgcolor: st.avatarBgLight,
+                        color: st.primaryColor,
                         fontSize: '0.75rem', fontWeight: 700,
-                        border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.15)'}`,
+                        border: `1px solid ${st.avatarBorder}`,
                       }}
                     >
                       {user.name[0]}
@@ -339,9 +333,9 @@ export default function UserManagement() {
                     label={user.role}
                     size="small"
                     sx={{
-                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
-                      color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                      border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                      bgcolor: st.chipBg,
+                      color: st.primaryColor,
+                      border: `1px solid ${st.avatarBorder}`,
                       fontWeight: 600, fontSize: '0.72rem',
                     }}
                   />
@@ -361,7 +355,7 @@ export default function UserManagement() {
                       onClick={() => handleEditOpen(user)}
                       sx={{
                         mr: 0.5, color: textSecondary, opacity: 0.6,
-                        '&:hover': { color: isDarkMode ? '#a5b4fc' : '#4338ca', opacity: 1, bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)' },
+                        '&:hover': { color: st.primaryColor, opacity: 1, bgcolor: st.accentIconHoverBg },
                         transition: 'all 0.15s ease',
                       }}
                     >
@@ -374,9 +368,9 @@ export default function UserManagement() {
                       onClick={() => handleToggleActive(user.id)}
                       sx={{
                         mr: 0.5,
-                        color: user.active ? (isDarkMode ? '#34d399' : '#059669') : textSecondary,
+                        color: user.active ? st.activeChipColor : textSecondary,
                         opacity: 0.6,
-                        '&:hover': { opacity: 1, bgcolor: isDarkMode ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.06)' },
+                        '&:hover': { opacity: 1, bgcolor: st.activeChipBg },
                         transition: 'all 0.15s ease',
                       }}
                     >
@@ -389,7 +383,7 @@ export default function UserManagement() {
                       onClick={() => handleDelete(user.id)}
                       sx={{
                         color: textSecondary, opacity: 0.6,
-                        '&:hover': { color: '#ef4444', opacity: 1, bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)' },
+                        '&:hover': { color: st.deleteHoverColor, opacity: 1, bgcolor: st.deleteHoverBg },
                         transition: 'all 0.15s ease',
                       }}
                     >

@@ -2,6 +2,7 @@
 import { Box, Grid, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getMileageTheme } from '@/theme/mileageTheme'
+import { STAT_CARD_CONFIGS } from '../config/statsConfig'
 
 interface Props {
   totalFish: number
@@ -9,37 +10,17 @@ interface Props {
   thisMonthExchanged: number
 }
 
-const CARDS = (totalFish: number, thisMonthFish: number, thisMonthExchanged: number) => [
-  {
-    label: '내가 잡은 생선',
-    value: totalFish,
-    unit: '마리',
-    icon: '🐟',
-    color: '#6366f1',
-    sub: `현금 환산 ≈ ${(totalFish * 100).toLocaleString()}원`,
-  },
-  {
-    label: '이달에 잡은 생선',
-    value: thisMonthFish,
-    unit: '마리',
-    icon: '🌱',
-    color: '#10b981',
-    sub: '이번 달 누적 획득량',
-  },
-  {
-    label: '이달에 바꾼 생선',
-    value: thisMonthExchanged,
-    unit: '마리',
-    icon: '💰',
-    color: '#f59e0b',
-    sub: `현금 환산 ≈ ${(thisMonthExchanged * 100).toLocaleString()}원`,
-  },
-]
-
 export default function MileageStatsCards({ totalFish, thisMonthFish, thisMonthExchanged }: Props) {
   const { isDarkMode } = useThemeMode()
   const t = getMileageTheme(isDarkMode)
-  const cards = CARDS(totalFish, thisMonthFish, thisMonthExchanged)
+
+  const values = [totalFish, thisMonthFish, thisMonthExchanged]
+  const cards = STAT_CARD_CONFIGS.map((cfg, i) => ({
+    ...cfg,
+    value: values[i],
+    color: t[cfg.colorKey],
+    sub:   cfg.getSub(values[i]),
+  }))
 
   return (
     <Grid container spacing={2.5} sx={{ mb: 5 }}>

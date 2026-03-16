@@ -16,6 +16,7 @@ import {
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import type { MileageEntry } from '@/api/types/settings'
 
 interface Props {
@@ -27,30 +28,29 @@ interface Props {
 export default function MileageRecipientPanel({ selected, onRemove, onFieldChange }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, rowBg, rowHoverBg, headerBg } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
 
   const inputSx = {
     '& .MuiOutlinedInput-root': {
       borderRadius: 1.5,
-      bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+      bgcolor: st.inputBg,
       fontSize: '0.8rem',
       '& fieldset': { borderColor },
-      '&:hover fieldset': {
-        borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
-      },
-      '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+      '&:hover fieldset': { borderColor: st.inputHoverBorder },
+      '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
     },
     '& .MuiInputBase-input': { color: textPrimary },
     '& .MuiInputLabel-root': {
       color: textSecondary,
       fontSize: '0.8rem',
-      '&.Mui-focused': { color: '#6366f1' },
+      '&.Mui-focused': { color: st.inputFocusBorder },
     },
   }
 
   return (
     <Box
       sx={{
-        bgcolor: isDarkMode ? 'rgba(22,30,46,0.6)' : '#fafbff',
+        bgcolor: st.panelBg,
         border: `1px solid ${borderColor}`,
         borderRadius: 2.5,
         overflow: 'hidden',
@@ -66,8 +66,8 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
           bgcolor: headerBg,
         }}
       >
-        <CardGiftcardIcon sx={{ fontSize: '1rem', color: isDarkMode ? '#a5b4fc' : '#4338ca' }} />
-        <Typography variant="caption" fontWeight={700} sx={{ color: isDarkMode ? '#a5b4fc' : '#4338ca', letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
+        <CardGiftcardIcon sx={{ fontSize: '1rem', color: st.primaryColor }} />
+        <Typography variant="caption" fontWeight={700} sx={{ color: st.primaryColor, letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
           지급 대상
         </Typography>
         {selected.length > 0 && (
@@ -76,9 +76,9 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
             size="small"
             sx={{
               ml: 'auto', height: 18, fontSize: '0.65rem', fontWeight: 700,
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-              color: isDarkMode ? '#a5b4fc' : '#4338ca',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+              bgcolor: st.chipBg,
+              color: st.primaryColor,
+              border: `1px solid ${st.avatarBorder}`,
               '& .MuiChip-label': { px: 0.75 },
             }}
           />
@@ -119,16 +119,16 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                   sx={{
                     display: 'flex', alignItems: 'center', gap: 1.5,
                     px: 2, py: 1.5, borderBottom: `1px solid ${borderColor}`,
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.05)' : 'rgba(99,102,241,0.03)',
+                    bgcolor: st.accordionDivisionBg,
                   }}
                 >
                   <Avatar
                     sx={{
                       width: 32, height: 32, flexShrink: 0,
-                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.1)',
-                      color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                      bgcolor: st.avatarBg,
+                      color: st.primaryColor,
                       fontSize: '0.8rem', fontWeight: 700,
-                      border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)'}`,
+                      border: `1px solid ${st.avatarBorder}`,
                     }}
                   >
                     {entry.name[0]}
@@ -152,7 +152,7 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                       onClick={() => onRemove(entry.id)}
                       sx={{
                         color: textSecondary,
-                        '&:hover': { color: '#ef4444', bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)' },
+                        '&:hover': { color: st.deleteHoverColor, bgcolor: st.deleteHoverBg },
                       }}
                     >
                       <CloseIcon sx={{ fontSize: '1rem' }} />
@@ -237,10 +237,10 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                         <Avatar
                           sx={{
                             width: 28, height: 28, flexShrink: 0,
-                            bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-                            color: isDarkMode ? '#a5b4fc' : '#4338ca',
+                            bgcolor: st.avatarBgLight,
+                            color: st.primaryColor,
                             fontSize: '0.72rem', fontWeight: 700,
-                            border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.15)'}`,
+                            border: `1px solid ${st.avatarBorder}`,
                           }}
                         >
                           {entry.name[0]}
@@ -266,9 +266,9 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                         size="small"
                         sx={{
                           mt: 0.25, height: 16, fontSize: '0.6rem', fontWeight: 700,
-                          bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
-                          color: isDarkMode ? '#a5b4fc' : '#4338ca',
-                          border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.13)'}`,
+                          bgcolor: st.chipBg,
+                          color: st.primaryColor,
+                          border: `1px solid ${st.avatarBorder}`,
                           '& .MuiChip-label': { px: 0.5 },
                         }}
                       />
@@ -283,18 +283,7 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                         onChange={(e) => onFieldChange(entry.id, 'score', e.target.value)}
                         placeholder="0"
                         slotProps={{ htmlInput: { min: 0, style: { textAlign: 'center', padding: '6px 8px' } } }}
-                        sx={{
-                          width: 88,
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: 1.5,
-                            bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
-                            fontSize: '0.82rem',
-                            '& fieldset': { borderColor },
-                            '&:hover fieldset': { borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)' },
-                            '&.Mui-focused fieldset': { borderColor: '#6366f1' },
-                          },
-                          '& .MuiInputBase-input': { color: textPrimary },
-                        }}
+                        sx={{ width: 88, ...inputSx }}
                       />
                     </TableCell>
 
@@ -307,18 +296,7 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                         onChange={(e) => onFieldChange(entry.id, 'mileage', e.target.value)}
                         placeholder="0"
                         slotProps={{ htmlInput: { min: 0, style: { textAlign: 'center', padding: '6px 8px' } } }}
-                        sx={{
-                          width: 88,
-                          '& .MuiOutlinedInput-root': {
-                            borderRadius: 1.5,
-                            bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
-                            fontSize: '0.82rem',
-                            '& fieldset': { borderColor },
-                            '&:hover fieldset': { borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)' },
-                            '&.Mui-focused fieldset': { borderColor: '#6366f1' },
-                          },
-                          '& .MuiInputBase-input': { color: textPrimary },
-                        }}
+                        sx={{ width: 88, ...inputSx }}
                       />
                     </TableCell>
 
@@ -333,11 +311,11 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                         sx={{
                           '& .MuiOutlinedInput-root': {
                             borderRadius: 1.5,
-                            bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+                            bgcolor: st.inputBg,
                             fontSize: '0.8rem',
                             '& fieldset': { borderColor },
-                            '&:hover fieldset': { borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)' },
-                            '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+                            '&:hover fieldset': { borderColor: st.inputHoverBorder },
+                            '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
                           },
                           '& .MuiInputBase-input': {
                             color: textPrimary, padding: '6px 10px',
@@ -355,7 +333,7 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                           onClick={() => onRemove(entry.id)}
                           sx={{
                             color: textSecondary, opacity: 0.6,
-                            '&:hover': { color: '#ef4444', opacity: 1, bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)' },
+                            '&:hover': { color: st.deleteHoverColor, opacity: 1, bgcolor: st.deleteHoverBg },
                             transition: 'all 0.15s ease',
                           }}
                         >

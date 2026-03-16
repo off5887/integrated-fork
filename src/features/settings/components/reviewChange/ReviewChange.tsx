@@ -8,6 +8,7 @@ import {
 import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import type { OrgMember } from '@/api/types/reviewer'
 import type { IdeaStatus, Idea } from '@/api/types/settings'
 import { mockIdeas } from '@/api/mock/settings'
@@ -19,7 +20,7 @@ import IdeaDetailPanel from './IdeaDetailPanel'
 export default function ReviewChange() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const panelBg = isDarkMode ? 'rgba(22,30,46,0.6)' : '#fafbff'
+  const st = getSettingsTheme(isDarkMode)
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIdeaId, setSelectedIdeaId] = useState<string | null>(null)
@@ -62,7 +63,6 @@ export default function ReviewChange() {
   }
 
   const handleSave = () => {
-    console.log('저장:', selectedIdea)
     alert('변경사항이 저장되었습니다.')
   }
 
@@ -87,8 +87,8 @@ export default function ReviewChange() {
               width: 26,
               height: 26,
               borderRadius: '50%',
-              bgcolor: '#6366f1',
-              color: '#fff',
+              bgcolor: st.primaryColor,
+              color: st.primaryBtnColor,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -129,7 +129,7 @@ export default function ReviewChange() {
           {selectedIdea === null ? (
             <Box
               sx={{
-                bgcolor: panelBg,
+                bgcolor: st.panelBg,
                 border: `1px solid ${borderColor}`,
                 borderRadius: 2.5,
                 minHeight: 400,

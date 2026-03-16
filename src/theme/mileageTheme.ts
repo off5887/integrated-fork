@@ -54,6 +54,29 @@ const mileageLight = {
   // ── 비활성 버튼 ──
   disabledBtnBg: 'rgba(99,102,241,0.1)',
   disabledBtnColor: 'rgba(99,102,241,0.35)',
+
+  // ── Primary 버튼 & 브랜드 색상 (light/dark 동일) ─────────────────────────
+  primaryColor:           '#6366f1',
+  primaryHoverBg:         '#4f46e5',
+  primaryBtnColor:        '#fff',
+  primaryBtnHoverShadow:  '0 4px 16px rgba(99,102,241,0.3)',
+  accentGradient:         'linear-gradient(90deg, #6366f1, #8b5cf6)',
+  modalIconBg:            '#6366f1',
+  modalIconColor:         '#fff',
+  inputFocusColor:        '#6366f1',
+  inputFocusHoverBorder:  'rgba(99,102,241,0.35)',
+  helperTextSuccessColor: '#10b981',
+
+  // ── 상태 배지 색상 (light/dark 동일) ────────────────────────────────────
+  statusSuccessColor:  '#10b981',
+  statusSuccessBg:     '#10b98112',
+  statusSuccessBorder: '#10b98128',
+  statusWarningColor:  '#f59e0b',
+  statusWarningBg:     '#f59e0b12',
+  statusWarningBorder: '#f59e0b28',
+  statusErrorColor:    '#ef4444',
+  statusErrorBg:       '#ef444412',
+  statusErrorBorder:   '#ef444428',
 } as const
 
 const mileageDark = {
@@ -109,6 +132,29 @@ const mileageDark = {
   // ── 비활성 버튼 ──
   disabledBtnBg: 'rgba(99,102,241,0.15)',
   disabledBtnColor: 'rgba(255,255,255,0.25)',
+
+  // ── Primary 버튼 & 브랜드 색상 (light/dark 동일) ─────────────────────────
+  primaryColor:           '#6366f1',
+  primaryHoverBg:         '#4f46e5',
+  primaryBtnColor:        '#fff',
+  primaryBtnHoverShadow:  '0 4px 16px rgba(99,102,241,0.3)',
+  accentGradient:         'linear-gradient(90deg, #6366f1, #8b5cf6)',
+  modalIconBg:            '#6366f1',
+  modalIconColor:         '#fff',
+  inputFocusColor:        '#6366f1',
+  inputFocusHoverBorder:  'rgba(99,102,241,0.35)',
+  helperTextSuccessColor: '#10b981',
+
+  // ── 상태 배지 색상 (light/dark 동일) ────────────────────────────────────
+  statusSuccessColor:  '#10b981',
+  statusSuccessBg:     '#10b98112',
+  statusSuccessBorder: '#10b98128',
+  statusWarningColor:  '#f59e0b',
+  statusWarningBg:     '#f59e0b12',
+  statusWarningBorder: '#f59e0b28',
+  statusErrorColor:    '#ef4444',
+  statusErrorBg:       '#ef444412',
+  statusErrorBorder:   '#ef444428',
 } as const
 
 export type MileageTheme = typeof mileageLight

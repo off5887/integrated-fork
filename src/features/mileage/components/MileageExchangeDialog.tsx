@@ -79,14 +79,14 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
       }}
     >
       {/* 상단 그라디언트 스트립 */}
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
+      <Box sx={{ height: 3, background: t.accentGradient }} />
 
       {/* 헤더 */}
       <Box sx={{ px: 3, pt: 2.5, pb: 2, display: 'flex', alignItems: 'center', gap: 1.25, borderBottom: `1px solid ${t.borderColorStrict}` }}>
         <Box
           sx={{
             width: 32, height: 32, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: t.modalIconBg, color: t.modalIconColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}
         >
@@ -117,7 +117,7 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
         >
           <Typography variant="body2" sx={{ color: t.textSecondary, fontWeight: 500 }}>보유 마일리지</Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-            <Typography fontWeight={800} sx={{ fontSize: '1.15rem', color: '#6366f1' }}>
+            <Typography fontWeight={800} sx={{ fontSize: '1.15rem', color: t.primaryColor }}>
               {totalMileage.toLocaleString()}
             </Typography>
             <Typography variant="caption" sx={{ color: t.textSecondary }}>마리</Typography>
@@ -148,16 +148,16 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
               fontSize: '1rem',
               fontWeight: 700,
               '& fieldset': { borderColor: t.borderColorStrict },
-              '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
-              '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+              '&:hover fieldset': { borderColor: t.inputFocusHoverBorder },
+              '&.Mui-focused fieldset': { borderColor: t.inputFocusColor },
             },
             '& .MuiInputBase-input': {
               color: t.textPrimary,
               WebkitTextFillColor: t.textPrimary,
             },
-            '& .MuiInputLabel-root': { color: t.textSecondary, '&.Mui-focused': { color: '#6366f1' } },
+            '& .MuiInputLabel-root': { color: t.textSecondary, '&.Mui-focused': { color: t.inputFocusColor } },
             '& .MuiFormHelperText-root': {
-              color: isValid ? '#10b981' : undefined,
+              color: isValid ? t.helperTextSuccessColor : undefined,
               fontWeight: isValid ? 600 : undefined,
             },
           }}
@@ -169,7 +169,7 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
           variant="text"
           onClick={() => setInputValue(String(totalMileage))}
           sx={{
-            fontSize: '0.75rem', fontWeight: 600, color: '#6366f1',
+            fontSize: '0.75rem', fontWeight: 600, color: t.primaryColor,
             textTransform: 'none', p: 0, mb: 3,
             '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' },
           }}
@@ -211,8 +211,8 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
             fullWidth
             sx={{
               borderRadius: 2, py: 1, fontWeight: 600,
-              bgcolor: '#6366f1', boxShadow: 'none',
-              '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 16px rgba(99,102,241,0.3)' },
+              bgcolor: t.primaryColor, boxShadow: 'none',
+              '&:hover': { bgcolor: t.primaryHoverBg, boxShadow: t.primaryBtnHoverShadow },
               '&.Mui-disabled': {
                 bgcolor: t.disabledBtnBg,
                 color: t.disabledBtnColor,
