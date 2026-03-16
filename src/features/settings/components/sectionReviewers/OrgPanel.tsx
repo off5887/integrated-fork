@@ -1,6 +1,7 @@
 import CheckIcon from '@mui/icons-material/Check'
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import {
   Accordion,
   AccordionDetails,
@@ -41,6 +42,8 @@ const OrgPanel: React.FC<Props> = ({
   const st = getSettingsTheme(isDarkMode)
   const isMobile = useMediaQuery('(max-width: 1199px)')
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [panelOpen, setPanelOpen] = useState(false)
+  const showContent = !isMobile || panelOpen
 
   const grouped = useMemo(() => {
     const filtered = members.filter(
@@ -74,7 +77,73 @@ const OrgPanel: React.FC<Props> = ({
   }
 
   return (
-    <Box>
+    <Box
+      sx={{
+        bgcolor: st.panelBg,
+        border: `1px solid ${borderColor}`,
+        borderRadius: 2.5,
+        overflow: 'hidden',
+      }}
+    >
+      {/* 패널 헤더 — 모바일에서 클릭하면 접기/펼치기 */}
+      <Box
+        onClick={() => isMobile && setPanelOpen((v) => !v)}
+        sx={{
+          px: 2,
+          py: 1.5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          bgcolor: st.accordionDivisionBg,
+          borderBottom: showContent ? `1px solid ${borderColor}` : 'none',
+          cursor: isMobile ? 'pointer' : 'default',
+          userSelect: 'none',
+          transition: 'background 0.15s ease',
+          '&:hover': isMobile ? { bgcolor: st.memberRowHoverBg } : {},
+        }}
+      >
+        <PeopleAltOutlinedIcon sx={{ fontSize: '1rem', color: st.primaryColor }} />
+        <Typography
+          variant="caption"
+          fontWeight={700}
+          sx={{
+            color: st.primaryColor,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            fontSize: '0.72rem',
+            flex: 1,
+          }}
+        >
+          조직도
+        </Typography>
+        <Chip
+          label={`${members.length}명`}
+          size="small"
+          sx={{
+            height: 18,
+            fontSize: '0.65rem',
+            fontWeight: 700,
+            bgcolor: st.chipBg,
+            color: st.primaryColor,
+            border: `1px solid ${st.avatarBorder}`,
+            '& .MuiChip-label': { px: 0.75 },
+          }}
+        />
+        {isMobile && (
+          <ExpandMoreIcon
+            sx={{
+              fontSize: '1.1rem',
+              color: st.primaryColor,
+              ml: 0.5,
+              transition: 'transform 0.2s ease',
+              transform: panelOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+          />
+        )}
+      </Box>
+
+      <Collapse in={showContent} timeout={220} unmountOnExit>
+      <Box sx={{ p: 2 }}>
       <TextField
         fullWidth
         placeholder="이름·직급·부서 검색"
@@ -104,7 +173,7 @@ const OrgPanel: React.FC<Props> = ({
           display: 'flex',
           flexDirection: 'column',
           gap: 1.5,
-          maxHeight: 600,
+          maxHeight: 520,
           overflow: 'auto',
           pr: 0.5,
           '&::-webkit-scrollbar': { width: 4 },
@@ -301,6 +370,8 @@ const OrgPanel: React.FC<Props> = ({
           </Accordion>
         ))}
       </Box>
+      </Box>
+      </Collapse>
     </Box>
   )
 }
