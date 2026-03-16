@@ -1,17 +1,19 @@
 // src/routes/Judge/components/JudgeDetailHeader.tsx
 import CloseIcon from '@mui/icons-material/Close'
 import GavelIcon from '@mui/icons-material/Gavel'
-import { Box, IconButton, Typography } from '@mui/material'
+import { Box, Chip, IconButton, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
+import { stageConfig } from '../config/judgeStageConfig'
 
 interface Props {
   title: string
+  reviewStage: 1 | 2 | 3
   onClose: () => void
 }
 
-export default function JudgeDetailHeader({ title, onClose }: Props) {
+export default function JudgeDetailHeader({ title, reviewStage, onClose }: Props) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
   const theme = getJudgeTheme(isDarkMode)
@@ -40,13 +42,28 @@ export default function JudgeDetailHeader({ title, onClose }: Props) {
         >
           <GavelIcon sx={{ color: '#fff', fontSize: '1.1rem' }} />
         </Box>
-        <Typography
-          variant="h6"
-          fontWeight={700}
-          sx={{ color: colors.textPrimary, letterSpacing: '-0.01em', lineHeight: 1.3 }}
-        >
-          {title}
-        </Typography>
+        <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+          <Typography
+            variant="h6"
+            fontWeight={700}
+            sx={{ color: colors.textPrimary, letterSpacing: '-0.01em', lineHeight: 1.3 }}
+          >
+            {title}
+          </Typography>
+          <Chip
+            label={`${reviewStage}차 심사`}
+            size="small"
+            sx={{
+              flexShrink: 0,
+              bgcolor: stageConfig[reviewStage].bg,
+              color: stageConfig[reviewStage].color,
+              border: `1px solid ${stageConfig[reviewStage].border}`,
+              fontWeight: 700,
+              fontSize: '0.72rem',
+              height: 22,
+            }}
+          />
+        </Box>
         <IconButton
           onClick={onClose}
           size="small"

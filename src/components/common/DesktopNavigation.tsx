@@ -1,5 +1,14 @@
 import * as MuiIcons from '@mui/icons-material'
-import { Avatar, Box, IconButton, Paper, Tooltip, Typography } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Divider,
+  ListItemIcon,
+  Menu,
+  MenuItem as MuiMenuItem,
+  Paper,
+  Typography,
+} from '@mui/material'
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems, settingsItem } from './headerConfig'
@@ -237,135 +246,236 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
   )
 }
 
-// ─── UserChip ─────────────────────────────────────────────────────────────────
+// ─── UserMenu ─────────────────────────────────────────────────────────────────
 
-function UserChip() {
-  const { isDarkMode, textColor, activeColor } = useNavColors()
-  const user = useCurrentUser()
-  if (!user) return null
-
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1,
-        pl: 1.5,
-        mr: 0.5,
-        borderLeft: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.5)'}`,
-      }}
-    >
-      <Avatar
-        src={user.avatarUrl}
-        sx={{
-          width: 28,
-          height: 28,
-          fontSize: '0.75rem',
-          fontWeight: 700,
-          bgcolor: isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.13)',
-          color: activeColor,
-          border: `1.5px solid ${isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)'}`,
-        }}
-      >
-        {user.name.charAt(0)}
-      </Avatar>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography
-          sx={{
-            fontSize: '0.78rem',
-            fontWeight: 700,
-            color: isDarkMode ? '#e2e8f0' : '#1e293b',
-            lineHeight: 1.25,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {user.name}
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: '0.68rem',
-            color: textColor,
-            lineHeight: 1.25,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {user.position}{user.department ? ` · ${user.department}` : ''}
-        </Typography>
-      </Box>
-    </Box>
-  )
-}
-
-// ─── HeaderActions ────────────────────────────────────────────────────────────
-
-function HeaderActions() {
+function UserMenu() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isDarkMode, toggleTheme, activeColor, textColor, hoverBg } = useNavColors()
+  const { isDarkMode, toggleTheme, activeColor, textColor, hoverBg, dropdownBg, dropdownBorder } =
+    useNavColors()
   const logout = useLogout()
+  const user = useCurrentUser()
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+
+  if (!user) return null
 
   const settingsActive = location.pathname === settingsItem.path
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
-      <Tooltip title="설정" arrow placement="bottom">
-        <IconButton
-          onClick={() => navigate(settingsItem.path)}
-          size="small"
+    <>
+      {/* 트리거: 아바타 + 이름 버튼 */}
+      <Box
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        role="button"
+        aria-label="사용자 메뉴 열기"
+        aria-haspopup="true"
+        aria-expanded={open}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          pl: 1.5,
+          pr: 1,
+          py: 0.5,
+          ml: 0.5,
+          borderLeft: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.5)'}`,
+          borderRadius: 2,
+          cursor: 'pointer',
+          transition: 'background 0.15s ease',
+          '&:hover': { bgcolor: hoverBg },
+        }}
+      >
+        <Avatar
+          src={user.avatarUrl}
           sx={{
-            color: settingsActive ? activeColor : textColor,
+            width: 30,
+            height: 30,
+            fontSize: '0.8rem',
+            fontWeight: 700,
+            bgcolor: isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.13)',
+            color: activeColor,
+            border: `1.5px solid ${isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.28)'}`,
+          }}
+        >
+          {user.name.charAt(0)}
+        </Avatar>
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Typography
+            sx={{
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              color: isDarkMode ? '#e2e8f0' : '#1e293b',
+              lineHeight: 1.25,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {user.name}
+          </Typography>
+          <Typography
+            sx={{
+              fontSize: '0.68rem',
+              color: textColor,
+              lineHeight: 1.25,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {user.position}
+            {user.department ? ` · ${user.department}` : ''}
+          </Typography>
+        </Box>
+        <MuiIcons.KeyboardArrowDown
+          sx={{
+            fontSize: '1rem',
+            color: textColor,
+            transition: 'transform 0.2s ease',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        />
+      </Box>
+
+      {/* 드롭다운 메뉴 */}
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={() => setAnchorEl(null)}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        slotProps={{
+          paper: {
+            elevation: 8,
+            sx: {
+              mt: 0.75,
+              minWidth: 210,
+              bgcolor: dropdownBg,
+              border: dropdownBorder,
+              borderRadius: 2,
+              backdropFilter: 'blur(24px)',
+              overflow: 'visible',
+              '& .MuiList-root': { py: 0.5 },
+            },
+          },
+        }}
+      >
+        {/* 프로필 헤더 */}
+        <Box sx={{ px: 2, py: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Avatar
+              src={user.avatarUrl}
+              sx={{
+                width: 40,
+                height: 40,
+                fontSize: '1rem',
+                fontWeight: 700,
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.13)',
+                color: activeColor,
+                border: `2px solid ${isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.28)'}`,
+              }}
+            >
+              {user.name.charAt(0)}
+            </Avatar>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                sx={{
+                  fontSize: '0.875rem',
+                  fontWeight: 700,
+                  color: isDarkMode ? '#f1f5f9' : '#0f172a',
+                  lineHeight: 1.3,
+                }}
+              >
+                {user.name}
+              </Typography>
+              <Typography
+                sx={{ fontSize: '0.75rem', color: textColor, lineHeight: 1.3 }}
+              >
+                {user.position}
+                {user.department ? ` · ${user.department}` : ''}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.68rem',
+                  color: isDarkMode ? '#475569' : '#94a3b8',
+                  lineHeight: 1.3,
+                }}
+              >
+                {user.employeeId}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        <Divider sx={{ borderColor: isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.6)' }} />
+
+        {/* 설정 */}
+        <MuiMenuItem
+          onClick={() => { navigate(settingsItem.path); setAnchorEl(null) }}
+          sx={{
+            px: 2,
+            py: 1,
+            gap: 1.5,
+            color: settingsActive ? activeColor : isDarkMode ? '#cbd5e1' : '#374151',
             bgcolor: settingsActive
-              ? isDarkMode
-                ? 'rgba(99,102,241,0.12)'
-                : 'rgba(99,102,241,0.08)'
+              ? isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)'
               : 'transparent',
             '&:hover': { bgcolor: hoverBg, color: activeColor },
           }}
         >
-          <MuiIcons.Settings fontSize="small" />
-        </IconButton>
-      </Tooltip>
+          <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
+            <MuiIcons.Settings fontSize="small" />
+          </ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem', fontWeight: settingsActive ? 700 : 500 }}>
+            설정
+          </Typography>
+        </MuiMenuItem>
 
-      <Tooltip
-        title={isDarkMode ? '라이트 모드' : '다크 모드'}
-        arrow
-        placement="bottom"
-      >
-        <IconButton
+        {/* 테마 전환 */}
+        <MuiMenuItem
           onClick={toggleTheme}
-          size="small"
           sx={{
-            color: textColor,
+            px: 2,
+            py: 1,
+            gap: 1.5,
+            color: isDarkMode ? '#cbd5e1' : '#374151',
             '&:hover': {
-              bgcolor: hoverBg,
-              color: isDarkMode ? '#fbbf24' : '#f59e0b',
+              bgcolor: isDarkMode ? 'rgba(251,191,36,0.1)' : 'rgba(245,158,11,0.08)',
+              color: isDarkMode ? '#fbbf24' : '#d97706',
             },
           }}
         >
-          {isDarkMode ? (
-            <MuiIcons.WbSunny fontSize="small" />
-          ) : (
-            <MuiIcons.NightsStay fontSize="small" />
-          )}
-        </IconButton>
-      </Tooltip>
+          <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
+            {isDarkMode ? (
+              <MuiIcons.WbSunny fontSize="small" />
+            ) : (
+              <MuiIcons.NightsStay fontSize="small" />
+            )}
+          </ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
+            {isDarkMode ? '라이트 모드' : '다크 모드'}
+          </Typography>
+        </MuiMenuItem>
 
-      <Tooltip title="로그아웃" arrow placement="bottom">
-        <IconButton
-          onClick={logout}
-          size="small"
+        <Divider sx={{ borderColor: isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.6)' }} />
+
+        {/* 로그아웃 */}
+        <MuiMenuItem
+          onClick={() => { setAnchorEl(null); logout() }}
           sx={{
-            color: textColor,
+            px: 2,
+            py: 1,
+            gap: 1.5,
+            color: isDarkMode ? '#fca5a5' : '#ef4444',
             '&:hover': {
-              bgcolor: isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.08)',
-              color: '#ef4444',
+              bgcolor: isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.07)',
             },
           }}
         >
-          <MuiIcons.Logout fontSize="small" />
-        </IconButton>
-      </Tooltip>
-    </Box>
+          <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
+            <MuiIcons.Logout fontSize="small" />
+          </ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>로그아웃</Typography>
+        </MuiMenuItem>
+      </Menu>
+    </>
   )
 }
 
@@ -392,8 +502,7 @@ export default function DesktopNavigation() {
 
       <Box sx={{ flexGrow: 1 }} />
 
-      <UserChip />
-      <HeaderActions />
+      <UserMenu />
     </>
   )
 }

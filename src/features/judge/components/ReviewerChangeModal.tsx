@@ -19,29 +19,8 @@ import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
-import { Proposal } from '@/api/types/judge'
-
-// ─── 결재 후보 목록 (실제 환경에서는 API로 받아옴) ───────────────────────────
-
-interface ReviewerCandidate {
-  id: string
-  name: string
-  position: string
-  department: string
-}
-
-const mockCandidates: ReviewerCandidate[] = [
-  { id: '1', name: '박부장', position: '부장', department: '개발팀' },
-  { id: '2', name: '김과장', position: '과장', department: '기획팀' },
-  { id: '3', name: '이부장', position: '부장', department: '안전관리팀' },
-  { id: '4', name: '최이사', position: '이사', department: '경영지원부문' },
-  { id: '5', name: '박인사', position: '과장', department: '인사팀' },
-  { id: '6', name: '이이사', position: '이사', department: '설비팀' },
-  { id: '7', name: '김감사', position: '감사', department: '감사팀' },
-  { id: '8', name: '박복지', position: '팀장', department: '복지지원팀' },
-  { id: '9', name: '서부문장', position: '부문장', department: '전략기획실' },
-  { id: '10', name: '장임원', position: '상무', department: '경영지원부문' },
-]
+import type { Proposal } from '@/api/types/judge'
+import { mockCandidates } from '@/api/mock/judge'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 

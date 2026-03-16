@@ -18,6 +18,7 @@ import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
 import { Proposal } from '@/api/types/judge'
 import { statusConfig } from '../config/judgeStatusConfig'
+import { stageConfig } from '../config/judgeStageConfig'
 
 interface JudgeTableProps {
   displayedData: Proposal[]
@@ -104,7 +105,7 @@ export default function JudgeTable({
                     cursor: 'pointer',
                     transition: 'background-color 0.15s ease',
                     ...(item.transferredFrom && {
-                      boxShadow: 'inset 3px 0 0 rgba(245,158,11,0.7)',
+                      boxShadow: theme.transferredRowShadow,
                       bgcolor: theme.transferredRowBg,
                     }),
                     '&:hover': {
@@ -168,13 +169,13 @@ export default function JudgeTable({
                               py: 0.2,
                               borderRadius: 1,
                               bgcolor: theme.transferredBadgeBg,
-                              border: '1px solid rgba(245,158,11,0.3)',
+                              border: `1px solid ${theme.transferredBadgeBorder}`,
                               cursor: 'default',
                             }}
                           >
-                            <SwapHorizIcon sx={{ fontSize: '0.65rem', color: '#f59e0b' }} />
+                            <SwapHorizIcon sx={{ fontSize: '0.65rem', color: theme.transferredColor }} />
                             <Typography
-                              sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#f59e0b', lineHeight: 1 }}
+                              sx={{ fontSize: '0.65rem', fontWeight: 700, color: theme.transferredColor, lineHeight: 1 }}
                             >
                               이관됨 · {item.transferredFrom}
                             </Typography>
@@ -198,20 +199,34 @@ export default function JudgeTable({
                     </Typography>
                   </TableCell>
 
-                  {/* 상태 */}
+                  {/* 상태 + 심사 단계 */}
                   <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                    <Chip
-                      label={status.label}
-                      size="small"
-                      sx={{
-                        bgcolor: status.bg,
-                        color: status.color,
-                        border: `1px solid ${status.border}`,
-                        fontWeight: 600,
-                        fontSize: '0.75rem',
-                        height: 24,
-                      }}
-                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, alignItems: 'flex-start' }}>
+                      <Chip
+                        label={status.label}
+                        size="small"
+                        sx={{
+                          bgcolor: status.bg,
+                          color: status.color,
+                          border: `1px solid ${status.border}`,
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                          height: 24,
+                        }}
+                      />
+                      <Chip
+                        label={`${item.reviewStage}차 심사`}
+                        size="small"
+                        sx={{
+                          bgcolor: stageConfig[item.reviewStage].bg,
+                          color: stageConfig[item.reviewStage].color,
+                          border: `1px solid ${stageConfig[item.reviewStage].border}`,
+                          fontWeight: 600,
+                          fontSize: '0.68rem',
+                          height: 20,
+                        }}
+                      />
+                    </Box>
                   </TableCell>
 
                   {/* 결재자 변경 */}

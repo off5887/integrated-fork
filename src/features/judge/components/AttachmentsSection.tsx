@@ -5,11 +5,7 @@ import { Box, Button, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
-
-interface Attachment {
-  name: string
-  url: string
-}
+import type { Attachment } from '@/api/types/judge'
 
 interface Props {
   attachments: Attachment[]

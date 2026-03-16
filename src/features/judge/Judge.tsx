@@ -12,6 +12,7 @@ import { getJudgeTheme } from '@/theme/judgeTheme'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { judgeData } from '@/api/mock/judge'
 import { Proposal } from '@/api/types/judge'
+import { useCurrentUser } from '@/components/common/hooks/useCurrentUser'
 import JudgeDetail from './JudgeDetail'
 import ReviewerChangeModal from './components/ReviewerChangeModal'
 import StatCard from './components/StatCard'
@@ -22,6 +23,7 @@ export default function Judge() {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
   const theme = getJudgeTheme(isDarkMode)
+  const user = useCurrentUser()
 
   const [isLoading, setIsLoading] = useState(true)
   const [proposals, setProposals] = useState<Proposal[]>(judgeData)
@@ -36,17 +38,23 @@ export default function Judge() {
     return () => clearTimeout(timer)
   }, [])
 
+  // 로그인한 사용자가 현재 담당 심사자인 제안만 표시
+  const myProposals = useMemo(
+    () => proposals.filter((p) => p.reviewer === (user?.name ?? '')),
+    [proposals, user?.name],
+  )
+
   const stats = useMemo(() => ({
-    심사대기: proposals.filter((p) => p.status === '심사대기').length,
-    심사중: proposals.filter((p) => p.status === '심사중').length,
-    승인: proposals.filter((p) => p.status === '승인').length,
-    반려: proposals.filter((p) => p.status === '반려').length,
-  }), [proposals])
+    심사대기: myProposals.filter((p) => p.status === '심사대기').length,
+    심사중: myProposals.filter((p) => p.status === '심사중').length,
+    승인: myProposals.filter((p) => p.status === '승인').length,
+    반려: myProposals.filter((p) => p.status === '반려').length,
+  }), [myProposals])
 
   const filteredProposals = useMemo(() => {
-    if (statusFilter === '전체') return proposals
-    return proposals.filter((p) => p.status === statusFilter)
-  }, [proposals, statusFilter])
+    if (statusFilter === '전체') return myProposals
+    return myProposals.filter((p) => p.status === statusFilter)
+  }, [myProposals, statusFilter])
 
   const displayedData = filteredProposals.slice(
     page * rowsPerPage,
@@ -169,7 +177,7 @@ export default function Judge() {
           </Box>
           <Box sx={{ ml: 'auto' }}>
             <Chip
-              label={`전체 ${proposals.length}건`}
+              label={`전체 ${myProposals.length}건`}
               size="small"
               sx={{
                 bgcolor: theme.totalChipBg,

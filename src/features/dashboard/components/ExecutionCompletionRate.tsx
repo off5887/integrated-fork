@@ -129,8 +129,8 @@ export default function ExecutionCompletionRate({ completionRate = 73.4 }: Execu
         프로젝트 진행 현황을 한눈에 확인하세요
       </Typography>
 
-      {/* 차트 - 고정 높이, 여백 없이 */}
-      <Box sx={{ flexShrink: 0 }}>
+      {/* 차트 - 고정 높이 */}
+      <Box sx={{ flexShrink: 0, mb: 2 }}>
         <Chart
           options={options}
           series={[completionRate]}
