@@ -3,22 +3,8 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import PendingActionsIcon from '@mui/icons-material/PendingActions'
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
-import {
-  Box,
-  Chip,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Box, Chip, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
@@ -28,124 +14,15 @@ import { judgeData } from '@/api/mock/judge'
 import { Proposal } from '@/api/types/judge'
 import JudgeDetail from './JudgeDetail'
 import ReviewerChangeModal from './components/ReviewerChangeModal'
-
-const statusConfig = {
-  심사대기: {
-    label: '심사대기',
-    bg: 'rgba(245,158,11,0.1)',
-    color: '#f59e0b',
-    border: 'rgba(245,158,11,0.25)',
-  },
-  심사중: {
-    label: '심사중',
-    bg: 'rgba(99,102,241,0.1)',
-    color: '#6366f1',
-    border: 'rgba(99,102,241,0.25)',
-  },
-  승인: {
-    label: '승인',
-    bg: 'rgba(16,185,129,0.1)',
-    color: '#10b981',
-    border: 'rgba(16,185,129,0.25)',
-  },
-  반려: {
-    label: '반려',
-    bg: 'rgba(239,68,68,0.1)',
-    color: '#ef4444',
-    border: 'rgba(239,68,68,0.25)',
-  },
-} as const
-
-type StatusFilter = '전체' | '심사대기' | '심사중' | '승인' | '반려'
-
-// ─── 내 결재 현황 요약 카드 ───────────────────────────────────────────────────
-
-interface StatCardProps {
-  label: string
-  count: number
-  color: string
-  bg: string
-  border: string
-  icon: React.ReactNode
-  active: boolean
-  onClick: () => void
-}
-
-function StatCard({ label, count, color, bg, border, icon, active, onClick }: StatCardProps) {
-  const { isDarkMode } = useThemeMode()
-  const theme = getJudgeTheme(isDarkMode)
-
-  return (
-    <Box
-      onClick={onClick}
-      sx={{
-        flex: '1 1 120px',
-        p: { xs: 1.5, sm: 2 },
-        borderRadius: 2.5,
-        border: `1px solid ${active ? border : theme.statCardInactiveBorder}`,
-        bgcolor: active ? bg : theme.statCardInactiveBg,
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1.5,
-        transition: 'all 0.15s ease',
-        '&:hover': {
-          bgcolor: bg,
-          borderColor: border,
-        },
-        boxShadow: active ? theme.statCardActiveShadow : 'none',
-      }}
-    >
-      <Box
-        sx={{
-          width: 36,
-          height: 36,
-          borderRadius: 2,
-          bgcolor: bg,
-          border: `1px solid ${border}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          color,
-        }}
-      >
-        {icon}
-      </Box>
-      <Box>
-        <Typography
-          sx={{
-            fontSize: { xs: '1.2rem', sm: '1.5rem' },
-            fontWeight: 800,
-            color,
-            lineHeight: 1,
-            mb: 0.25,
-          }}
-        >
-          {count}
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: '0.72rem',
-            color: active ? color : theme.statCardLabelColor,
-            fontWeight: active ? 700 : 500,
-          }}
-        >
-          {label}
-        </Typography>
-      </Box>
-    </Box>
-  )
-}
-
-// ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
+import StatCard from './components/StatCard'
+import JudgeTable from './components/JudgeTable'
+import { statusConfig, type StatusFilter } from './config/judgeStatusConfig'
 
 export default function Judge() {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
   const theme = getJudgeTheme(isDarkMode)
 
-  // mutable proposals state (reviewer 변경을 위해)
   const [isLoading, setIsLoading] = useState(true)
   const [proposals, setProposals] = useState<Proposal[]>(judgeData)
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null)
@@ -159,7 +36,6 @@ export default function Judge() {
     return () => clearTimeout(timer)
   }, [])
 
-  // 통계
   const stats = useMemo(() => ({
     심사대기: proposals.filter((p) => p.status === '심사대기').length,
     심사중: proposals.filter((p) => p.status === '심사중').length,
@@ -167,7 +43,6 @@ export default function Judge() {
     반려: proposals.filter((p) => p.status === '반려').length,
   }), [proposals])
 
-  // 필터링
   const filteredProposals = useMemo(() => {
     if (statusFilter === '전체') return proposals
     return proposals.filter((p) => p.status === statusFilter)
@@ -223,7 +98,8 @@ export default function Judge() {
     if (selectedIndex > 0) setSelectedProposal(filteredProposals[selectedIndex - 1])
   }
   const handleNext = () => {
-    if (selectedIndex < filteredProposals.length - 1) setSelectedProposal(filteredProposals[selectedIndex + 1])
+    if (selectedIndex < filteredProposals.length - 1)
+      setSelectedProposal(filteredProposals[selectedIndex + 1])
   }
 
   return (
@@ -378,277 +254,19 @@ export default function Judge() {
             </Typography>
           </Box>
         ) : (
-          <Box
-            sx={{
-              borderRadius: 3,
-              bgcolor: colors.cardBg,
-              border: `1px solid ${colors.borderColor}`,
-              boxShadow: colors.cardShadow,
-              overflow: 'hidden',
+          <JudgeTable
+            displayedData={displayedData}
+            filteredTotal={filteredProposals.length}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onRowClick={setSelectedProposal}
+            onReviewerChangeClick={setReviewerChangeTarget}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10))
+              setPage(0)
             }}
-          >
-            <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
-
-            {/* 테이블 — 모바일 수평 스크롤 */}
-            <Box sx={{ overflowX: 'auto' }}>
-              <Table sx={{ minWidth: 680 }}>
-                <TableHead>
-                  <TableRow sx={{ bgcolor: colors.headerBg }}>
-                    {[
-                      { label: '번호', sx: { display: { xs: 'none', sm: 'table-cell' } } },
-                      { label: '제안 제목', sx: {} },
-                      { label: '제안자', sx: { display: { xs: 'none', md: 'table-cell' } } },
-                      { label: '제출일', sx: { display: { xs: 'none', lg: 'table-cell' } } },
-                      { label: '상태', sx: {} },
-                      { label: '결재자 변경', sx: {}, align: 'center' as const },
-                      { label: '상세', sx: {}, align: 'center' as const },
-                    ].map((col) => (
-                      <TableCell
-                        key={col.label}
-                        align={col.align}
-                        sx={{
-                          color: colors.textSecondary,
-                          fontWeight: 600,
-                          fontSize: '0.75rem',
-                          letterSpacing: '0.05em',
-                          textTransform: 'uppercase',
-                          py: 1.75,
-                          borderBottomColor: colors.borderColor,
-                          whiteSpace: 'nowrap',
-                          ...col.sx,
-                        }}
-                      >
-                        {col.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-
-                <TableBody>
-                  {displayedData.map((item) => {
-                    const status = statusConfig[item.status]
-                    const isPending = item.status === '심사대기' || item.status === '심사중'
-                    return (
-                      <TableRow
-                        key={item.id}
-                        onClick={() => setSelectedProposal(item)}
-                        hover
-                        sx={{
-                          cursor: 'pointer',
-                          transition: 'background-color 0.15s ease',
-                          // 이관된 항목: 좌측 amber 인디케이터 + 미세 배경
-                          ...(item.transferredFrom && {
-                            boxShadow: 'inset 3px 0 0 rgba(245,158,11,0.7)',
-                            bgcolor: theme.transferredRowBg,
-                          }),
-                          '&:hover': {
-                            bgcolor: item.transferredFrom
-                              ? theme.transferredRowHover
-                              : colors.rowHoverBg,
-                          },
-                          '& .MuiTableCell-root': {
-                            borderBottomColor: colors.borderColor,
-                            py: 1.75,
-                            color: colors.textPrimary,
-                          },
-                        }}
-                      >
-                        {/* 번호 */}
-                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                          <Typography sx={{ fontSize: '0.8rem', color: colors.textSecondary, fontWeight: 500 }}>
-                            #{item.id}
-                          </Typography>
-                        </TableCell>
-
-                        {/* 제안 제목 */}
-                        <TableCell>
-                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.4 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                              <Typography
-                                sx={{ fontSize: '0.9rem', color: colors.textPrimary, fontWeight: 500 }}
-                              >
-                                {item.title}
-                              </Typography>
-                              {/* 모바일: 상태 인라인 표시 */}
-                              <Chip
-                                label={status.label}
-                                size="small"
-                                sx={{
-                                  display: { xs: 'flex', sm: 'none' },
-                                  bgcolor: status.bg,
-                                  color: status.color,
-                                  border: `1px solid ${status.border}`,
-                                  fontWeight: 600,
-                                  fontSize: '0.68rem',
-                                  height: 20,
-                                }}
-                              />
-                            </Box>
-
-                            {/* 이관 배지 */}
-                            {item.transferredFrom && (
-                              <Tooltip
-                                title={`결재자 변경된 항목 · 이전 담당자: ${item.transferredFrom}`}
-                                placement="right"
-                                arrow
-                              >
-                                <Box
-                                  sx={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 0.4,
-                                    width: 'fit-content',
-                                    px: 0.8,
-                                    py: 0.2,
-                                    borderRadius: 1,
-                                    bgcolor: theme.transferredBadgeBg,
-                                    border: '1px solid rgba(245,158,11,0.3)',
-                                    cursor: 'default',
-                                  }}
-                                >
-                                  <SwapHorizIcon sx={{ fontSize: '0.65rem', color: '#f59e0b' }} />
-                                  <Typography
-                                    sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#f59e0b', lineHeight: 1 }}
-                                  >
-                                    이관됨 · {item.transferredFrom}
-                                  </Typography>
-                                </Box>
-                              </Tooltip>
-                            )}
-                          </Box>
-                        </TableCell>
-
-                        {/* 제안자 */}
-                        <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          <Typography sx={{ fontSize: '0.875rem', color: colors.textSecondary }}>
-                            {item.proposers.join(', ')}
-                          </Typography>
-                        </TableCell>
-
-                        {/* 제출일 */}
-                        <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>
-                          <Typography sx={{ fontSize: '0.875rem', color: colors.textSecondary }}>
-                            {item.submittedAt}
-                          </Typography>
-                        </TableCell>
-
-                        {/* 상태 */}
-                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                          <Chip
-                            label={status.label}
-                            size="small"
-                            sx={{
-                              bgcolor: status.bg,
-                              color: status.color,
-                              border: `1px solid ${status.border}`,
-                              fontWeight: 600,
-                              fontSize: '0.75rem',
-                              height: 24,
-                            }}
-                          />
-                        </TableCell>
-
-                        {/* 결재자 변경 */}
-                        <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                          <Tooltip
-                            title={
-                              isPending
-                                ? `결재자 변경 (현재: ${item.reviewer})`
-                                : '완료된 항목은 변경 불가'
-                            }
-                            placement="top"
-                          >
-                            <Box component="span">
-                              <IconButton
-                                size="small"
-                                disabled={!isPending}
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setReviewerChangeTarget(item)
-                                }}
-                                sx={{
-                                  width: 30,
-                                  height: 30,
-                                  color: isPending
-                                    ? theme.reviewerBtnColor
-                                    : colors.textSecondary,
-                                  bgcolor: isPending
-                                    ? theme.reviewerBtnBg
-                                    : 'transparent',
-                                  border: isPending
-                                    ? `1px solid ${theme.reviewerBtnBorder}`
-                                    : `1px solid transparent`,
-                                  '&:hover': {
-                                    bgcolor: theme.reviewerBtnHoverBg,
-                                    borderColor: theme.reviewerBtnHoverBorder,
-                                    color: '#6366f1',
-                                  },
-                                  '&.Mui-disabled': { opacity: 0.28 },
-                                  transition: 'all 0.15s ease',
-                                }}
-                              >
-                                <SwapHorizIcon sx={{ fontSize: '1rem' }} />
-                              </IconButton>
-                            </Box>
-                          </Tooltip>
-                        </TableCell>
-
-                        {/* 상세 */}
-                        <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                          <Tooltip title="상세 보기" placement="left">
-                            <IconButton
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setSelectedProposal(item)
-                              }}
-                              sx={{
-                                color: colors.textSecondary,
-                                width: 30,
-                                height: 30,
-                                '&:hover': {
-                                  bgcolor: theme.viewBtnHoverBg,
-                                  color: '#6366f1',
-                                },
-                                transition: 'all 0.15s ease',
-                              }}
-                            >
-                              <OpenInNewIcon sx={{ fontSize: '1rem' }} />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </Box>
-
-            <Box sx={{ borderTop: `1px solid ${colors.borderColor}` }}>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 20]}
-                component="div"
-                count={filteredProposals.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={(_, newPage) => setPage(newPage)}
-                onRowsPerPageChange={(e) => {
-                  setRowsPerPage(parseInt(e.target.value, 10))
-                  setPage(0)
-                }}
-                sx={{
-                  color: colors.textSecondary,
-                  '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
-                    color: colors.textSecondary,
-                    fontSize: '0.8rem',
-                  },
-                  '.MuiTablePagination-select': { color: colors.textPrimary },
-                  '.MuiTablePagination-selectIcon': { color: colors.textSecondary },
-                  '.MuiTablePagination-actions button': { color: colors.textSecondary },
-                }}
-              />
-            </Box>
-          </Box>
+          />
         )}
       </Box>
 
