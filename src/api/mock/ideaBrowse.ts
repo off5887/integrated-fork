@@ -1,9 +1,10 @@
 // src/api/mock/ideaBrowse.ts
 
 import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
+import { DEMO_USER_PROFILE } from './auth'
 
-/** 현재 로그인된 사용자 (mock) */
-export const MY_AUTHOR = '김개발'
+/** 현재 로그인된 사용자 (auth.ts의 DEMO_USER_PROFILE을 단일 출처로 사용) */
+export const MY_AUTHOR = DEMO_USER_PROFILE.name
 
 export const CATEGORY_CONFIG: CategoryConfig[] = [
   { id: '절감', label: '절감', emoji: '💰', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)' },
@@ -47,7 +48,7 @@ export const IDEAS: IdeaItem[] = [
     category: '절감',
     problem: '현재 형광등 사용으로 전기요금이 연간 2,400만원 이상 발생하고 있으며, 노후 조명으로 작업 환경이 불량합니다.',
     solution: 'LED 교체 시 연간 1,200만원 절감 예상. 3년 이내 투자 회수 가능. 작업 조도 개선으로 생산성 향상 기대.',
-    author: '김개발',
+    author: MY_AUTHOR,
     division: 'B부문',
     department: '생산1부',
     status: '심사대기',
@@ -95,7 +96,7 @@ export const IDEAS: IdeaItem[] = [
     category: '혁신',
     problem: '현재 시스템 화질·지연 문제로 재택근무 및 원격근무 회의 효율 저하. 원격 협업 생산성 30% 하락 추정.',
     solution: 'Microsoft Teams Premium 도입. AI 기반 회의 요약 및 재택근무 환경 개선.',
-    author: '김개발',
+    author: MY_AUTHOR,
     division: 'A부문',
     department: '개발팀',
     status: '승인',
@@ -506,5 +507,56 @@ export const IDEAS: IdeaItem[] = [
     likes: 67,
     comments: 14,
     views: 225,
+  },
+  // 데모 계정(홍길동) 작성 아이디어
+  {
+    id: 101,
+    title: '개발팀 온보딩 프로세스 디지털화',
+    category: '혁신',
+    problem: '신입 개발자 온보딩이 수작업·구두 전달에 의존해 인수인계 품질이 들쭉날쭉함.',
+    solution: '노션 기반 온보딩 위키 + 자동 체크리스트 시스템 구축. 평균 온보딩 기간 2주 → 1주로 단축.',
+    author: MY_AUTHOR,
+    division: 'A부문',
+    department: '개발팀',
+    status: '심사중',
+    submittedAt: '2026-03-05',
+    security: 'public',
+    likes: 34,
+    comments: 8,
+    views: 120,
+  },
+  {
+    id: 102,
+    title: '코드 리뷰 가이드라인 표준화',
+    category: '품질',
+    problem: '팀원마다 코드 리뷰 기준이 달라 리뷰 시간이 길고 피드백 일관성이 부족함.',
+    solution: '리뷰 체크리스트 + 자동 린트 룰 세트 제정. PR당 평균 리뷰 시간 40% 단축 목표.',
+    author: MY_AUTHOR,
+    division: 'A부문',
+    department: '개발팀',
+    status: '승인',
+    submittedAt: '2026-01-20',
+    security: 'public',
+    likes: 52,
+    comments: 15,
+    views: 210,
+    ideaScore: 82,
+    mileageScore: 20000,
+  },
+  {
+    id: 103,
+    title: '사내 기술 블로그 운영 제안',
+    category: '혁신',
+    problem: '개발팀 내 지식이 개인에 집중되고 외부 공유 채널이 없어 채용 브랜딩 취약.',
+    solution: '주 1회 기술 포스팅 의무화 + 외부 블로그 플랫폼 연동. 분기별 우수 포스팅 포상.',
+    author: MY_AUTHOR,
+    division: 'A부문',
+    department: '개발팀',
+    status: '심사대기',
+    submittedAt: '2026-03-14',
+    security: 'public',
+    likes: 18,
+    comments: 4,
+    views: 73,
   },
 ]

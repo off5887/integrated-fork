@@ -38,23 +38,48 @@ export default function Judge() {
     return () => clearTimeout(timer)
   }, [])
 
-  // 로그인한 사용자가 현재 담당 심사자인 제안만 표시
-  const myProposals = useMemo(
-    () => proposals.filter((p) => p.reviewer === (user?.name ?? '')),
-    [proposals, user?.name],
-  )
+  // 내 심사 목록:
+  // 1) 현재 내가 담당 심사자인 건 (심사대기/심사중/승인/반려)
+  // 2) 내 심사 단계를 이미 지났으나 후속 단계(2차·3차)가 아직 진행 중인 건 (심사중 추적)
+  const myName = user?.name ?? ''
+
+  const myProposals = useMemo(() => {
+    return proposals.filter((p) => {
+      if (p.reviewer === myName) return true
+      if (p.status === '심사중') {
+        const myStage =
+          p.reviewer1 === myName ? 1 :
+          p.reviewer2 === myName ? 2 :
+          p.reviewer3 === myName ? 3 : null
+        if (myStage !== null && p.reviewStage > myStage) return true
+      }
+      return false
+    })
+  }, [proposals, myName])
 
   const stats = useMemo(() => ({
-    심사대기: myProposals.filter((p) => p.status === '심사대기').length,
-    심사중: myProposals.filter((p) => p.status === '심사중').length,
+    // 심사대기: 아직 내가 심사 안 한 건 (status=심사대기 또는 status=심사중이지만 내가 현재 담당자)
+    심사대기: myProposals.filter(
+      (p) => p.status === '심사대기' || (p.status === '심사중' && p.reviewer === myName),
+    ).length,
+    // 심사중: 내가 이미 심사를 마치고 후속 단계가 진행 중인 건
+    심사중: myProposals.filter((p) => p.status === '심사중' && p.reviewer !== myName).length,
     승인: myProposals.filter((p) => p.status === '승인').length,
     반려: myProposals.filter((p) => p.status === '반려').length,
-  }), [myProposals])
+  }), [myProposals, myName])
 
   const filteredProposals = useMemo(() => {
     if (statusFilter === '전체') return myProposals
+    if (statusFilter === '심사대기') {
+      return myProposals.filter(
+        (p) => p.status === '심사대기' || (p.status === '심사중' && p.reviewer === myName),
+      )
+    }
+    if (statusFilter === '심사중') {
+      return myProposals.filter((p) => p.status === '심사중' && p.reviewer !== myName)
+    }
     return myProposals.filter((p) => p.status === statusFilter)
-  }, [myProposals, statusFilter])
+  }, [myProposals, statusFilter, myName])
 
   const displayedData = filteredProposals.slice(
     page * rowsPerPage,

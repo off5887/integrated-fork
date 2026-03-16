@@ -1,10 +1,11 @@
 // src/routes/ideaBrowse/IdeaBrowse.tsx
 import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
-import { DEPT_BY_DIVISION, IDEAS, MY_AUTHOR } from '@/api/mock/ideaBrowse'
+import { DEPT_BY_DIVISION, IDEAS } from '@/api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useCurrentUser } from '@/components/common/hooks/useCurrentUser'
 import { getIdeaTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
 import IdeaCard from './components/IdeaCard'
 import IdeaDetailDialog from './components/IdeaDetailDialog'
@@ -20,6 +21,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 
 export default function IdeaBrowse() {
   const { isDarkMode } = useThemeMode()
+  const user = useCurrentUser()
   const { textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg, similar, statsBg, statsBorder, myOnlyActiveBg } = getIdeaTheme(isDarkMode)
 
   // ─── 필터 상태 ──────────────────────────────────────────────
@@ -58,7 +60,7 @@ export default function IdeaBrowse() {
     const q = search.trim().toLowerCase()
 
     const filtered = IDEAS.filter((idea) => {
-      if (showMyOnly && idea.author !== MY_AUTHOR) return false
+      if (showMyOnly && idea.author !== (user?.name ?? '')) return false
       if (selectedCategory && idea.category !== selectedCategory) return false
       if (selectedDivision && idea.division !== selectedDivision) return false
       if (selectedDept && idea.department !== selectedDept) return false
@@ -88,8 +90,8 @@ export default function IdeaBrowse() {
   )
 
   const myCount = useMemo(
-    () => IDEAS.filter((i) => i.author === MY_AUTHOR).length,
-    [],
+    () => IDEAS.filter((i) => i.author === (user?.name ?? '')).length,
+    [user?.name],
   )
 
   const hasFilter = !!(search || selectedCategory || selectedDivision || selectedDept || selectedStatus || showSimilarOnly || showMyOnly)
