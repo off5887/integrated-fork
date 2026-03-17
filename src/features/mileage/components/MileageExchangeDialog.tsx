@@ -211,7 +211,7 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
             fullWidth
             sx={{
               borderRadius: 2, py: 1, fontWeight: 600,
-              bgcolor: t.primaryColor, color: '#fff', boxShadow: 'none',
+              bgcolor: t.primaryColor, color: t.primaryBtnColor, boxShadow: 'none',
               '&:hover': { bgcolor: t.primaryHoverBg, boxShadow: t.primaryBtnHoverShadow },
               '&.Mui-disabled': {
                 bgcolor: t.disabledBtnBg,
