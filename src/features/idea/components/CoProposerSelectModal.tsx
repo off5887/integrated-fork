@@ -21,6 +21,7 @@ import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { ORG_STRUCTURE } from '@/api/mock/idea'
 import { getIdeaTheme } from '@/theme/ideaTheme'
+import { onKeyboardClick } from '@/utils/keyboardClick'
 
 // 검색을 위한 플랫 멤버 목록
 const allMembers = ORG_STRUCTURE.flatMap((div) =>
@@ -91,7 +92,12 @@ export default function CoProposerSelectModal({
     const isSelected = selected.includes(member.name)
     return (
       <Box
+        role="checkbox"
+        aria-checked={isSelected}
+        aria-label={`${member.name} ${member.position} ${isSelected ? '선택됨' : '선택 안됨'}`}
+        tabIndex={0}
         onClick={() => onToggle(member.name)}
+        onKeyDown={onKeyboardClick(() => onToggle(member.name))}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -101,7 +107,9 @@ export default function CoProposerSelectModal({
           py: 1,
           borderRadius: 1.5,
           cursor: 'pointer',
+          outline: 'none',
           border: `1px solid ${isSelected ? it.accent.borderHover : borderColor}`,
+          '&:focus-visible': { outline: `2px solid ${it.accent.border}`, outlineOffset: 2 },
           bgcolor: isSelected
             ? it.accent.bgSelected
             : it.listItemBg,
@@ -227,6 +235,7 @@ export default function CoProposerSelectModal({
         <IconButton
           size="small"
           onClick={handleClose}
+          aria-label="닫기"
           sx={{ color: textSecondary, flexShrink: 0 }}
         >
           <CloseIcon sx={{ fontSize: '1.1rem' }} />
@@ -270,6 +279,8 @@ export default function CoProposerSelectModal({
 
         {/* 목록 */}
         <Box
+          role="group"
+          aria-label="구성원 목록"
           sx={{
             maxHeight: 360,
             overflowY: 'auto',
@@ -305,7 +316,12 @@ export default function CoProposerSelectModal({
               <Box key={div.id} sx={{ mb: 0.5 }}>
                 {/* 부문 헤더 */}
                 <Box
+                  role="button"
+                  aria-expanded={expandedDivs.includes(div.id)}
+                  aria-label={`${div.name} 부문 ${expandedDivs.includes(div.id) ? '접기' : '펼치기'}`}
+                  tabIndex={0}
                   onClick={() => handleToggleDiv(div.id)}
+                  onKeyDown={onKeyboardClick(() => handleToggleDiv(div.id))}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -314,15 +330,14 @@ export default function CoProposerSelectModal({
                     py: 0.9,
                     borderRadius: 1.5,
                     cursor: 'pointer',
+                    outline: 'none',
                     border: `1px solid ${expandedDivs.includes(div.id) ? it.accent.border : borderColor}`,
                     bgcolor: expandedDivs.includes(div.id)
                       ? it.accent.bgHover
                       : it.categoryCardBg,
                     transition: 'all 0.12s ease',
-                    '&:hover': {
-                      bgcolor: it.accent.bgHover,
-                      borderColor: it.accent.border,
-                    },
+                    '&:hover': { bgcolor: it.accent.bgHover, borderColor: it.accent.border },
+                    '&:focus-visible': { outline: `2px solid ${it.accent.border}`, outlineOffset: 2 },
                   }}
                 >
                   <Typography
@@ -348,7 +363,12 @@ export default function CoProposerSelectModal({
                       <Box key={team.id}>
                         {/* 팀 헤더 */}
                         <Box
+                          role="button"
+                          aria-expanded={expandedTeams.includes(team.id)}
+                          aria-label={`${team.name} 팀 ${expandedTeams.includes(team.id) ? '접기' : '펼치기'}`}
+                          tabIndex={0}
                           onClick={() => handleToggleTeam(team.id)}
+                          onKeyDown={onKeyboardClick(() => handleToggleTeam(team.id))}
                           sx={{
                             display: 'flex',
                             alignItems: 'center',
@@ -358,12 +378,12 @@ export default function CoProposerSelectModal({
                             mb: 0.5,
                             borderRadius: 1.5,
                             cursor: 'pointer',
+                            outline: 'none',
                             border: `1px solid ${borderColor}`,
                             bgcolor: 'transparent',
                             transition: 'all 0.12s ease',
-                            '&:hover': {
-                              bgcolor: it.accent.bgVerySubtle,
-                            },
+                            '&:hover': { bgcolor: it.accent.bgVerySubtle },
+                            '&:focus-visible': { outline: `2px solid ${it.accent.border}`, outlineOffset: 2 },
                           }}
                         >
                           <Typography

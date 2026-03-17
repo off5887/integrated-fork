@@ -18,6 +18,7 @@ import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { REVIEWERS } from '@/api/mock/idea'
 import { getIdeaTheme } from '@/theme/ideaTheme'
+import { onKeyboardClick } from '@/utils/keyboardClick'
 
 interface Props {
   open: boolean
@@ -101,7 +102,7 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
             </Typography>
           )}
         </Box>
-        <IconButton size="small" onClick={handleClose} sx={{ color: textSecondary, flexShrink: 0 }}>
+        <IconButton size="small" onClick={handleClose} aria-label="닫기" sx={{ color: textSecondary, flexShrink: 0 }}>
           <CloseIcon sx={{ fontSize: '1.1rem' }} />
         </IconButton>
       </Box>
@@ -143,6 +144,8 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
 
         {/* 목록 */}
         <Box
+          role="group"
+          aria-label="심사자 목록"
           sx={{
             display: 'flex', flexDirection: 'column', gap: 0.75,
             maxHeight: 340, overflowY: 'auto', pr: 0.25, mb: 2,
@@ -168,19 +171,21 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
               return (
                 <Box
                   key={r.id}
+                  role="checkbox"
+                  aria-checked={isSelected}
+                  aria-label={`${r.name} ${r.dept} ${r.position} ${isSelected ? '선택됨' : '선택 안됨'}`}
+                  tabIndex={0}
                   onClick={() => onToggle(r.name)}
+                  onKeyDown={onKeyboardClick(() => onToggle(r.name))}
                   sx={{
                     display: 'flex', alignItems: 'center', gap: 1.25,
                     p: 1.25, borderRadius: 1.5, cursor: 'pointer',
+                    outline: 'none',
                     border: `1px solid ${isSelected ? it.accent.borderHover : borderColor}`,
-                    bgcolor: isSelected
-                      ? it.accent.bgSelected
-                      : it.listItemBg,
+                    bgcolor: isSelected ? it.accent.bgSelected : it.listItemBg,
                     transition: 'all 0.12s ease',
-                    '&:hover': {
-                      bgcolor: it.accent.bgHover,
-                      borderColor: it.accent.border,
-                    },
+                    '&:hover': { bgcolor: it.accent.bgHover, borderColor: it.accent.border },
+                    '&:focus-visible': { outline: `2px solid ${it.accent.border}`, outlineOffset: 2 },
                   }}
                 >
                   <Avatar
