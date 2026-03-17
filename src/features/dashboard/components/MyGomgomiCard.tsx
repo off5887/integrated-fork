@@ -1,4 +1,5 @@
 // src/pages/Dashboard/components/MyGomgomiCard.tsx
+import godBear from '@/assets/tarot/god_bear.png'
 import { Box, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getDashboardTheme } from '@/theme/dashboardTheme'
@@ -58,7 +59,7 @@ export default function MyGomgomiCard({ fishTotal, fishToNextLevel }: MyGomgomiC
             }}
           >
             <img
-              src="/src/assets/tarot/god_bear.png"
+              src={godBear}
               alt="나의 곰곰이"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />

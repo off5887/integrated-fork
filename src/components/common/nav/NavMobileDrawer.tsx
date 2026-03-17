@@ -1,3 +1,4 @@
+import gomgomLogo from '@/assets/gomgom_logo.png'
 import * as MuiIcons from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
 import {
@@ -78,7 +79,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
         >
           <Box
             component="img"
-            src="/src/assets/gomgom_logo.png"
+            src={gomgomLogo}
             alt="Gomgom"
             sx={{ height: 34, filter: isDarkMode ? nt.logoFilter : 'none' }}
           />

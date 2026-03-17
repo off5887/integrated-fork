@@ -1,4 +1,5 @@
 // src/routes/Welcome/Welcome.tsx
+import gomgomLogo from '@/assets/gomgom_logo.png'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import LightModeIcon from '@mui/icons-material/LightMode'
@@ -130,7 +131,7 @@ export default function Welcome() {
           {/* 로고 - 가운데 강조 버전 */}
           <Box
             component="img"
-            src="/src/assets/gomgom_logo.png"
+            src={gomgomLogo}
             alt="Gomgom Logo"
             sx={{
               width: { xs: 110, sm: 130, md: 100 },
