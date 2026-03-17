@@ -49,9 +49,9 @@ export default function Welcome() {
         }}
       >
         {isDarkMode ? (
-          <LightModeIcon sx={{ color: '#fbbf24' }} />
+          <LightModeIcon sx={{ color: t.toggleIconColor }} />
         ) : (
-          <DarkModeIcon sx={{ color: '#64748b' }} />
+          <DarkModeIcon sx={{ color: t.toggleIconColor }} />
         )}
       </IconButton>
 

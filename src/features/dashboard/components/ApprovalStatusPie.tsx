@@ -55,7 +55,7 @@ export default function ApprovalStatusPie() {
     fill: {
       type: 'gradient',
       gradient: {
-        shade: isDarkMode ? 'dark' : 'light',
+        shade: dt.chartShade,
         type: 'vertical',
         shadeIntensity: 0.35,
         gradientToColors: ['#818cf8', '#60a5fa', '#22d3ee', '#a78bfa'],
@@ -74,7 +74,7 @@ export default function ApprovalStatusPie() {
     },
     tooltip: {
       enabled: true,
-      theme: isDarkMode ? 'dark' : 'light',
+      theme: dt.chartTheme,
       style: { fontSize: '13px', fontFamily: 'inherit' },
       y: { formatter: (val: number) => val + '건' },
     },

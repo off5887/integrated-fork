@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { usePageColors } from '@/theme/pageColors'
+import { getTFTheme } from '@/theme/tfTheme'
 import TFIdeaCard from './components/TFIdeaCard'
 import { mockIdeas } from '@/api/mock/mercenary'
 
@@ -16,6 +17,7 @@ export default function MercenarySupportPage() {
   const [ideas] = useState(mockIdeas)
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
+  const tf = getTFTheme(isDarkMode)
   const { showSnackbar } = useSnackbar()
 
   const handleApply = (id: number) => {
@@ -121,9 +123,9 @@ export default function MercenarySupportPage() {
             label="마감 임박 포함"
             size="small"
             sx={{
-              bgcolor: isDarkMode ? 'rgba(245,158,11,0.1)' : 'rgba(245,158,11,0.07)',
-              color: isDarkMode ? '#fbbf24' : '#92400e',
-              border: `1px solid ${isDarkMode ? 'rgba(245,158,11,0.25)' : 'rgba(245,158,11,0.18)'}`,
+              bgcolor: tf.urgentBg,
+              color: tf.urgentColor,
+              border: `1px solid ${tf.urgentBorder}`,
               fontWeight: 600,
               fontSize: '0.78rem',
             }}

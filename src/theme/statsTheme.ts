@@ -19,6 +19,12 @@ const statsLight = {
   cardShadow: '0 6px 20px rgba(0,0,0,0.1)',
   cardHoverShadow: '0 16px 36px rgba(0,0,0,0.14)',
 
+  // ── 차트 ──
+  chartTheme: 'light' as const,
+  chartShade: 'light' as const,
+  strokeColor: '#ffffff',
+  gridBorderColor: 'rgba(0,0,0,0.08)',
+
 } as const
 
 const statsDark = {
@@ -38,6 +44,12 @@ const statsDark = {
   cardBorder: 'rgba(255,255,255,0.12)',
   cardShadow: '0 6px 20px rgba(0,0,0,0.4)',
   cardHoverShadow: '0 16px 36px rgba(0,0,0,0.5)',
+
+  // ── 차트 ──
+  chartTheme: 'dark' as const,
+  chartShade: 'dark' as const,
+  strokeColor: '#1e293b',
+  gridBorderColor: 'rgba(255,255,255,0.09)',
 } as const
 
 export type StatsTheme = typeof statsLight

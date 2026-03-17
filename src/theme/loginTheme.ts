@@ -34,6 +34,7 @@ export function getLoginColors(isDarkMode: boolean) {
     btnHover: isDarkMode ? '#0ea5e9' : '#0284c7',
     link: isDarkMode ? '#60a5fa' : '#2563eb',
     linkHover: isDarkMode ? '#93c5fd' : '#1d4ed8',
+    toggleIconColor: isDarkMode ? '#fbbf24' : '#64748b',
   }
 }
 

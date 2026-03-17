@@ -2,7 +2,6 @@
 import { Card, CardContent, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
 import Chart from 'react-apexcharts'
-import { useThemeMode } from '@/context/ThemeContext'
 import type { StatsTheme } from '@/theme/statsTheme'
 import { pieChartData as PIE_DATA } from '@/api/mock/stats'
 
@@ -13,8 +12,6 @@ interface Props {
 }
 
 export default function StatsApprovalPie({ t }: Props) {
-  const { isDarkMode } = useThemeMode()
-
   const cardStyle = {
     borderRadius: 16,
     background: t.cardBg,
@@ -90,14 +87,14 @@ export default function StatsApprovalPie({ t }: Props) {
     },
     stroke: {
       width: 2,
-      colors: [isDarkMode ? '#1e293b' : '#ffffff'],
+      colors: [t.strokeColor],
     },
     states: {
       hover: { filter: { type: 'brighten', value: 0.08 } },
       active: { filter: { type: 'none' } },
     },
     tooltip: {
-      theme: isDarkMode ? 'dark' : 'light',
+      theme: t.chartTheme,
       style: { fontSize: '13px', fontFamily: 'inherit' },
       y: { formatter: (val: number) => val + '%' },
     },

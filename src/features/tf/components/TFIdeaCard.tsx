@@ -4,6 +4,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { Box, Button, Chip, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
+import { getTFTheme } from '@/theme/tfTheme'
 import { Idea } from '@/api/types/mercenary'
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 export default function TFIdeaCard({ idea, onApply }: Props) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
+  const tf = getTFTheme(isDarkMode)
 
   const isUrgent = idea.remainingDays <= 7
 
@@ -31,9 +33,7 @@ export default function TFIdeaCard({ idea, onApply }: Props) {
         boxShadow: colors.shadowSmall,
         '&:hover': {
           transform: 'translateY(-6px)',
-          boxShadow: isDarkMode
-            ? '0 20px 40px rgba(0,0,0,0.5), 0 8px 16px rgba(99,102,241,0.3)'
-            : '0 20px 40px rgba(0,0,0,0.09), 0 8px 16px rgba(99,102,241,0.12)',
+          boxShadow: tf.cardHoverShadow,
           borderColor: colors.accentBorder,
         },
       }}
@@ -68,9 +68,7 @@ export default function TFIdeaCard({ idea, onApply }: Props) {
               variant="h6"
               fontWeight={800}
               sx={{
-                background: isDarkMode
-                  ? 'linear-gradient(90deg, #c4b5fd, #a78bfa)'
-                  : 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                background: tf.rewardGradient,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 lineHeight: 1.1,
@@ -139,13 +137,9 @@ export default function TFIdeaCard({ idea, onApply }: Props) {
             label={`${idea.remainingDays}일 남음`}
             size="small"
             sx={{
-              bgcolor: isUrgent
-                ? (isDarkMode ? 'rgba(245,158,11,0.12)' : 'rgba(245,158,11,0.08)')
-                : 'transparent',
-              color: isUrgent ? (isDarkMode ? '#fbbf24' : '#92400e') : colors.textSecondary,
-              border: `1px solid ${isUrgent
-                ? (isDarkMode ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.2)')
-                : colors.borderColor}`,
+              bgcolor: isUrgent ? tf.urgentBgStrong : 'transparent',
+              color: isUrgent ? tf.urgentColor : colors.textSecondary,
+              border: `1px solid ${isUrgent ? tf.urgentBorderStrong : colors.borderColor}`,
               fontWeight: isUrgent ? 700 : 500,
               fontSize: '0.75rem',
               '& .MuiChip-icon': { color: 'inherit' },

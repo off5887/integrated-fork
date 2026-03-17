@@ -15,6 +15,7 @@ import {
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getTFTheme } from '@/theme/tfTheme'
 import type { Applicant } from '@/api/types/mercenary'
 
 interface ApplicantListProps {
@@ -26,6 +27,7 @@ interface ApplicantListProps {
 export default function ApplicantList({ applicants, onAccept, onReject }: ApplicantListProps) {
   const colors = usePageColors()
   const { isDarkMode } = useThemeMode()
+  const tf = getTFTheme(isDarkMode)
 
   return (
     <Box
@@ -60,9 +62,9 @@ export default function ApplicantList({ applicants, onAccept, onReject }: Applic
               label={`${applicants.length}명`}
               size="small"
               sx={{
-                bgcolor: isDarkMode ? 'rgba(245,158,11,0.12)' : 'rgba(245,158,11,0.08)',
-                color: isDarkMode ? '#fbbf24' : '#92400e',
-                border: `1px solid ${isDarkMode ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.2)'}`,
+                bgcolor: tf.urgentBgStrong,
+                color: tf.urgentColor,
+                border: `1px solid ${tf.urgentBorderStrong}`,
                 fontWeight: 700,
                 fontSize: '0.72rem',
               }}
@@ -77,8 +79,8 @@ export default function ApplicantList({ applicants, onAccept, onReject }: Applic
                 textAlign: 'center',
                 py: 10,
                 borderRadius: 2,
-                border: `1px dashed ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.15)'}`,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.03)' : 'rgba(99,102,241,0.02)',
+                border: `1px dashed ${tf.emptyStateBorder}`,
+                bgcolor: tf.emptyStateBg,
               }}
             >
               <GroupsIcon sx={{ fontSize: '2.5rem', color: colors.textSecondary, opacity: 0.3, mb: 1.5 }} />
@@ -99,7 +101,7 @@ export default function ApplicantList({ applicants, onAccept, onReject }: Applic
                   transition: 'all 0.15s ease',
                   '&:hover': {
                     bgcolor: colors.rowHoverBg,
-                    borderColor: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+                    borderColor: tf.hoverAccentBorder,
                   },
                 }}
               >
@@ -137,11 +139,11 @@ export default function ApplicantList({ applicants, onAccept, onReject }: Applic
                       fontWeight: 700,
                       fontSize: '0.82rem',
                       textTransform: 'none',
-                      borderColor: isDarkMode ? 'rgba(16,185,129,0.4)' : 'rgba(16,185,129,0.35)',
-                      color: isDarkMode ? '#34d399' : '#059669',
+                      borderColor: tf.acceptBorder,
+                      color: tf.acceptColor,
                       '&:hover': {
-                        bgcolor: isDarkMode ? 'rgba(16,185,129,0.12)' : 'rgba(16,185,129,0.07)',
-                        borderColor: isDarkMode ? '#34d399' : '#10b981',
+                        bgcolor: tf.acceptHoverBg,
+                        borderColor: tf.acceptHoverBorder,
                       },
                       transition: 'all 0.15s ease',
                     }}
@@ -160,11 +162,11 @@ export default function ApplicantList({ applicants, onAccept, onReject }: Applic
                       fontWeight: 700,
                       fontSize: '0.82rem',
                       textTransform: 'none',
-                      borderColor: isDarkMode ? 'rgba(239,68,68,0.4)' : 'rgba(239,68,68,0.3)',
-                      color: isDarkMode ? '#f87171' : '#dc2626',
+                      borderColor: tf.rejectBorder,
+                      color: tf.rejectColor,
                       '&:hover': {
-                        bgcolor: isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.07)',
-                        borderColor: isDarkMode ? '#f87171' : '#ef4444',
+                        bgcolor: tf.rejectHoverBg,
+                        borderColor: tf.rejectHoverBorder,
                       },
                       transition: 'all 0.15s ease',
                     }}

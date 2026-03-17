@@ -73,10 +73,8 @@ export default function RealDashboard() {
             px: 2,
             py: 0.75,
             borderRadius: 2,
-            bgcolor: isDarkMode
-              ? 'rgba(59,130,246,0.12)'
-              : 'rgba(59,130,246,0.08)',
-            border: `1px solid ${isDarkMode ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.2)'}`,
+            bgcolor: dt.realtimeBadgeBg,
+            border: `1px solid ${dt.realtimeBadgeBorder}`,
           }}
         >
           <Typography
@@ -111,7 +109,7 @@ export default function RealDashboard() {
                       width: 48,
                       height: 48,
                       borderRadius: 2.5,
-                      bgcolor: alpha(stat.color, isDarkMode ? 0.15 : 0.1),
+                      bgcolor: alpha(stat.color, dt.iconBgAlpha),
                       border: `1px solid ${alpha(stat.color, 0.2)}`,
                       display: 'flex',
                       alignItems: 'center',
@@ -236,7 +234,7 @@ export default function RealDashboard() {
                           width: 40,
                           height: 40,
                           borderRadius: '50%',
-                          bgcolor: alpha(act.color, isDarkMode ? 0.15 : 0.1),
+                          bgcolor: alpha(act.color, dt.iconBgAlpha),
                           border: `1px solid ${alpha(act.color, 0.25)}`,
                           display: 'flex',
                           alignItems: 'center',

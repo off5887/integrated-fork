@@ -230,9 +230,9 @@ export default function Login() {
         }}
       >
         {isDarkMode ? (
-          <LightModeOutlined sx={{ color: '#fbbf24' }} />
+          <LightModeOutlined sx={{ color: colors.toggleIconColor }} />
         ) : (
-          <DarkModeOutlined sx={{ color: '#64748b' }} />
+          <DarkModeOutlined sx={{ color: colors.toggleIconColor }} />
         )}
       </IconButton>
 

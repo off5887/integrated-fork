@@ -83,6 +83,9 @@ const welcomeLight = {
 
   // ── 특별카드 이름 색 ──
   specialCardNameColor: '#4338ca',
+
+  // ── 다크 모드 토글 아이콘 색 ──
+  toggleIconColor: '#64748b',
 } as const
 
 const welcomeDark = {
@@ -167,6 +170,9 @@ const welcomeDark = {
 
   // ── 특별카드 이름 색 ──
   specialCardNameColor: '#a5b4fc',
+
+  // ── 다크 모드 토글 아이콘 색 ──
+  toggleIconColor: '#fbbf24',
 } as const
 
 export type WelcomeTheme = typeof welcomeLight

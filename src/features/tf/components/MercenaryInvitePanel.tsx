@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getTFTheme } from '@/theme/tfTheme'
 import type { Employee, ExtendedIdea } from '@/api/types/mercenary'
 
 interface MercenaryInvitePanelProps {
@@ -36,6 +37,7 @@ export default function MercenaryInvitePanel({
 }: MercenaryInvitePanelProps) {
   const colors = usePageColors()
   const { isDarkMode } = useThemeMode()
+  const tf = getTFTheme(isDarkMode)
 
   return (
     <Box
@@ -75,13 +77,13 @@ export default function MercenaryInvitePanel({
               mb: 3,
               '& .MuiOutlinedInput-root': {
                 borderRadius: 2,
-                bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+                bgcolor: tf.searchInputBg,
                 fontSize: '0.875rem',
                 '& fieldset': {
                   borderColor: colors.borderColor,
                 },
                 '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.3)',
+                  borderColor: tf.searchHoverBorder,
                 },
                 '&.Mui-focused fieldset': {
                   borderColor: '#6366f1',
@@ -115,7 +117,7 @@ export default function MercenaryInvitePanel({
                     transition: 'all 0.15s ease',
                     '&:hover': {
                       bgcolor: colors.rowHoverBg,
-                      borderColor: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+                      borderColor: tf.hoverAccentBorder,
                     },
                   }}
                 >
@@ -183,14 +185,14 @@ export default function MercenaryInvitePanel({
                 sx={{
                   p: { xs: 2.5, md: 3 },
                   border: `1.5px dashed`,
-                  borderColor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.25)',
+                  borderColor: tf.dropZoneBorder,
                   borderRadius: 2.5,
-                  bgcolor: isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(99,102,241,0.03)',
+                  bgcolor: tf.dropZoneBg,
                   minHeight: 110,
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    borderColor: isDarkMode ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.4)',
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.06)',
+                    borderColor: tf.dropZoneHoverBorder,
+                    bgcolor: tf.dropZoneHoverBg,
                   },
                 }}
               >
@@ -218,7 +220,7 @@ export default function MercenaryInvitePanel({
                     sx={{
                       color: colors.textSecondary,
                       flexShrink: 0,
-                      bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(100,116,139,0.06)',
+                      bgcolor: tf.countBadgeBg,
                       px: 1.25, py: 0.4,
                       borderRadius: 9999,
                       fontSize: '0.72rem',
@@ -249,8 +251,8 @@ export default function MercenaryInvitePanel({
                         avatar={
                           <Avatar
                             sx={{
-                              bgcolor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.15)',
-                              color: isDarkMode ? '#c7d2fe' : '#4338ca',
+                              bgcolor: tf.chipAvatarBg,
+                              color: tf.chipAvatarColor,
                               fontSize: '0.7rem',
                               fontWeight: 700,
                             }}
@@ -263,14 +265,14 @@ export default function MercenaryInvitePanel({
                         size="small"
                         sx={{
                           bgcolor: colors.accentBg,
-                          color: isDarkMode ? '#c7d2fe' : '#4338ca',
+                          color: tf.chipColor,
                           border: `1px solid ${colors.accentBorder}`,
                           fontWeight: 600,
                           fontSize: '0.78rem',
                           '& .MuiChip-deleteIcon': {
-                            color: isDarkMode ? 'rgba(248,113,113,0.7)' : 'rgba(220,38,38,0.6)',
+                            color: tf.deleteIconColor,
                             '&:hover': {
-                              color: isDarkMode ? '#f87171' : '#dc2626',
+                              color: tf.deleteIconHoverColor,
                             },
                           },
                         }}

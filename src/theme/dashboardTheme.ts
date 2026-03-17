@@ -36,6 +36,13 @@ const dashboardLight = {
   insightBg: 'rgba(99,102,241,0.05)',
   insightBorder: 'rgba(99,102,241,0.1)',
 
+  // ── 실시간 뱃지 ──
+  realtimeBadgeBg: 'rgba(59,130,246,0.08)',
+  realtimeBadgeBorder: 'rgba(59,130,246,0.2)',
+  iconBgAlpha: 0.1,
+  chartShade: 'light' as const,
+  chartTheme: 'light' as const,
+
   // ── 나의 곰곰이 전용 ──
   gom: {
     profileBg: 'rgba(99,102,241,0.05)',
@@ -85,6 +92,13 @@ const dashboardDark = {
   // ── 인사이트 박스 (indigo tint) ──
   insightBg: 'rgba(99,102,241,0.08)',
   insightBorder: 'rgba(99,102,241,0.15)',
+
+  // ── 실시간 뱃지 ──
+  realtimeBadgeBg: 'rgba(59,130,246,0.12)',
+  realtimeBadgeBorder: 'rgba(59,130,246,0.25)',
+  iconBgAlpha: 0.15,
+  chartShade: 'dark' as const,
+  chartTheme: 'dark' as const,
 
   // ── 나의 곰곰이 전용 ──
   gom: {

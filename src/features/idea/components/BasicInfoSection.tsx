@@ -31,7 +31,8 @@ export default function BasicInfoSection({
   labelSx,
 }: Props) {
   const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor, categoryCardBg } = getIdeaTheme(isDarkMode)
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor, categoryCardBg } = it
 
   const handleToggle = (id: string) => {
     if (categories.includes(id)) {
@@ -187,7 +188,7 @@ export default function BasicInfoSection({
                     sx={{
                       fontSize: '1.5rem',
                       lineHeight: 1,
-                      filter: isSelected ? 'none' : (isDarkMode ? 'grayscale(20%)' : 'grayscale(10%)'),
+                      filter: isSelected ? 'none' : it.categoryGrayscale,
                       transition: 'filter 0.18s ease',
                     }}
                     aria-hidden

@@ -47,17 +47,26 @@ const ideaLight = {
   snackbarBg:    '#ffffff',
   snackbarColor: '#0f172a',
 
+  // ── 다이얼로그/모달 ──
+  dialogShadow:        '0 24px 64px rgba(0,0,0,0.12)',
+  fileItemShadow:      '0 2px 8px rgba(0,0,0,0.06)',
+  fileItemHoverShadow: '0 8px 24px rgba(0,0,0,0.12)',
+  categoryGrayscale:   'grayscale(10%)',
+
   // ── 인디고(primary) 액센트 ──
   accent: {
-    color:       '#6366f1',
-    hover:       '#4f46e5',
-    text:        '#4338ca',
-    textMuted:   '#6366f1',
-    bg:          'rgba(99,102,241,0.05)',
-    bgHover:     'rgba(99,102,241,0.04)',
-    bgStrong:    'rgba(99,102,241,0.1)',
-    border:      'rgba(99,102,241,0.2)',
-    borderHover: 'rgba(99,102,241,0.35)',
+    color:           '#6366f1',
+    hover:           '#4f46e5',
+    text:            '#4338ca',
+    textMuted:       '#6366f1',
+    bg:              'rgba(99,102,241,0.05)',
+    bgHover:         'rgba(99,102,241,0.04)',
+    bgStrong:        'rgba(99,102,241,0.1)',
+    bgSelected:      'rgba(99,102,241,0.05)',
+    bgAvatarSelected:'rgba(99,102,241,0.12)',
+    bgVerySubtle:    'rgba(99,102,241,0.03)',
+    border:          'rgba(99,102,241,0.2)',
+    borderHover:     'rgba(99,102,241,0.35)',
   },
 
   // ── 퍼플(공동제안자) 액센트 ──
@@ -113,17 +122,26 @@ const ideaDark = {
   snackbarBg:    'rgba(22,30,46,0.98)',
   snackbarColor: '#f1f5f9',
 
+  // ── 다이얼로그/모달 ──
+  dialogShadow:        '0 24px 64px rgba(0,0,0,0.6)',
+  fileItemShadow:      '0 2px 12px rgba(0,0,0,0.3)',
+  fileItemHoverShadow: '0 8px 24px rgba(0,0,0,0.4)',
+  categoryGrayscale:   'grayscale(20%)',
+
   // ── 인디고(primary) 액센트 ──
   accent: {
-    color:       '#6366f1',
-    hover:       '#4f46e5',
-    text:        '#a5b4fc',
-    textMuted:   '#a5b4fc',
-    bg:          'rgba(99,102,241,0.08)',
-    bgHover:     'rgba(99,102,241,0.08)',
-    bgStrong:    'rgba(99,102,241,0.15)',
-    border:      'rgba(99,102,241,0.25)',
-    borderHover: 'rgba(99,102,241,0.4)',
+    color:           '#6366f1',
+    hover:           '#4f46e5',
+    text:            '#a5b4fc',
+    textMuted:       '#a5b4fc',
+    bg:              'rgba(99,102,241,0.08)',
+    bgHover:         'rgba(99,102,241,0.08)',
+    bgStrong:        'rgba(99,102,241,0.15)',
+    bgSelected:      'rgba(99,102,241,0.1)',
+    bgAvatarSelected:'rgba(99,102,241,0.25)',
+    bgVerySubtle:    'rgba(99,102,241,0.05)',
+    border:          'rgba(99,102,241,0.25)',
+    borderHover:     'rgba(99,102,241,0.4)',
   },
 
   // ── 퍼플(공동제안자) 액센트 ──

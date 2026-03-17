@@ -2,7 +2,6 @@
 import { Card, CardContent, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
 import Chart from 'react-apexcharts'
-import { useThemeMode } from '@/context/ThemeContext'
 import type { StatsTheme } from '@/theme/statsTheme'
 import { barChartData as BAR_DATA } from '@/api/mock/stats'
 
@@ -13,8 +12,6 @@ interface Props {
 }
 
 export default function StatsTeamBar({ t }: Props) {
-  const { isDarkMode } = useThemeMode()
-
   const cardStyle = {
     borderRadius: 16,
     background: t.cardBg,
@@ -54,7 +51,7 @@ export default function StatsTeamBar({ t }: Props) {
     fill: {
       type: 'gradient',
       gradient: {
-        shade: isDarkMode ? 'dark' : 'light',
+        shade: t.chartShade,
         type: 'vertical',
         shadeIntensity: 0.2,
         opacityFrom: 0.95,
@@ -84,14 +81,14 @@ export default function StatsTeamBar({ t }: Props) {
       },
     },
     grid: {
-      borderColor: isDarkMode ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)',
+      borderColor: t.gridBorderColor,
       yaxis: { lines: { show: true } },
       xaxis: { lines: { show: false } },
       padding: { top: 10, bottom: 0 },
     },
     legend: { show: false },
     tooltip: {
-      theme: isDarkMode ? 'dark' : 'light',
+      theme: t.chartTheme,
       style: { fontSize: '13px', fontFamily: 'inherit' },
       y: { formatter: (val: number) => val + '건' },
     },

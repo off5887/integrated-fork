@@ -47,7 +47,8 @@ export default function CoProposerSelectModal({
   const [expandedDivs, setExpandedDivs] = useState<string[]>(['div1', 'div2'])
   const [expandedTeams, setExpandedTeams] = useState<string[]>(['team-a1', 'team-b1'])
 
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor } = it
 
   const handleClose = () => {
     setSearch('')
@@ -100,24 +101,14 @@ export default function CoProposerSelectModal({
           py: 1,
           borderRadius: 1.5,
           cursor: 'pointer',
-          border: `1px solid ${
-            isSelected
-              ? isDarkMode
-                ? 'rgba(99,102,241,0.4)'
-                : 'rgba(99,102,241,0.3)'
-              : borderColor
-          }`,
+          border: `1px solid ${isSelected ? it.accent.borderHover : borderColor}`,
           bgcolor: isSelected
-            ? isDarkMode
-              ? 'rgba(99,102,241,0.1)'
-              : 'rgba(99,102,241,0.05)'
-            : isDarkMode
-              ? 'rgba(30,41,59,0.5)'
-              : '#ffffff',
+            ? it.accent.bgSelected
+            : it.listItemBg,
           transition: 'all 0.12s ease',
           '&:hover': {
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
-            borderColor: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+            bgcolor: it.accent.bgHover,
+            borderColor: it.accent.border,
           },
         }}
       >
@@ -127,26 +118,14 @@ export default function CoProposerSelectModal({
             height: 34,
             flexShrink: 0,
             bgcolor: isSelected
-              ? isDarkMode
-                ? 'rgba(99,102,241,0.25)'
-                : 'rgba(99,102,241,0.12)'
-              : isDarkMode
-                ? 'rgba(30,41,59,0.8)'
-                : 'rgba(241,245,249,0.9)',
+              ? it.accent.bgAvatarSelected
+              : it.avatarBg,
             color: isSelected
-              ? isDarkMode
-                ? '#a5b4fc'
-                : '#4338ca'
+              ? it.accent.text
               : textSecondary,
             fontSize: '0.8rem',
             fontWeight: 700,
-            border: `1px solid ${
-              isSelected
-                ? isDarkMode
-                  ? 'rgba(99,102,241,0.3)'
-                  : 'rgba(99,102,241,0.2)'
-                : borderColor
-            }`,
+            border: `1px solid ${isSelected ? it.accent.border : borderColor}`,
           }}
         >
           {member.name[0]}
@@ -157,7 +136,7 @@ export default function CoProposerSelectModal({
             sx={{
               fontSize: '0.83rem',
               fontWeight: isSelected ? 700 : 600,
-              color: isSelected ? (isDarkMode ? '#a5b4fc' : '#4338ca') : textPrimary,
+              color: isSelected ? it.accent.text : textPrimary,
               lineHeight: 1.3,
             }}
           >
@@ -170,7 +149,7 @@ export default function CoProposerSelectModal({
 
         {isSelected && (
           <CheckIcon
-            sx={{ fontSize: '1rem', color: isDarkMode ? '#a5b4fc' : '#4338ca', flexShrink: 0 }}
+            sx={{ fontSize: '1rem', color: it.accent.text, flexShrink: 0 }}
           />
         )}
       </Box>
@@ -187,11 +166,9 @@ export default function CoProposerSelectModal({
         paper: {
           sx: {
             borderRadius: 3,
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
+            bgcolor: it.modalBg,
             border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode
-              ? '0 24px 64px rgba(0,0,0,0.6)'
-              : '0 24px 64px rgba(0,0,0,0.12)',
+            boxShadow: it.dialogShadow,
             overflow: 'hidden',
             m: { xs: 2, sm: 3 },
           },
@@ -199,7 +176,7 @@ export default function CoProposerSelectModal({
         backdrop: {
           sx: {
             backdropFilter: 'blur(6px)',
-            backgroundColor: isDarkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.35)',
+            backgroundColor: it.backdropBg,
           },
         },
       }}
@@ -277,7 +254,7 @@ export default function CoProposerSelectModal({
             mb: 1.5,
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
-              backgroundColor: isDarkMode ? 'rgba(15,23,42,0.5)' : '#f8fafc',
+              backgroundColor: it.searchInputBg,
               fontSize: '0.875rem',
               '& fieldset': { borderColor },
               '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
@@ -304,13 +281,11 @@ export default function CoProposerSelectModal({
             '&::-webkit-scrollbar': { width: 4 },
             '&::-webkit-scrollbar-track': { background: 'transparent' },
             '&::-webkit-scrollbar-thumb': {
-              background: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+              background: it.accent.border,
               borderRadius: 9999,
             },
             scrollbarWidth: 'thin',
-            scrollbarColor: isDarkMode
-              ? 'rgba(99,102,241,0.25) transparent'
-              : 'rgba(99,102,241,0.2) transparent',
+            scrollbarColor: `${it.accent.border} transparent`,
           }}
         >
           {/* 검색 결과 */}
@@ -339,24 +314,14 @@ export default function CoProposerSelectModal({
                     py: 0.9,
                     borderRadius: 1.5,
                     cursor: 'pointer',
-                    border: `1px solid ${
-                      expandedDivs.includes(div.id)
-                        ? isDarkMode
-                          ? 'rgba(99,102,241,0.25)'
-                          : 'rgba(99,102,241,0.2)'
-                        : borderColor
-                    }`,
+                    border: `1px solid ${expandedDivs.includes(div.id) ? it.accent.border : borderColor}`,
                     bgcolor: expandedDivs.includes(div.id)
-                      ? isDarkMode
-                        ? 'rgba(99,102,241,0.08)'
-                        : 'rgba(99,102,241,0.04)'
-                      : isDarkMode
-                        ? 'rgba(30,41,59,0.4)'
-                        : 'rgba(248,250,252,0.8)',
+                      ? it.accent.bgHover
+                      : it.categoryCardBg,
                     transition: 'all 0.12s ease',
                     '&:hover': {
-                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
-                      borderColor: isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.2)',
+                      bgcolor: it.accent.bgHover,
+                      borderColor: it.accent.border,
                     },
                   }}
                 >
@@ -365,11 +330,7 @@ export default function CoProposerSelectModal({
                       flex: 1,
                       fontSize: '0.83rem',
                       fontWeight: 700,
-                      color: expandedDivs.includes(div.id)
-                        ? isDarkMode
-                          ? '#a5b4fc'
-                          : '#4338ca'
-                        : textPrimary,
+                      color: expandedDivs.includes(div.id) ? it.accent.text : textPrimary,
                     }}
                   >
                     {div.name}
@@ -401,9 +362,7 @@ export default function CoProposerSelectModal({
                             bgcolor: 'transparent',
                             transition: 'all 0.12s ease',
                             '&:hover': {
-                              bgcolor: isDarkMode
-                                ? 'rgba(99,102,241,0.05)'
-                                : 'rgba(99,102,241,0.03)',
+                              bgcolor: it.accent.bgVerySubtle,
                             },
                           }}
                         >
@@ -463,7 +422,7 @@ export default function CoProposerSelectModal({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          bgcolor: isDarkMode ? 'rgba(15,23,42,0.3)' : 'rgba(248,250,252,0.8)',
+          bgcolor: it.modalFooterBg,
         }}
       >
         <Typography variant="caption" sx={{ color: textSecondary }}>

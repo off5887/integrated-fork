@@ -1,20 +1,20 @@
 // src/components/CommonHeader.tsx
 import { AppBar, Box, Toolbar, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getTFTheme } from '@/theme/tfTheme'
 
 export default function CommonHeader({ fishCount = 12480 }) {
   const { isDarkMode } = useThemeMode()
+  const tf = getTFTheme(isDarkMode)
 
   return (
     <AppBar
       position="sticky"
       elevation={0}
       sx={{
-        backgroundColor: isDarkMode ? '#0f172a' : '#ffffff',
-        borderBottom: isDarkMode
-          ? '1px solid rgba(226,232,240,0.08)'
-          : '1px solid rgba(15,23,42,0.06)',
-        color: isDarkMode ? '#e2e8f0' : '#0f172a',
+        backgroundColor: tf.headerBg,
+        borderBottom: tf.headerBorder,
+        color: tf.headerColor,
       }}
     >
       <Toolbar

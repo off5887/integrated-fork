@@ -125,12 +125,12 @@ export default function FileUploadSection({
                       overflow: 'hidden',
                       border: `1px solid ${borderColor}`,
                       bgcolor: fileItemBg,
-                      boxShadow: isDarkMode ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.06)',
+                      boxShadow: it.fileItemShadow,
                       transition: 'all 0.2s ease',
                       cursor: isImage ? 'zoom-in' : 'default',
                       '&:hover': {
                         transform: isImage ? 'scale(1.04)' : undefined,
-                        boxShadow: isDarkMode ? '0 8px 24px rgba(0,0,0,0.4)' : '0 8px 24px rgba(0,0,0,0.12)',
+                        boxShadow: it.fileItemHoverShadow,
                       },
                     }}
                   >
