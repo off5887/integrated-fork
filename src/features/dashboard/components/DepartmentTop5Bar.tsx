@@ -75,7 +75,7 @@ export default function DepartmentTop5Bar() {
     },
     tooltip: {
       enabled: true,
-      theme: isDarkMode ? 'dark' : 'light',
+      theme: dt.chartTheme,
       style: { fontSize: '12px', fontFamily: 'inherit' },
       y: { formatter: (val: number) => val + '건' },
     },

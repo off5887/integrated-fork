@@ -18,7 +18,6 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems, settingsItem } from './headerConfig'
 import type { MenuItem, SubMenuItem } from './headerConfig'
-import { useThemeMode } from '@/context/ThemeContext'
 import { useCurrentUser } from './hooks/useCurrentUser'
 import { useLogout } from './hooks/useLogout'
 import { useNavColors } from './hooks/useNavColors'
@@ -31,12 +30,12 @@ interface MobileNavigationDrawerProps {
 export default function MobileNavigationDrawer({ open, onClose }: MobileNavigationDrawerProps) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isDarkMode, toggleTheme, activeColor, drawerTextColor } = useNavColors()
+  const { nt, isDarkMode, toggleTheme, activeColor, drawerTextColor } = useNavColors()
   const logout = useLogout()
   const user = useCurrentUser()
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
 
-  const subItemBg = isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.04)'
+  const subItemBg = nt.subItemBg
 
   const isActive = (path: string) => location.pathname === path
   const isGroupActive = (children: SubMenuItem[]) =>
@@ -60,11 +59,9 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
         paper: {
           sx: {
             width: 280,
-            bgcolor: isDarkMode ? 'rgba(13,17,30,0.97)' : '#ffffff',
+            bgcolor: nt.drawerBg,
             backdropFilter: 'blur(24px)',
-            borderLeft: isDarkMode
-              ? '1px solid rgba(148,163,184,0.1)'
-              : '1px solid rgba(203,213,225,0.4)',
+            borderLeft: nt.drawerBorderLeft,
           },
         },
       }}
@@ -100,8 +97,8 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
               mb: 2.5,
               p: 1.5,
               borderRadius: 2,
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.07)' : 'rgba(99,102,241,0.05)',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.12)'}`,
+              bgcolor: nt.profileBoxBg,
+              border: `1px solid ${nt.profileBoxBorder}`,
             }}
           >
             <Avatar
@@ -112,9 +109,9 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
                 fontSize: '1rem',
                 fontWeight: 700,
                 flexShrink: 0,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.13)',
+                bgcolor: nt.avatarBg,
                 color: activeColor,
-                border: `1.5px solid ${isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)'}`,
+                border: `1.5px solid ${nt.avatarBorderStrong}`,
               }}
             >
               {user.name.charAt(0)}
@@ -136,7 +133,7 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
               <Typography
                 sx={{
                   fontSize: '0.75rem',
-                  color: isDarkMode ? '#94a3b8' : '#64748b',
+                  color: nt.textColor,
                   lineHeight: 1.3,
                 }}
               >
@@ -145,7 +142,7 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
               <Typography
                 sx={{
                   fontSize: '0.68rem',
-                  color: isDarkMode ? '#475569' : '#94a3b8',
+                  color: nt.employeeIdColor,
                   lineHeight: 1.3,
                 }}
               >
@@ -186,15 +183,9 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
                     borderRadius: 2,
                     py: 1.1,
                     px: 1.5,
-                    bgcolor: active
-                      ? isDarkMode
-                        ? 'rgba(99,102,241,0.1)'
-                        : 'rgba(99,102,241,0.06)'
-                      : 'transparent',
+                    bgcolor: active ? nt.activeBg : 'transparent',
                     '&:hover': {
-                      bgcolor: isDarkMode
-                        ? 'rgba(99,102,241,0.08)'
-                        : 'rgba(99,102,241,0.04)',
+                      bgcolor: nt.hoverStrongBg,
                     },
                   }}
                 >
@@ -224,9 +215,7 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
 
         <Divider
           sx={{
-            borderColor: isDarkMode
-              ? 'rgba(148,163,184,0.1)'
-              : 'rgba(203,213,225,0.4)',
+            borderColor: nt.dividerColorWeak,
             my: 1.5,
           }}
         />
@@ -259,7 +248,7 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
               sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
             >
               <ListItemIcon
-                sx={{ minWidth: 36, color: isDarkMode ? '#fbbf24' : '#f59e0b' }}
+                sx={{ minWidth: 36, color: nt.themeIconColor }}
               >
                 {isDarkMode ? (
                   <MuiIcons.WbSunny fontSize="small" />
@@ -329,7 +318,7 @@ function GroupMenuItem({
   subItemBg,
   isActive,
 }: GroupMenuItemProps) {
-  const { isDarkMode } = useThemeMode()
+  const { nt } = useNavColors()
   const Icon = MuiIcons[item.iconName] ?? MuiIcons.HelpOutline
 
   return (
@@ -342,13 +331,9 @@ function GroupMenuItem({
             borderRadius: 2,
             py: 1.1,
             px: 1.5,
-            bgcolor: isGroupActive
-              ? isDarkMode
-                ? 'rgba(99,102,241,0.1)'
-                : 'rgba(99,102,241,0.06)'
-              : 'transparent',
+            bgcolor: isGroupActive ? nt.groupActiveBg : 'transparent',
             '&:hover': {
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+              bgcolor: nt.groupHoverBg,
             },
           }}
         >
@@ -386,9 +371,7 @@ function GroupMenuItem({
           sx={{
             ml: 1.5,
             pl: 1.5,
-            borderLeft: `2px solid ${
-              isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.25)'
-            }`,
+            borderLeft: `2px solid ${nt.groupBorderLeft}`,
             mb: 0.5,
           }}
         >

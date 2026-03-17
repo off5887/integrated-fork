@@ -34,3 +34,17 @@ export type OrgDivision = {
   name: string
   teams: OrgTeam[]
 }
+
+export interface DraftData {
+  title: string
+  categories: string[]
+  problem: string
+  solution: string
+  reviewer: string[]
+  // coProposers: string[]
+  // startDate: string
+  // endDate: string
+  security: 'public' | 'private'
+  plan: string
+  savedAt: string
+}

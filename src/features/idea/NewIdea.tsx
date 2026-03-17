@@ -1,50 +1,32 @@
-// src/routes/idea/NewIdea.tsx
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+// src/features/idea/NewIdea.tsx
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import HistoryIcon from '@mui/icons-material/History'
-import RestoreIcon from '@mui/icons-material/Restore'
 import SaveIcon from '@mui/icons-material/Save'
 import SendIcon from '@mui/icons-material/Send'
 import {
   Alert,
   Box,
   Button,
-  IconButton,
   Snackbar,
-  Tooltip,
-  Typography,
 } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
+import type { DraftData } from '@/api/types/idea'
 
 import BasicInfoSection from './components/BasicInfoSection'
 import FileUploadSection from './components/FileUploadSection'
 import ParticipantsSection from './components/ParticipantsSection'
-// import ScheduleAndVisibilitySection from './components/ScheduleAndVisibilitySection'
-
-// import CoProposerSelectModal from './components/CoProposerSelectModal'
 import ReviewerSelectModal from './components/ReviewerSelectModal'
 import SimilarIdeaSearchModal from './components/SimilarIdeaSearchModal'
+import NewIdeaHeader from './components/NewIdeaHeader'
+import SimilarIdeaBanner from './components/SimilarIdeaBanner'
+import DraftRestoreBanner from './components/DraftRestoreBanner'
+import PlanSection from './components/PlanSection'
 
 const DRAFT_KEY = 'gomgom_new_idea_draft'
 const AUTO_SAVE_INTERVAL = 5 * 60 * 1000 // 5분
-
-interface DraftData {
-  title: string
-  categories: string[]
-  problem: string
-  solution: string
-  reviewer: string[]
-  // coProposers: string[]
-  // startDate: string
-  // endDate: string
-  security: 'public' | 'private'
-  plan: string
-  savedAt: string
-}
 
 function SectionDivider() {
   const { isDarkMode } = useThemeMode()
@@ -175,12 +157,6 @@ export default function NewIdea() {
     )
   }
 
-  // const handleToggleCoProposer = (name: string) => {
-  //   setCoProposers((prev) =>
-  //     prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
-  //   )
-  // }
-
   // ─── 제출 ────────────────────────────────────────────────────────────────
   const handleSubmit = () => {
     if (!title.trim() || categories.length === 0 || !problem.trim() || !solution.trim()) {
@@ -231,208 +207,22 @@ export default function NewIdea() {
     >
       <Box sx={{ maxWidth: 860, mx: 'auto' }}>
         {/* ─── 페이지 헤더 ─────────────────────────────────────────────── */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2,
-            mb: 3,
-            flexWrap: 'wrap',
-          }}
-        >
-          <IconButton
-            onClick={handleBack}
-            size="small"
-            sx={{
-              color: textSecondary,
-              bgcolor: borderColor,
-              borderRadius: 2,
-              '&:hover': {
-                bgcolor: it.inputBorder,
-              },
-            }}
-          >
-            <ArrowBackIcon fontSize="small" />
-          </IconButton>
-
-          <Box flex={1} minWidth={0}>
-            <Typography
-              variant="h5"
-              fontWeight={800}
-              sx={{ color: textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
-            >
-              새로운 상상 제안
-            </Typography>
-            <Typography variant="caption" sx={{ color: textSecondary }}>
-              아이디어를 제안하고 함께 실현해보세요
-            </Typography>
-          </Box>
-
-          {/* 마지막 저장 시각 + 수동저장 버튼 */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {lastSavedAt && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.6,
-                  px: 1.25,
-                  py: 0.5,
-                  borderRadius: 1.5,
-                  bgcolor: 'rgba(16,185,129,0.08)',
-                  border: '1px solid rgba(16,185,129,0.25)',
-                }}
-              >
-                <CheckCircleIcon sx={{ fontSize: '0.8rem', color: '#10b981' }} />
-                <Typography sx={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                  {formatTime(lastSavedAt)} 임시저장
-                </Typography>
-              </Box>
-            )}
-            <Tooltip title="임시저장" placement="bottom">
-              <IconButton
-                size="small"
-                onClick={handleManualSave}
-                sx={{
-                  color: textSecondary,
-                  border: `1px solid ${borderColor}`,
-                  borderRadius: 1.5,
-                  width: 34,
-                  height: 34,
-                  '&:hover': {
-                    bgcolor: it.accent.bgStrong,
-                    borderColor: '#6366f1',
-                    color: '#6366f1',
-                  },
-                }}
-              >
-                <SaveIcon sx={{ fontSize: '1rem' }} />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
+        <NewIdeaHeader
+          lastSavedAt={lastSavedAt}
+          onBack={handleBack}
+          onManualSave={handleManualSave}
+        />
 
         {/* ─── 유사 아이디어 검색 배너 ──────────────────────────────────── */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: { xs: 1.5, sm: 2 },
-            px: 2.5, py: 1.75, mb: 2.5,
-            borderRadius: 2.5,
-            bgcolor: it.accent.bgHover,
-            border: `1px solid ${it.accent.border}`,
-            flexWrap: 'wrap',
-          }}
-        >
-          <Box
-            sx={{
-              width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-              bgcolor: it.accent.bgStrong,
-              border: `1px solid ${it.accent.borderHover}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1rem',
-            }}
-          >
-            🔍
-          </Box>
-          <Box flex={1} minWidth={0}>
-            <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}>
-              유사한 아이디어가 이미 있을 수 있어요
-            </Typography>
-            <Typography sx={{ fontSize: '0.75rem', color: textSecondary }}>
-              제안 전 기존 아이디어와 중복 여부를 확인해 보세요
-            </Typography>
-          </Box>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => setSimilarSearchOpen(true)}
-            sx={{
-              borderRadius: 2, px: 2, py: 0.7,
-              fontWeight: 700, fontSize: '0.8rem',
-              textTransform: 'none', flexShrink: 0,
-              borderColor: it.accent.borderHover,
-              color: it.accent.text,
-              '&:hover': {
-                borderColor: '#6366f1',
-                bgcolor: it.accent.bgStrong,
-              },
-            }}
-          >
-            유사 아이디어 검색
-          </Button>
-        </Box>
+        <SimilarIdeaBanner onOpenSearch={() => setSimilarSearchOpen(true)} />
 
         {/* ─── 임시저장 복원 배너 ──────────────────────────────────────── */}
         {savedDraft && (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              px: 2.5,
-              py: 1.75,
-              mb: 2.5,
-              borderRadius: 2.5,
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)',
-              border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.18)'}`,
-              flexWrap: 'wrap',
-            }}
-          >
-            <HistoryIcon sx={{ fontSize: '1.2rem', color: '#6366f1', flexShrink: 0 }} />
-            <Box flex={1} minWidth={0}>
-              <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}>
-                작성 중인 임시저장 내용이 있습니다
-              </Typography>
-              <Typography sx={{ fontSize: '0.75rem', color: textSecondary }}>
-                {new Date(savedDraft.savedAt).toLocaleString('ko-KR', {
-                  month: 'long', day: 'numeric',
-                  hour: '2-digit', minute: '2-digit',
-                })} 에 자동저장됨
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={handleDiscardDraft}
-                sx={{
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  borderRadius: 1.5,
-                  px: 1.75,
-                  py: 0.5,
-                  borderColor: isDarkMode ? 'rgba(148,163,184,0.25)' : 'rgba(203,213,225,0.7)',
-                  color: textSecondary,
-                  textTransform: 'none',
-                  '&:hover': { borderColor: textSecondary, bgcolor: 'transparent' },
-                }}
-              >
-                무시
-              </Button>
-              <Button
-                size="small"
-                variant="contained"
-                startIcon={<RestoreIcon sx={{ fontSize: '0.9rem' }} />}
-                onClick={handleRestoreDraft}
-                sx={{
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  borderRadius: 1.5,
-                  px: 1.75,
-                  py: 0.5,
-                  bgcolor: '#6366f1',
-                  color: '#fff',
-                  boxShadow: 'none',
-                  textTransform: 'none',
-                  '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 12px rgba(99,102,241,0.35)' },
-                }}
-              >
-                불러오기
-              </Button>
-            </Box>
-          </Box>
+          <DraftRestoreBanner
+            savedDraft={savedDraft}
+            onRestore={handleRestoreDraft}
+            onDiscard={handleDiscardDraft}
+          />
         )}
 
         {/* ─── 메인 폼 카드 ────────────────────────────────────────────── */}
@@ -468,79 +258,15 @@ export default function NewIdea() {
             <ParticipantsSection
               reviewer={reviewer}
               setReviewer={setReviewer}
-              // coProposers={coProposers}
-              // setCoProposers={setCoProposers}
               security={security}
               setSecurity={setSecurity}
               onOpenReviewerModal={() => setReviewerModalOpen(true)}
-              // onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
             />
-
-            {/* 실행 일정 - 추후 사용 */}
-            {/* <SectionDivider />
-            <ScheduleAndVisibilitySection
-              startDate={startDate}
-              setStartDate={setStartDate}
-              endDate={endDate}
-              setEndDate={setEndDate}
-              security={security}
-              setSecurity={setSecurity}
-              inputSx={inputSx}
-              labelSx={labelSx}
-            /> */}
 
             <SectionDivider />
 
             {/* 섹션 3: 실행 계획 */}
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
-                <Box
-                  sx={{
-                    width: 26, height: 26, borderRadius: '50%',
-                    bgcolor: '#6366f1', color: '#fff',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
-                  }}
-                >
-                  3
-                </Box>
-                <Typography variant="h6" fontWeight={700} sx={{ color: textPrimary, letterSpacing: '-0.01em' }}>
-                  실행 계획
-                </Typography>
-              </Box>
-              <Box
-                component="textarea"
-                value={plan}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPlan(e.target.value)}
-                placeholder="구체적인 실행 계획을 작성해주세요"
-                rows={7}
-                sx={{
-                  width: '100%',
-                  resize: 'vertical',
-                  minHeight: 160,
-                  p: 2,
-                  borderRadius: 2,
-                  border: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.18)' : 'rgba(203,213,225,0.7)'}`,
-                  bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
-                  color: textPrimary,
-                  fontSize: '0.9rem',
-                  fontFamily: 'inherit',
-                  lineHeight: 1.7,
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  transition: 'border-color 0.15s ease',
-                  '&::placeholder': { color: textSecondary },
-                  '&:hover': {
-                    borderColor: isDarkMode ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.5)',
-                  },
-                  '&:focus': {
-                    borderColor: '#6366f1',
-                    borderWidth: '1.5px',
-                    boxShadow: `0 0 0 3px ${isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)'}`,
-                  },
-                }}
-              />
-            </Box>
+            <PlanSection plan={plan} setPlan={setPlan} />
 
             <SectionDivider />
 
@@ -666,12 +392,6 @@ export default function NewIdea() {
         selected={reviewer}
         onToggle={handleToggleReviewer}
       />
-      {/* <CoProposerSelectModal
-        open={coProposerModalOpen}
-        onClose={() => setCoProposerModalOpen(false)}
-        selected={coProposers}
-        onToggle={handleToggleCoProposer}
-      /> */}
 
       {/* ─── 임시저장 스낵바 ─────────────────────────────────────────── */}
       <Snackbar

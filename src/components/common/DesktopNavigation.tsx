@@ -22,7 +22,7 @@ import { useNavColors } from './hooks/useNavColors'
 function NavItem({ item }: { item: MenuItem & { path: string } }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isDarkMode, activeColor, textColor, hoverBg } = useNavColors()
+  const { nt, activeColor, textColor, hoverBg } = useNavColors()
   const active = location.pathname === item.path
   const Icon = MuiIcons[item.iconName] ?? MuiIcons.HelpOutline
 
@@ -39,17 +39,9 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
         cursor: 'pointer',
         transition: 'all 0.15s ease',
         position: 'relative',
-        bgcolor: active
-          ? isDarkMode
-            ? 'rgba(99,102,241,0.15)'
-            : 'rgba(99,102,241,0.1)'
-          : 'transparent',
+        bgcolor: active ? nt.activeBg : 'transparent',
         '&:hover': {
-          bgcolor: active
-            ? isDarkMode
-              ? 'rgba(99,102,241,0.2)'
-              : 'rgba(99,102,241,0.12)'
-            : hoverBg,
+          bgcolor: active ? nt.activeHoverBg : hoverBg,
         },
       }}
     >
@@ -87,7 +79,7 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
 function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isDarkMode, activeColor, textColor, dropdownBg, dropdownBorder } = useNavColors()
+  const { nt, activeColor, textColor, dropdownBg, dropdownBorder } = useNavColors()
   const [isOpen, setIsOpen] = useState(false)
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -117,14 +109,9 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
           cursor: 'default',
           transition: 'all 0.15s ease',
           position: 'relative',
-          bgcolor:
-            groupActive || isOpen
-              ? isDarkMode
-                ? 'rgba(99,102,241,0.15)'
-                : 'rgba(99,102,241,0.1)'
-              : 'transparent',
+          bgcolor: groupActive || isOpen ? nt.activeBg : 'transparent',
           '&:hover': {
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)',
+            bgcolor: nt.activeBg,
           },
         }}
       >
@@ -212,14 +199,10 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
                   px: 1.5,
                   py: 0.9,
                   cursor: 'pointer',
-                  bgcolor: childActive
-                    ? isDarkMode
-                      ? 'rgba(99,102,241,0.15)'
-                      : 'rgba(99,102,241,0.08)'
-                    : 'transparent',
+                  bgcolor: childActive ? nt.dropdownChildActiveBg : 'transparent',
                   transition: 'background 0.12s ease',
                   '&:hover': {
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
+                    bgcolor: nt.dropdownChildHoverBg,
                   },
                 }}
               >
@@ -251,7 +234,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
 function UserMenu() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isDarkMode, toggleTheme, activeColor, textColor, hoverBg, dropdownBg, dropdownBorder } =
+  const { nt, toggleTheme, activeColor, textColor, hoverBg, dropdownBg, dropdownBorder } =
     useNavColors()
   const logout = useLogout()
   const user = useCurrentUser()
@@ -279,7 +262,7 @@ function UserMenu() {
           pr: 1,
           py: 0.5,
           ml: 0.5,
-          borderLeft: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(203,213,225,0.5)'}`,
+          borderLeft: `1px solid ${nt.headerBorderLeft}`,
           borderRadius: 2,
           cursor: 'pointer',
           transition: 'background 0.15s ease',
@@ -293,9 +276,9 @@ function UserMenu() {
             height: 30,
             fontSize: '0.8rem',
             fontWeight: 700,
-            bgcolor: isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.13)',
+            bgcolor: nt.avatarBg,
             color: activeColor,
-            border: `1.5px solid ${isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.28)'}`,
+            border: `1.5px solid ${nt.avatarBorder}`,
           }}
         >
           {user.name.charAt(0)}
@@ -305,7 +288,7 @@ function UserMenu() {
             sx={{
               fontSize: '0.8rem',
               fontWeight: 700,
-              color: isDarkMode ? '#e2e8f0' : '#1e293b',
+              color: nt.nameColor,
               lineHeight: 1.25,
               whiteSpace: 'nowrap',
             }}
@@ -367,9 +350,9 @@ function UserMenu() {
                 height: 40,
                 fontSize: '1rem',
                 fontWeight: 700,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.22)' : 'rgba(99,102,241,0.13)',
+                bgcolor: nt.avatarBg,
                 color: activeColor,
-                border: `2px solid ${isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.28)'}`,
+                border: `2px solid ${nt.avatarBorder}`,
               }}
             >
               {user.name.charAt(0)}
@@ -379,7 +362,7 @@ function UserMenu() {
                 sx={{
                   fontSize: '0.875rem',
                   fontWeight: 700,
-                  color: isDarkMode ? '#f1f5f9' : '#0f172a',
+                  color: nt.profileNameColor,
                   lineHeight: 1.3,
                 }}
               >
@@ -394,7 +377,7 @@ function UserMenu() {
               <Typography
                 sx={{
                   fontSize: '0.68rem',
-                  color: isDarkMode ? '#475569' : '#94a3b8',
+                  color: nt.employeeIdColor,
                   lineHeight: 1.3,
                 }}
               >
@@ -404,7 +387,7 @@ function UserMenu() {
           </Box>
         </Box>
 
-        <Divider sx={{ borderColor: isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.6)' }} />
+        <Divider sx={{ borderColor: nt.dividerColor }} />
 
         {/* 설정 */}
         <MuiMenuItem
@@ -413,10 +396,8 @@ function UserMenu() {
             px: 2,
             py: 1,
             gap: 1.5,
-            color: settingsActive ? activeColor : isDarkMode ? '#cbd5e1' : '#374151',
-            bgcolor: settingsActive
-              ? isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)'
-              : 'transparent',
+            color: settingsActive ? activeColor : nt.menuItemColor,
+            bgcolor: settingsActive ? nt.settingsActiveBg : 'transparent',
             '&:hover': { bgcolor: hoverBg, color: activeColor },
           }}
         >
@@ -435,10 +416,10 @@ function UserMenu() {
             px: 2,
             py: 1,
             gap: 1.5,
-            color: isDarkMode ? '#cbd5e1' : '#374151',
+            color: nt.menuItemColor,
             '&:hover': {
-              bgcolor: isDarkMode ? 'rgba(251,191,36,0.1)' : 'rgba(245,158,11,0.08)',
-              color: isDarkMode ? '#fbbf24' : '#d97706',
+              bgcolor: nt.themeHoverBg,
+              color: nt.themeHoverColor,
             },
           }}
         >
@@ -454,7 +435,7 @@ function UserMenu() {
           </Typography>
         </MuiMenuItem>
 
-        <Divider sx={{ borderColor: isDarkMode ? 'rgba(148,163,184,0.1)' : 'rgba(203,213,225,0.6)' }} />
+        <Divider sx={{ borderColor: nt.dividerColor }} />
 
         {/* 로그아웃 */}
         <MuiMenuItem
@@ -463,9 +444,9 @@ function UserMenu() {
             px: 2,
             py: 1,
             gap: 1.5,
-            color: isDarkMode ? '#fca5a5' : '#ef4444',
+            color: nt.logoutColor,
             '&:hover': {
-              bgcolor: isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.07)',
+              bgcolor: nt.logoutHoverBg,
             },
           }}
         >
