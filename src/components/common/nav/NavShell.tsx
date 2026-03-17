@@ -1,6 +1,7 @@
 import { AppBar, Box, Toolbar, useMediaQuery, useTheme } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import gomgomLogo from '@/assets/gomgom_logo.png'
 import { useNavColors } from './useNavColors'
 import NavDesktop from './NavDesktop'
 import NavMobileDrawer from './NavMobileDrawer'
@@ -44,7 +45,7 @@ export default function NavShell() {
           >
             <Box
               component="img"
-              src="/src/assets/gomgom_logo.png"
+              src={gomgomLogo}
               alt="Gomgom"
               sx={{
                 height: { xs: 32, md: 36 },
