@@ -1,6 +1,6 @@
 import path from 'path'
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [react()],
@@ -14,9 +14,11 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/tests/setup.ts'],
     css: false,
-    deps: {
-      // Windows 파일 핸들 제한 방지: MUI icons를 번들링해서 로드
-      inline: ['@mui/icons-material'],
+    server: {
+      deps: {
+        // Windows 파일 핸들 제한 방지: MUI icons를 번들링해서 로드
+        inline: ['@mui/icons-material'],
+      },
     },
   },
 })

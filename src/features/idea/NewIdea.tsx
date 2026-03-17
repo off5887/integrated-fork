@@ -383,7 +383,6 @@ export default function NewIdea() {
       <SimilarIdeaSearchModal
         open={similarSearchOpen}
         onClose={() => setSimilarSearchOpen(false)}
-        isDarkMode={isDarkMode}
         initialQuery={title}
       />
       <ReviewerSelectModal

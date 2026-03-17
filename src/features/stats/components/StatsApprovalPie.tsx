@@ -90,7 +90,7 @@ export default function StatsApprovalPie({ t }: Props) {
       colors: [t.strokeColor],
     },
     states: {
-      hover: { filter: { type: 'brighten', value: 0.08 } },
+      hover: { filter: { type: 'brighten' } as { type: string } },
       active: { filter: { type: 'none' } },
     },
     tooltip: {

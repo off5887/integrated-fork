@@ -69,7 +69,7 @@ export default function ApprovalStatusPie() {
     legend: { show: false },
     stroke: { width: 3, colors: [dt.bgBase] },
     states: {
-      hover: { filter: { type: 'brighten', value: 0.08 } },
+      hover: { filter: { type: 'brighten' } as { type: string } },
       active: { filter: { type: 'none' } },
     },
     tooltip: {

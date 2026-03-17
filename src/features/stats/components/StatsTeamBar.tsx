@@ -93,7 +93,7 @@ export default function StatsTeamBar({ t }: Props) {
       y: { formatter: (val: number) => val + '건' },
     },
     states: {
-      hover: { filter: { type: 'brighten', value: 0.08 } },
+      hover: { filter: { type: 'brighten' } as { type: string } },
       active: { filter: { type: 'none' } },
     },
   }

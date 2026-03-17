@@ -248,3 +248,4 @@ npm run test:watch  # 파일 변경 감지 모드
 - [ ] 크로스 모듈 import에 `@/` alias를 사용하는가?
 - [ ] `npx tsc --noEmit` 통과 여부 확인했는가?
 - [ ] `npm test` 통과 여부 확인했는가?
+- [ ] `tsc -b && vite build` 통과 여부 확인했는가? (Vercel 배포 전 필수)

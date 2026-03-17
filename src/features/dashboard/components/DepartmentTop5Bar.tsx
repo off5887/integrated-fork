@@ -81,7 +81,7 @@ export default function DepartmentTop5Bar() {
     },
     legend: { show: false },
     states: {
-      hover: { filter: { type: 'brighten', value: 0.08 } },
+      hover: { filter: { type: 'brighten' } as { type: string } },
       active: { filter: { type: 'none' } },
     },
   }

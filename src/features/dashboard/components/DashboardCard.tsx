@@ -1,3 +1,4 @@
+import React from 'react'
 import { motion } from 'framer-motion'
 import { useThemeMode } from '@/context/ThemeContext'
 import type { DashboardCardProps } from '@/api/types/dashboard'
@@ -32,7 +33,7 @@ export default function DashboardCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
-      style={cardStyle}
+      style={cardStyle as React.CSSProperties}
     >
       {children}
     </motion.div>
