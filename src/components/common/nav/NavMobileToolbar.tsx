@@ -2,13 +2,13 @@ import MenuIcon from '@mui/icons-material/Menu'
 import NightsStayIcon from '@mui/icons-material/NightsStay'
 import WbSunnyIcon from '@mui/icons-material/WbSunny'
 import { Box, IconButton } from '@mui/material'
-import { useNavColors } from './hooks/useNavColors'
+import { useNavColors } from './useNavColors'
 
-interface MobileToolbarProps {
+interface NavMobileToolbarProps {
   onOpenDrawer: () => void
 }
 
-export default function MobileToolbar({ onOpenDrawer }: MobileToolbarProps) {
+export default function NavMobileToolbar({ onOpenDrawer }: NavMobileToolbarProps) {
   const { isDarkMode, toggleTheme, textColor } = useNavColors()
 
   return (

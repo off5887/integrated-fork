@@ -1,24 +1,17 @@
 import { AppBar, Box, Toolbar, useMediaQuery, useTheme } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useThemeMode } from '@/context/ThemeContext'
-import DesktopNavigation from './DesktopNavigation'
-import MobileNavigationDrawer from './MobileNavigationDrawer'
-import MobileToolbar from './MobileToolbar'
+import { useNavColors } from './useNavColors'
+import NavDesktop from './NavDesktop'
+import NavMobileDrawer from './NavMobileDrawer'
+import NavMobileToolbar from './NavMobileToolbar'
 
-export default function Header() {
+export default function NavShell() {
   const theme = useTheme()
   const navigate = useNavigate()
-  const { isDarkMode } = useThemeMode()
+  const { nt } = useNavColors()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const [drawerOpen, setDrawerOpen] = useState(false)
-
-  const navBg = isDarkMode
-    ? 'rgba(13, 17, 30, 0.85)'
-    : 'rgba(255, 255, 255, 0.85)'
-  const borderBottomColor = isDarkMode
-    ? 'rgba(148,163,184,0.08)'
-    : 'rgba(203,213,225,0.4)'
 
   return (
     <>
@@ -27,8 +20,8 @@ export default function Header() {
         elevation={0}
         sx={{
           backdropFilter: 'blur(24px) saturate(180%)',
-          bgcolor: navBg,
-          borderBottom: `1px solid ${borderBottomColor}`,
+          bgcolor: nt.appBarBg,
+          borderBottom: `1px solid ${nt.appBarBorderBottom}`,
         }}
       >
         <Toolbar
@@ -56,27 +49,23 @@ export default function Header() {
               sx={{
                 height: { xs: 32, md: 36 },
                 width: 'auto',
-                filter: isDarkMode
-                  ? 'drop-shadow(0 0 8px rgba(99,102,241,0.4))'
-                  : 'none',
+                filter: nt.logoFilter,
                 transition: 'filter 0.2s',
                 '&:hover': {
-                  filter: isDarkMode
-                    ? 'drop-shadow(0 0 12px rgba(99,102,241,0.6))'
-                    : 'drop-shadow(0 2px 8px rgba(99,102,241,0.3))',
+                  filter: nt.logoHoverFilter,
                 },
               }}
             />
           </Box>
 
-          {!isMobile && <DesktopNavigation />}
+          {!isMobile && <NavDesktop />}
 
-          {isMobile && <MobileToolbar onOpenDrawer={() => setDrawerOpen(true)} />}
+          {isMobile && <NavMobileToolbar onOpenDrawer={() => setDrawerOpen(true)} />}
         </Toolbar>
       </AppBar>
 
       {isMobile && (
-        <MobileNavigationDrawer
+        <NavMobileDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
         />

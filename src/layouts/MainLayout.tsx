@@ -1,7 +1,7 @@
 // src/layouts/MainLayout.tsx
 import { Box } from '@mui/material'
 import { Outlet } from 'react-router-dom'
-import Header from '@/components/common/Header'
+import Header from '@/components/common/nav/NavShell'
 import { useThemeMode } from '@/context/ThemeContext'
 
 export default function MainLayout() {

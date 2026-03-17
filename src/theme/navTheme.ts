@@ -63,6 +63,12 @@ const navLight = {
   // ── 로그아웃 ──
   logoutColor:     '#ef4444',
   logoutHoverBg:   'rgba(239,68,68,0.07)',
+
+  // ── 앱바 (NavShell) ──
+  appBarBg:            'rgba(255, 255, 255, 0.85)',
+  appBarBorderBottom:  'rgba(203,213,225,0.4)',
+  logoFilter:          'none',
+  logoHoverFilter:     'drop-shadow(0 2px 8px rgba(99,102,241,0.3))',
 } as const
 
 const navDark = {
@@ -127,6 +133,12 @@ const navDark = {
   // ── 로그아웃 ──
   logoutColor:     '#fca5a5',
   logoutHoverBg:   'rgba(239,68,68,0.12)',
+
+  // ── 앱바 (NavShell) ──
+  appBarBg:            'rgba(13, 17, 30, 0.85)',
+  appBarBorderBottom:  'rgba(148,163,184,0.08)',
+  logoFilter:          'drop-shadow(0 0 8px rgba(99,102,241,0.4))',
+  logoHoverFilter:     'drop-shadow(0 0 12px rgba(99,102,241,0.6))',
 } as const
 
 export type NavTheme = typeof navLight

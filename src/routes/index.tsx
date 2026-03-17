@@ -2,8 +2,8 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
-import ErrorBoundary from '@/components/common/ErrorBoundary'
-import ProtectedRoute from '@/components/common/ProtectedRoute'
+import ErrorBoundary from '@/components/common/routing/ErrorBoundary'
+import ProtectedRoute from '@/components/common/routing/ProtectedRoute'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'

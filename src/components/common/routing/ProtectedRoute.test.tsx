@@ -1,4 +1,4 @@
-// src/components/common/ProtectedRoute.test.tsx
+// src/components/common/routing/ProtectedRoute.test.tsx
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'

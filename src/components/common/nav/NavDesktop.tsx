@@ -11,11 +11,11 @@ import {
 } from '@mui/material'
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { menuItems, settingsItem } from './headerConfig'
-import type { MenuItem, SubMenuItem } from './headerConfig'
-import { useCurrentUser } from './hooks/useCurrentUser'
-import { useLogout } from './hooks/useLogout'
-import { useNavColors } from './hooks/useNavColors'
+import { menuItems, settingsItem } from './navConfig'
+import type { MenuItem, SubMenuItem } from './navConfig'
+import { useCurrentUser } from '@/components/common/hooks/useCurrentUser'
+import { useLogout } from '@/components/common/hooks/useLogout'
+import { useNavColors } from './useNavColors'
 
 // ─── NavItem ──────────────────────────────────────────────────────────────────
 
@@ -234,7 +234,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
 function UserMenu() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { nt, toggleTheme, activeColor, textColor, hoverBg, dropdownBg, dropdownBorder } =
+  const { nt, isDarkMode, toggleTheme, activeColor, textColor, hoverBg, dropdownBg, dropdownBorder } =
     useNavColors()
   const logout = useLogout()
   const user = useCurrentUser()
@@ -460,9 +460,9 @@ function UserMenu() {
   )
 }
 
-// ─── DesktopNavigation ────────────────────────────────────────────────────────
+// ─── NavDesktop ────────────────────────────────────────────────────────────────
 
-export default function DesktopNavigation() {
+export default function NavDesktop() {
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mr: 2 }}>

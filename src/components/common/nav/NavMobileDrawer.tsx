@@ -16,18 +16,18 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { menuItems, settingsItem } from './headerConfig'
-import type { MenuItem, SubMenuItem } from './headerConfig'
-import { useCurrentUser } from './hooks/useCurrentUser'
-import { useLogout } from './hooks/useLogout'
-import { useNavColors } from './hooks/useNavColors'
+import { menuItems, settingsItem } from './navConfig'
+import type { MenuItem, SubMenuItem } from './navConfig'
+import { useCurrentUser } from '@/components/common/hooks/useCurrentUser'
+import { useLogout } from '@/components/common/hooks/useLogout'
+import { useNavColors } from './useNavColors'
 
-interface MobileNavigationDrawerProps {
+interface NavMobileDrawerProps {
   open: boolean
   onClose: () => void
 }
 
-export default function MobileNavigationDrawer({ open, onClose }: MobileNavigationDrawerProps) {
+export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const { nt, isDarkMode, toggleTheme, activeColor, drawerTextColor } = useNavColors()
@@ -80,7 +80,7 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
             component="img"
             src="/src/assets/gomgom_logo.png"
             alt="Gomgom"
-            sx={{ height: 34, filter: isDarkMode ? 'brightness(1.1)' : 'none' }}
+            sx={{ height: 34, filter: isDarkMode ? nt.logoFilter : 'none' }}
           />
           <IconButton onClick={onClose} size="small" sx={{ color: drawerTextColor }}>
             <CloseIcon fontSize="small" />
@@ -273,13 +273,13 @@ export default function MobileNavigationDrawer({ open, onClose }: MobileNavigati
               onClick={logout}
               sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: '#ef4444' }}>
+              <ListItemIcon sx={{ minWidth: 36, color: nt.logoutColor }}>
                 <MuiIcons.Logout fontSize="small" />
               </ListItemIcon>
               <ListItemText
                 primary={
                   <Typography
-                    sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#ef4444' }}
+                    sx={{ fontSize: '0.875rem', fontWeight: 600, color: nt.logoutColor }}
                   >
                     로그아웃
                   </Typography>
