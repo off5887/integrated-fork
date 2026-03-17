@@ -12,9 +12,9 @@ import {
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems, settingsItem } from './navConfig'
-import type { MenuItem, SubMenuItem } from './navConfig'
-import { useCurrentUser } from '@/components/common/hooks/useCurrentUser'
-import { useLogout } from '@/components/common/hooks/useLogout'
+import type { MenuItem, SubMenuItem } from '@/api/types/nav'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useNavColors } from './useNavColors'
 
 // ─── NavItem ──────────────────────────────────────────────────────────────────
@@ -22,7 +22,7 @@ import { useNavColors } from './useNavColors'
 function NavItem({ item }: { item: MenuItem & { path: string } }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { nt, activeColor, textColor, hoverBg } = useNavColors()
+  const { nt } = useNavColors()
   const active = location.pathname === item.path
   const Icon = MuiIcons[item.iconName] ?? MuiIcons.HelpOutline
 
@@ -41,16 +41,16 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
         position: 'relative',
         bgcolor: active ? nt.activeBg : 'transparent',
         '&:hover': {
-          bgcolor: active ? nt.activeHoverBg : hoverBg,
+          bgcolor: active ? nt.activeHoverBg : nt.hoverBg,
         },
       }}
     >
-      <Icon fontSize="small" sx={{ color: active ? activeColor : textColor }} />
+      <Icon fontSize="small" sx={{ color: active ? nt.activeColor : nt.textColor }} />
       <Typography
         sx={{
           fontSize: '0.82rem',
           fontWeight: active ? 700 : 500,
-          color: active ? activeColor : textColor,
+          color: active ? nt.activeColor : nt.textColor,
           letterSpacing: '-0.01em',
           whiteSpace: 'nowrap',
         }}
@@ -66,7 +66,7 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
             right: 0,
             height: 2,
             borderRadius: '2px 2px 0 0',
-            bgcolor: activeColor,
+            bgcolor: nt.activeColor,
           }}
         />
       )}
@@ -79,7 +79,7 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
 function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { nt, activeColor, textColor, dropdownBg, dropdownBorder } = useNavColors()
+  const { nt } = useNavColors()
   const [isOpen, setIsOpen] = useState(false)
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -117,13 +117,13 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
       >
         <Icon
           fontSize="small"
-          sx={{ color: groupActive || isOpen ? activeColor : textColor }}
+          sx={{ color: groupActive || isOpen ? nt.activeColor : nt.textColor }}
         />
         <Typography
           sx={{
             fontSize: '0.82rem',
             fontWeight: groupActive || isOpen ? 700 : 500,
-            color: groupActive || isOpen ? activeColor : textColor,
+            color: groupActive || isOpen ? nt.activeColor : nt.textColor,
             letterSpacing: '-0.01em',
             whiteSpace: 'nowrap',
           }}
@@ -133,7 +133,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
         <MuiIcons.KeyboardArrowDown
           sx={{
             fontSize: '1rem',
-            color: groupActive || isOpen ? activeColor : textColor,
+            color: groupActive || isOpen ? nt.activeColor : nt.textColor,
             transition: 'transform 0.2s ease',
             transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
           }}
@@ -147,7 +147,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
               right: 0,
               height: 2,
               borderRadius: '2px 2px 0 0',
-              bgcolor: activeColor,
+              bgcolor: nt.activeColor,
             }}
           />
         )}
@@ -167,8 +167,8 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
             left: '50%',
             transform: 'translateX(-50%)',
             minWidth: 148,
-            bgcolor: dropdownBg,
-            border: dropdownBorder,
+            bgcolor: nt.dropdownBg,
+            border: nt.dropdownBorder,
             borderRadius: 2,
             overflow: 'hidden',
             backdropFilter: 'blur(24px)',
@@ -208,13 +208,13 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
               >
                 <ChildIcon
                   fontSize="small"
-                  sx={{ fontSize: '1rem', color: childActive ? activeColor : textColor }}
+                  sx={{ fontSize: '1rem', color: childActive ? nt.activeColor : nt.textColor }}
                 />
                 <Typography
                   sx={{
                     fontSize: '0.82rem',
                     fontWeight: childActive ? 700 : 500,
-                    color: childActive ? activeColor : textColor,
+                    color: childActive ? nt.activeColor : nt.textColor,
                     whiteSpace: 'nowrap',
                   }}
                 >
@@ -234,8 +234,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
 function UserMenu() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { nt, isDarkMode, toggleTheme, activeColor, textColor, hoverBg, dropdownBg, dropdownBorder } =
-    useNavColors()
+  const { nt, isDarkMode, toggleTheme } = useNavColors()
   const logout = useLogout()
   const user = useCurrentUser()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -266,7 +265,7 @@ function UserMenu() {
           borderRadius: 2,
           cursor: 'pointer',
           transition: 'background 0.15s ease',
-          '&:hover': { bgcolor: hoverBg },
+          '&:hover': { bgcolor: nt.hoverBg },
         }}
       >
         <Avatar
@@ -277,7 +276,7 @@ function UserMenu() {
             fontSize: '0.8rem',
             fontWeight: 700,
             bgcolor: nt.avatarBg,
-            color: activeColor,
+            color: nt.activeColor,
             border: `1.5px solid ${nt.avatarBorder}`,
           }}
         >
@@ -298,7 +297,7 @@ function UserMenu() {
           <Typography
             sx={{
               fontSize: '0.68rem',
-              color: textColor,
+              color: nt.textColor,
               lineHeight: 1.25,
               whiteSpace: 'nowrap',
             }}
@@ -310,7 +309,7 @@ function UserMenu() {
         <MuiIcons.KeyboardArrowDown
           sx={{
             fontSize: '1rem',
-            color: textColor,
+            color: nt.textColor,
             transition: 'transform 0.2s ease',
             transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
           }}
@@ -330,8 +329,8 @@ function UserMenu() {
             sx: {
               mt: 0.75,
               minWidth: 210,
-              bgcolor: dropdownBg,
-              border: dropdownBorder,
+              bgcolor: nt.dropdownBg,
+              border: nt.dropdownBorder,
               borderRadius: 2,
               backdropFilter: 'blur(24px)',
               overflow: 'visible',
@@ -351,7 +350,7 @@ function UserMenu() {
                 fontSize: '1rem',
                 fontWeight: 700,
                 bgcolor: nt.avatarBg,
-                color: activeColor,
+                color: nt.activeColor,
                 border: `2px solid ${nt.avatarBorder}`,
               }}
             >
@@ -369,7 +368,7 @@ function UserMenu() {
                 {user.name}
               </Typography>
               <Typography
-                sx={{ fontSize: '0.75rem', color: textColor, lineHeight: 1.3 }}
+                sx={{ fontSize: '0.75rem', color: nt.textColor, lineHeight: 1.3 }}
               >
                 {user.position}
                 {user.department ? ` · ${user.department}` : ''}
@@ -396,9 +395,9 @@ function UserMenu() {
             px: 2,
             py: 1,
             gap: 1.5,
-            color: settingsActive ? activeColor : nt.menuItemColor,
+            color: settingsActive ? nt.activeColor : nt.menuItemColor,
             bgcolor: settingsActive ? nt.settingsActiveBg : 'transparent',
-            '&:hover': { bgcolor: hoverBg, color: activeColor },
+            '&:hover': { bgcolor: nt.hoverBg, color: nt.activeColor },
           }}
         >
           <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>

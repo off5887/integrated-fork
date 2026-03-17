@@ -1,19 +1,6 @@
-import * as MuiIcons from '@mui/icons-material'
+import type { IconName, MenuItem, SubMenuItem } from '@/api/types/nav'
 
-export type IconName = keyof typeof MuiIcons
-
-export type SubMenuItem = {
-  iconName: IconName
-  text: string
-  path: string
-}
-
-export type MenuItem = {
-  iconName: IconName
-  text: string
-  path?: string
-  children?: SubMenuItem[]
-}
+export type { IconName, MenuItem, SubMenuItem }
 
 export const menuItems: MenuItem[] = [
   { iconName: 'Dashboard', text: '대시보드', path: '/dashboard' },

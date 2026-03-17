@@ -14,11 +14,5 @@ export function useNavColors() {
     isDarkMode,
     toggleTheme,
     nt,
-    activeColor:      nt.activeColor,
-    textColor:        nt.textColor,
-    drawerTextColor:  nt.drawerTextColor,
-    hoverBg:          nt.hoverBg,
-    dropdownBg:       nt.dropdownBg,
-    dropdownBorder:   nt.dropdownBorder,
   }
 }

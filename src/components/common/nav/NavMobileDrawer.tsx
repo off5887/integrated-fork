@@ -17,9 +17,9 @@ import {
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems, settingsItem } from './navConfig'
-import type { MenuItem, SubMenuItem } from './navConfig'
-import { useCurrentUser } from '@/components/common/hooks/useCurrentUser'
-import { useLogout } from '@/components/common/hooks/useLogout'
+import type { MenuItem, SubMenuItem } from '@/api/types/nav'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useNavColors } from './useNavColors'
 
 interface NavMobileDrawerProps {
@@ -30,7 +30,7 @@ interface NavMobileDrawerProps {
 export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { nt, isDarkMode, toggleTheme, activeColor, drawerTextColor } = useNavColors()
+  const { nt, isDarkMode, toggleTheme } = useNavColors()
   const logout = useLogout()
   const user = useCurrentUser()
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
@@ -82,7 +82,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
             alt="Gomgom"
             sx={{ height: 34, filter: isDarkMode ? nt.logoFilter : 'none' }}
           />
-          <IconButton onClick={onClose} size="small" sx={{ color: drawerTextColor }}>
+          <IconButton onClick={onClose} size="small" sx={{ color: nt.drawerTextColor }}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -110,7 +110,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                 fontWeight: 700,
                 flexShrink: 0,
                 bgcolor: nt.avatarBg,
-                color: activeColor,
+                color: nt.activeColor,
                 border: `1.5px solid ${nt.avatarBorderStrong}`,
               }}
             >
@@ -121,7 +121,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                 sx={{
                   fontSize: '0.875rem',
                   fontWeight: 700,
-                  color: drawerTextColor,
+                  color: nt.drawerTextColor,
                   lineHeight: 1.3,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -164,8 +164,6 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                   isGroupActive={isGroupActive(item.children)}
                   onToggle={() => handleGroupToggle(item.text)}
                   onNavigate={handleNavigate}
-                  activeColor={activeColor}
-                  drawerTextColor={drawerTextColor}
                   subItemBg={subItemBg}
                   isActive={isActive}
                 />
@@ -190,7 +188,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                   }}
                 >
                   <ListItemIcon
-                    sx={{ minWidth: 36, color: active ? activeColor : drawerTextColor }}
+                    sx={{ minWidth: 36, color: active ? nt.activeColor : nt.drawerTextColor }}
                   >
                     <Icon fontSize="small" />
                   </ListItemIcon>
@@ -200,7 +198,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                         sx={{
                           fontSize: '0.875rem',
                           fontWeight: active ? 700 : 500,
-                          color: active ? activeColor : drawerTextColor,
+                          color: active ? nt.activeColor : nt.drawerTextColor,
                         }}
                       >
                         {item.text}
@@ -227,13 +225,13 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
               onClick={() => handleNavigate(settingsItem.path)}
               sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
             >
-              <ListItemIcon sx={{ minWidth: 36, color: drawerTextColor }}>
+              <ListItemIcon sx={{ minWidth: 36, color: nt.drawerTextColor }}>
                 <MuiIcons.Settings fontSize="small" />
               </ListItemIcon>
               <ListItemText
                 primary={
                   <Typography
-                    sx={{ fontSize: '0.875rem', fontWeight: 500, color: drawerTextColor }}
+                    sx={{ fontSize: '0.875rem', fontWeight: 500, color: nt.drawerTextColor }}
                   >
                     설정
                   </Typography>
@@ -259,7 +257,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
               <ListItemText
                 primary={
                   <Typography
-                    sx={{ fontSize: '0.875rem', fontWeight: 500, color: drawerTextColor }}
+                    sx={{ fontSize: '0.875rem', fontWeight: 500, color: nt.drawerTextColor }}
                   >
                     {isDarkMode ? '라이트 모드' : '다크 모드'}
                   </Typography>
@@ -301,8 +299,6 @@ interface GroupMenuItemProps {
   isGroupActive: boolean
   onToggle: () => void
   onNavigate: (path: string) => void
-  activeColor: string
-  drawerTextColor: string
   subItemBg: string
   isActive: (path: string) => boolean
 }
@@ -313,8 +309,6 @@ function GroupMenuItem({
   isGroupActive,
   onToggle,
   onNavigate,
-  activeColor,
-  drawerTextColor,
   subItemBg,
   isActive,
 }: GroupMenuItemProps) {
@@ -338,7 +332,7 @@ function GroupMenuItem({
           }}
         >
           <ListItemIcon
-            sx={{ minWidth: 36, color: isGroupActive ? activeColor : drawerTextColor }}
+            sx={{ minWidth: 36, color: isGroupActive ? nt.activeColor : nt.drawerTextColor }}
           >
             <Icon fontSize="small" />
           </ListItemIcon>
@@ -348,7 +342,7 @@ function GroupMenuItem({
                 sx={{
                   fontSize: '0.875rem',
                   fontWeight: isGroupActive ? 700 : 500,
-                  color: isGroupActive ? activeColor : drawerTextColor,
+                  color: isGroupActive ? nt.activeColor : nt.drawerTextColor,
                 }}
               >
                 {item.text}
@@ -358,7 +352,7 @@ function GroupMenuItem({
           <MuiIcons.KeyboardArrowDown
             sx={{
               fontSize: '1.1rem',
-              color: isGroupActive ? activeColor : drawerTextColor,
+              color: isGroupActive ? nt.activeColor : nt.drawerTextColor,
               transition: 'transform 0.2s ease',
               transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
             }}
@@ -394,7 +388,7 @@ function GroupMenuItem({
                   <ListItemIcon
                     sx={{
                       minWidth: 32,
-                      color: childActive ? activeColor : drawerTextColor,
+                      color: childActive ? nt.activeColor : nt.drawerTextColor,
                     }}
                   >
                     <ChildIcon sx={{ fontSize: '1rem' }} />
@@ -405,7 +399,7 @@ function GroupMenuItem({
                         sx={{
                           fontSize: '0.825rem',
                           fontWeight: childActive ? 700 : 500,
-                          color: childActive ? activeColor : drawerTextColor,
+                          color: childActive ? nt.activeColor : nt.drawerTextColor,
                         }}
                       >
                         {child.text}
@@ -418,7 +412,7 @@ function GroupMenuItem({
                         width: 6,
                         height: 6,
                         borderRadius: '50%',
-                        bgcolor: activeColor,
+                        bgcolor: nt.activeColor,
                         flexShrink: 0,
                       }}
                     />

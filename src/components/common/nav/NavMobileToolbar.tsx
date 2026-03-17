@@ -9,11 +9,11 @@ interface NavMobileToolbarProps {
 }
 
 export default function NavMobileToolbar({ onOpenDrawer }: NavMobileToolbarProps) {
-  const { isDarkMode, toggleTheme, textColor } = useNavColors()
+  const { isDarkMode, toggleTheme, nt } = useNavColors()
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 'auto' }}>
-      <IconButton onClick={toggleTheme} size="small" sx={{ color: textColor }}>
+      <IconButton onClick={toggleTheme} size="small" sx={{ color: nt.textColor }}>
         {isDarkMode ? (
           <WbSunnyIcon fontSize="small" />
         ) : (
@@ -24,7 +24,7 @@ export default function NavMobileToolbar({ onOpenDrawer }: NavMobileToolbarProps
         edge="end"
         onClick={onOpenDrawer}
         size="small"
-        sx={{ color: textColor }}
+        sx={{ color: nt.textColor }}
       >
         <MenuIcon />
       </IconButton>
