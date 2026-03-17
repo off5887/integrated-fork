@@ -1,5 +1,6 @@
 // src/api/types/dashboard.ts
 
+import type { SxProps, Theme } from '@mui/material'
 import { ReactNode } from 'react'
 
 // ─── 컴포넌트 Props ───────────────────────────────────────────────────────────
@@ -7,7 +8,7 @@ import { ReactNode } from 'react'
 export type DashboardCardProps = {
   children: ReactNode
   delay?: number
-  sx?: any
+  sx?: SxProps<Theme>
 }
 
 export type MyGomgomiCardProps = {

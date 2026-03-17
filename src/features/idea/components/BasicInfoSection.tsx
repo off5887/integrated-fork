@@ -1,5 +1,6 @@
 // src/routes/idea/BasicInfoSection.tsx
 import { Box, TextField, Typography } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { CATEGORIES } from '@/api/mock/idea'
 import { getIdeaTheme } from '@/theme/ideaTheme'
@@ -13,8 +14,8 @@ interface Props {
   setProblem: (v: string) => void
   solution: string
   setSolution: (v: string) => void
-  inputSx: any
-  labelSx: any
+  inputSx: SxProps<Theme>
+  labelSx: SxProps<Theme>
 }
 
 export default function BasicInfoSection({

@@ -43,8 +43,8 @@ export default function ForgotPasswordForm({
 
     try {
       await onSubmit(email.trim())
-    } catch (err: any) {
-      setLocalError(err.message || '비밀번호 재설정 요청에 실패했습니다.')
+    } catch (err: unknown) {
+      setLocalError(err instanceof Error ? err.message : '비밀번호 재설정 요청에 실패했습니다.')
     }
   }
 

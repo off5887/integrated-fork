@@ -7,6 +7,7 @@ import PublicIcon from '@mui/icons-material/Public'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Box, Typography } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -21,8 +22,8 @@ interface Props {
   setEndDate: (v: string) => void
   security: 'public' | 'private'
   setSecurity: (v: 'public' | 'private') => void
-  inputSx: any
-  labelSx: any
+  inputSx: SxProps<Theme>
+  labelSx: SxProps<Theme>
 }
 
 const VISIBILITY_OPTIONS = [

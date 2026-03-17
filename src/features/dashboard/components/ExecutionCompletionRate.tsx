@@ -1,6 +1,7 @@
 // src/routes/Dashboard/Components/ExecutionCompletionRate.tsx
 import { Box, Typography } from '@mui/material'
 import Chart from 'react-apexcharts'
+import type { ApexOptions } from 'apexcharts'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getDashboardTheme } from '@/theme/dashboardTheme'
 import type { ExecutionCompletionRateProps } from '@/api/types/dashboard'
@@ -17,7 +18,7 @@ export default function ExecutionCompletionRate({ completionRate = 73.4 }: Execu
   const status = getStatus(completionRate)
   const completed = Math.round((completionRate / 100) * 150)
 
-  const options: any = {
+  const options: ApexOptions = {
     chart: {
       type: 'radialBar',
       fontFamily: 'inherit',
