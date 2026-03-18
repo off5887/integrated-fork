@@ -15,6 +15,7 @@ import { useSnackbar } from '@/context/SnackbarContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 import type { DraftData } from '@/api/types/idea'
 
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
 import BasicInfoSection from './components/BasicInfoSection'
 import FileUploadSection from './components/FileUploadSection'
@@ -175,9 +176,9 @@ export default function NewIdea() {
 
   const handleBack = () => navigate(-1)
 
-  // ─── 미저장 경고 (탭 닫기/새로고침 시 경고) ──────────────────────────────
+  // ─── 미저장 경고 ──────────────────────────────────────────────────────────
   const isDirty = !loading && !!(title.trim() || problem.trim() || solution.trim())
-  useUnsavedChanges(isDirty)
+  const { isBlocked, proceed, reset } = useUnsavedChanges(isDirty)
 
   // ─── 스타일 ──────────────────────────────────────────────────────────────
   const it = getIdeaTheme(isDarkMode)
@@ -397,7 +398,18 @@ export default function NewIdea() {
         onToggle={handleToggleReviewer}
       />
 
-{/* ─── 임시저장 스낵바 ─────────────────────────────────────────── */}
+      {/* ─── 미저장 경고 다이얼로그 ─────────────────────────────────── */}
+      <ConfirmDialog
+        open={isBlocked}
+        title="작성 중인 내용이 있어요"
+        message="페이지를 떠나면 작성 중인 내용이 사라질 수 있어요. 계속하시겠습니까?"
+        confirmLabel="떠나기"
+        cancelLabel="계속 작성"
+        onConfirm={proceed}
+        onCancel={reset}
+      />
+
+      {/* ─── 임시저장 스낵바 ─────────────────────────────────────────── */}
       <Snackbar
         open={snackOpen}
         autoHideDuration={3000}

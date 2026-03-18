@@ -1,6 +1,12 @@
 // src/routes/index.tsx
 import { lazy, Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Navigate,
+  Outlet,
+  Route,
+} from 'react-router'
 
 import ErrorBoundary from '@/components/common/routing/ErrorBoundary'
 import ProtectedRoute from '@/components/common/routing/ProtectedRoute'
@@ -26,58 +32,65 @@ const MercenarySupportPage = lazy(
 )
 const NotFoundPage = lazy(() => import('@/features/error/NotFoundPage'))
 
-export default function AppRoutes() {
+// Suspense + ErrorBoundary 루트 레이아웃
+function RootLayout() {
   return (
     <ErrorBoundary>
       <Suspense fallback={<LoadingSpinner />}>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated() ? (
-                <Navigate to="/dashboard" replace />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
-          />
-
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/welcome" element={<Welcome />} />
-          </Route>
-
-          {/* 로그인 필요 — 모든 역할 */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<MainLayout />}>
-              <Route path="/welcome" element={<Welcome />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/newIdea" element={<NewIdea />} />
-              <Route path="/ideaBrowse" element={<IdeaBrowse />} />
-              <Route path="/rqMileage" element={<RqMileage />} />
-              <Route path="/stats" element={<Stats />} />
-              <Route path="/mercenary-support" element={<MercenarySupportPage />} />
-              <Route path="/mercenary-management" element={<MercenaryManagementPage />} />
-            </Route>
-          </Route>
-
-          {/* 심사자 + 관리자 전용 */}
-          <Route element={<ProtectedRoute roles={['reviewer', 'admin']} />}>
-            <Route element={<MainLayout />}>
-              <Route path="/judge" element={<Judge />} />
-            </Route>
-          </Route>
-
-          {/* 관리자 전용 */}
-          <Route element={<ProtectedRoute roles={['admin']} />}>
-            <Route element={<MainLayout />}>
-              <Route path="/settings" element={<Settings />} />
-            </Route>
-          </Route>
-
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+        <Outlet />
       </Suspense>
     </ErrorBoundary>
   )
 }
+
+// 루트("/") 리디렉트 — 렌더 시점에 인증 여부 확인
+function RootRedirect() {
+  return isAuthenticated() ? (
+    <Navigate to="/dashboard" replace />
+  ) : (
+    <Navigate to="/login" replace />
+  )
+}
+
+export const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route element={<RootLayout />}>
+      <Route path="/" element={<RootRedirect />} />
+
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/welcome" element={<Welcome />} />
+      </Route>
+
+      {/* 로그인 필요 — 모든 역할 */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />}>
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/newIdea" element={<NewIdea />} />
+          <Route path="/ideaBrowse" element={<IdeaBrowse />} />
+          <Route path="/rqMileage" element={<RqMileage />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="/mercenary-support" element={<MercenarySupportPage />} />
+          <Route path="/mercenary-management" element={<MercenaryManagementPage />} />
+        </Route>
+      </Route>
+
+      {/* 심사자 + 관리자 전용 */}
+      <Route element={<ProtectedRoute roles={['reviewer', 'admin']} />}>
+        <Route element={<MainLayout />}>
+          <Route path="/judge" element={<Judge />} />
+        </Route>
+      </Route>
+
+      {/* 관리자 전용 */}
+      <Route element={<ProtectedRoute roles={['admin']} />}>
+        <Route element={<MainLayout />}>
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<NotFoundPage />} />
+    </Route>,
+  ),
+)
