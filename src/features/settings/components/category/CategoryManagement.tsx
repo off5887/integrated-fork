@@ -8,7 +8,7 @@ import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import { CATEGORIES } from '@/api/mock/idea'
+import { useCategories } from '@/api/queries/useCategories'
 import type { CategoryOption } from '@/api/types/idea'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import CategoryFormDialog from './CategoryFormDialog'
@@ -19,7 +19,8 @@ export default function CategoryManagement() {
   const st = getSettingsTheme(isDarkMode)
   const { showSnackbar } = useSnackbar()
 
-  const [categories, setCategories] = useState<CategoryOption[]>(CATEGORIES)
+  const { categories, addCategory, updateCategory, deleteCategory } = useCategories()
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<CategoryOption | null>(null)
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
@@ -34,24 +35,24 @@ export default function CategoryManagement() {
     setDialogOpen(true)
   }
 
-  const handleSave = (cat: CategoryOption) => {
+  const handleSave = async (cat: CategoryOption) => {
     if (editTarget) {
-      setCategories((prev) => prev.map((c) => (c.id === cat.id ? cat : c)))
+      await updateCategory(cat)
       showSnackbar('카테고리가 수정되었습니다', 'success')
     } else {
       if (categories.some((c) => c.id === cat.id)) {
         showSnackbar('이미 존재하는 카테고리 ID입니다', 'error')
         return
       }
-      setCategories((prev) => [...prev, cat])
+      await addCategory(cat)
       showSnackbar('카테고리가 추가되었습니다', 'success')
     }
     setDialogOpen(false)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!deleteTargetId) return
-    setCategories((prev) => prev.filter((c) => c.id !== deleteTargetId))
+    await deleteCategory(deleteTargetId)
     showSnackbar('카테고리가 삭제되었습니다', 'success')
     setDeleteTargetId(null)
   }
