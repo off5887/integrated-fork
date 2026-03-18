@@ -11,6 +11,7 @@ import { getSettingsTheme } from '@/theme/settingsTheme'
 import { useCategories } from '@/api/queries/useCategories'
 import type { CategoryOption } from '@/api/types/idea'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import EmptyState from '@/components/ui/EmptyState'
 import CategoryFormDialog from './CategoryFormDialog'
 
 export default function CategoryManagement() {
@@ -111,6 +112,14 @@ export default function CategoryManagement() {
       </Box>
 
       {/* 카테고리 카드 그리드 */}
+      {categories.length === 0 ? (
+        <EmptyState
+          emoji="🏷️"
+          title="등록된 카테고리가 없어요"
+          description="카테고리를 추가하면 아이디어를 분류할 수 있어요"
+          action={{ label: '카테고리 추가', onClick: handleAddOpen }}
+        />
+      ) : (
       <Grid container spacing={2}>
         {categories.map((cat) => (
           <Grid key={cat.id} size={{ xs: 12, sm: 6, md: 4 }}>
@@ -210,6 +219,7 @@ export default function CategoryManagement() {
           </Grid>
         ))}
       </Grid>
+      )}
 
       {/* 추가/수정 다이얼로그 */}
       <CategoryFormDialog
