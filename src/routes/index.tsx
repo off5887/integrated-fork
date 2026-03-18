@@ -49,6 +49,7 @@ export default function AppRoutes() {
 
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
+              <Route path="/welcome" element={<Welcome />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/newIdea" element={<NewIdea />} />
               <Route path="/ideaBrowse" element={<IdeaBrowse />} />

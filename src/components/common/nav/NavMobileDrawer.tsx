@@ -17,7 +17,7 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { menuItems, settingsItem } from './navConfig'
+import { menuItems, settingsItem, introItem } from './navConfig'
 import type { MenuItem, SubMenuItem } from '@/api/types/nav'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { useLogout } from '@/features/auth/hooks/useLogout'
@@ -219,8 +219,28 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
           }}
         />
 
-        {/* 설정, 테마, 로그아웃 */}
+        {/* 시스템소개, 설정, 테마, 로그아웃 */}
         <List disablePadding>
+          <ListItem disablePadding sx={{ mb: 0.25 }}>
+            <ListItemButton
+              onClick={() => handleNavigate(introItem.path)}
+              sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 36, color: nt.drawerTextColor }}>
+                <MuiIcons.InfoOutlined fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography
+                    sx={{ fontSize: '0.875rem', fontWeight: 500, color: nt.drawerTextColor }}
+                  >
+                    시스템소개
+                  </Typography>
+                }
+              />
+            </ListItemButton>
+          </ListItem>
+
           <ListItem disablePadding sx={{ mb: 0.25 }}>
             <ListItemButton
               onClick={() => handleNavigate(settingsItem.path)}

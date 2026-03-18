@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { menuItems, settingsItem } from './navConfig'
+import { menuItems, settingsItem, introItem } from './navConfig'
 import type { MenuItem, SubMenuItem } from '@/api/types/nav'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { useLogout } from '@/features/auth/hooks/useLogout'
@@ -243,6 +243,7 @@ function UserMenu() {
   if (!user) return null
 
   const settingsActive = location.pathname === settingsItem.path
+  const introActive = location.pathname === introItem.path
 
   return (
     <>
@@ -387,6 +388,26 @@ function UserMenu() {
         </Box>
 
         <Divider sx={{ borderColor: nt.dividerColor }} />
+
+        {/* 시스템소개 */}
+        <MuiMenuItem
+          onClick={() => { navigate(introItem.path); setAnchorEl(null) }}
+          sx={{
+            px: 2,
+            py: 1,
+            gap: 1.5,
+            color: introActive ? nt.activeColor : nt.menuItemColor,
+            bgcolor: introActive ? nt.settingsActiveBg : 'transparent',
+            '&:hover': { bgcolor: nt.hoverBg, color: nt.activeColor },
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
+            <MuiIcons.InfoOutlined fontSize="small" />
+          </ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem', fontWeight: introActive ? 700 : 500 }}>
+            시스템소개
+          </Typography>
+        </MuiMenuItem>
 
         {/* 설정 */}
         <MuiMenuItem

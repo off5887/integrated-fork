@@ -24,3 +24,9 @@ export const settingsItem: SubMenuItem = {
   text: '설정',
   path: '/settings',
 }
+
+export const introItem: SubMenuItem = {
+  iconName: 'InfoOutlined',
+  text: '시스템소개',
+  path: '/welcome',
+}
