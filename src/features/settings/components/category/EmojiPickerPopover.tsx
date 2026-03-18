@@ -3,33 +3,7 @@ import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-
-const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
-  {
-    label: '아이디어',
-    emojis: ['💡', '🚀', '💰', '💹', '📈', '🏆', '🎯', '💎', '🔑', '💼', '🏅', '🥇', '🎖️', '📣', '🔔'],
-  },
-  {
-    label: '자연/환경',
-    emojis: ['🌿', '🌱', '🌍', '♻️', '🌊', '⚡', '🔥', '🌸', '🍀', '🌞', '🌻', '🌲', '🌾', '🐋', '💧'],
-  },
-  {
-    label: '기술/혁신',
-    emojis: ['🤖', '💻', '📱', '🔬', '🔭', '🔧', '⚙️', '🛠️', '🔩', '🏭', '📡', '🧬', '🧪', '🖥️', '🖨️'],
-  },
-  {
-    label: '사람/복지',
-    emojis: ['❤️', '🤝', '👥', '🏥', '🎁', '🎓', '🏠', '😊', '🧘', '🤸', '👨‍💼', '👩‍💼', '🧑‍🤝‍🧑', '🫂', '🙌'],
-  },
-  {
-    label: '안전/품질',
-    emojis: ['🛡️', '✅', '⭐', '🔒', '🚨', '⚠️', '🏗️', '📋', '🔍', '👁️', '🧯', '🪖', '🦺', '🔐', '✔️'],
-  },
-  {
-    label: '기타',
-    emojis: ['📌', '🎨', '📝', '🗂️', '📦', '🎲', '🌈', '✨', '🏷️', '📎', '🗒️', '📊', '📉', '🖊️', '🎪'],
-  },
-]
+import { EMOJI_GROUPS } from '@/features/settings/config/emojiGroups'
 
 interface Props {
   anchorEl: HTMLElement | null
