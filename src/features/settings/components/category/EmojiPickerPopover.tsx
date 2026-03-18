@@ -1,4 +1,4 @@
-import { Box, Popover, Tab, Tabs, Tooltip, Typography } from '@mui/material'
+import { Box, Popover, Tab, Tabs, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
@@ -102,29 +102,29 @@ export default function EmojiPickerPopover({ anchorEl, onClose, onSelect }: Prop
           }}
         >
           {group.emojis.map((em) => (
-            <Tooltip key={em} title={em} placement="top">
-              <Box
-                onClick={() => { onSelect(em); onClose() }}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(em); onClose() } }}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '100%',
-                  aspectRatio: '1',
-                  borderRadius: 1.5,
-                  fontSize: '1.4rem',
-                  cursor: 'pointer',
-                  transition: 'background 0.1s',
-                  '&:hover': { bgcolor: `${st.primaryColor}18` },
-                  '&:focus-visible': { outline: `2px solid ${st.primaryColor}`, outlineOffset: 1 },
-                }}
-              >
-                {em}
-              </Box>
-            </Tooltip>
+            <Box
+              key={em}
+              onClick={() => { onSelect(em); onClose() }}
+              role="button"
+              tabIndex={0}
+              aria-label={em}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(em); onClose() } }}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                aspectRatio: '1',
+                borderRadius: 1.5,
+                fontSize: '1.4rem',
+                cursor: 'pointer',
+                transition: 'background 0.1s',
+                '&:hover': { bgcolor: `${st.primaryColor}18` },
+                '&:focus-visible': { outline: `2px solid ${st.primaryColor}`, outlineOffset: 1 },
+              }}
+            >
+              {em}
+            </Box>
           ))}
         </Box>
       </Box>
