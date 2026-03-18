@@ -1,11 +1,12 @@
-import type { LoginRequest, LoginResponse } from '../types/auth'
+import type { LoginRequest, LoginResponse } from '@/api/types/auth'
 import { useMutation } from '@tanstack/react-query'
-import { api } from '../client'
+import { api } from '@/api/client'
 import { isAxiosError } from 'axios'
+import { queryKeys } from '@/api/queryKeys'
 
 export const useLoginMutation = () => {
   return useMutation<LoginResponse, Error, LoginRequest>({
-    mutationKey: ['auth', 'login'],
+    mutationKey: queryKeys.auth.login(),
 
     mutationFn: async (credentials: LoginRequest) => {
       const response = await api.post<LoginResponse>(

@@ -1,4 +1,15 @@
 // src/api/types/auth.ts
+export type UserRole = 'user' | 'reviewer' | 'admin'
+
+export interface UserProfile {
+  employeeId: string
+  name: string
+  position: string
+  department: string
+  role: UserRole
+  avatarUrl?: string
+}
+
 export interface LoginRequest {
   employeeId: string
   password: string

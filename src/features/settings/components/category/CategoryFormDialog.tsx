@@ -1,0 +1,217 @@
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Typography,
+} from '@mui/material'
+import { useEffect, useState } from 'react'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getSettingsTheme } from '@/theme/settingsTheme'
+import type { CategoryOption } from '@/api/types/idea'
+
+interface Props {
+  open: boolean
+  onClose: () => void
+  onSave: (category: CategoryOption) => void
+  initial?: CategoryOption | null
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+  const clean = hex.replace('#', '')
+  const r = parseInt(clean.slice(0, 2), 16)
+  const g = parseInt(clean.slice(2, 4), 16)
+  const b = parseInt(clean.slice(4, 6), 16)
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(0,0,0,${alpha})`
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
+const DEFAULT_COLOR = '#6366f1'
+
+export default function CategoryFormDialog({ open, onClose, onSave, initial }: Props) {
+  const { isDarkMode } = useThemeMode()
+  const { textPrimary, textSecondary, borderColor } = usePageColors()
+  const st = getSettingsTheme(isDarkMode)
+  const isEditing = Boolean(initial)
+
+  const [id, setId] = useState('')
+  const [label, setLabel] = useState('')
+  const [emoji, setEmoji] = useState('')
+  const [color, setColor] = useState(DEFAULT_COLOR)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (open) {
+      setId(initial?.id ?? '')
+      setLabel(initial?.label ?? '')
+      setEmoji(initial?.emoji ?? '')
+      setColor(initial?.color ?? DEFAULT_COLOR)
+      setErrors({})
+    }
+  }, [open, initial])
+
+  const validate = () => {
+    const e: Record<string, string> = {}
+    if (!id.trim()) e.id = '카테고리 ID를 입력해주세요'
+    if (!label.trim()) e.label = '카테고리 이름을 입력해주세요'
+    if (!emoji.trim()) e.emoji = '이모지를 입력해주세요'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  const handleSave = () => {
+    if (!validate()) return
+    onSave({
+      id: id.trim(),
+      label: label.trim(),
+      emoji: emoji.trim(),
+      color,
+      bg: hexToRgba(color, 0.1),
+      border: hexToRgba(color, 0.35),
+    })
+  }
+
+  const inputSx = {
+    '& .MuiOutlinedInput-root': {
+      bgcolor: st.inputBg,
+      '&:hover fieldset': { borderColor: st.inputHoverBorder },
+      '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
+    },
+    '& .MuiInputLabel-root.Mui-focused': { color: st.primaryColor },
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      PaperProps={{
+        sx: { bgcolor: st.dialogBg, backgroundImage: 'none', borderRadius: 3 },
+      }}
+    >
+      <DialogTitle sx={{ pb: 1 }}>
+        <Typography fontWeight={700} sx={{ color: textPrimary }}>
+          {isEditing ? '카테고리 수정' : '카테고리 추가'}
+        </Typography>
+      </DialogTitle>
+
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '12px !important' }}>
+        {/* 미리보기 */}
+        <Box
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 1,
+            px: 2,
+            py: 0.75,
+            borderRadius: 2,
+            border: `1px solid ${hexToRgba(color, 0.35)}`,
+            bgcolor: hexToRgba(color, 0.1),
+            alignSelf: 'flex-start',
+          }}
+        >
+          <Typography sx={{ fontSize: '1rem' }}>{emoji || '?'}</Typography>
+          <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color }}>
+            {label || '미리보기'}
+          </Typography>
+        </Box>
+
+        <TextField
+          label="카테고리 ID"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+          disabled={isEditing}
+          error={Boolean(errors.id)}
+          helperText={errors.id ?? (isEditing ? '수정 불가' : '예: 절감, 혁신, safety')}
+          size="small"
+          fullWidth
+          sx={inputSx}
+        />
+        <TextField
+          label="표시 이름"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          error={Boolean(errors.label)}
+          helperText={errors.label ?? '예: 절감 아이디어'}
+          size="small"
+          fullWidth
+          sx={inputSx}
+        />
+        <TextField
+          label="이모지"
+          value={emoji}
+          onChange={(e) => setEmoji(e.target.value)}
+          error={Boolean(errors.emoji)}
+          helperText={errors.emoji ?? '예: 💰 🚀 🛡️'}
+          size="small"
+          fullWidth
+          sx={inputSx}
+        />
+
+        {/* 색상 선택 */}
+        <Box>
+          <Typography variant="caption" sx={{ color: textSecondary, mb: 0.5, display: 'block' }}>
+            대표 색상
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box
+              component="input"
+              type="color"
+              value={color}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setColor(e.target.value)}
+              sx={{
+                width: 40,
+                height: 36,
+                border: `1px solid ${borderColor}`,
+                borderRadius: 1,
+                cursor: 'pointer',
+                bgcolor: 'transparent',
+                padding: '2px',
+              }}
+            />
+            <Typography sx={{ fontSize: '0.85rem', color: textPrimary, fontFamily: 'monospace' }}>
+              {color}
+            </Typography>
+          </Box>
+        </Box>
+      </DialogContent>
+
+      <DialogActions
+        sx={{
+          px: 3,
+          py: 2,
+          gap: 1,
+          bgcolor: st.dialogFooterBg,
+          borderTop: `1px solid ${borderColor}`,
+        }}
+      >
+        <Button
+          onClick={onClose}
+          sx={{
+            color: textSecondary,
+            '&:hover': { bgcolor: st.cancelBtnHoverBg },
+          }}
+        >
+          취소
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          sx={{
+            bgcolor: st.primaryColor,
+            color: st.primaryBtnColor,
+            fontWeight: 700,
+            '&:hover': { bgcolor: st.primaryHoverBg, boxShadow: st.primaryBtnHoverShadow },
+          }}
+        >
+          {isEditing ? '수정' : '추가'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}

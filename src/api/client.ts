@@ -31,7 +31,6 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
     (response) => response,
     (error) => {
       // 401 → 로그아웃 처리, 500 → 알림 등 나중에 추가
-      console.error('API Error:', error)
       return Promise.reject(error)
     },
   )
