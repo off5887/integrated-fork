@@ -1,51 +1,31 @@
 // src/features/idea/NewIdea.tsx
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import SaveIcon from '@mui/icons-material/Save'
 import SendIcon from '@mui/icons-material/Send'
-import {
-  Alert,
-  Box,
-  Button,
-  Snackbar,
-} from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
+import { Box, Button } from '@mui/material'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
-import type { DraftData } from '@/api/types/idea'
-
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
-import BasicInfoSection from './components/BasicInfoSection'
-import FileUploadSection from './components/FileUploadSection'
-import ParticipantsSection from './components/ParticipantsSection'
-import ReviewerSelectModal from './components/ReviewerSelectModal'
-import SimilarIdeaSearchModal from './components/SimilarIdeaSearchModal'
+
+import { useIdeaDraft, DRAFT_KEY } from './hooks/useIdeaDraft'
+import DraftSnackbar from './components/DraftSnackbar'
+import DraftRestoreBanner from './components/DraftRestoreBanner'
 import NewIdeaHeader from './components/NewIdeaHeader'
 import SimilarIdeaBanner from './components/SimilarIdeaBanner'
-import DraftRestoreBanner from './components/DraftRestoreBanner'
-import PlanSection from './components/PlanSection'
-
-const DRAFT_KEY = 'gomgom_new_idea_draft'
-const AUTO_SAVE_INTERVAL = 5 * 60 * 1000 // 5분
+import BasicInfoSection from './components/sections/BasicInfoSection'
+import FileUploadSection from './components/sections/FileUploadSection'
+import ParticipantsSection from './components/sections/ParticipantsSection'
+import PlanSection from './components/sections/PlanSection'
+import ReviewerSelectModal from './components/modals/ReviewerSelectModal'
+import SimilarIdeaSearchModal from './components/modals/SimilarIdeaSearchModal'
 
 function SectionDivider() {
   const { isDarkMode } = useThemeMode()
   const { dividerBg } = getIdeaTheme(isDarkMode)
-  return (
-    <Box
-      sx={{
-        height: '1px',
-        bgcolor: dividerBg,
-        my: 5,
-      }}
-    />
-  )
-}
-
-function formatTime(date: Date) {
-  return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+  return <Box sx={{ height: '1px', bgcolor: dividerBg, my: 5 }} />
 }
 
 export default function NewIdea() {
@@ -59,9 +39,6 @@ export default function NewIdea() {
   const [problem, setProblem] = useState('')
   const [solution, setSolution] = useState('')
   const [reviewer, setReviewer] = useState<string[]>([])
-  // const [coProposers, setCoProposers] = useState<string[]>([])
-  // const [startDate, setStartDate] = useState('')
-  // const [endDate, setEndDate] = useState('')
   const [security, setSecurity] = useState<'public' | 'private'>('public')
   const [plan, setPlan] = useState('')
   const [files, setFiles] = useState<File[]>([])
@@ -70,96 +47,30 @@ export default function NewIdea() {
 
   // ─── 모달 상태 ─────────────────────────────────────────────────────────────
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
-  // const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
   const [similarSearchOpen, setSimilarSearchOpen] = useState(false)
 
-  // ─── 자동저장 상태 ─────────────────────────────────────────────────────────
-  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
-  const [snackOpen, setSnackOpen] = useState(false)
-  const [snackMsg, setSnackMsg] = useState('')
-  const [savedDraft, setSavedDraft] = useState<DraftData | null>(() => {
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY)
-      if (!raw) return null
-      const draft: DraftData = JSON.parse(raw)
-      return draft.savedAt ? draft : null
-    } catch {
-      return null
-    }
-  })
+  // ─── 임시저장 ──────────────────────────────────────────────────────────────
+  const {
+    savedDraft, lastSavedAt, snackOpen, snackMsg, setSnackOpen,
+    handleManualSave, handleRestoreDraft, handleDiscardDraft, clearDraft,
+  } = useIdeaDraft(
+    { title, categories, problem, solution, reviewer, security, plan },
+    (draft) => {
+      setTitle(draft.title ?? '')
+      setCategories(draft.categories ?? [])
+      setProblem(draft.problem ?? '')
+      setSolution(draft.solution ?? '')
+      setReviewer(draft.reviewer ?? [])
+      setSecurity(draft.security ?? 'public')
+      setPlan(draft.plan ?? '')
+    },
+  )
 
-  // 항상 최신 폼 값을 참조하기 위한 ref
-  const formRef = useRef({
-    title, categories, problem, solution,
-    reviewer, security, plan,
-    // coProposers, startDate, endDate,
-  })
-  useEffect(() => {
-    formRef.current = {
-      title, categories, problem, solution,
-      reviewer, security, plan,
-      // coProposers, startDate, endDate,
-    }
-  }, [title, categories, problem, solution, reviewer, security, plan])
+  // ─── 미저장 경고 ──────────────────────────────────────────────────────────
+  const isDirty = !loading && !!(title.trim() || problem.trim() || solution.trim())
+  const { isBlocked, proceed, reset } = useUnsavedChanges(isDirty)
 
-  // ─── 5분 자동저장 인터벌 ─────────────────────────────────────────────────
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const f = formRef.current
-      // 제목이나 내용이 있을 때만 저장
-      const hasContent = f.title.trim() || f.problem.trim() || f.solution.trim() || f.plan.trim()
-      if (!hasContent) return
-      const draft: DraftData = { ...f, savedAt: new Date().toISOString() }
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
-      setLastSavedAt(new Date())
-      setSnackMsg('임시저장 완료')
-      setSnackOpen(true)
-    }, AUTO_SAVE_INTERVAL)
-    return () => clearInterval(timer)
-  }, [])
-
-  // ─── 수동 임시저장 ────────────────────────────────────────────────────────
-  const handleManualSave = () => {
-    const f = formRef.current
-    const draft: DraftData = { ...f, savedAt: new Date().toISOString() }
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
-    setLastSavedAt(new Date())
-    setSavedDraft(null) // 복원 배너 숨김
-    setSnackMsg('임시저장 완료')
-    setSnackOpen(true)
-  }
-
-  // ─── 임시저장 복원 ────────────────────────────────────────────────────────
-  const handleRestoreDraft = () => {
-    if (!savedDraft) return
-    setTitle(savedDraft.title ?? '')
-    setCategories(savedDraft.categories ?? [])
-    setProblem(savedDraft.problem ?? '')
-    setSolution(savedDraft.solution ?? '')
-    setReviewer(savedDraft.reviewer ?? [])
-    // setCoProposers(savedDraft.coProposers ?? [])
-    // setStartDate(savedDraft.startDate ?? '')
-    // setEndDate(savedDraft.endDate ?? '')
-    setSecurity(savedDraft.security ?? 'public')
-    setPlan(savedDraft.plan ?? '')
-    setSavedDraft(null)
-    setSnackMsg('임시저장 내용을 불러왔습니다')
-    setSnackOpen(true)
-  }
-
-  const handleDiscardDraft = () => {
-    localStorage.removeItem(DRAFT_KEY)
-    setSavedDraft(null)
-  }
-
-  // ─── 참여자 토글 ─────────────────────────────────────────────────────────
-  const handleToggleReviewer = (name: string) => {
-    setReviewer((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
-    )
-  }
-
-  // ─── 제출 ────────────────────────────────────────────────────────────────
+  // ─── 제출 ─────────────────────────────────────────────────────────────────
   const handleSubmit = () => {
     if (!title.trim() || categories.length === 0 || !problem.trim() || !solution.trim()) {
       showSnackbar('필수 항목을 모두 입력해주세요.', 'warning')
@@ -167,20 +78,14 @@ export default function NewIdea() {
     }
     setLoading(true)
     setTimeout(() => {
-      localStorage.removeItem(DRAFT_KEY)
+      clearDraft()
       showSnackbar('제안이 등록되었습니다!', 'success')
       setLoading(false)
       navigate('/dashboard')
     }, 1500)
   }
 
-  const handleBack = () => navigate(-1)
-
-  // ─── 미저장 경고 ──────────────────────────────────────────────────────────
-  const isDirty = !loading && !!(title.trim() || problem.trim() || solution.trim())
-  const { isBlocked, proceed, reset } = useUnsavedChanges(isDirty)
-
-  // ─── 스타일 ──────────────────────────────────────────────────────────────
+  // ─── 스타일 ───────────────────────────────────────────────────────────────
   const it = getIdeaTheme(isDarkMode)
   const { textPrimary, textSecondary, borderColor } = it
 
@@ -212,17 +117,14 @@ export default function NewIdea() {
       }}
     >
       <Box sx={{ maxWidth: 860, mx: 'auto' }}>
-        {/* ─── 페이지 헤더 ─────────────────────────────────────────────── */}
         <NewIdeaHeader
           lastSavedAt={lastSavedAt}
-          onBack={handleBack}
+          onBack={() => navigate(-1)}
           onManualSave={handleManualSave}
         />
 
-        {/* ─── 유사 아이디어 검색 배너 ──────────────────────────────────── */}
         <SimilarIdeaBanner onOpenSearch={() => setSimilarSearchOpen(true)} />
 
-        {/* ─── 임시저장 복원 배너 ──────────────────────────────────────── */}
         {savedDraft && (
           <DraftRestoreBanner
             savedDraft={savedDraft}
@@ -231,7 +133,7 @@ export default function NewIdea() {
           />
         )}
 
-        {/* ─── 메인 폼 카드 ────────────────────────────────────────────── */}
+        {/* 메인 폼 카드 */}
         <Box
           sx={{
             borderRadius: 3,
@@ -244,49 +146,33 @@ export default function NewIdea() {
           <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
 
           <Box sx={{ p: { xs: 3, sm: 5 } }}>
-            {/* 섹션 1: 기본 정보 (카테고리 포함) */}
             <BasicInfoSection
-              title={title}
-              setTitle={setTitle}
-              categories={categories}
-              setCategories={setCategories}
-              problem={problem}
-              setProblem={setProblem}
-              solution={solution}
-              setSolution={setSolution}
-              inputSx={inputSx}
-              labelSx={labelSx}
+              title={title} setTitle={setTitle}
+              categories={categories} setCategories={setCategories}
+              problem={problem} setProblem={setProblem}
+              solution={solution} setSolution={setSolution}
+              inputSx={inputSx} labelSx={labelSx}
             />
-
             <SectionDivider />
 
-            {/* 섹션 2: 심사자 & 공개 범위 */}
             <ParticipantsSection
-              reviewer={reviewer}
-              setReviewer={setReviewer}
-              security={security}
-              setSecurity={setSecurity}
+              reviewer={reviewer} setReviewer={setReviewer}
+              security={security} setSecurity={setSecurity}
               onOpenReviewerModal={() => setReviewerModalOpen(true)}
             />
-
             <SectionDivider />
 
-            {/* 섹션 3: 실행 계획 */}
             <PlanSection plan={plan} setPlan={setPlan} />
-
             <SectionDivider />
 
-            {/* 섹션 4: 첨부 파일 */}
             <FileUploadSection
               files={files}
               filePreviews={filePreviews}
-              onFilesChange={(newFilesFromChild) => {
-                const addedFiles = newFilesFromChild.slice(files.length)
-                const newPreviews = addedFiles.map((file) =>
-                  file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
-                )
-                setFiles(newFilesFromChild)
-                setFilePreviews((prev) => [...prev, ...newPreviews])
+              onFilesChange={(newFiles) => {
+                const added = newFiles.slice(files.length)
+                const previews = added.map((f) => f.type.startsWith('image/') ? URL.createObjectURL(f) : '')
+                setFiles(newFiles)
+                setFilePreviews((prev) => [...prev, ...previews])
               }}
               onRemoveFile={(index) => {
                 if (filePreviews[index] && files[index]?.type.startsWith('image/')) {
@@ -297,57 +183,30 @@ export default function NewIdea() {
               }}
             />
 
-            {/* ─── 하단 버튼 영역 ────────────────────────────────────── */}
-            <Box
-              sx={{
-                mt: 6,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: 2,
-              }}
-            >
-              {/* 임시저장 버튼 (왼쪽) */}
+            {/* 하단 버튼 */}
+            <Box sx={{ mt: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
               <Button
                 variant="outlined"
                 startIcon={<SaveIcon sx={{ fontSize: '1rem' }} />}
                 onClick={handleManualSave}
                 sx={{
-                  borderRadius: 2,
-                  px: 2.5,
-                  py: 1.1,
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                  textTransform: 'none',
+                  borderRadius: 2, px: 2.5, py: 1.1, fontWeight: 600, fontSize: '0.875rem', textTransform: 'none',
                   borderColor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.25)',
                   color: isDarkMode ? '#a5b4fc' : '#6366f1',
-                  '&:hover': {
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)',
-                    borderColor: '#6366f1',
-                  },
+                  '&:hover': { bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)', borderColor: '#6366f1' },
                 }}
               >
                 임시저장
               </Button>
 
-              {/* 취소 + 제출 (오른쪽) */}
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
                   variant="outlined"
-                  onClick={handleBack}
+                  onClick={() => navigate(-1)}
                   sx={{
-                    borderRadius: 2,
-                    px: 3,
-                    py: 1.25,
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    borderColor: borderColor,
-                    color: textSecondary,
-                    '&:hover': {
-                      borderColor: isDarkMode ? 'rgba(148,163,184,0.3)' : 'rgba(148,163,184,0.6)',
-                      bgcolor: 'transparent',
-                    },
+                    borderRadius: 2, px: 3, py: 1.25, fontWeight: 600, textTransform: 'none',
+                    borderColor: borderColor, color: textSecondary,
+                    '&:hover': { borderColor: isDarkMode ? 'rgba(148,163,184,0.3)' : 'rgba(148,163,184,0.6)', bgcolor: 'transparent' },
                   }}
                 >
                   취소
@@ -358,22 +217,10 @@ export default function NewIdea() {
                   onClick={handleSubmit}
                   startIcon={loading ? null : <SendIcon />}
                   sx={{
-                    borderRadius: 2,
-                    px: 4,
-                    py: 1.25,
-                    fontWeight: 700,
-                    textTransform: 'none',
-                    bgcolor: '#6366f1',
-                    boxShadow: 'none',
-                    color: '#fff',
-                    '&:hover': {
-                      bgcolor: '#4f46e5',
-                      boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
-                    },
-                    '&.Mui-disabled': {
-                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)',
-                      color: '#fff',
-                    },
+                    borderRadius: 2, px: 4, py: 1.25, fontWeight: 700, textTransform: 'none',
+                    bgcolor: '#6366f1', boxShadow: 'none', color: '#fff',
+                    '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 16px rgba(99,102,241,0.35)' },
+                    '&.Mui-disabled': { bgcolor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)', color: '#fff' },
                     transition: 'all 0.15s ease',
                   }}
                 >
@@ -385,20 +232,16 @@ export default function NewIdea() {
         </Box>
       </Box>
 
-      {/* ─── 모달 ───────────────────────────────────────────────────────── */}
-      <SimilarIdeaSearchModal
-        open={similarSearchOpen}
-        onClose={() => setSimilarSearchOpen(false)}
-        initialQuery={title}
-      />
+      {/* 모달 */}
+      <SimilarIdeaSearchModal open={similarSearchOpen} onClose={() => setSimilarSearchOpen(false)} initialQuery={title} />
       <ReviewerSelectModal
         open={reviewerModalOpen}
         onClose={() => setReviewerModalOpen(false)}
         selected={reviewer}
-        onToggle={handleToggleReviewer}
+        onToggle={(name) => setReviewer((prev) => prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name])}
       />
 
-      {/* ─── 미저장 경고 다이얼로그 ─────────────────────────────────── */}
+      {/* 미저장 경고 */}
       <ConfirmDialog
         open={isBlocked}
         title="작성 중인 내용이 있어요"
@@ -410,40 +253,16 @@ export default function NewIdea() {
         onCancel={reset}
       />
 
-      {/* ─── 임시저장 스낵바 ─────────────────────────────────────────── */}
-      <Snackbar
+      {/* 임시저장 스낵바 */}
+      <DraftSnackbar
         open={snackOpen}
-        autoHideDuration={3000}
+        message={snackMsg}
+        lastSavedAt={lastSavedAt}
         onClose={() => setSnackOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        sx={{ mb: { xs: 8, md: 2 } }}
-      >
-        <Alert
-          onClose={() => setSnackOpen(false)}
-          severity="success"
-          icon={<CheckCircleIcon fontSize="small" />}
-          sx={{
-            borderRadius: 2.5,
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
-            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-            border: `1px solid ${isDarkMode ? 'rgba(16,185,129,0.3)' : 'rgba(16,185,129,0.25)'}`,
-            boxShadow: isDarkMode
-              ? '0 8px 32px rgba(0,0,0,0.5)'
-              : '0 8px 32px rgba(0,0,0,0.1)',
-            '& .MuiAlert-icon': { color: '#10b981' },
-            '& .MuiAlert-action': { color: isDarkMode ? '#94a3b8' : '#64748b' },
-          }}
-        >
-          {snackMsg}
-          {lastSavedAt && (
-            <Box component="span" sx={{ color: isDarkMode ? '#94a3b8' : '#64748b', ml: 0.5, fontWeight: 500 }}>
-              · {formatTime(lastSavedAt)}
-            </Box>
-          )}
-        </Alert>
-      </Snackbar>
+      />
     </Box>
   )
 }
+
+// DRAFT_KEY re-export for external use (e.g. submit clear)
+export { DRAFT_KEY }
