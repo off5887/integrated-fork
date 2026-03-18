@@ -57,6 +57,7 @@ export function findDemoAccount(id: string, password: string): DemoAccount | und
 
 // 기존 호환용 (ideaBrowse.ts 등에서 DEMO_USER_PROFILE 참조)
 export const DEMO_USER_PROFILE: UserProfile = DEMO_ACCOUNTS[0].profile
+export const DEMO_REVIEWER_PROFILE: UserProfile = DEMO_ACCOUNTS[1].profile
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   user: '일반사용자',
