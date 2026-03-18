@@ -1,6 +1,6 @@
 // src/hooks/useUnsavedChanges.ts
 import { useEffect } from 'react'
-import { useBlocker } from 'react-router-dom'
+import { useBlocker } from 'react-router'
 
 /**
  * 폼에 미저장 변경사항이 있을 때 페이지 이탈을 막는 훅.
