@@ -1,4 +1,5 @@
-// src/routes/idea/components/SimilarIdeaDetailPanel.tsx
+// src/features/idea/components/modals/SimilarIdeaDetailPanel.tsx
+// 유사 아이디어 검색 모달 내 선택된 아이디어의 상세 내용을 표시하는 패널
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
@@ -23,7 +24,8 @@ interface DetailPanelProps {
 
 export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProps) {
   const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor } = it
   const cat = getCatConfig(idea.category)
   const stat = IDEA_STATUS_CONFIG[idea.status]
 
@@ -42,13 +44,13 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
           alignItems: 'center',
           gap: 0.6,
           cursor: 'pointer',
-          color: '#6366f1',
+          color: it.accent.textMuted,
           fontSize: '0.82rem',
           fontWeight: 600,
           width: 'fit-content',
           outline: 'none',
           '&:hover': { opacity: 0.75 },
-          '&:focus-visible': { outline: '2px solid #6366f1', outlineOffset: 2 },
+          '&:focus-visible': { outline: `2px solid ${it.accent.color}`, outlineOffset: 2 },
         }}
       >
         ← 목록으로
@@ -68,12 +70,8 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
             border: `1px solid ${cat.border}`,
           }}
         >
-          <Box component="span" sx={{ fontSize: '0.8rem' }}>
-            {cat.emoji}
-          </Box>
-          <Typography
-            sx={{ fontSize: '0.75rem', fontWeight: 700, color: cat.color }}
-          >
+          <Box component="span" sx={{ fontSize: '0.8rem' }}>{cat.emoji}</Box>
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: cat.color }}>
             {idea.category}
           </Typography>
         </Box>
@@ -88,9 +86,7 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
             border: `1px solid ${stat.border}`,
           }}
         >
-          <Typography
-            sx={{ fontSize: '0.75rem', fontWeight: 700, color: stat.color }}
-          >
+          <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: stat.color }}>
             {idea.status}
           </Typography>
         </Box>
@@ -113,23 +109,16 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
         <Avatar
           sx={{
-            width: 32,
-            height: 32,
-            bgcolor: '#6366f1',
-            fontSize: '0.8rem',
-            fontWeight: 700,
+            width: 32, height: 32,
+            bgcolor: it.accent.color,
+            fontSize: '0.8rem', fontWeight: 700,
           }}
         >
           {idea.author[0]}
         </Avatar>
         <Box>
           <Typography
-            sx={{
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              color: textPrimary,
-              lineHeight: 1.3,
-            }}
+            sx={{ fontSize: '0.85rem', fontWeight: 600, color: textPrimary, lineHeight: 1.3 }}
           >
             {idea.author}
           </Typography>
@@ -137,12 +126,8 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
             {idea.division} · {idea.department}
           </Typography>
         </Box>
-        <Box
-          sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 0.5 }}
-        >
-          <CalendarTodayIcon
-            sx={{ fontSize: '0.78rem', color: textSecondary }}
-          />
+        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <CalendarTodayIcon sx={{ fontSize: '0.78rem', color: textSecondary }} />
           <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
             {idea.submittedAt}
           </Typography>
@@ -155,19 +140,13 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
       <Box>
         <Typography
           sx={{
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            color: textSecondary,
-            mb: 0.75,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            fontSize: '0.75rem', fontWeight: 700, color: textSecondary, mb: 0.75,
+            textTransform: 'uppercase', letterSpacing: '0.05em',
           }}
         >
           문제점 도출
         </Typography>
-        <Typography
-          sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}
-        >
+        <Typography sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}>
           {idea.problem}
         </Typography>
       </Box>
@@ -178,19 +157,13 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
       <Box>
         <Typography
           sx={{
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            color: textSecondary,
-            mb: 0.75,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            fontSize: '0.75rem', fontWeight: 700, color: textSecondary, mb: 0.75,
+            textTransform: 'uppercase', letterSpacing: '0.05em',
           }}
         >
           해결 대안
         </Typography>
-        <Typography
-          sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}
-        >
+        <Typography sx={{ fontSize: '0.88rem', color: textPrimary, lineHeight: 1.7 }}>
           {idea.solution}
         </Typography>
       </Box>
@@ -200,35 +173,14 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
       {/* 통계 */}
       <Box sx={{ display: 'flex', gap: 3 }}>
         {[
-          {
-            icon: <ThumbUpOutlinedIcon sx={{ fontSize: '0.88rem' }} />,
-            label: '좋아요',
-            value: idea.likes,
-          },
-          {
-            icon: <ChatBubbleOutlineIcon sx={{ fontSize: '0.88rem' }} />,
-            label: '댓글',
-            value: idea.comments,
-          },
-          {
-            icon: <VisibilityOutlinedIcon sx={{ fontSize: '0.88rem' }} />,
-            label: '조회수',
-            value: idea.views,
-          },
+          { icon: <ThumbUpOutlinedIcon sx={{ fontSize: '0.88rem' }} />, label: '좋아요', value: idea.likes },
+          { icon: <ChatBubbleOutlineIcon sx={{ fontSize: '0.88rem' }} />, label: '댓글', value: idea.comments },
+          { icon: <VisibilityOutlinedIcon sx={{ fontSize: '0.88rem' }} />, label: '조회수', value: idea.views },
         ].map(({ icon, label, value }) => (
-          <Box
-            key={label}
-            sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}
-          >
+          <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
             <Box sx={{ color: textSecondary }}>{icon}</Box>
-            <Typography sx={{ fontSize: '0.8rem', color: textSecondary }}>
-              {label}
-            </Typography>
-            <Typography
-              sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}
-            >
-              {value}
-            </Typography>
+            <Typography sx={{ fontSize: '0.8rem', color: textSecondary }}>{label}</Typography>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}>{value}</Typography>
           </Box>
         ))}
       </Box>

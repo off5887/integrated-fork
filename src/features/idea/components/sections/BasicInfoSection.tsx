@@ -1,4 +1,5 @@
-// src/routes/idea/BasicInfoSection.tsx
+// src/features/idea/components/sections/BasicInfoSection.tsx
+// 제목·카테고리·문제 상황·해결 방안 입력 섹션 (기본 정보)
 import { Box, TextField, Typography } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
@@ -50,7 +51,7 @@ export default function BasicInfoSection({
         <Box
           sx={{
             width: 26, height: 26, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: it.accent.color, color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
           }}
@@ -88,9 +89,9 @@ export default function BasicInfoSection({
               component="span"
               sx={{
                 fontSize: '0.68rem',
-                color: '#ef4444',
-                bgcolor: 'rgba(239,68,68,0.08)',
-                border: '1px solid rgba(239,68,68,0.3)',
+                color: it.danger.color,
+                bgcolor: it.danger.bgSubtle,
+                border: `1px solid ${it.danger.borderStrong}`,
                 borderRadius: 1,
                 px: 0.75, py: 0.2,
                 fontWeight: 600,
@@ -100,8 +101,8 @@ export default function BasicInfoSection({
             </Box>
             {categories.length > 0 && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#10b981' }} />
-                <Typography sx={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600 }}>
+                <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: it.success.color }} />
+                <Typography sx={{ fontSize: '0.72rem', color: it.success.color, fontWeight: 600 }}>
                   {categories.length}개 선택
                 </Typography>
               </Box>
@@ -217,8 +218,8 @@ export default function BasicInfoSection({
           {/* 미선택 에러 */}
           {isEmpty && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
-              <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#ef4444', flexShrink: 0 }} />
-              <Typography sx={{ fontSize: '0.75rem', color: '#ef4444' }}>
+              <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: it.danger.color, flexShrink: 0 }} />
+              <Typography sx={{ fontSize: '0.75rem', color: it.danger.color }}>
                 카테고리를 1개 이상 선택해주세요
               </Typography>
             </Box>

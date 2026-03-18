@@ -1,4 +1,5 @@
 // src/features/idea/components/DraftRestoreBanner.tsx
+// 임시저장된 내용이 있을 때 복원 또는 버리기를 선택하는 배너
 import HistoryIcon from '@mui/icons-material/History'
 import RestoreIcon from '@mui/icons-material/Restore'
 import { Box, Button, Typography } from '@mui/material'

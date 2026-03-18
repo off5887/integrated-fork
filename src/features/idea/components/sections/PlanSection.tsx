@@ -1,4 +1,5 @@
-// src/features/idea/components/PlanSection.tsx
+// src/features/idea/components/sections/PlanSection.tsx
+// 실행 계획 입력 섹션 (자유 텍스트 에디터)
 import { Box, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
@@ -19,7 +20,7 @@ export default function PlanSection({ plan, setPlan }: PlanSectionProps) {
         <Box
           sx={{
             width: 26, height: 26, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: it.accent.color, color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
           }}
@@ -42,8 +43,8 @@ export default function PlanSection({ plan, setPlan }: PlanSectionProps) {
           minHeight: 160,
           p: 2,
           borderRadius: 2,
-          border: `1px solid ${isDarkMode ? 'rgba(148,163,184,0.18)' : 'rgba(203,213,225,0.7)'}`,
-          bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
+          border: `1px solid ${it.inputBorder}`,
+          bgcolor: it.inputBg,
           color: textPrimary,
           fontSize: '0.9rem',
           fontFamily: 'inherit',
@@ -53,12 +54,12 @@ export default function PlanSection({ plan, setPlan }: PlanSectionProps) {
           transition: 'border-color 0.15s ease',
           '&::placeholder': { color: textSecondary },
           '&:hover': {
-            borderColor: isDarkMode ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.5)',
+            borderColor: it.inputHoverBorder,
           },
           '&:focus': {
-            borderColor: '#6366f1',
+            borderColor: it.accent.color,
             borderWidth: '1.5px',
-            boxShadow: `0 0 0 3px ${isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.1)'}`,
+            boxShadow: `0 0 0 3px ${it.accent.bgStrong}`,
           },
         }}
       />

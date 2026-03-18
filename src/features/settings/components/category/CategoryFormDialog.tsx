@@ -94,8 +94,10 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
         onClose={onClose}
         maxWidth="xs"
         fullWidth
-        PaperProps={{
-          sx: { bgcolor: st.dialogBg, backgroundImage: 'none', borderRadius: 3 },
+        slotProps={{
+          paper: {
+            sx: { bgcolor: st.dialogBg, backgroundImage: 'none', borderRadius: 3 },
+          },
         }}
       >
         <DialogTitle sx={{ pb: 1 }}>

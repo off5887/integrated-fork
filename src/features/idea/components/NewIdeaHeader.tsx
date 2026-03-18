@@ -1,4 +1,5 @@
 // src/features/idea/components/NewIdeaHeader.tsx
+// 아이디어 등록 페이지 상단 헤더 (뒤로가기, 임시저장 버튼, 마지막 저장 시각 표시)
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import SaveIcon from '@mui/icons-material/Save'
@@ -70,12 +71,12 @@ export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave }: New
               px: 1.25,
               py: 0.5,
               borderRadius: 1.5,
-              bgcolor: 'rgba(16,185,129,0.08)',
-              border: '1px solid rgba(16,185,129,0.25)',
+              bgcolor: it.success.bg,
+              border: `1px solid ${it.success.border}`,
             }}
           >
-            <CheckCircleIcon sx={{ fontSize: '0.8rem', color: '#10b981' }} />
-            <Typography sx={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600, whiteSpace: 'nowrap' }}>
+            <CheckCircleIcon sx={{ fontSize: '0.8rem', color: it.success.color }} />
+            <Typography sx={{ fontSize: '0.72rem', color: it.success.color, fontWeight: 600, whiteSpace: 'nowrap' }}>
               {formatTime(lastSavedAt)} 임시저장
             </Typography>
           </Box>
@@ -92,8 +93,8 @@ export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave }: New
               height: 34,
               '&:hover': {
                 bgcolor: it.accent.bgStrong,
-                borderColor: '#6366f1',
-                color: '#6366f1',
+                borderColor: it.accent.color,
+                color: it.accent.color,
               },
             }}
           >

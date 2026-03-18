@@ -1,4 +1,5 @@
 // src/features/idea/components/SimilarIdeaBanner.tsx
+// 유사 아이디어 검색을 유도하는 안내 배너 (검색 모달 열기 버튼 포함)
 import { Box, Button, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'

@@ -1,4 +1,5 @@
-// src/routes/idea/components/SimilarIdeaResultCard.tsx
+// src/features/idea/components/modals/SimilarIdeaResultCard.tsx
+// 유사 아이디어 검색 결과 목록에서 각 항목을 표시하는 카드
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
@@ -16,7 +17,7 @@ function getCatConfig(id: string): CategoryConfig {
 }
 
 function fmtDate(s: string) {
-  return s.replace(/-/g, '.').slice(2) // "26.02.20"
+  return s.replace(/-/g, '.').slice(2)
 }
 
 interface ResultCardProps {
@@ -27,7 +28,8 @@ interface ResultCardProps {
 
 export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCardProps) {
   const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor } = getIdeaTheme(isDarkMode)
+  const it = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor } = it
   const cat = getCatConfig(idea.category)
   const stat = IDEA_STATUS_CONFIG[idea.status]
   const isHighSimilarity = score >= 4
@@ -48,34 +50,14 @@ export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCa
         borderRadius: 2,
         cursor: 'pointer',
         outline: 'none',
-        border: `1px solid ${
-          isHighSimilarity
-            ? isDarkMode
-              ? 'rgba(245,158,11,0.3)'
-              : 'rgba(245,158,11,0.25)'
-            : borderColor
-        }`,
-        bgcolor: isHighSimilarity
-          ? isDarkMode
-            ? 'rgba(245,158,11,0.05)'
-            : 'rgba(245,158,11,0.03)'
-          : isDarkMode
-            ? 'rgba(30,41,59,0.5)'
-            : 'rgba(248,250,252,0.7)',
+        border: `1px solid ${isHighSimilarity ? it.amber.border : borderColor}`,
+        bgcolor: isHighSimilarity ? it.amber.bgSubtle : it.itemBg,
         transition: 'all 0.15s ease',
         '&:hover': {
-          borderColor: isHighSimilarity
-            ? 'rgba(245,158,11,0.5)'
-            : 'rgba(99,102,241,0.3)',
-          bgcolor: isHighSimilarity
-            ? isDarkMode
-              ? 'rgba(245,158,11,0.08)'
-              : 'rgba(245,158,11,0.06)'
-            : isDarkMode
-              ? 'rgba(99,102,241,0.06)'
-              : 'rgba(99,102,241,0.04)',
+          borderColor: isHighSimilarity ? it.amber.borderHover : it.accent.border,
+          bgcolor: isHighSimilarity ? it.amber.bgHover : it.accent.bg,
         },
-        '&:focus-visible': { outline: '2px solid #6366f1', outlineOffset: 2 },
+        '&:focus-visible': { outline: `2px solid ${it.accent.color}`, outlineOffset: 2 },
       }}
     >
       {/* 뱃지 행 */}
@@ -104,12 +86,7 @@ export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCa
             {cat.emoji}
           </Box>
           <Typography
-            sx={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              color: cat.color,
-              lineHeight: 1,
-            }}
+            sx={{ fontSize: '0.68rem', fontWeight: 700, color: cat.color, lineHeight: 1 }}
           >
             {idea.category}
           </Typography>
@@ -126,12 +103,7 @@ export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCa
           }}
         >
           <Typography
-            sx={{
-              fontSize: '0.68rem',
-              fontWeight: 700,
-              color: stat.color,
-              lineHeight: 1,
-            }}
+            sx={{ fontSize: '0.68rem', fontWeight: 700, color: stat.color, lineHeight: 1 }}
           >
             {idea.status}
           </Typography>
@@ -144,29 +116,19 @@ export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCa
               px: 0.8,
               py: 0.25,
               borderRadius: 1,
-              bgcolor: 'rgba(245,158,11,0.1)',
-              border: '1px solid rgba(245,158,11,0.3)',
+              bgcolor: it.amber.bg,
+              border: `1px solid ${it.amber.border}`,
             }}
           >
             <Typography
-              sx={{
-                fontSize: '0.68rem',
-                fontWeight: 700,
-                color: '#f59e0b',
-                lineHeight: 1,
-              }}
+              sx={{ fontSize: '0.68rem', fontWeight: 700, color: it.amber.color, lineHeight: 1 }}
             >
               ⚠ 유사도 높음
             </Typography>
           </Box>
         )}
         <Typography
-          sx={{
-            fontSize: '0.68rem',
-            color: textSecondary,
-            ml: 'auto',
-            whiteSpace: 'nowrap',
-          }}
+          sx={{ fontSize: '0.68rem', color: textSecondary, ml: 'auto', whiteSpace: 'nowrap' }}
         >
           {idea.department}
         </Typography>
@@ -210,11 +172,9 @@ export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCa
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Avatar
             sx={{
-              width: 18,
-              height: 18,
-              fontSize: '0.6rem',
-              fontWeight: 700,
-              bgcolor: '#6366f1',
+              width: 18, height: 18,
+              fontSize: '0.6rem', fontWeight: 700,
+              bgcolor: it.accent.color,
             }}
           >
             {idea.author[0]}
@@ -224,27 +184,15 @@ export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCa
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-          <ThumbUpOutlinedIcon
-            sx={{ fontSize: '0.7rem', color: textSecondary }}
-          />
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-            {idea.likes}
-          </Typography>
+          <ThumbUpOutlinedIcon sx={{ fontSize: '0.7rem', color: textSecondary }} />
+          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.likes}</Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-          <ChatBubbleOutlineIcon
-            sx={{ fontSize: '0.7rem', color: textSecondary }}
-          />
-          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-            {idea.comments}
-          </Typography>
+          <ChatBubbleOutlineIcon sx={{ fontSize: '0.7rem', color: textSecondary }} />
+          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.comments}</Typography>
         </Box>
-        <Box
-          sx={{ display: 'flex', alignItems: 'center', gap: 0.3, ml: 'auto' }}
-        >
-          <CalendarTodayIcon
-            sx={{ fontSize: '0.68rem', color: textSecondary }}
-          />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3, ml: 'auto' }}>
+          <CalendarTodayIcon sx={{ fontSize: '0.68rem', color: textSecondary }} />
           <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
             {fmtDate(idea.submittedAt)}
           </Typography>

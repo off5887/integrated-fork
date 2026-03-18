@@ -1,4 +1,5 @@
-// src/routes/idea/components/ReviewerSelectModal.tsx
+// src/features/idea/components/modals/ReviewerSelectModal.tsx
+// 검토자 검색·선택 모달 (다중 선택, 선택된 목록 표시)
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
@@ -73,7 +74,7 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
       }}
     >
       {/* 상단 그라디언트 스트립 */}
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
+      <Box sx={{ height: 3, background: it.modalHeaderGradient }} />
 
       {/* 헤더 */}
       <Box
@@ -86,7 +87,7 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
         <Box
           sx={{
             width: 32, height: 32, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: it.accent.color, color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}
         >
@@ -97,7 +98,7 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
             심사자 선택
           </Typography>
           {selected.length > 0 && (
-            <Typography variant="caption" sx={{ color: '#6366f1', fontWeight: 600 }}>
+            <Typography variant="caption" sx={{ color: it.accent.textMuted, fontWeight: 600 }}>
               {selected.length}명 선택됨
             </Typography>
           )}
@@ -131,8 +132,8 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
               backgroundColor: it.searchInputBg,
               fontSize: '0.875rem',
               '& fieldset': { borderColor },
-              '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
-              '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+              '&:hover fieldset': { borderColor: it.accent.borderHover },
+              '&.Mui-focused fieldset': { borderColor: it.accent.color },
             },
             '& .MuiInputBase-input': {
               color: textPrimary,
@@ -249,8 +250,8 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
             borderRadius: 1.5, px: 3, py: 0.85,
             fontWeight: 700, fontSize: '0.82rem',
             textTransform: 'none', boxShadow: 'none',
-            bgcolor: '#6366f1', color: '#fff',
-            '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 14px rgba(99,102,241,0.4)' },
+            bgcolor: it.accent.color, color: '#fff',
+            '&:hover': { bgcolor: it.accent.hover, boxShadow: it.accent.btnModalHoverShadow },
           }}
         >
           완료

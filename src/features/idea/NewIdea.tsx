@@ -143,7 +143,7 @@ export default function NewIdea() {
             overflow: 'hidden',
           }}
         >
-          <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+          <Box sx={{ height: 3, background: it.headerGradient }} />
 
           <Box sx={{ p: { xs: 3, sm: 5 } }}>
             <BasicInfoSection
@@ -191,9 +191,9 @@ export default function NewIdea() {
                 onClick={handleManualSave}
                 sx={{
                   borderRadius: 2, px: 2.5, py: 1.1, fontWeight: 600, fontSize: '0.875rem', textTransform: 'none',
-                  borderColor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.25)',
-                  color: isDarkMode ? '#a5b4fc' : '#6366f1',
-                  '&:hover': { bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)', borderColor: '#6366f1' },
+                  borderColor: it.accent.btnOutlineBorder,
+                  color: it.accent.textMuted,
+                  '&:hover': { bgcolor: it.accent.bg, borderColor: it.accent.color },
                 }}
               >
                 임시저장
@@ -218,9 +218,9 @@ export default function NewIdea() {
                   startIcon={loading ? null : <SendIcon />}
                   sx={{
                     borderRadius: 2, px: 4, py: 1.25, fontWeight: 700, textTransform: 'none',
-                    bgcolor: '#6366f1', boxShadow: 'none', color: '#fff',
-                    '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 16px rgba(99,102,241,0.35)' },
-                    '&.Mui-disabled': { bgcolor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)', color: '#fff' },
+                    bgcolor: it.accent.color, boxShadow: 'none', color: '#fff',
+                    '&:hover': { bgcolor: it.accent.hover, boxShadow: it.accent.btnHoverShadow },
+                    '&.Mui-disabled': { bgcolor: it.accent.btnDisabledBg, color: '#fff' },
                     transition: 'all 0.15s ease',
                   }}
                 >

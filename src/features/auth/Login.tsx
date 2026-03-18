@@ -77,7 +77,7 @@ function LoginLogo({ colors }: { colors: LoginColors }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 24px rgba(59,130,246,0.3)',
+          boxShadow: '0 8px 24px rgba(99,102,241,0.35)',
         }}
       >
         <Typography
@@ -390,15 +390,22 @@ export default function Login() {
               sx={{
                 py: 1.8,
                 borderRadius: 3,
-                fontWeight: 600,
+                fontWeight: 700,
                 textTransform: 'none',
                 fontSize: '1.05rem',
-                bgcolor: colors.btnBg,
+                background: colors.btnBg,
+                color: colors.btnColor,
+                boxShadow: colors.btnShadow,
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  bgcolor: colors.btnHover,
+                  background: colors.btnHover,
+                  boxShadow: colors.btnShadow,
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 10px 30px rgba(59,130,246,0.35)',
+                },
+                '&.Mui-disabled': {
+                  background: colors.btnBg,
+                  color: 'rgba(255,255,255,0.6)',
+                  opacity: 0.7,
                 },
               }}
             >

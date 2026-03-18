@@ -1,4 +1,5 @@
-// src/routes/idea/components/CoProposerSelectModal.tsx
+// src/features/idea/components/modals/CoProposerSelectModal.tsx
+// 공동 제안자 검색·선택 모달 (부서별 그룹 토글 포함)
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
@@ -190,7 +191,7 @@ export default function CoProposerSelectModal({
       }}
     >
       {/* 상단 그라디언트 스트립 */}
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
+      <Box sx={{ height: 3, background: it.modalHeaderGradient }} />
 
       {/* 헤더 */}
       <Box
@@ -209,7 +210,7 @@ export default function CoProposerSelectModal({
             width: 32,
             height: 32,
             borderRadius: '50%',
-            bgcolor: '#6366f1',
+            bgcolor: it.accent.color,
             color: '#fff',
             display: 'flex',
             alignItems: 'center',
@@ -227,7 +228,7 @@ export default function CoProposerSelectModal({
             공동제안자 선택
           </Typography>
           {selected.length > 0 && (
-            <Typography variant="caption" sx={{ color: '#6366f1', fontWeight: 600 }}>
+            <Typography variant="caption" sx={{ color: it.accent.textMuted, fontWeight: 600 }}>
               {selected.length}명 선택됨
             </Typography>
           )}
@@ -266,8 +267,8 @@ export default function CoProposerSelectModal({
               backgroundColor: it.searchInputBg,
               fontSize: '0.875rem',
               '& fieldset': { borderColor },
-              '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
-              '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+              '&:hover fieldset': { borderColor: it.accent.borderHover },
+              '&.Mui-focused fieldset': { borderColor: it.accent.color },
             },
             '& .MuiInputBase-input': {
               color: textPrimary,
@@ -460,11 +461,11 @@ export default function CoProposerSelectModal({
             fontSize: '0.82rem',
             textTransform: 'none',
             boxShadow: 'none',
-            bgcolor: '#6366f1',
+            bgcolor: it.accent.color,
             color: '#fff',
             '&:hover': {
-              bgcolor: '#4f46e5',
-              boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
+              bgcolor: it.accent.hover,
+              boxShadow: it.accent.btnModalHoverShadow,
             },
           }}
         >

@@ -1,7 +1,6 @@
-// src/routes/idea/ScheduleAndVisibilitySection.tsx
+// src/features/idea/components/sections/ScheduleAndVisibilitySection.tsx
+// 제안 일정(시작일·마감일) 및 공개/비공개 설정 섹션
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import PublicIcon from '@mui/icons-material/Public'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
@@ -14,6 +13,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
+import { VISIBILITY_OPTIONS } from '../../config/visibilityOptions'
 
 interface Props {
   startDate: string
@@ -25,33 +25,6 @@ interface Props {
   inputSx: SxProps<Theme>
   labelSx: SxProps<Theme>
 }
-
-const VISIBILITY_OPTIONS = [
-  {
-    value: 'public' as const,
-    icon: PublicIcon,
-    activeIcon: CheckCircleIcon,
-    label: '전체 공개',
-    description: '모든 구성원이 이 제안을 열람할 수 있습니다',
-    accentColor: '#6366f1',
-    accentBg: 'rgba(99,102,241,0.1)',
-    accentBorder: 'rgba(99,102,241,0.35)',
-    accentBgDark: 'rgba(99,102,241,0.12)',
-    accentBorderDark: 'rgba(99,102,241,0.4)',
-  },
-  {
-    value: 'private' as const,
-    icon: LockIcon,
-    activeIcon: LockOpenIcon,
-    label: '비공개',
-    description: '제안자와 담당 심사자만 확인할 수 있습니다',
-    accentColor: '#8b5cf6',
-    accentBg: 'rgba(139,92,246,0.1)',
-    accentBorder: 'rgba(139,92,246,0.35)',
-    accentBgDark: 'rgba(139,92,246,0.12)',
-    accentBorderDark: 'rgba(139,92,246,0.4)',
-  },
-]
 
 export default function ScheduleAndVisibilitySection({
   startDate,
@@ -77,7 +50,6 @@ export default function ScheduleAndVisibilitySection({
       backgroundColor: it.searchInputBg,
       height: 50,
     },
-    // MUI X v7 DatePicker 날짜 섹션 텍스트 색상
     '& .MuiPickersSectionList-root': {
       color: `${textPrimary} !important`,
     },
@@ -90,12 +62,10 @@ export default function ScheduleAndVisibilitySection({
     '& .MuiPickersSectionList-separator': {
       color: `${textSecondary} !important`,
     },
-    // placeholder 상태 (미선택)
     '& .MuiPickersSectionList-section[data-placeholder]': {
       color: `${textSecondary} !important`,
       opacity: 0.6,
     },
-    // 일반 input fallback
     '& .MuiInputBase-input': {
       fontSize: '0.9rem',
       fontWeight: 500,
@@ -105,8 +75,8 @@ export default function ScheduleAndVisibilitySection({
     '& .MuiInputLabel-root': {
       color: textSecondary,
       fontSize: '0.875rem',
-      '&.Mui-focused': { color: '#6366f1' },
-      '&.MuiInputLabel-shrink': { color: '#6366f1', fontWeight: 600 },
+      '&.Mui-focused': { color: it.accent.color },
+      '&.MuiInputLabel-shrink': { color: it.accent.color, fontWeight: 600 },
     },
     '& .MuiOutlinedInput-notchedOutline': {
       borderColor: it.inputBorder,
@@ -115,7 +85,7 @@ export default function ScheduleAndVisibilitySection({
       borderColor: it.accent.borderHover,
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: '#6366f1',
+      borderColor: it.accent.color,
       borderWidth: '1.5px',
     },
     '& .MuiSvgIcon-root': { color: textSecondary },
@@ -139,7 +109,7 @@ export default function ScheduleAndVisibilitySection({
           <Box
             sx={{
               width: 26, height: 26, borderRadius: '50%',
-              bgcolor: '#6366f1', color: '#fff',
+              bgcolor: it.accent.color, color: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
             }}
@@ -172,7 +142,7 @@ export default function ScheduleAndVisibilitySection({
                 bgcolor: it.accent.bg,
               }}
             >
-              <CalendarMonthIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+              <CalendarMonthIcon sx={{ color: it.accent.color, fontSize: '1.1rem' }} />
               <Typography fontWeight={700} sx={{ color: textPrimary, fontSize: '0.9rem' }}>
                 실행 일정
               </Typography>
@@ -190,7 +160,7 @@ export default function ScheduleAndVisibilitySection({
                       border: `1px solid ${it.accent.border}`,
                     }}
                   >
-                    <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: '#6366f1' }}>
+                    <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: it.accent.color }}>
                       {durationDays}일
                     </Typography>
                   </Box>
@@ -220,7 +190,7 @@ export default function ScheduleAndVisibilitySection({
                     flexShrink: 0,
                   }}
                 >
-                  <SwapHorizIcon sx={{ fontSize: '0.9rem', color: '#6366f1' }} />
+                  <SwapHorizIcon sx={{ fontSize: '0.9rem', color: it.accent.color }} />
                 </Box>
                 <Box sx={{ flex: 1, height: '1px', bgcolor: borderColor }} />
               </Box>
@@ -238,7 +208,7 @@ export default function ScheduleAndVisibilitySection({
                       ...dateFieldSx,
                       ...(isEndBeforeStart && {
                         '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: '#ef4444 !important',
+                          borderColor: `${it.danger.color} !important`,
                         },
                       }),
                     },
@@ -256,12 +226,12 @@ export default function ScheduleAndVisibilitySection({
                     px: 1.5,
                     py: 1,
                     borderRadius: 1.5,
-                    bgcolor: 'rgba(239,68,68,0.07)',
-                    border: '1px solid rgba(239,68,68,0.2)',
+                    bgcolor: it.danger.bg,
+                    border: `1px solid ${it.danger.border}`,
                   }}
                 >
-                  <WarningAmberIcon sx={{ fontSize: '0.9rem', color: '#ef4444', flexShrink: 0 }} />
-                  <Typography sx={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 600 }}>
+                  <WarningAmberIcon sx={{ fontSize: '0.9rem', color: it.danger.color, flexShrink: 0 }} />
+                  <Typography sx={{ fontSize: '0.75rem', color: it.danger.color, fontWeight: 600 }}>
                     종료일이 시작일보다 앞설 수 없습니다
                   </Typography>
                 </Box>
@@ -280,8 +250,8 @@ export default function ScheduleAndVisibilitySection({
                     border: `1px dashed ${it.accent.border}`,
                   }}
                 >
-                  <CalendarMonthIcon sx={{ fontSize: '0.9rem', color: '#6366f1' }} />
-                  <Typography sx={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: 600 }}>
+                  <CalendarMonthIcon sx={{ fontSize: '0.9rem', color: it.accent.color }} />
+                  <Typography sx={{ fontSize: '0.8rem', color: it.accent.color, fontWeight: 600 }}>
                     {start!.format('M.D')} → {end!.format('M.D')} &nbsp;·&nbsp; 총 {durationDays}일
                   </Typography>
                 </Box>
@@ -303,7 +273,7 @@ export default function ScheduleAndVisibilitySection({
                 bgcolor: it.accent.bg,
               }}
             >
-              <PublicIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+              <PublicIcon sx={{ color: it.accent.color, fontSize: '1.1rem' }} />
               <Typography fontWeight={700} sx={{ color: textPrimary, fontSize: '0.9rem' }}>
                 공개 범위
               </Typography>
@@ -453,8 +423,8 @@ export default function ScheduleAndVisibilitySection({
                 }}
               >
                 {security === 'public'
-                  ? <PublicIcon sx={{ fontSize: '0.9rem', color: '#6366f1', flexShrink: 0 }} />
-                  : <LockOpenIcon sx={{ fontSize: '0.9rem', color: '#8b5cf6', flexShrink: 0 }} />
+                  ? <PublicIcon sx={{ fontSize: '0.9rem', color: it.accent.color, flexShrink: 0 }} />
+                  : <LockOpenIcon sx={{ fontSize: '0.9rem', color: it.purple.color, flexShrink: 0 }} />
                 }
                 <Typography sx={{ fontSize: '0.75rem', color: textSecondary, lineHeight: 1.4 }}>
                   {security === 'public'

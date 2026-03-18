@@ -1,60 +1,29 @@
-// src/routes/idea/ParticipantsSection.tsx
-// import GroupAddIcon from '@mui/icons-material/GroupAdd'
+// src/features/idea/components/sections/ParticipantsSection.tsx
+// 검토자·공동제안자 선택 및 공개/비공개 설정 섹션
 import CloseIcon from '@mui/icons-material/Close'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PublicIcon from '@mui/icons-material/Public'
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
+import { VISIBILITY_OPTIONS } from '../../config/visibilityOptions'
 
 interface Props {
   reviewer: string[]
   setReviewer: (v: string[]) => void
-  // coProposers: string[]
-  // setCoProposers: (v: string[]) => void
   security: 'public' | 'private'
   setSecurity: (v: 'public' | 'private') => void
   onOpenReviewerModal: () => void
-  // onOpenCoProposerModal: () => void
 }
-
-const VISIBILITY_OPTIONS = [
-  {
-    value: 'public' as const,
-    icon: PublicIcon,
-    label: '전체 공개',
-    description: '모든 구성원이 이 제안을 열람할 수 있습니다',
-    accentColor: '#6366f1',
-    accentBg: 'rgba(99,102,241,0.1)',
-    accentBorder: 'rgba(99,102,241,0.35)',
-    accentBgDark: 'rgba(99,102,241,0.12)',
-    accentBorderDark: 'rgba(99,102,241,0.4)',
-  },
-  {
-    value: 'private' as const,
-    icon: LockIcon,
-    label: '비공개',
-    description: '제안자와 담당 심사자만 확인할 수 있습니다',
-    accentColor: '#8b5cf6',
-    accentBg: 'rgba(139,92,246,0.1)',
-    accentBorder: 'rgba(139,92,246,0.35)',
-    accentBgDark: 'rgba(139,92,246,0.12)',
-    accentBorderDark: 'rgba(139,92,246,0.4)',
-  },
-]
 
 export default function ParticipantsSection({
   reviewer,
   setReviewer,
-  // coProposers,
-  // setCoProposers,
   security,
   setSecurity,
   onOpenReviewerModal,
-  // onOpenCoProposerModal,
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const it = getIdeaTheme(isDarkMode)
@@ -66,7 +35,7 @@ export default function ParticipantsSection({
         <Box
           sx={{
             width: 26, height: 26, borderRadius: '50%',
-            bgcolor: '#6366f1', color: '#fff',
+            bgcolor: it.accent.color, color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
           }}
@@ -90,7 +59,7 @@ export default function ParticipantsSection({
           {/* 헤더 + 추가 버튼 한 줄 */}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <PersonAddIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+              <PersonAddIcon sx={{ color: it.accent.color, fontSize: '1.1rem' }} />
               <Typography variant="body1" fontWeight={700} sx={{ color: textPrimary }}>
                 심사자
               </Typography>
@@ -99,7 +68,7 @@ export default function ParticipantsSection({
                   aria-label={`${reviewer.length}명 선택됨`}
                   sx={{
                     minWidth: 20, height: 20, borderRadius: '50%', px: 0.5,
-                    bgcolor: '#6366f1', color: '#fff',
+                    bgcolor: it.accent.color, color: '#fff',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '0.68rem', fontWeight: 800,
                   }}
@@ -117,7 +86,7 @@ export default function ParticipantsSection({
                 borderRadius: 1.5, px: 1.5, py: 0.45, fontWeight: 600, fontSize: '0.76rem',
                 borderColor: it.accent.borderHover,
                 color: it.accent.text,
-                '&:hover': { borderColor: '#6366f1', bgcolor: it.accent.bgStrong },
+                '&:hover': { borderColor: it.accent.color, bgcolor: it.accent.bgStrong },
               }}
             >
               추가
@@ -176,7 +145,7 @@ export default function ParticipantsSection({
                       aria-hidden
                       sx={{
                         width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                        bgcolor: '#6366f1', color: '#fff',
+                        bgcolor: it.accent.color, color: '#fff',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '0.78rem', fontWeight: 700,
                       }}
@@ -201,7 +170,7 @@ export default function ParticipantsSection({
                       aria-label={`${displayName.trim()} 심사자 제거`}
                       sx={{
                         p: 0.5, color: textSecondary,
-                        '&:hover': { color: '#ef4444', bgcolor: 'rgba(239,68,68,0.08)' },
+                        '&:hover': { color: it.danger.color, bgcolor: it.danger.bgSubtle },
                       }}
                     >
                       <CloseIcon sx={{ fontSize: '0.9rem' }} />
@@ -221,66 +190,12 @@ export default function ParticipantsSection({
               border: `1px solid ${it.accent.border}`,
             }}
           >
-            <InfoOutlinedIcon sx={{ fontSize: '0.85rem', color: '#6366f1', mt: '1px', flexShrink: 0 }} />
+            <InfoOutlinedIcon sx={{ fontSize: '0.85rem', color: it.accent.color, mt: '1px', flexShrink: 0 }} />
             <Typography sx={{ fontSize: '0.75rem', color: textSecondary, lineHeight: 1.6 }}>
               심사자는 관리자가 등록한 구성원 중에서만 선택할 수 있으며, 선택된 심사자에게 제안 검토 요청이 전달됩니다.
             </Typography>
           </Box>
         </Box>
-
-        {/* 공동제안자 - 추후 사용 */}
-        {/*
-        <Box
-          sx={{
-            flex: 1, minWidth: 0, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
-            bgcolor: isDarkMode ? 'rgba(139,92,246,0.05)' : 'rgba(139,92,246,0.03)',
-            border: `1px solid ${isDarkMode ? 'rgba(139,92,246,0.14)' : 'rgba(139,92,246,0.1)'}`,
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2.5 }}>
-            <GroupAddIcon sx={{ color: '#8b5cf6', fontSize: '1.1rem' }} />
-            <Typography variant="body1" fontWeight={700} sx={{ color: isDarkMode ? '#e2e8f0' : '#1e293b' }}>
-              공동제안자
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, minHeight: 44, mb: 2.5 }}>
-            {coProposers.length === 0 ? (
-              <Typography variant="body2" sx={{ color: textSecondary, py: 0.5 }}>
-                아직 추가된 공동제안자가 없습니다
-              </Typography>
-            ) : coProposers.map((name, i) => (
-              <Chip
-                key={i}
-                label={name}
-                variant="outlined"
-                size="medium"
-                onDelete={() => setCoProposers(coProposers.filter((_, idx) => idx !== i))}
-                sx={{
-                  borderColor: isDarkMode ? 'rgba(139,92,246,0.4)' : 'rgba(139,92,246,0.3)',
-                  color: isDarkMode ? '#c4b5fd' : '#6d28d9',
-                  bgcolor: isDarkMode ? 'rgba(139,92,246,0.12)' : 'rgba(139,92,246,0.07)',
-                  '&:hover': { bgcolor: isDarkMode ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.12)' },
-                }}
-              />
-            ))}
-          </Box>
-          <Button
-            variant="outlined"
-            fullWidth
-            size="small"
-            startIcon={<GroupAddIcon sx={{ fontSize: '1rem' }} />}
-            onClick={onOpenCoProposerModal}
-            sx={{
-              borderRadius: 1.5, py: 0.9, fontWeight: 600, fontSize: '0.8rem',
-              borderColor: isDarkMode ? 'rgba(139,92,246,0.35)' : 'rgba(139,92,246,0.3)',
-              color: isDarkMode ? '#c4b5fd' : '#6d28d9',
-              '&:hover': { borderColor: '#8b5cf6', bgcolor: isDarkMode ? 'rgba(139,92,246,0.12)' : 'rgba(139,92,246,0.07)' },
-            }}
-          >
-            공동제안자 추가
-          </Button>
-        </Box>
-        */}
 
         {/* 공개 범위 */}
         <Box
@@ -300,7 +215,7 @@ export default function ParticipantsSection({
               bgcolor: it.accent.bg,
             }}
           >
-            <PublicIcon sx={{ color: '#6366f1', fontSize: '1.1rem' }} />
+            <PublicIcon sx={{ color: it.accent.color, fontSize: '1.1rem' }} />
             <Typography fontWeight={700} sx={{ color: textPrimary, fontSize: '0.9rem' }}>
               공개 범위
             </Typography>
@@ -389,8 +304,8 @@ export default function ParticipantsSection({
               }}
             >
               {security === 'public'
-                ? <PublicIcon sx={{ fontSize: '0.9rem', color: '#6366f1', flexShrink: 0 }} />
-                : <LockOpenIcon sx={{ fontSize: '0.9rem', color: '#8b5cf6', flexShrink: 0 }} />
+                ? <PublicIcon sx={{ fontSize: '0.9rem', color: it.accent.color, flexShrink: 0 }} />
+                : <LockOpenIcon sx={{ fontSize: '0.9rem', color: it.purple.color, flexShrink: 0 }} />
               }
               <Typography sx={{ fontSize: '0.75rem', color: textSecondary, lineHeight: 1.4 }}>
                 {security === 'public'

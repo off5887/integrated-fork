@@ -1,4 +1,5 @@
-// src/routes/idea/components/FileUploadSection.tsx
+// src/features/idea/components/sections/FileUploadSection.tsx
+// 이미지·문서 첨부파일 업로드 및 미리보기 섹션
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import CloseIcon from '@mui/icons-material/Close'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
@@ -60,7 +61,7 @@ export default function FileUploadSection({
           <Box
             sx={{
               width: 26, height: 26, borderRadius: '50%',
-              bgcolor: '#6366f1', color: '#fff',
+              bgcolor: it.accent.color, color: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
             }}
@@ -95,7 +96,7 @@ export default function FileUploadSection({
                 borderColor: it.accent.borderHover,
                 color: it.accent.text,
                 '&:hover': {
-                  borderColor: '#6366f1',
+                  borderColor: it.accent.color,
                   bgcolor: it.accent.bgStrong,
                 },
               }}
@@ -155,7 +156,7 @@ export default function FileUploadSection({
                         sx={{
                           position: 'absolute', inset: 0,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          bgcolor: 'rgba(0,0,0,0.45)',
+                          bgcolor: it.overlay.imageBg,
                           opacity: 0, transition: 'opacity 0.2s',
                           pointerEvents: 'none',
                           '&:hover': { opacity: 1 },
@@ -171,9 +172,9 @@ export default function FileUploadSection({
                       sx={{
                         position: 'absolute', top: 4, right: 4,
                         width: 22, height: 22,
-                        bgcolor: 'rgba(0,0,0,0.6)',
+                        bgcolor: it.overlay.deleteButtonBg,
                         color: '#fff',
-                        '&:hover': { bgcolor: 'rgba(239,68,68,0.9)' },
+                        '&:hover': { bgcolor: it.overlay.deleteButtonHoverBg },
                         transition: 'all 0.15s ease',
                       }}
                     >
@@ -202,9 +203,9 @@ export default function FileUploadSection({
         slotProps={{
           paper: {
             sx: {
-              bgcolor: 'rgba(0,0,0,0.94)',
+              bgcolor: it.overlay.previewDialogBg,
               borderRadius: 3,
-              boxShadow: '0 0 80px rgba(0,0,0,0.9)',
+              boxShadow: it.overlay.previewDialogShadow,
               overflow: 'hidden',
             },
           },
@@ -215,8 +216,8 @@ export default function FileUploadSection({
           size="small"
           sx={{
             position: 'absolute', top: 12, right: 12,
-            color: '#fff', bgcolor: 'rgba(0,0,0,0.5)', zIndex: 10,
-            '&:hover': { bgcolor: 'rgba(239,68,68,0.85)' },
+            color: '#fff', bgcolor: it.overlay.closeBg, zIndex: 10,
+            '&:hover': { bgcolor: it.overlay.closeHoverBg },
           }}
         >
           <CloseIcon />
@@ -233,7 +234,7 @@ export default function FileUploadSection({
         </DialogContent>
 
         {selectedIndex !== null && (
-          <Box sx={{ p: 2, textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
+          <Box sx={{ p: 2, textAlign: 'center', color: it.overlay.textColor, fontSize: '0.85rem' }}>
             {files[selectedIndex]?.name}
           </Box>
         )}

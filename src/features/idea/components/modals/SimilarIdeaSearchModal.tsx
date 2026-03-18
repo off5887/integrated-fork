@@ -1,4 +1,5 @@
-// src/routes/idea/components/SimilarIdeaSearchModal.tsx
+// src/features/idea/components/modals/SimilarIdeaSearchModal.tsx
+// 유사 아이디어 키워드 검색 모달 (결과 목록 + 상세 패널 포함)
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import {
@@ -83,9 +84,7 @@ export default function SimilarIdeaSearchModal({
             borderRadius: 3,
             bgcolor: it.modalBg,
             border: `1px solid ${borderColor}`,
-            boxShadow: isDarkMode
-              ? '0 24px 64px rgba(0,0,0,0.6)'
-              : '0 24px 64px rgba(0,0,0,0.12)',
+            boxShadow: it.dialogShadow,
             overflow: 'hidden',
             m: { xs: 2, sm: 3 },
             maxHeight: { xs: '90vh', sm: '80vh' },
@@ -100,12 +99,7 @@ export default function SimilarIdeaSearchModal({
       }}
     >
       {/* 상단 그라디언트 */}
-      <Box
-        sx={{
-          height: 3,
-          background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
-        }}
-      />
+      <Box sx={{ height: 3, background: it.headerGradient }} />
 
       {/* 헤더 */}
       <Box
@@ -125,7 +119,7 @@ export default function SimilarIdeaSearchModal({
             height: 32,
             borderRadius: '50%',
             flexShrink: 0,
-            bgcolor: '#6366f1',
+            bgcolor: it.accent.color,
             color: '#fff',
             display: 'flex',
             alignItems: 'center',
@@ -199,7 +193,7 @@ export default function SimilarIdeaSearchModal({
                   fontSize: '0.875rem',
                   '& fieldset': { borderColor },
                   '&:hover fieldset': { borderColor: it.accent.borderHover },
-                  '&.Mui-focused fieldset': { borderColor: '#6366f1' },
+                  '&.Mui-focused fieldset': { borderColor: it.accent.color },
                 },
                 '& .MuiInputBase-input': {
                   color: textPrimary,
@@ -271,7 +265,7 @@ export default function SimilarIdeaSearchModal({
                     >
                       <Box
                         component="span"
-                        sx={{ fontWeight: 700, color: '#6366f1' }}
+                        sx={{ fontWeight: 700, color: it.accent.textMuted }}
                       >
                         {results.length}건
                       </Box>
@@ -285,15 +279,15 @@ export default function SimilarIdeaSearchModal({
                           px: 0.8,
                           py: 0.2,
                           borderRadius: 1,
-                          bgcolor: 'rgba(245,158,11,0.1)',
-                          border: '1px solid rgba(245,158,11,0.25)',
+                          bgcolor: it.amber.bg,
+                          border: `1px solid ${it.amber.border}`,
                         }}
                       >
                         <Typography
                           sx={{
                             fontSize: '0.68rem',
                             fontWeight: 700,
-                            color: '#f59e0b',
+                            color: it.amber.color,
                           }}
                         >
                           ⚠ 유사도 높은 건 포함

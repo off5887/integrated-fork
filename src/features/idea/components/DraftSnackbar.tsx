@@ -1,4 +1,5 @@
 // src/features/idea/components/DraftSnackbar.tsx
+// 임시저장 완료 시 하단에 표시되는 스낵바 (저장 시각 함께 표시)
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Alert, Box, Snackbar } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
