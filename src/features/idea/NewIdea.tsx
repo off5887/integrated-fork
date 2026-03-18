@@ -405,6 +405,7 @@ export default function NewIdea() {
         message="페이지를 떠나면 작성 중인 내용이 사라질 수 있어요. 계속하시겠습니까?"
         confirmLabel="떠나기"
         cancelLabel="계속 작성"
+        variant="warning"
         onConfirm={proceed}
         onCancel={reset}
       />

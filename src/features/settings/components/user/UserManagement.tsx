@@ -434,6 +434,7 @@ export default function UserManagement() {
         title="사용자 삭제"
         message="정말 이 사용자를 삭제하시겠습니까?"
         confirmLabel="삭제"
+        variant="error"
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteConfirmId(null)}
       />

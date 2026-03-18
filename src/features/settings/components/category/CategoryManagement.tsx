@@ -234,6 +234,8 @@ export default function CategoryManagement() {
         open={Boolean(deleteTargetId)}
         title="카테고리 삭제"
         message={`'${categories.find((c) => c.id === deleteTargetId)?.label ?? ''}' 카테고리를 삭제하시겠습니까?`}
+        confirmLabel="삭제"
+        variant="error"
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTargetId(null)}
       />
