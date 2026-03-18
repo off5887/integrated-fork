@@ -1,9 +1,10 @@
-import { DarkModeOutlined, LightModeOutlined } from '@mui/icons-material'
+import { DarkModeOutlined, ExpandMore, LightModeOutlined } from '@mui/icons-material'
 import {
   Box,
   Button,
   Card,
   CardContent,
+  Collapse,
   CircularProgress,
   IconButton,
   Link,
@@ -123,29 +124,60 @@ interface DemoHintProps {
 }
 
 function DemoHint({ colors, onSelect }: DemoHintProps) {
+  const [open, setOpen] = useState(false)
+
   return (
     <Box
       sx={{
         mb: 4,
-        p: 2,
         borderRadius: 2.5,
         bgcolor: colors.demoBg,
         border: `1px solid ${colors.demoBorder}`,
+        overflow: 'hidden',
       }}
     >
-      <Typography
+      {/* 헤더 — 클릭으로 토글 */}
+      <Box
+        onClick={() => setOpen((v) => !v)}
+        role="button"
+        aria-expanded={open}
+        aria-label="데모 계정 목록 펼치기"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((v) => !v) } }}
         sx={{
-          fontSize: '0.72rem',
-          fontWeight: 700,
-          color: colors.demoAccent,
-          mb: 1.25,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 2,
+          py: 1.25,
+          cursor: 'pointer',
+          userSelect: 'none',
+          '&:focus-visible': { outline: `2px solid ${colors.demoAccent}`, outlineOffset: -2 },
         }}
       >
-        데모 계정 (클릭하면 자동 입력)
-      </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+        <Typography
+          sx={{
+            fontSize: '0.72rem',
+            fontWeight: 700,
+            color: colors.demoAccent,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+          }}
+        >
+          데모 계정 {open ? '(클릭하면 자동 입력)' : ''}
+        </Typography>
+        <ExpandMore
+          sx={{
+            fontSize: '1rem',
+            color: colors.demoAccent,
+            transition: 'transform 0.2s',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        />
+      </Box>
+
+      <Collapse in={open}>
+        <Box sx={{ px: 2, pb: 1.5, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
         {DEMO_ACCOUNTS.map((account) => (
           <Box
             key={account.id}
@@ -197,7 +229,8 @@ function DemoHint({ colors, onSelect }: DemoHintProps) {
             </Box>
           </Box>
         ))}
-      </Box>
+        </Box>
+      </Collapse>
     </Box>
   )
 }
