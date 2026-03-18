@@ -47,6 +47,7 @@ export default function AppRoutes() {
             <Route path="/welcome" element={<Welcome />} />
           </Route>
 
+          {/* 로그인 필요 — 모든 역할 */}
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/welcome" element={<Welcome />} />
@@ -54,17 +55,23 @@ export default function AppRoutes() {
               <Route path="/newIdea" element={<NewIdea />} />
               <Route path="/ideaBrowse" element={<IdeaBrowse />} />
               <Route path="/rqMileage" element={<RqMileage />} />
-              <Route path="/judge" element={<Judge />} />
               <Route path="/stats" element={<Stats />} />
+              <Route path="/mercenary-support" element={<MercenarySupportPage />} />
+              <Route path="/mercenary-management" element={<MercenaryManagementPage />} />
+            </Route>
+          </Route>
+
+          {/* 심사자 + 관리자 전용 */}
+          <Route element={<ProtectedRoute roles={['reviewer', 'admin']} />}>
+            <Route element={<MainLayout />}>
+              <Route path="/judge" element={<Judge />} />
+            </Route>
+          </Route>
+
+          {/* 관리자 전용 */}
+          <Route element={<ProtectedRoute roles={['admin']} />}>
+            <Route element={<MainLayout />}>
               <Route path="/settings" element={<Settings />} />
-              <Route
-                path="/mercenary-support"
-                element={<MercenarySupportPage />}
-              />
-              <Route
-                path="/mercenary-management"
-                element={<MercenaryManagementPage />}
-              />
             </Route>
           </Route>
 

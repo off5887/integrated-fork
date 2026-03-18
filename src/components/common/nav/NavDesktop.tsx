@@ -409,25 +409,27 @@ function UserMenu() {
           </Typography>
         </MuiMenuItem>
 
-        {/* 설정 */}
-        <MuiMenuItem
-          onClick={() => { navigate(settingsItem.path); setAnchorEl(null) }}
-          sx={{
-            px: 2,
-            py: 1,
-            gap: 1.5,
-            color: settingsActive ? nt.activeColor : nt.menuItemColor,
-            bgcolor: settingsActive ? nt.settingsActiveBg : 'transparent',
-            '&:hover': { bgcolor: nt.hoverBg, color: nt.activeColor },
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
-            <MuiIcons.Settings fontSize="small" />
-          </ListItemIcon>
-          <Typography sx={{ fontSize: '0.85rem', fontWeight: settingsActive ? 700 : 500 }}>
-            설정
-          </Typography>
-        </MuiMenuItem>
+        {/* 설정 — 관리자 전용 */}
+        {user?.role === 'admin' && (
+          <MuiMenuItem
+            onClick={() => { navigate(settingsItem.path); setAnchorEl(null) }}
+            sx={{
+              px: 2,
+              py: 1,
+              gap: 1.5,
+              color: settingsActive ? nt.activeColor : nt.menuItemColor,
+              bgcolor: settingsActive ? nt.settingsActiveBg : 'transparent',
+              '&:hover': { bgcolor: nt.hoverBg, color: nt.activeColor },
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
+              <MuiIcons.Settings fontSize="small" />
+            </ListItemIcon>
+            <Typography sx={{ fontSize: '0.85rem', fontWeight: settingsActive ? 700 : 500 }}>
+              설정
+            </Typography>
+          </MuiMenuItem>
+        )}
 
         {/* 테마 전환 */}
         <MuiMenuItem
@@ -483,10 +485,17 @@ function UserMenu() {
 // ─── NavDesktop ────────────────────────────────────────────────────────────────
 
 export default function NavDesktop() {
+  const user = useCurrentUser()
+  const role = user?.role
+
+  const visibleItems = menuItems.filter(
+    (item) => !item.roles || (role && item.roles.includes(role)),
+  )
+
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mr: 2 }}>
-        {menuItems.map((item) =>
+        {visibleItems.map((item) =>
           item.children ? (
             <NavGroup
               key={item.text}

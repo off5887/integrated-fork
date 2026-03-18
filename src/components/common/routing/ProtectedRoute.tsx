@@ -1,11 +1,22 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { isAuthenticated } from '@/utils/auth'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import type { UserRole } from '@/api/types/auth'
 
-export default function ProtectedRoute() {
+interface Props {
+  roles?: UserRole[]
+}
+
+export default function ProtectedRoute({ roles }: Props) {
+  const user = useCurrentUser()
+
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />
   }
 
-  // 토큰 있으면 자식 라우트(Outlet) 렌더링
+  if (roles && user && !roles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />
+  }
+
   return <Outlet />
 }

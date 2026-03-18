@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { getLoginErrorMessage, useLoginMutation } from '@/api/queries/useLoginMutation'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getLoginColors, type LoginColors } from '@/theme/loginTheme'
-import { DEMO_CREDENTIALS, DEMO_USER_PROFILE } from '@/api/mock/auth'
+import { DEMO_ACCOUNTS } from '@/api/mock/auth'
 
 // ─── LoginField ───────────────────────────────────────────────────────────────
 
@@ -111,7 +111,18 @@ function LoginLogo({ colors }: { colors: LoginColors }) {
 
 // ─── DemoHint ─────────────────────────────────────────────────────────────────
 
-function DemoHint({ colors }: { colors: LoginColors }) {
+const ROLE_COLOR: Record<string, string> = {
+  user:     '#3b82f6',
+  reviewer: '#8b5cf6',
+  admin:    '#10b981',
+}
+
+interface DemoHintProps {
+  colors: LoginColors
+  onSelect: (id: string, password: string) => void
+}
+
+function DemoHint({ colors, onSelect }: DemoHintProps) {
   return (
     <Box
       sx={{
@@ -127,30 +138,66 @@ function DemoHint({ colors }: { colors: LoginColors }) {
           fontSize: '0.72rem',
           fontWeight: 700,
           color: colors.demoAccent,
-          mb: 0.75,
+          mb: 1.25,
           letterSpacing: '0.04em',
           textTransform: 'uppercase',
         }}
       >
-        데모 계정
+        데모 계정 (클릭하면 자동 입력)
       </Typography>
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <DemoField label="사번" value={DEMO_CREDENTIALS.id} colors={colors} />
-        <DemoField label="비밀번호" value={DEMO_CREDENTIALS.password} colors={colors} />
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+        {DEMO_ACCOUNTS.map((account) => (
+          <Box
+            key={account.id}
+            onClick={() => onSelect(account.id, account.password)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(account.id, account.password) } }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 1.5,
+              py: 1,
+              borderRadius: 1.5,
+              cursor: 'pointer',
+              border: `1px solid transparent`,
+              transition: 'all 0.15s',
+              '&:hover': {
+                bgcolor: `${ROLE_COLOR[account.profile.role]}18`,
+                borderColor: `${ROLE_COLOR[account.profile.role]}40`,
+              },
+              '&:focus-visible': { outline: `2px solid ${ROLE_COLOR[account.profile.role]}` },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box
+                sx={{
+                  width: 8, height: 8, borderRadius: '50%',
+                  bgcolor: ROLE_COLOR[account.profile.role],
+                  flexShrink: 0,
+                }}
+              />
+              <Box>
+                <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: colors.demoValue, lineHeight: 1.2 }}>
+                  {account.roleLabel}
+                </Typography>
+                <Typography sx={{ fontSize: '0.68rem', color: colors.muted }}>
+                  {account.description}
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: colors.demoValue, fontFamily: 'monospace' }}>
+                {account.id}
+              </Typography>
+              <Typography sx={{ fontSize: '0.68rem', color: colors.muted, fontFamily: 'monospace' }}>
+                {account.password}
+              </Typography>
+            </Box>
+          </Box>
+        ))}
       </Box>
-    </Box>
-  )
-}
-
-function DemoField({ label, value, colors }: { label: string; value: string; colors: LoginColors }) {
-  return (
-    <Box>
-      <Typography sx={{ fontSize: '0.72rem', color: colors.muted }}>{label}</Typography>
-      <Typography
-        sx={{ fontSize: '0.85rem', fontWeight: 700, color: colors.demoValue, letterSpacing: '0.02em' }}
-      >
-        {value}
-      </Typography>
     </Box>
   )
 }
@@ -167,16 +214,25 @@ export default function Login() {
   const mutation = useLoginMutation()
   const navigate = useNavigate()
 
+  const loginWithDemo = (id: string, pw: string) => {
+    const account = DEMO_ACCOUNTS.find((a) => a.id === id && a.password === pw)
+    if (!account) return false
+    localStorage.setItem('accessToken', `demo-token-${account.profile.role}`)
+    localStorage.setItem('userProfile', JSON.stringify(account.profile))
+    navigate('/dashboard')
+    return true
+  }
+
+  const handleDemoSelect = (id: string, pw: string) => {
+    setEmployeeId(id)
+    setPassword(pw)
+  }
+
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     setErrorMsg('')
 
-    if (employeeId === DEMO_CREDENTIALS.id && password === DEMO_CREDENTIALS.password) {
-      localStorage.setItem('accessToken', 'demo-token')
-      localStorage.setItem('userProfile', JSON.stringify(DEMO_USER_PROFILE))
-      navigate('/welcome')
-      return
-    }
+    if (loginWithDemo(employeeId, password)) return
 
     try {
       const data = await mutation.mutateAsync({ employeeId, password })
@@ -186,8 +242,9 @@ export default function Login() {
         name: data.name,
         position: (data.position as string) ?? '',
         department: (data.department as string) ?? '',
+        role: (data.role as string) ?? 'user',
       }))
-      navigate('/welcome')
+      navigate('/dashboard')
     } catch (err: unknown) {
       setErrorMsg(getLoginErrorMessage(err))
     }
@@ -254,7 +311,7 @@ export default function Login() {
         <CardContent sx={{ p: { xs: 4, sm: 6 }, pt: 8, pb: 6 }}>
           <LoginLogo colors={colors} />
 
-          <DemoHint colors={colors} />
+          <DemoHint colors={colors} onSelect={handleDemoSelect} />
 
           {errorMsg && (
             <Box

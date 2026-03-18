@@ -155,7 +155,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
 
         {/* 메인 메뉴 */}
         <List disablePadding sx={{ mb: 1 }}>
-          {menuItems.map((item) => {
+          {menuItems.filter((item) => !item.roles || (user?.role && item.roles.includes(user.role))).map((item) => {
             if (item.children) {
               return (
                 <GroupMenuItem
@@ -241,25 +241,27 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
             </ListItemButton>
           </ListItem>
 
-          <ListItem disablePadding sx={{ mb: 0.25 }}>
-            <ListItemButton
-              onClick={() => handleNavigate(settingsItem.path)}
-              sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
-            >
-              <ListItemIcon sx={{ minWidth: 36, color: nt.drawerTextColor }}>
-                <MuiIcons.Settings fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <Typography
-                    sx={{ fontSize: '0.875rem', fontWeight: 500, color: nt.drawerTextColor }}
-                  >
-                    설정
-                  </Typography>
-                }
-              />
-            </ListItemButton>
-          </ListItem>
+          {user?.role === 'admin' && (
+            <ListItem disablePadding sx={{ mb: 0.25 }}>
+              <ListItemButton
+                onClick={() => handleNavigate(settingsItem.path)}
+                sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: nt.drawerTextColor }}>
+                  <MuiIcons.Settings fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography
+                      sx={{ fontSize: '0.875rem', fontWeight: 500, color: nt.drawerTextColor }}
+                    >
+                      설정
+                    </Typography>
+                  }
+                />
+              </ListItemButton>
+            </ListItem>
+          )}
 
           <ListItem disablePadding sx={{ mb: 0.25 }}>
             <ListItemButton
