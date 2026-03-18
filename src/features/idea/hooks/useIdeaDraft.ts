@@ -5,15 +5,7 @@ import type { DraftData } from '@/api/types/idea'
 export const DRAFT_KEY = 'gomgom_new_idea_draft'
 const AUTO_SAVE_INTERVAL = 5 * 60 * 1000 // 5분
 
-type FormValues = {
-  title: string
-  categories: string[]
-  problem: string
-  solution: string
-  reviewer: string[]
-  security: 'public' | 'private'
-  plan: string
-}
+type FormValues = Omit<DraftData, 'savedAt'>
 
 type UseIdeaDraftReturn = {
   savedDraft: DraftData | null
