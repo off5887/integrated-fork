@@ -1,13 +1,7 @@
 // src/features/mileage/config/statsConfig.ts
-import type { MileageTheme } from '@/theme/mileageTheme'
+import type { StatCardConfig } from '@/api/types/mileage'
 
-export interface StatCardConfig {
-  label: string
-  unit: string
-  icon: string
-  colorKey: keyof Pick<MileageTheme, 'primaryColor' | 'statusSuccessColor' | 'statusWarningColor'>
-  getSub: (value: number) => string
-}
+export type { StatCardConfig }
 
 export const STAT_CARD_CONFIGS: StatCardConfig[] = [
   {

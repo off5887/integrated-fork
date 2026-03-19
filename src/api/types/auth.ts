@@ -1,6 +1,14 @@
 // src/api/types/auth.ts
 export type UserRole = 'user' | 'reviewer' | 'admin'
 
+export interface DemoAccount {
+  id: string
+  password: string
+  profile: UserProfile
+  roleLabel: string
+  description: string
+}
+
 export interface UserProfile {
   employeeId: string
   name: string

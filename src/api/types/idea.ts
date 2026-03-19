@@ -1,4 +1,17 @@
 // src/api/types/idea.ts
+import type { SvgIconComponent } from '@mui/icons-material'
+
+export interface VisibilityOption {
+  value: 'public' | 'private'
+  icon: SvgIconComponent
+  label: string
+  description: string
+  accentColor: string
+  accentBg: string
+  accentBorder: string
+  accentBgDark: string
+  accentBorderDark: string
+}
 
 export type CategoryOption = {
   id: string

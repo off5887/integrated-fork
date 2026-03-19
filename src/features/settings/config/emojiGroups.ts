@@ -1,7 +1,6 @@
-export interface EmojiGroup {
-  label: string
-  emojis: string[]
-}
+import type { EmojiGroup } from '@/api/types/settings'
+
+export type { EmojiGroup }
 
 /**
  * 카테고리 아이콘 피커용 이모지 그룹 목록.

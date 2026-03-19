@@ -1,12 +1,4 @@
-import type { UserProfile, UserRole } from '@/api/types/auth'
-
-export interface DemoAccount {
-  id: string
-  password: string
-  profile: UserProfile
-  roleLabel: string
-  description: string
-}
+import type { DemoAccount, UserProfile, UserRole } from '@/api/types/auth'
 
 export const DEMO_ACCOUNTS: DemoAccount[] = [
   {

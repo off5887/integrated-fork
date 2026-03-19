@@ -1,5 +1,12 @@
 import type { OrgMember } from '@/api/types/reviewer'
 
+// ─── 이모지 ───────────────────────────────────────────────────────────────────
+
+export interface EmojiGroup {
+  label: string
+  emojis: string[]
+}
+
 // ─── 사용자 관리 ─────────────────────────────────────────────────────────────
 
 export interface User {

@@ -2,19 +2,9 @@
 // 공개/비공개 선택 옵션 설정 (ParticipantsSection, ScheduleAndVisibilitySection 공용)
 import LockIcon from '@mui/icons-material/Lock'
 import PublicIcon from '@mui/icons-material/Public'
-import type { SvgIconComponent } from '@mui/icons-material'
+import type { VisibilityOption } from '@/api/types/idea'
 
-export interface VisibilityOption {
-  value: 'public' | 'private'
-  icon: SvgIconComponent
-  label: string
-  description: string
-  accentColor: string
-  accentBg: string
-  accentBorder: string
-  accentBgDark: string
-  accentBorderDark: string
-}
+export type { VisibilityOption }
 
 export const VISIBILITY_OPTIONS: VisibilityOption[] = [
   {
