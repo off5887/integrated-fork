@@ -26,11 +26,15 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
     (error) => Promise.reject(error),
   )
 
-  // 응답 인터셉터 (에러 핸들링 등)
+  // 응답 인터셉터
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-      // 401 → 로그아웃 처리, 500 → 알림 등 나중에 추가
+      if (error.response?.status === 401) {
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('userProfile')
+        window.location.href = '/login'
+      }
       return Promise.reject(error)
     },
   )

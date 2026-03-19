@@ -18,22 +18,21 @@ export interface UserProfile {
   avatarUrl?: string
 }
 
+/** 모든 API 응답의 공통 래퍼: { data, message, success } */
+export interface ApiResponse<T> {
+  data: T
+  message: string
+  success: boolean
+}
+
 export interface LoginRequest {
   employeeId: string
   password: string
 }
 
+/** /api/auth/login 응답의 data 필드 */
 export interface LoginResponse {
-  accessToken: string
-  // 백엔드가 실제로 주는 다른 필드가 있다면 여기에 명시적으로 추가
-  // 예시:
-  // refreshToken?: string;
-  // userId?: number;
-  // role?: string;
   token: string
   employeeId: string
   name: string
-
-  // 모르는 필드가 있을 수 있으니 unknown으로 열어둠 (any보다 안전)
-  [key: string]: unknown
 }

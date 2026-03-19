@@ -270,12 +270,13 @@ export default function Login() {
     try {
       const data = await mutation.mutateAsync({ employeeId, password })
       localStorage.setItem('accessToken', data.token)
+      // position, department, role은 내정보 API 연동 전까지 기본값
       localStorage.setItem('userProfile', JSON.stringify({
         employeeId: data.employeeId,
         name: data.name,
-        position: (data.position as string) ?? '',
-        department: (data.department as string) ?? '',
-        role: (data.role as string) ?? 'user',
+        position: '',
+        department: '',
+        role: 'user',
       }))
       navigate('/dashboard')
     } catch (err: unknown) {
