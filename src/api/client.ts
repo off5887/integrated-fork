@@ -30,7 +30,9 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response?.status === 401) {
+      const isLoginEndpoint = error.config?.url?.includes('/auth/login')
+      // 로그인 엔드포인트 401은 뮤테이션 catch에서 직접 처리 (에러 메시지 표시)
+      if (error.response?.status === 401 && !isLoginEndpoint) {
         localStorage.removeItem('accessToken')
         localStorage.removeItem('userProfile')
         window.location.href = '/login'
