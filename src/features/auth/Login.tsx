@@ -265,6 +265,9 @@ export default function Login() {
     e.preventDefault()
     setErrorMsg('')
 
+    if (!employeeId.trim()) { setErrorMsg('사번을 입력해주세요.'); return }
+    if (!password.trim()) { setErrorMsg('비밀번호를 입력해주세요.'); return }
+
     if (loginWithDemo(employeeId, password)) return
 
     try {
