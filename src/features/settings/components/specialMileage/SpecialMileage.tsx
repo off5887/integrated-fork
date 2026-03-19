@@ -1,4 +1,5 @@
-// src/routes/Settings/components/specialMileage/SpecialMileage.tsx
+// src/features/settings/components/specialMileage/SpecialMileage.tsx
+// 특별 마일리지 지급 페이지 — 조직도 선택 → 마일리지 입력 → 저장 → 지급 내역 확인
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import SaveIcon from '@mui/icons-material/Save'
 import {
@@ -12,9 +13,11 @@ import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import type { MileageMember, MileageEntry } from '@/api/types/settings'
+import type { MileageMember, MileageEntry, SpecialMileageHistory } from '@/api/types/settings'
+import { specialMileageHistoryData } from '@/api/mock/mileage'
 import MileageOrgPanel from './MileageOrgPanel'
 import MileageRecipientPanel from './MileageRecipientPanel'
+import MileageHistoryPanel from './MileageHistoryPanel'
 
 export default function SpecialMileage() {
   const { isDarkMode } = useThemeMode()
@@ -24,38 +27,43 @@ export default function SpecialMileage() {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<MileageEntry[]>([])
+  const [history, setHistory] = useState<SpecialMileageHistory[]>(specialMileageHistoryData)
 
   const handleAdd = (member: MileageMember) => {
     if (selected.some((s) => s.id === member.id)) return
-    setSelected((prev) => [
-      ...prev,
-      { ...member, score: '', mileage: '', reason: '' },
-    ])
+    setSelected((prev) => [...prev, { ...member, mileage: '', reason: '' }])
   }
 
   const handleRemove = (id: string) => {
     setSelected((prev) => prev.filter((s) => s.id !== id))
   }
 
-  const handleFieldChange = (
-    id: string,
-    field: 'score' | 'mileage' | 'reason',
-    value: string,
-  ) => {
-    setSelected((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)),
-    )
+  const handleFieldChange = (id: string, field: 'mileage' | 'reason', value: string) => {
+    setSelected((prev) => prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)))
   }
 
   const handleSave = () => {
-    const incomplete = selected.filter(
-      (s) => s.score === '' && s.mileage === '',
-    )
+    const incomplete = selected.filter((s) => s.mileage === '')
     if (incomplete.length > 0) {
-      showSnackbar('점수 또는 마일리지를 하나 이상 입력해주세요.', 'warning')
+      showSnackbar('마일리지를 입력해주세요.', 'warning')
       return
     }
-    showSnackbar(`${selected.length}명에게 특별 마일리지/점수가 지급되었습니다.`, 'success')
+
+    const today = new Date().toISOString().split('T')[0]
+    const newEntries: SpecialMileageHistory[] = selected.map((s, i) => ({
+      id: Date.now() + i,
+      grantedAt: today,
+      name: s.name,
+      department: s.department,
+      position: s.position,
+      employeeNumber: s.employeeNumber,
+      mileage: Number(s.mileage),
+      reason: s.reason,
+    }))
+
+    setHistory((prev) => [...newEntries, ...prev])
+    setSelected([])
+    showSnackbar(`${newEntries.length}명에게 특별 마일리지가 지급되었습니다.`, 'success')
   }
 
   return (
@@ -89,7 +97,7 @@ export default function SpecialMileage() {
               특별 마일리지 지급
             </Typography>
             <Typography variant="caption" sx={{ color: textSecondary }}>
-              조직도에서 인원을 선택하고 점수·마일리지를 개별 입력 후 저장하세요
+              조직도에서 인원을 선택하고 마일리지를 입력 후 저장하세요
             </Typography>
           </Box>
         </Box>
@@ -113,18 +121,16 @@ export default function SpecialMileage() {
         </Button>
       </Box>
 
-      <Grid container spacing={{ xs: 2, sm: 3 }}>
-        {/* 왼쪽: 조직도 패널 */}
+      {/* 지급 입력 영역 */}
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, lg: 4 }}>
           <MileageOrgPanel
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             onAdd={handleAdd}
-            selectedIds={selected.map(s => s.id)}
+            selectedIds={selected.map((s) => s.id)}
           />
         </Grid>
-
-        {/* 오른쪽: 지급 대상 및 입력 */}
         <Grid size={{ xs: 12, lg: 8 }}>
           <MileageRecipientPanel
             selected={selected}
@@ -133,6 +139,9 @@ export default function SpecialMileage() {
           />
         </Grid>
       </Grid>
+
+      {/* 지급 내역 */}
+      <MileageHistoryPanel history={history} />
     </Box>
   )
 }

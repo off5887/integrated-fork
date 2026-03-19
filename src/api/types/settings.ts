@@ -26,8 +26,18 @@ export interface MileageMember extends OrgMember {
 }
 
 export interface MileageEntry extends MileageMember {
-  score: string
   mileage: string
+  reason: string
+}
+
+export interface SpecialMileageHistory {
+  id: number
+  grantedAt: string
+  name: string
+  department: string
+  position: string
+  employeeNumber: string
+  mileage: number
   reason: string
 }
 

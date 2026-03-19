@@ -1,4 +1,13 @@
 import type { AwardItem, ExchangeItem } from '@/api/types/mileage'
+import type { SpecialMileageHistory } from '@/api/types/settings'
+
+export const specialMileageHistoryData: SpecialMileageHistory[] = [
+  { id: 1, grantedAt: '2026-03-10', name: '홍길동', department: '개발1팀', position: '대리', employeeNumber: 'EMP001', mileage: 50, reason: '프로젝트 우수 기여' },
+  { id: 2, grantedAt: '2026-03-10', name: '김영희', department: '기획팀', position: '과장', employeeNumber: 'EMP002', mileage: 30, reason: '고객 만족도 향상 기여' },
+  { id: 3, grantedAt: '2026-02-20', name: '이철수', department: '경영지원팀', position: '부장', employeeNumber: 'EMP003', mileage: 100, reason: '연간 성과 우수' },
+  { id: 4, grantedAt: '2026-02-05', name: '박지수', department: '개발2팀', position: '사원', employeeNumber: 'EMP004', mileage: 20, reason: '아이디어 채택' },
+  { id: 5, grantedAt: '2026-01-15', name: '최민준', department: '디자인팀', position: '대리', employeeNumber: 'EMP005', mileage: 40, reason: '신규 서비스 론칭 기여' },
+]
 
 // 마일리지 수상내역
 export const awardData: AwardItem[] = [

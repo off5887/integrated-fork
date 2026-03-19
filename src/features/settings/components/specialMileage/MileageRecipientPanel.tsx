@@ -22,7 +22,7 @@ import type { MileageEntry } from '@/api/types/settings'
 interface Props {
   selected: MileageEntry[]
   onRemove: (id: string) => void
-  onFieldChange: (id: string, field: 'score' | 'mileage' | 'reason', value: string) => void
+  onFieldChange: (id: string, field: 'mileage' | 'reason', value: string) => void
 }
 
 export default function MileageRecipientPanel({ selected, onRemove, onFieldChange }: Props) {
@@ -162,28 +162,16 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
 
                 {/* 입력 필드 */}
                 <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <Box sx={{ display: 'flex', gap: 1.5 }}>
-                    <TextField
-                      label="점수"
-                      size="small"
-                      type="number"
-                      value={entry.score}
-                      onChange={(e) => onFieldChange(entry.id, 'score', e.target.value)}
-                      placeholder="0"
-                      slotProps={{ htmlInput: { min: 0 } }}
-                      sx={{ flex: 1, ...inputSx }}
-                    />
-                    <TextField
-                      label="마일리지"
-                      size="small"
-                      type="number"
-                      value={entry.mileage}
-                      onChange={(e) => onFieldChange(entry.id, 'mileage', e.target.value)}
-                      placeholder="0"
-                      slotProps={{ htmlInput: { min: 0 } }}
-                      sx={{ flex: 1, ...inputSx }}
-                    />
-                  </Box>
+                  <TextField
+                    label="마일리지"
+                    size="small"
+                    type="number"
+                    value={entry.mileage}
+                    onChange={(e) => onFieldChange(entry.id, 'mileage', e.target.value)}
+                    placeholder="0"
+                    slotProps={{ htmlInput: { min: 0 } }}
+                    sx={{ ...inputSx }}
+                  />
                   <TextField
                     label="지급 사유"
                     size="small"
@@ -204,7 +192,7 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
             <Table size="small">
               <TableHead>
                 <TableRow sx={{ bgcolor: headerBg }}>
-                  {['이름 / 사번', '부서', '점수', '마일리지', '지급 사유', ''].map((label, i) => (
+                  {['이름 / 사번', '부서', '마일리지', '지급 사유', ''].map((label, i) => (
                     <TableCell
                       key={i}
                       align={i === 5 ? 'center' : 'left'}
@@ -271,19 +259,6 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                           border: `1px solid ${st.avatarBorder}`,
                           '& .MuiChip-label': { px: 0.5 },
                         }}
-                      />
-                    </TableCell>
-
-                    {/* 점수 */}
-                    <TableCell sx={{ minWidth: 90 }}>
-                      <TextField
-                        size="small"
-                        type="number"
-                        value={entry.score}
-                        onChange={(e) => onFieldChange(entry.id, 'score', e.target.value)}
-                        placeholder="0"
-                        slotProps={{ htmlInput: { min: 0, style: { textAlign: 'center', padding: '6px 8px' } } }}
-                        sx={{ width: 88, ...inputSx }}
                       />
                     </TableCell>
 
