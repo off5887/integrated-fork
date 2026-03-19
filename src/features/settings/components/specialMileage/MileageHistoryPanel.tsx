@@ -106,7 +106,7 @@ export default function MileageHistoryPanel({ history }: Props) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ bgcolor: st.panelBg, border: `1px solid ${borderColor}`, borderRadius: 2.5, overflow: 'hidden' }}>
+      <Box sx={{ bgcolor: st.panelBg, border: `1px solid ${borderColor}`, borderRadius: 2.5, overflow: 'clip' }}>
 
         {/* 패널 헤더 */}
         <Box sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', gap: 1, borderBottom: `1px solid ${borderColor}`, bgcolor: headerBg }}>
@@ -164,140 +164,120 @@ export default function MileageHistoryPanel({ history }: Props) {
           />
         </Box>
 
-        {/* ── 모바일 카드 리스트 (xs ~ sm) ── */}
-        <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+        {/* ── 모바일 카드 리스트 (xs ~ sm): 페이지 자체가 스크롤되므로 내부 스크롤 없음 ── */}
+        <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 1, p: 1.5 }}>
           {filtered.length === 0 ? (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 8, gap: 1 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 8, gap: 1 }}>
+              <HistoryIcon sx={{ fontSize: '2rem', color: textSecondary, opacity: 0.25 }} />
+              <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>검색 결과가 없습니다</Typography>
+            </Box>
+          ) : filtered.map((h) => (
+            <Box
+              key={h.id}
+              sx={{ bgcolor: rowBg, border: `1px solid ${borderColor}`, borderRadius: 2, overflow: 'hidden', transition: 'background 0.15s ease', '&:hover': { bgcolor: rowHoverBg } }}
+            >
+              {/* 카드 상단: 아바타 + 이름 + 마일리지 */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, px: 1.75, py: 1.25, borderBottom: `1px solid ${borderColor}`, bgcolor: st.accordionDivisionBg }}>
+                <Avatar sx={{ width: 32, height: 32, flexShrink: 0, bgcolor: st.avatarBgLight, color: st.primaryColor, fontSize: '0.78rem', fontWeight: 700, border: `1px solid ${st.avatarBorder}` }}>
+                  {h.name[0]}
+                </Avatar>
+                <Box flex={1} minWidth={0}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}>{h.name}</Typography>
+                    <Typography sx={{ fontSize: '0.68rem', color: textSecondary, fontFamily: 'monospace' }}>{h.employeeNumber}</Typography>
+                  </Box>
+                  <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{h.department} · {h.position}</Typography>
+                </Box>
+                <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
+                  <Typography sx={{ fontSize: '1rem', fontWeight: 800, color: st.primaryColor, lineHeight: 1 }}>{h.mileage.toLocaleString()}</Typography>
+                  <Typography sx={{ fontSize: '0.62rem', color: textSecondary, mt: 0.25 }}>마일리지</Typography>
+                </Box>
+              </Box>
+              {/* 카드 하단: 날짜 + 사유 */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1.75, py: 1 }}>
+                <Chip label={h.grantedAt} size="small" sx={{ height: 18, fontSize: '0.62rem', fontFamily: 'monospace', flexShrink: 0, bgcolor: st.chipBg, color: textSecondary, border: `1px solid ${st.avatarBorder}`, '& .MuiChip-label': { px: 0.75 } }} />
+                <Typography sx={{ fontSize: '0.78rem', color: textPrimary, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {h.reason || '—'}
+                </Typography>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+
+        {/* ── 데스크톱 테이블 (md+): sticky 헤더 + 고정 높이 바디 스크롤 ── */}
+        <Box
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            height: TABLE_BODY_HEIGHT + 44, // 바디 + 헤더 행 높이
+            overflowY: 'auto',
+            overflowX: 'auto',
+            ...scrollbarSx,
+          }}
+        >
+          {filtered.length === 0 ? (
+            <Box sx={{ height: TABLE_BODY_HEIGHT, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
               <HistoryIcon sx={{ fontSize: '2rem', color: textSecondary, opacity: 0.25 }} />
               <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>검색 결과가 없습니다</Typography>
             </Box>
           ) : (
-            <Box
-              sx={{
-                display: 'flex', flexDirection: 'column', gap: 1, p: 1.5,
-                maxHeight: TABLE_BODY_HEIGHT,
-                overflowY: 'auto',
-                ...scrollbarSx,
-              }}
-            >
-              {filtered.map((h) => (
-                <Box
-                  key={h.id}
-                  sx={{
-                    bgcolor: rowBg,
-                    border: `1px solid ${borderColor}`,
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                    transition: 'background 0.15s ease',
-                    '&:hover': { bgcolor: rowHoverBg },
-                  }}
-                >
-                  {/* 카드 상단: 아바타 + 이름 + 마일리지 */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, px: 1.75, py: 1.25, borderBottom: `1px solid ${borderColor}`, bgcolor: st.accordionDivisionBg }}>
-                    <Avatar
+            <Table size="small" stickyHeader sx={{ minWidth: 560 }}>
+              <TableHead>
+                <TableRow>
+                  {columns.map((label) => (
+                    <TableCell
+                      key={label}
                       sx={{
-                        width: 32, height: 32, flexShrink: 0,
-                        bgcolor: st.avatarBgLight, color: st.primaryColor,
-                        fontSize: '0.78rem', fontWeight: 700,
-                        border: `1px solid ${st.avatarBorder}`,
+                        bgcolor: headerBg,
+                        color: textSecondary, fontWeight: 600, fontSize: '0.7rem',
+                        letterSpacing: '0.05em', textTransform: 'uppercase',
+                        py: 1.5, borderBottomColor: borderColor, whiteSpace: 'nowrap',
                       }}
                     >
-                      {h.name[0]}
-                    </Avatar>
-                    <Box flex={1} minWidth={0}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                        <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}>{h.name}</Typography>
-                        <Typography sx={{ fontSize: '0.68rem', color: textSecondary, fontFamily: 'monospace' }}>{h.employeeNumber}</Typography>
-                      </Box>
-                      <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{h.department} · {h.position}</Typography>
-                    </Box>
-                    <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
-                      <Typography sx={{ fontSize: '1rem', fontWeight: 800, color: st.primaryColor, lineHeight: 1 }}>
-                        {h.mileage.toLocaleString()}
-                      </Typography>
-                      <Typography sx={{ fontSize: '0.62rem', color: textSecondary, mt: 0.25 }}>마일리지</Typography>
-                    </Box>
-                  </Box>
-                  {/* 카드 하단: 날짜 + 사유 */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1.75, py: 1 }}>
-                    <Chip
-                      label={h.grantedAt}
-                      size="small"
-                      sx={{ height: 18, fontSize: '0.62rem', fontFamily: 'monospace', bgcolor: st.chipBg, color: textSecondary, border: `1px solid ${st.avatarBorder}`, '& .MuiChip-label': { px: 0.75 } }}
-                    />
-                    <Typography sx={{ fontSize: '0.78rem', color: textPrimary, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {h.reason || '—'}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-          )}
-        </Box>
-
-        {/* ── 데스크톱 테이블 (md+) ── */}
-        <Box sx={{ display: { xs: 'none', md: 'block' }, overflowX: 'auto', ...scrollbarSx }}>
-          <Table size="small" sx={{ minWidth: 560 }}>
-            <TableHead>
-              <TableRow sx={{ bgcolor: headerBg }}>
-                {columns.map((label) => (
-                  <TableCell key={label} sx={{ color: textSecondary, fontWeight: 600, fontSize: '0.7rem', letterSpacing: '0.05em', textTransform: 'uppercase', py: 1.5, borderBottomColor: borderColor, whiteSpace: 'nowrap' }}>
-                    {label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-          </Table>
-
-          <Box sx={{ height: TABLE_BODY_HEIGHT, overflowY: 'auto', ...scrollbarSx }}>
-            {filtered.length === 0 ? (
-              <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                <HistoryIcon sx={{ fontSize: '2rem', color: textSecondary, opacity: 0.25 }} />
-                <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 500 }}>검색 결과가 없습니다</Typography>
-              </Box>
-            ) : (
-              <Table size="small" sx={{ minWidth: 560 }}>
-                <TableBody>
-                  {filtered.map((h) => (
-                    <TableRow
-                      key={h.id}
-                      sx={{
-                        bgcolor: rowBg,
-                        transition: 'background-color 0.15s ease',
-                        '&:hover': { bgcolor: rowHoverBg },
-                        '& .MuiTableCell-root': { borderBottomColor: borderColor, py: 1.25 },
-                      }}
-                    >
-                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                        <Typography sx={{ fontSize: '0.78rem', color: textSecondary, fontFamily: 'monospace' }}>{h.grantedAt}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-                          <Avatar sx={{ width: 28, height: 28, flexShrink: 0, bgcolor: st.avatarBgLight, color: st.primaryColor, fontSize: '0.72rem', fontWeight: 700, border: `1px solid ${st.avatarBorder}` }}>
-                            {h.name[0]}
-                          </Avatar>
-                          <Box>
-                            <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: textPrimary, lineHeight: 1.2 }}>{h.name}</Typography>
-                            <Typography sx={{ fontSize: '0.68rem', color: textSecondary, fontFamily: 'monospace' }}>{h.employeeNumber}</Typography>
-                          </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ fontSize: '0.78rem', color: textSecondary, lineHeight: 1.3 }}>{h.department}</Typography>
-                        <Chip label={h.position} size="small" sx={{ mt: 0.25, height: 16, fontSize: '0.6rem', fontWeight: 700, bgcolor: st.chipBg, color: st.primaryColor, border: `1px solid ${st.avatarBorder}`, '& .MuiChip-label': { px: 0.5 } }} />
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: st.primaryColor }}>{h.mileage.toLocaleString()}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography sx={{ fontSize: '0.78rem', color: textPrimary }}>{h.reason || '—'}</Typography>
-                      </TableCell>
-                    </TableRow>
+                      {label}
+                    </TableCell>
                   ))}
-                </TableBody>
-              </Table>
-            )}
-          </Box>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filtered.map((h) => (
+                  <TableRow
+                    key={h.id}
+                    sx={{
+                      bgcolor: rowBg,
+                      transition: 'background-color 0.15s ease',
+                      '&:hover': { bgcolor: rowHoverBg },
+                      '& .MuiTableCell-root': { borderBottomColor: borderColor, py: 1.25 },
+                    }}
+                  >
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      <Typography sx={{ fontSize: '0.78rem', color: textSecondary, fontFamily: 'monospace' }}>{h.grantedAt}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                        <Avatar sx={{ width: 28, height: 28, flexShrink: 0, bgcolor: st.avatarBgLight, color: st.primaryColor, fontSize: '0.72rem', fontWeight: 700, border: `1px solid ${st.avatarBorder}` }}>
+                          {h.name[0]}
+                        </Avatar>
+                        <Box>
+                          <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: textPrimary, lineHeight: 1.2 }}>{h.name}</Typography>
+                          <Typography sx={{ fontSize: '0.68rem', color: textSecondary, fontFamily: 'monospace' }}>{h.employeeNumber}</Typography>
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Typography sx={{ fontSize: '0.78rem', color: textSecondary, lineHeight: 1.3 }}>{h.department}</Typography>
+                      <Chip label={h.position} size="small" sx={{ mt: 0.25, height: 16, fontSize: '0.6rem', fontWeight: 700, bgcolor: st.chipBg, color: st.primaryColor, border: `1px solid ${st.avatarBorder}`, '& .MuiChip-label': { px: 0.5 } }} />
+                    </TableCell>
+                    <TableCell>
+                      <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: st.primaryColor }}>{h.mileage.toLocaleString()}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography sx={{ fontSize: '0.78rem', color: textPrimary }}>{h.reason || '—'}</Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </Box>
 
       </Box>
