@@ -3,6 +3,7 @@
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Alert, Box, Snackbar } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface DraftSnackbarProps {
   open: boolean
@@ -17,6 +18,7 @@ function formatTime(date: Date) {
 
 export default function DraftSnackbar({ open, message, lastSavedAt, onClose }: DraftSnackbarProps) {
   const { isDarkMode } = useThemeMode()
+  const it = getIdeaTheme(isDarkMode)
 
   return (
     <Snackbar
@@ -34,19 +36,19 @@ export default function DraftSnackbar({ open, message, lastSavedAt, onClose }: D
           borderRadius: 2.5,
           fontWeight: 600,
           fontSize: '0.875rem',
-          bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
-          color: isDarkMode ? '#f1f5f9' : '#0f172a',
-          border: `1px solid ${isDarkMode ? 'rgba(16,185,129,0.3)' : 'rgba(16,185,129,0.25)'}`,
-          boxShadow: isDarkMode ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 32px rgba(0,0,0,0.1)',
-          '& .MuiAlert-icon': { color: '#10b981' },
-          '& .MuiAlert-action': { color: isDarkMode ? '#94a3b8' : '#64748b' },
+          bgcolor: it.snackbarBg,
+          color: it.snackbarColor,
+          border: `1px solid ${it.success.border}`,
+          boxShadow: it.snackbarShadow,
+          '& .MuiAlert-icon': { color: it.success.color },
+          '& .MuiAlert-action': { color: it.textSecondary },
         }}
       >
         {message}
         {lastSavedAt && (
           <Box
             component="span"
-            sx={{ color: isDarkMode ? '#94a3b8' : '#64748b', ml: 0.5, fontWeight: 500 }}
+            sx={{ color: it.textSecondary, ml: 0.5, fontWeight: 500 }}
           >
             · {formatTime(lastSavedAt)}
           </Box>

@@ -115,6 +115,13 @@ const dashboardDark = {
   },
 } as const
 
+// ── 전체 실행 완료율 상태 설정 (threshold 내림차순) ──
+export const COMPLETION_RATE_STATUS = [
+  { threshold: 80, label: '우수',     color: '#10b981', gradTo: '#34d399', bg: '#10b98118', border: '#10b98130' },
+  { threshold: 60, label: '보통',     color: '#f59e0b', gradTo: '#fcd34d', bg: '#f59e0b18', border: '#f59e0b30' },
+  { threshold: 0,  label: '개선 필요', color: '#ef4444', gradTo: '#f87171', bg: '#ef444418', border: '#ef444430' },
+] as const
+
 // ── 차트/랭킹용 액센트 컬러 (라이트/다크 동일) ──
 export const dashboardAccent = {
   indigo: '#6366f1',

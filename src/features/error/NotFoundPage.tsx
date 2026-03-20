@@ -5,15 +5,13 @@ import LightModeOutlined from '@mui/icons-material/LightModeOutlined'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
+import { getErrorTheme } from '@/theme/errorTheme'
 
 export default function NotFoundPage() {
   const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useThemeMode()
   const { textPrimary, textSecondary, bgBase } = usePageColors()
-
-  const indigo = isDarkMode ? '#6366f1' : '#4338ca'
-  const purple = isDarkMode ? '#a78bfa' : '#7c3aed'
-  const blobOpacity = isDarkMode ? 0.18 : 0.12
+  const t = getErrorTheme(isDarkMode)
 
   return (
     <Box
@@ -38,9 +36,9 @@ export default function NotFoundPage() {
           width: { xs: 320, md: 520 },
           height: { xs: 320, md: 520 },
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${indigo}, transparent 70%)`,
+          background: `radial-gradient(circle, ${t.blobIndigo}, transparent 70%)`,
           filter: 'blur(60px)',
-          opacity: blobOpacity,
+          opacity: t.blobOpacity,
           pointerEvents: 'none',
         }}
       />
@@ -52,9 +50,9 @@ export default function NotFoundPage() {
           width: { xs: 280, md: 440 },
           height: { xs: 280, md: 440 },
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${purple}, transparent 70%)`,
+          background: `radial-gradient(circle, ${t.blobPurple}, transparent 70%)`,
           filter: 'blur(60px)',
-          opacity: blobOpacity,
+          opacity: t.blobOpacity,
           pointerEvents: 'none',
         }}
       />
@@ -69,11 +67,9 @@ export default function NotFoundPage() {
             right: 20,
             zIndex: 2,
             color: textSecondary,
-            bgcolor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
-            '&:hover': {
-              bgcolor: isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
-            },
+            bgcolor: t.toggleBg,
+            border: `1px solid ${t.toggleBorder}`,
+            '&:hover': { bgcolor: t.toggleHoverBg },
           }}
         >
           {isDarkMode ? <LightModeOutlined fontSize="small" /> : <DarkModeOutlined fontSize="small" />}
@@ -85,7 +81,7 @@ export default function NotFoundPage() {
         sx={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: `radial-gradient(circle, ${isDarkMode ? 'rgba(148,163,184,0.07)' : 'rgba(100,116,139,0.1)'} 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle, ${t.gridDot} 1px, transparent 1px)`,
           backgroundSize: '28px 28px',
           pointerEvents: 'none',
         }}
@@ -114,9 +110,7 @@ export default function NotFoundPage() {
             fontSize: '5rem',
             lineHeight: 1,
             mb: 3,
-            filter: isDarkMode
-              ? 'drop-shadow(0 0 10px rgba(99,102,241,0.4))'
-              : 'drop-shadow(0 4px 8px rgba(67,56,202,0.2))',
+            filter: t.emojiFilter,
             userSelect: 'none',
           }}
         >
@@ -130,9 +124,7 @@ export default function NotFoundPage() {
             fontWeight: 900,
             lineHeight: 1,
             letterSpacing: '-0.05em',
-            background: isDarkMode
-              ? 'linear-gradient(135deg, #a5b4fc 0%, #c084fc 60%, #f0abfc 100%)'
-              : 'linear-gradient(135deg, #4338ca 0%, #7c3aed 60%, #a21caf 100%)',
+            background: t.gradient404,
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -149,9 +141,7 @@ export default function NotFoundPage() {
             width: 48,
             height: 3,
             borderRadius: 2,
-            background: isDarkMode
-              ? 'linear-gradient(90deg, #6366f1, #a78bfa)'
-              : 'linear-gradient(90deg, #4338ca, #7c3aed)',
+            background: t.dividerGradient,
             mb: 3,
             opacity: 0.6,
           }}
@@ -167,12 +157,7 @@ export default function NotFoundPage() {
 
         <Typography
           variant="body2"
-          sx={{
-            color: textSecondary,
-            lineHeight: 1.8,
-            mb: 4.5,
-            fontSize: '0.875rem',
-          }}
+          sx={{ color: textSecondary, lineHeight: 1.8, mb: 4.5, fontSize: '0.875rem' }}
         >
           요청하신 주소가 잘못되었거나
           <br />
@@ -190,13 +175,13 @@ export default function NotFoundPage() {
               fontWeight: 600,
               borderRadius: 2.5,
               fontSize: '0.875rem',
-              border: `1.5px solid ${isDarkMode ? 'rgba(99,102,241,0.35)' : 'rgba(67,56,202,0.3)'}`,
-              color: isDarkMode ? '#a5b4fc' : '#4338ca',
+              border: `1.5px solid ${t.outlinedBorder}`,
+              color: t.outlinedColor,
               bgcolor: 'transparent',
               transition: 'all 0.2s',
               '&:hover': {
-                border: `1.5px solid ${isDarkMode ? '#6366f1' : '#4338ca'}`,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(67,56,202,0.06)',
+                border: `1.5px solid ${t.outlinedHoverBorder}`,
+                bgcolor: t.outlinedHoverBg,
                 transform: 'translateY(-1px)',
               },
             }}
@@ -212,21 +197,13 @@ export default function NotFoundPage() {
               fontWeight: 700,
               borderRadius: 2.5,
               fontSize: '0.875rem',
-              background: isDarkMode
-                ? 'linear-gradient(135deg, #6366f1 0%, #7c3aed 100%)'
-                : 'linear-gradient(135deg, #4338ca 0%, #6d28d9 100%)',
-              color: '#fff',
-              boxShadow: isDarkMode
-                ? '0 4px 14px rgba(99,102,241,0.4)'
-                : '0 4px 14px rgba(67,56,202,0.3)',
+              background: t.btnGradient,
+              color: t.btnColor,
+              boxShadow: t.btnShadow,
               transition: 'all 0.2s',
               '&:hover': {
-                background: isDarkMode
-                  ? 'linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%)'
-                  : 'linear-gradient(135deg, #3730a3 0%, #5b21b6 100%)',
-                boxShadow: isDarkMode
-                  ? '0 6px 20px rgba(99,102,241,0.55)'
-                  : '0 6px 20px rgba(67,56,202,0.4)',
+                background: t.btnHoverGradient,
+                boxShadow: t.btnHoverShadow,
                 transform: 'translateY(-1px)',
               },
             }}

@@ -3,14 +3,11 @@ import { Box, Typography } from '@mui/material'
 import Chart from 'react-apexcharts'
 import type { ApexOptions } from 'apexcharts'
 import { useThemeMode } from '@/context/ThemeContext'
-import { getDashboardTheme } from '@/theme/dashboardTheme'
+import { getDashboardTheme, COMPLETION_RATE_STATUS, dashboardAccent } from '@/theme/dashboardTheme'
 import type { ExecutionCompletionRateProps } from '@/api/types/dashboard'
 
-const getStatus = (rate: number) => {
-  if (rate >= 80) return { label: '우수', color: '#10b981', gradTo: '#34d399', bg: '#10b98118', border: '#10b98130' }
-  if (rate >= 60) return { label: '보통', color: '#f59e0b', gradTo: '#fcd34d', bg: '#f59e0b18', border: '#f59e0b30' }
-  return { label: '개선 필요', color: '#ef4444', gradTo: '#f87171', bg: '#ef444418', border: '#ef444430' }
-}
+const getStatus = (rate: number) =>
+  COMPLETION_RATE_STATUS.find((s) => rate >= s.threshold) ?? COMPLETION_RATE_STATUS[COMPLETION_RATE_STATUS.length - 1]
 
 export default function ExecutionCompletionRate({ completionRate = 73.4 }: ExecutionCompletionRateProps) {
   const { isDarkMode } = useThemeMode()
@@ -88,7 +85,7 @@ export default function ExecutionCompletionRate({ completionRate = 73.4 }: Execu
   const STATS = [
     { label: '완료', value: `${completed}건`, color: status.color },
     { label: '전체', value: '150건', color: dt.textSecondary },
-    { label: '진행 중', value: `${150 - completed}건`, color: '#3b82f6' },
+    { label: '진행 중', value: `${150 - completed}건`, color: dashboardAccent.blue },
     { label: '완료율', value: `${completionRate}%`, color: status.color },
   ]
 

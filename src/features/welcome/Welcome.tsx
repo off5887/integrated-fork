@@ -173,7 +173,7 @@ export default function Welcome() {
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                bgcolor: '#6366f1',
+                bgcolor: t.primaryColor,
                 animation: 'pulseDot 2s ease-in-out infinite',
                 '@keyframes pulseDot': {
                   '0%, 100%': { opacity: 1, transform: 'scale(1)' },
@@ -203,8 +203,7 @@ export default function Welcome() {
               lineHeight: 1.08,
               letterSpacing: '-0.03em',
               mb: 2.5,
-              background:
-                'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)',
+              background: t.gradientTitle,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -249,12 +248,12 @@ export default function Welcome() {
                 borderRadius: 9999,
                 fontWeight: 700,
                 fontSize: '0.95rem',
-                bgcolor: '#6366f1',
-                color: '#fff',
-                boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
+                bgcolor: t.primaryBtnBg,
+                color: t.primaryBtnColor,
+                boxShadow: t.btnShadow,
                 '&:hover': {
-                  bgcolor: '#4f46e5',
-                  boxShadow: '0 12px 32px rgba(99,102,241,0.55)',
+                  bgcolor: t.primaryBtnHoverBg,
+                  boxShadow: t.btnHoverShadow,
                   transform: 'translateY(-2px)',
                 },
                 transition: 'all 0.25s ease',
@@ -266,7 +265,6 @@ export default function Welcome() {
               variant="outlined"
               size="large"
               onClick={() => {
-                localStorage.removeItem('accessToken')
                 window.location.href = '/login'
               }}
               sx={{
@@ -278,8 +276,8 @@ export default function Welcome() {
                 borderColor: t.outlineButtonBorder,
                 color: t.outlineButtonColor,
                 '&:hover': {
-                  borderColor: '#6366f1',
-                  bgcolor: 'rgba(99,102,241,0.08)',
+                  borderColor: t.primaryColor,
+                  bgcolor: t.accentBg,
                   transform: 'translateY(-2px)',
                 },
                 transition: 'all 0.25s ease',
@@ -315,7 +313,7 @@ export default function Welcome() {
               scroll
             </Typography>
             <KeyboardArrowDownIcon
-              sx={{ fontSize: '1.4rem', color: '#6366f1' }}
+              sx={{ fontSize: '1.4rem', color: t.primaryColor }}
             />
           </Box>
         </Box>

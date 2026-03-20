@@ -167,7 +167,7 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
                 px: 1.5,
                 py: 1,
                 borderRadius: 1.5,
-                border: `1px solid ${errors.emoji ? '#ef4444' : borderColor}`,
+                border: `1px solid ${errors.emoji ? st.deleteHoverColor : borderColor}`,
                 bgcolor: st.inputBg,
                 cursor: 'pointer',
                 transition: 'border-color 0.15s',
@@ -183,7 +183,7 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
               </Typography>
             </Box>
             {errors.emoji && (
-              <Typography sx={{ fontSize: '0.75rem', color: '#ef4444', mt: 0.5, ml: 0.5 }}>
+              <Typography sx={{ fontSize: '0.75rem', color: st.deleteHoverColor, mt: 0.5, ml: 0.5 }}>
                 {errors.emoji}
               </Typography>
             )}

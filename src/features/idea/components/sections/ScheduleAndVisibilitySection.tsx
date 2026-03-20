@@ -13,7 +13,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
-import { VISIBILITY_OPTIONS } from '../../config/visibilityOptions'
+import { VISIBILITY_OPTIONS } from '@/features/idea/config/visibilityOptions'
 
 interface Props {
   startDate: string

@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import { statusConfig } from '../../config/statusConfig'
+import { statusConfig } from '@/features/settings/config/statusConfig'
 import type { Idea } from '@/api/types/settings'
 
 interface Props {

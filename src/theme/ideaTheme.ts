@@ -13,6 +13,7 @@ const overlay = {
   previewDialogBg:      'rgba(0,0,0,0.94)',
   previewDialogShadow:  '0 0 80px rgba(0,0,0,0.9)',
   textColor:            '#94a3b8',
+  iconColor:            '#ffffff',
 } as const
 
 const ideaLight = {
@@ -56,8 +57,9 @@ const ideaLight = {
   backdropBg: 'rgba(0,0,0,0.35)',
 
   // ── 스낵바 ──
-  snackbarBg:    '#ffffff',
-  snackbarColor: '#0f172a',
+  snackbarBg:     '#ffffff',
+  snackbarColor:  '#0f172a',
+  snackbarShadow: '0 8px 32px rgba(0,0,0,0.1)',
 
   // ── 다이얼로그/모달 ──
   dialogShadow:        '0 24px 64px rgba(0,0,0,0.12)',
@@ -90,6 +92,8 @@ const ideaLight = {
     btnDisabledBg:      'rgba(99,102,241,0.3)',
     btnHoverShadow:     '0 4px 16px rgba(99,102,241,0.35)',
     btnModalHoverShadow:'0 4px 14px rgba(99,102,241,0.4)',
+    btnColor:           '#ffffff',
+    dismissBtnBorder:   'rgba(203,213,225,0.7)',
   },
 
   // ── 퍼플(공동제안자/비공개) 액센트 ──
@@ -170,8 +174,9 @@ const ideaDark = {
   backdropBg: 'rgba(0,0,0,0.6)',
 
   // ── 스낵바 ──
-  snackbarBg:    'rgba(22,30,46,0.98)',
-  snackbarColor: '#f1f5f9',
+  snackbarBg:     'rgba(22,30,46,0.98)',
+  snackbarColor:  '#f1f5f9',
+  snackbarShadow: '0 8px 32px rgba(0,0,0,0.5)',
 
   // ── 다이얼로그/모달 ──
   dialogShadow:        '0 24px 64px rgba(0,0,0,0.6)',
@@ -204,6 +209,8 @@ const ideaDark = {
     btnDisabledBg:      'rgba(99,102,241,0.4)',
     btnHoverShadow:     '0 4px 16px rgba(99,102,241,0.35)',
     btnModalHoverShadow:'0 4px 14px rgba(99,102,241,0.4)',
+    btnColor:           '#ffffff',
+    dismissBtnBorder:   'rgba(148,163,184,0.25)',
   },
 
   // ── 퍼플(공동제안자/비공개) 액센트 ──

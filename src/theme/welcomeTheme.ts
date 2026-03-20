@@ -86,6 +86,24 @@ const welcomeLight = {
 
   // ── 다크 모드 토글 아이콘 색 ──
   toggleIconColor: '#64748b',
+
+  // ── Primary 버튼 ──
+  primaryColor: '#6366f1',
+  primaryBtnBg: '#6366f1',
+  primaryBtnHoverBg: '#4f46e5',
+  primaryBtnColor: '#ffffff',
+
+  // ── 그라디언트 ──
+  gradientTitle: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)',
+  gradientStrip: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+  gradientHeading: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  gradientBar: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+
+  // ── 그림자 ──
+  logoShadow: '0 12px 40px rgba(99,102,241,0.5)',
+  logoHoverShadow: '0 15px 50px rgba(99,102,241,0.65)',
+  btnShadow: '0 8px 24px rgba(99,102,241,0.4)',
+  btnHoverShadow: '0 12px 32px rgba(99,102,241,0.55)',
 } as const
 
 const welcomeDark = {
@@ -173,6 +191,24 @@ const welcomeDark = {
 
   // ── 다크 모드 토글 아이콘 색 ──
   toggleIconColor: '#fbbf24',
+
+  // ── Primary 버튼 ──
+  primaryColor: '#818cf8',
+  primaryBtnBg: '#6366f1',
+  primaryBtnHoverBg: '#4f46e5',
+  primaryBtnColor: '#ffffff',
+
+  // ── 그라디언트 (모드 무관 고정) ──
+  gradientTitle: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)',
+  gradientStrip: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+  gradientHeading: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  gradientBar: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+
+  // ── 그림자 ──
+  logoShadow: '0 12px 40px rgba(99,102,241,0.5)',
+  logoHoverShadow: '0 15px 50px rgba(99,102,241,0.65)',
+  btnShadow: '0 8px 24px rgba(99,102,241,0.4)',
+  btnHoverShadow: '0 12px 32px rgba(99,102,241,0.55)',
 } as const
 
 export type WelcomeTheme = typeof welcomeLight

@@ -8,7 +8,7 @@ import { Box, Chip, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { getJudgeTheme, JUDGE_STAT_CONFIG } from '@/theme/judgeTheme'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { judgeData } from '@/api/mock/judge'
 import { Proposal } from '@/api/types/judge'
@@ -183,7 +183,7 @@ export default function Judge() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
+              boxShadow: theme.iconBoxShadow,
             }}
           >
             <AssignmentTurnedInIcon sx={{ color: theme.primaryBtnColor, fontSize: '1.4rem' }} />
@@ -217,46 +217,27 @@ export default function Judge() {
 
         {/* 내 결재 현황 요약 */}
         <Box sx={{ display: 'flex', gap: { xs: 1, sm: 1.5 }, mb: 3.5, flexWrap: 'wrap' }}>
-          <StatCard
-            label="심사대기"
-            count={stats.심사대기}
-            color="#f59e0b"
-            bg="rgba(245,158,11,0.08)"
-            border="rgba(245,158,11,0.25)"
-            icon={<HourglassEmptyIcon sx={{ fontSize: '1.1rem' }} />}
-            active={statusFilter === '심사대기'}
-            onClick={() => handleFilterChange(statusFilter === '심사대기' ? '전체' : '심사대기')}
-          />
-          <StatCard
-            label="심사중"
-            count={stats.심사중}
-            color="#6366f1"
-            bg="rgba(99,102,241,0.08)"
-            border="rgba(99,102,241,0.25)"
-            icon={<PendingActionsIcon sx={{ fontSize: '1.1rem' }} />}
-            active={statusFilter === '심사중'}
-            onClick={() => handleFilterChange(statusFilter === '심사중' ? '전체' : '심사중')}
-          />
-          <StatCard
-            label="승인"
-            count={stats.승인}
-            color="#10b981"
-            bg="rgba(16,185,129,0.08)"
-            border="rgba(16,185,129,0.25)"
-            icon={<CheckCircleOutlineIcon sx={{ fontSize: '1.1rem' }} />}
-            active={statusFilter === '승인'}
-            onClick={() => handleFilterChange(statusFilter === '승인' ? '전체' : '승인')}
-          />
-          <StatCard
-            label="반려"
-            count={stats.반려}
-            color="#ef4444"
-            bg="rgba(239,68,68,0.08)"
-            border="rgba(239,68,68,0.25)"
-            icon={<DoNotDisturbIcon sx={{ fontSize: '1.1rem' }} />}
-            active={statusFilter === '반려'}
-            onClick={() => handleFilterChange(statusFilter === '반려' ? '전체' : '반려')}
-          />
+          {JUDGE_STAT_CONFIG.map(({ key, color, bg, border }) => {
+            const iconMap = {
+              심사대기: <HourglassEmptyIcon sx={{ fontSize: '1.1rem' }} />,
+              심사중: <PendingActionsIcon sx={{ fontSize: '1.1rem' }} />,
+              승인: <CheckCircleOutlineIcon sx={{ fontSize: '1.1rem' }} />,
+              반려: <DoNotDisturbIcon sx={{ fontSize: '1.1rem' }} />,
+            } as const
+            return (
+              <StatCard
+                key={key}
+                label={key}
+                count={stats[key]}
+                color={color}
+                bg={bg}
+                border={border}
+                icon={iconMap[key]}
+                active={statusFilter === key}
+                onClick={() => handleFilterChange(statusFilter === key ? '전체' : key)}
+              />
+            )
+          })}
         </Box>
 
         {/* 필터 안내 */}

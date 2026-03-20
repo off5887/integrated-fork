@@ -20,7 +20,7 @@ import { OrgMember } from '@/api/types/reviewer'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import { levelConfig } from '../../config/levelConfig'
+import { levelConfig } from '@/features/settings/config/levelConfig'
 
 interface Props {
   members: OrgMember[]

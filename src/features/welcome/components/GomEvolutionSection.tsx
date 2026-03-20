@@ -97,7 +97,7 @@ export default function GomEvolutionSection({
         <Box
           sx={{
             height: 3,
-            background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+            background: t.gradientStrip,
           }}
         />
 
@@ -112,7 +112,7 @@ export default function GomEvolutionSection({
                 letterSpacing: '-0.03em',
                 lineHeight: 1.1,
                 mb: 1,
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                background: t.gradientHeading,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -230,7 +230,7 @@ export default function GomEvolutionSection({
                 bgcolor: t.progressBg,
                 '& .MuiLinearProgress-bar': {
                   borderRadius: 9999,
-                  background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                  background: t.gradientBar,
                 },
               }}
             />
@@ -271,12 +271,12 @@ export default function GomEvolutionSection({
                 py: 1.25,
                 fontWeight: 700,
                 fontSize: '0.9rem',
-                bgcolor: '#6366f1',
-                color: '#fff',
-                boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+                bgcolor: t.primaryBtnBg,
+                color: t.primaryBtnColor,
+                boxShadow: t.btnShadow,
                 '&:hover': {
-                  bgcolor: '#4f46e5',
-                  boxShadow: '0 10px 28px rgba(99,102,241,0.5)',
+                  bgcolor: t.primaryBtnHoverBg,
+                  boxShadow: t.btnHoverShadow,
                   transform: 'translateY(-2px)',
                 },
                 transition: 'all 0.25s ease',

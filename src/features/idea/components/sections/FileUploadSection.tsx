@@ -61,7 +61,7 @@ export default function FileUploadSection({
           <Box
             sx={{
               width: 26, height: 26, borderRadius: '50%',
-              bgcolor: it.accent.color, color: '#fff',
+              bgcolor: it.accent.color, color: it.accent.btnColor,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
             }}
@@ -162,7 +162,7 @@ export default function FileUploadSection({
                           '&:hover': { opacity: 1 },
                         }}
                       >
-                        <ZoomInIcon sx={{ color: '#fff', fontSize: 36 }} />
+                        <ZoomInIcon sx={{ color: it.overlay.iconColor, fontSize: 36 }} />
                       </Box>
                     )}
 
@@ -173,7 +173,7 @@ export default function FileUploadSection({
                         position: 'absolute', top: 4, right: 4,
                         width: 22, height: 22,
                         bgcolor: it.overlay.deleteButtonBg,
-                        color: '#fff',
+                        color: it.overlay.iconColor,
                         '&:hover': { bgcolor: it.overlay.deleteButtonHoverBg },
                         transition: 'all 0.15s ease',
                       }}
@@ -216,7 +216,7 @@ export default function FileUploadSection({
           size="small"
           sx={{
             position: 'absolute', top: 12, right: 12,
-            color: '#fff', bgcolor: it.overlay.closeBg, zIndex: 10,
+            color: it.overlay.iconColor, bgcolor: it.overlay.closeBg, zIndex: 10,
             '&:hover': { bgcolor: it.overlay.closeHoverBg },
           }}
         >

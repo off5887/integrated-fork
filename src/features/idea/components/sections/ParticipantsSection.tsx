@@ -8,7 +8,7 @@ import PublicIcon from '@mui/icons-material/Public'
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
-import { VISIBILITY_OPTIONS } from '../../config/visibilityOptions'
+import { VISIBILITY_OPTIONS } from '@/features/idea/config/visibilityOptions'
 
 interface Props {
   reviewer: string[]
@@ -35,7 +35,7 @@ export default function ParticipantsSection({
         <Box
           sx={{
             width: 26, height: 26, borderRadius: '50%',
-            bgcolor: it.accent.color, color: '#fff',
+            bgcolor: it.accent.color, color: it.accent.btnColor,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '0.75rem', fontWeight: 800, flexShrink: 0,
           }}
@@ -68,7 +68,7 @@ export default function ParticipantsSection({
                   aria-label={`${reviewer.length}명 선택됨`}
                   sx={{
                     minWidth: 20, height: 20, borderRadius: '50%', px: 0.5,
-                    bgcolor: it.accent.color, color: '#fff',
+                    bgcolor: it.accent.color, color: it.accent.btnColor,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '0.68rem', fontWeight: 800,
                   }}
@@ -145,7 +145,7 @@ export default function ParticipantsSection({
                       aria-hidden
                       sx={{
                         width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                        bgcolor: it.accent.color, color: '#fff',
+                        bgcolor: it.accent.color, color: it.accent.btnColor,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '0.78rem', fontWeight: 700,
                       }}

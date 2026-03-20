@@ -16,7 +16,6 @@ interface DraftRestoreBannerProps {
 export default function DraftRestoreBanner({ savedDraft, onRestore, onDiscard }: DraftRestoreBannerProps) {
   const { isDarkMode } = useThemeMode()
   const it = getIdeaTheme(isDarkMode)
-  const { textPrimary, textSecondary } = it
 
   return (
     <Box
@@ -28,17 +27,17 @@ export default function DraftRestoreBanner({ savedDraft, onRestore, onDiscard }:
         py: 1.75,
         mb: 2.5,
         borderRadius: 2.5,
-        bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)',
-        border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.18)'}`,
+        bgcolor: it.accent.bg,
+        border: `1px solid ${it.accent.border}`,
         flexWrap: 'wrap',
       }}
     >
-      <HistoryIcon sx={{ fontSize: '1.2rem', color: '#6366f1', flexShrink: 0 }} />
+      <HistoryIcon sx={{ fontSize: '1.2rem', color: it.accent.color, flexShrink: 0 }} />
       <Box flex={1} minWidth={0}>
-        <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: textPrimary }}>
+        <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: it.textPrimary }}>
           작성 중인 임시저장 내용이 있습니다
         </Typography>
-        <Typography sx={{ fontSize: '0.75rem', color: textSecondary }}>
+        <Typography sx={{ fontSize: '0.75rem', color: it.textSecondary }}>
           {new Date(savedDraft.savedAt).toLocaleString('ko-KR', {
             month: 'long', day: 'numeric',
             hour: '2-digit', minute: '2-digit',
@@ -56,10 +55,10 @@ export default function DraftRestoreBanner({ savedDraft, onRestore, onDiscard }:
             borderRadius: 1.5,
             px: 1.75,
             py: 0.5,
-            borderColor: isDarkMode ? 'rgba(148,163,184,0.25)' : 'rgba(203,213,225,0.7)',
-            color: textSecondary,
+            borderColor: it.accent.dismissBtnBorder,
+            color: it.textSecondary,
             textTransform: 'none',
-            '&:hover': { borderColor: textSecondary, bgcolor: 'transparent' },
+            '&:hover': { borderColor: it.textSecondary, bgcolor: 'transparent' },
           }}
         >
           무시
@@ -75,11 +74,11 @@ export default function DraftRestoreBanner({ savedDraft, onRestore, onDiscard }:
             borderRadius: 1.5,
             px: 1.75,
             py: 0.5,
-            bgcolor: '#6366f1',
-            color: '#fff',
+            bgcolor: it.accent.color,
+            color: it.accent.btnColor,
             boxShadow: 'none',
             textTransform: 'none',
-            '&:hover': { bgcolor: '#4f46e5', boxShadow: '0 4px 12px rgba(99,102,241,0.35)' },
+            '&:hover': { bgcolor: it.accent.hover, boxShadow: it.accent.btnHoverShadow },
           }}
         >
           불러오기

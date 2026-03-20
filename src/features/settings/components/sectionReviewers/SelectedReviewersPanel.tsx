@@ -12,7 +12,7 @@ import { SelectedReviewer } from '@/api/types/reviewer'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import { levelConfig } from '../../config/levelConfig'
+import { levelConfig } from '@/features/settings/config/levelConfig'
 
 interface Props {
   selected: SelectedReviewer[]

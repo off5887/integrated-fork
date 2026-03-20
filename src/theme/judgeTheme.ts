@@ -95,6 +95,9 @@ const judgeLight = {
   attachmentBtnColor:    '#4338ca',
   attachmentBtnHoverBg:  'rgba(99,102,241,0.06)',
 
+  // ── 헤더 아이콘 박스 그림자 ──────────────────────────────────────────────
+  iconBoxShadow: '0 4px 16px rgba(99,102,241,0.35)',
+
   // ── StatCard ──────────────────────────────────────────────────────────────
   statCardInactiveBg:     '#ffffff',
   statCardInactiveBorder: 'rgba(203,213,225,0.5)',
@@ -178,6 +181,14 @@ const judgeLight = {
   closeIconHoverBg: 'rgba(239,68,68,0.08)',
 } as const
 
+// ── Judge 내 결재 현황 StatCard 상태별 색상 (light/dark 동일) ────────────────
+export const JUDGE_STAT_CONFIG = [
+  { key: '심사대기', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)',    border: 'rgba(245,158,11,0.25)' },
+  { key: '심사중',   color: '#6366f1', bg: 'rgba(99,102,241,0.08)',    border: 'rgba(99,102,241,0.25)' },
+  { key: '승인',     color: '#10b981', bg: 'rgba(16,185,129,0.08)',    border: 'rgba(16,185,129,0.25)' },
+  { key: '반려',     color: '#ef4444', bg: 'rgba(239,68,68,0.08)',     border: 'rgba(239,68,68,0.25)'  },
+] as const
+
 const judgeDark = {
   accentGradient:          'linear-gradient(90deg, #6366f1, #8b5cf6)',
   accentGradientExtended:  'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
@@ -254,6 +265,8 @@ const judgeDark = {
   attachmentBtnBorder:   'rgba(99,102,241,0.35)',
   attachmentBtnColor:    '#a5b4fc',
   attachmentBtnHoverBg:  'rgba(99,102,241,0.1)',
+
+  iconBoxShadow: '0 4px 16px rgba(99,102,241,0.35)',
 
   statCardInactiveBg:     'rgba(22,30,46,0.6)',
   statCardInactiveBorder: 'rgba(148,163,184,0.1)',
