@@ -2,6 +2,7 @@
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
 import PendingActionsIcon from '@mui/icons-material/PendingActions'
 import { Box, Chip, Typography } from '@mui/material'
@@ -219,11 +220,25 @@ export default function Judge() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' },
+            gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(5, 1fr)' },
             gap: { xs: 1, sm: 1.5 },
             mb: { xs: 2.5, sm: 3.5 },
           }}
         >
+          {/* 전체 버튼 — 모바일에서 2칸 너비 */}
+          <Box sx={{ gridColumn: { xs: '1 / -1', sm: 'auto' } }}>
+            <StatCard
+              label="전체"
+              count={myProposals.length}
+              color={theme.primaryIconColor}
+              bg={theme.totalChipBg}
+              border={theme.totalChipBorder}
+              icon={<FormatListBulletedIcon sx={{ fontSize: '1.1rem' }} />}
+              active={statusFilter === '전체'}
+              onClick={() => handleFilterChange('전체')}
+            />
+          </Box>
+
           {JUDGE_STAT_CONFIG.map(({ key, color, bg, border }) => {
             const iconMap = {
               심사대기: <HourglassEmptyIcon sx={{ fontSize: '1.1rem' }} />,
