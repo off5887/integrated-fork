@@ -57,8 +57,121 @@ export default function JudgeTable({
     >
       <Box sx={{ height: 3, background: theme.accentGradientExtended }} />
 
-      {/* 테이블 — 모바일 수평 스크롤 */}
-      <Box sx={{ overflowX: 'auto' }}>
+      {/* 모바일 카드 뷰 (xs only) */}
+      <Box sx={{ display: { xs: 'flex', sm: 'none' }, flexDirection: 'column', gap: 1.25, p: 1.5 }}>
+        {displayedData.map((item) => {
+          const status = statusConfig[item.status]
+          const isPending = item.status === '심사대기' || item.status === '심사중'
+          return (
+            <Box
+              key={item.id}
+              onClick={() => onRowClick(item)}
+              sx={{
+                p: 2,
+                borderRadius: 2.5,
+                border: `1.5px solid ${item.transferredFrom ? theme.transferredBadgeBorder : colors.borderColor}`,
+                bgcolor: item.transferredFrom ? theme.transferredRowBg : colors.cardBg,
+                boxShadow: item.transferredFrom ? theme.transferredRowShadow : colors.shadowSmall,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                '&:hover': {
+                  bgcolor: item.transferredFrom ? theme.transferredRowHover : colors.rowHoverBg,
+                },
+              }}
+            >
+              {/* 제목 + 상태 */}
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 1 }}>
+                <Typography
+                  sx={{
+                    fontSize: '0.88rem', fontWeight: 600, color: colors.textPrimary,
+                    flex: 1, minWidth: 0, lineHeight: 1.4,
+                  }}
+                >
+                  {item.title}
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, alignItems: 'flex-end', flexShrink: 0 }}>
+                  <Chip
+                    label={status.label}
+                    size="small"
+                    sx={{ bgcolor: status.bg, color: status.color, border: `1px solid ${status.border}`, fontWeight: 700, fontSize: '0.68rem', height: 22 }}
+                  />
+                  <Chip
+                    label={`${item.reviewStage}차 심사`}
+                    size="small"
+                    sx={{ bgcolor: stageConfig[item.reviewStage].bg, color: stageConfig[item.reviewStage].color, border: `1px solid ${stageConfig[item.reviewStage].border}`, fontWeight: 600, fontSize: '0.62rem', height: 18 }}
+                  />
+                </Box>
+              </Box>
+
+              {/* 이관 배지 */}
+              {item.transferredFrom && (
+                <Box
+                  sx={{
+                    display: 'inline-flex', alignItems: 'center', gap: 0.4, mb: 1,
+                    px: 0.8, py: 0.25, borderRadius: 1,
+                    bgcolor: theme.transferredBadgeBg, border: `1px solid ${theme.transferredBadgeBorder}`,
+                  }}
+                >
+                  <SwapHorizIcon sx={{ fontSize: '0.62rem', color: theme.transferredColor }} />
+                  <Typography sx={{ fontSize: '0.62rem', fontWeight: 700, color: theme.transferredColor }}>
+                    이관됨 · {item.transferredFrom}
+                  </Typography>
+                </Box>
+              )}
+
+              {/* 메타 + 버튼 */}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                  <Typography sx={{ fontSize: '0.74rem', color: colors.textSecondary }}>
+                    {item.proposers.join(', ')}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.7rem', color: colors.textSecondary, opacity: 0.5 }}>·</Typography>
+                  <Typography sx={{ fontSize: '0.74rem', color: colors.textSecondary }}>
+                    {item.submittedAt}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 0.5 }} onClick={(e) => e.stopPropagation()}>
+                  <Tooltip title={isPending ? `결재자 변경 (${item.reviewer})` : '완료된 항목은 변경 불가'}>
+                    <Box component="span">
+                      <IconButton
+                        size="small"
+                        disabled={!isPending}
+                        onClick={(e) => { e.stopPropagation(); onReviewerChangeClick(item) }}
+                        sx={{
+                          width: 30, height: 30,
+                          color: isPending ? theme.reviewerBtnColor : colors.textSecondary,
+                          bgcolor: isPending ? theme.reviewerBtnBg : 'transparent',
+                          border: isPending ? `1px solid ${theme.reviewerBtnBorder}` : '1px solid transparent',
+                          '&:hover': { bgcolor: theme.reviewerBtnHoverBg, borderColor: theme.reviewerBtnHoverBorder, color: theme.primaryIconColor },
+                          '&.Mui-disabled': { opacity: 0.28 },
+                        }}
+                      >
+                        <SwapHorizIcon sx={{ fontSize: '0.9rem' }} />
+                      </IconButton>
+                    </Box>
+                  </Tooltip>
+                  <Tooltip title="상세 보기">
+                    <IconButton
+                      size="small"
+                      onClick={(e) => { e.stopPropagation(); onRowClick(item) }}
+                      sx={{
+                        width: 30, height: 30,
+                        color: colors.textSecondary,
+                        '&:hover': { bgcolor: theme.viewBtnHoverBg, color: theme.primaryIconColor },
+                      }}
+                    >
+                      <OpenInNewIcon sx={{ fontSize: '0.9rem' }} />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Box>
+            </Box>
+          )
+        })}
+      </Box>
+
+      {/* 테이블 뷰 (sm+) */}
+      <Box sx={{ display: { xs: 'none', sm: 'block' }, overflowX: 'auto' }}>
         <Table sx={{ minWidth: 680 }}>
           <TableHead>
             <TableRow sx={{ bgcolor: colors.headerBg }}>

@@ -173,34 +173,34 @@ export default function Judge() {
     >
       <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
         {/* 페이지 헤더 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, mb: { xs: 2.5, md: 4 } }}>
           <Box
             sx={{
-              width: 44,
-              height: 44,
+              width: { xs: 38, sm: 44 },
+              height: { xs: 38, sm: 44 },
               borderRadius: 2.5,
               background: theme.accentGradientDiag,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexShrink: 0,
               boxShadow: theme.iconBoxShadow,
             }}
           >
-            <AssignmentTurnedInIcon sx={{ color: theme.primaryBtnColor, fontSize: '1.4rem' }} />
+            <AssignmentTurnedInIcon sx={{ color: theme.primaryBtnColor, fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
           </Box>
-          <Box>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
             <Typography
-              variant="h5"
               fontWeight={800}
-              sx={{ color: colors.textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
+              sx={{ color: colors.textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2, fontSize: { xs: '1.15rem', sm: '1.5rem' } }}
             >
               심사하기
             </Typography>
-            <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+            <Typography variant="caption" sx={{ color: colors.textSecondary, display: { xs: 'none', sm: 'block' } }}>
               제출된 제안을 검토하고 심사 결과를 입력하세요
             </Typography>
           </Box>
-          <Box sx={{ ml: 'auto' }}>
+          <Box sx={{ flexShrink: 0 }}>
             <Chip
               label={`전체 ${myProposals.length}건`}
               size="small"
@@ -208,7 +208,7 @@ export default function Judge() {
                 bgcolor: theme.totalChipBg,
                 color: theme.totalChipColor,
                 fontWeight: 700,
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 border: `1px solid ${theme.totalChipBorder}`,
               }}
             />
@@ -216,7 +216,14 @@ export default function Judge() {
         </Box>
 
         {/* 내 결재 현황 요약 */}
-        <Box sx={{ display: 'flex', gap: { xs: 1, sm: 1.5 }, mb: 3.5, flexWrap: 'wrap' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' },
+            gap: { xs: 1, sm: 1.5 },
+            mb: { xs: 2.5, sm: 3.5 },
+          }}
+        >
           {JUDGE_STAT_CONFIG.map(({ key, color, bg, border }) => {
             const iconMap = {
               심사대기: <HourglassEmptyIcon sx={{ fontSize: '1.1rem' }} />,
