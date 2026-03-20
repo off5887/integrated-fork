@@ -12,11 +12,11 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { getLoginErrorMessage, useLoginMutation } from '@/api/queries/useLoginMutation'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getLoginColors, type LoginColors } from '@/theme/loginTheme'
 import { DEMO_ACCOUNTS } from '@/api/mock/auth'
+import type { DemoAccount } from '@/api/types/auth'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getLoginColors, ROLE_COLORS, type LoginColors } from '@/theme/loginTheme'
+import { useLogin } from '../auth/hooks/useLogin'
 
 // ─── LoginField ───────────────────────────────────────────────────────────────
 
@@ -112,18 +112,13 @@ function LoginLogo({ colors }: { colors: LoginColors }) {
 
 // ─── DemoHint ─────────────────────────────────────────────────────────────────
 
-const ROLE_COLOR: Record<string, string> = {
-  user:     '#3b82f6',
-  reviewer: '#8b5cf6',
-  admin:    '#10b981',
-}
-
 interface DemoHintProps {
+  accounts: DemoAccount[]
   colors: LoginColors
   onSelect: (id: string, password: string) => void
 }
 
-function DemoHint({ colors, onSelect }: DemoHintProps) {
+function DemoHint({ accounts, colors, onSelect }: DemoHintProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -178,7 +173,7 @@ function DemoHint({ colors, onSelect }: DemoHintProps) {
 
       <Collapse in={open}>
         <Box sx={{ px: 2, pb: 1.5, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-        {DEMO_ACCOUNTS.map((account) => (
+        {accounts.map((account) => (
           <Box
             key={account.id}
             onClick={() => onSelect(account.id, account.password)}
@@ -196,17 +191,17 @@ function DemoHint({ colors, onSelect }: DemoHintProps) {
               border: `1px solid transparent`,
               transition: 'all 0.15s',
               '&:hover': {
-                bgcolor: `${ROLE_COLOR[account.profile.role]}18`,
-                borderColor: `${ROLE_COLOR[account.profile.role]}40`,
+                bgcolor: `${ROLE_COLORS[account.profile.role]}18`,
+                borderColor: `${ROLE_COLORS[account.profile.role]}40`,
               },
-              '&:focus-visible': { outline: `2px solid ${ROLE_COLOR[account.profile.role]}` },
+              '&:focus-visible': { outline: `2px solid ${ROLE_COLORS[account.profile.role]}` },
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Box
                 sx={{
                   width: 8, height: 8, borderRadius: '50%',
-                  bgcolor: ROLE_COLOR[account.profile.role],
+                  bgcolor: ROLE_COLORS[account.profile.role],
                   flexShrink: 0,
                 }}
               />
@@ -244,17 +239,7 @@ export default function Login() {
 
   const { isDarkMode, toggleTheme } = useThemeMode()
   const colors = getLoginColors(isDarkMode)
-  const mutation = useLoginMutation()
-  const navigate = useNavigate()
-
-  const loginWithDemo = (id: string, pw: string) => {
-    const account = DEMO_ACCOUNTS.find((a) => a.id === id && a.password === pw)
-    if (!account) return false
-    localStorage.setItem('accessToken', `demo-token-${account.profile.role}`)
-    localStorage.setItem('userProfile', JSON.stringify(account.profile))
-    navigate('/dashboard')
-    return true
-  }
+  const { login, isPending } = useLogin()
 
   const handleDemoSelect = (id: string, pw: string) => {
     setEmployeeId(id)
@@ -264,27 +249,8 @@ export default function Login() {
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     setErrorMsg('')
-
-    if (!employeeId.trim()) { setErrorMsg('사번을 입력해주세요.'); return }
-    if (!password.trim()) { setErrorMsg('비밀번호를 입력해주세요.'); return }
-
-    if (loginWithDemo(employeeId, password)) return
-
-    try {
-      const data = await mutation.mutateAsync({ employeeId, password })
-      localStorage.setItem('accessToken', data.token)
-      // position, department, role은 내정보 API 연동 전까지 기본값
-      localStorage.setItem('userProfile', JSON.stringify({
-        employeeId: data.employeeId,
-        name: data.name,
-        position: '',
-        department: '',
-        role: 'user',
-      }))
-      navigate('/dashboard')
-    } catch (err: unknown) {
-      setErrorMsg(getLoginErrorMessage(err))
-    }
+    const error = await login(employeeId, password)
+    if (error) setErrorMsg(error)
   }
 
   return (
@@ -348,7 +314,7 @@ export default function Login() {
         <CardContent sx={{ p: { xs: 4, sm: 6 }, pt: 8, pb: 6 }}>
           <LoginLogo colors={colors} />
 
-          <DemoHint colors={colors} onSelect={handleDemoSelect} />
+          <DemoHint accounts={DEMO_ACCOUNTS} colors={colors} onSelect={handleDemoSelect} />
 
           {errorMsg && (
             <Box
@@ -390,7 +356,7 @@ export default function Login() {
               type="submit"
               variant="contained"
               disableElevation
-              disabled={mutation.isPending}
+              disabled={isPending}
               sx={{
                 py: 1.8,
                 borderRadius: 3,
@@ -413,7 +379,7 @@ export default function Login() {
                 },
               }}
             >
-              {mutation.isPending ? (
+              {isPending ? (
                 <>
                   <CircularProgress size={20} color="inherit" sx={{ mr: 1.5 }} />
                   로그인 중...

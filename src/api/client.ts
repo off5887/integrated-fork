@@ -13,28 +13,15 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
     ...config,
   })
 
-  // 요청 인터셉터 (토큰 넣기 등 나중에 확장 가능)
-  axiosInstance.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem('accessToken')
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
-
-      return config
-    },
-    (error) => Promise.reject(error),
-  )
-
   // 응답 인터셉터
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
       const isLoginEndpoint = error.config?.url?.includes('/auth/login')
-      // 로그인 엔드포인트 401은 뮤테이션 catch에서 직접 처리 (에러 메시지 표시)
-      if (error.response?.status === 401 && !isLoginEndpoint) {
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('userProfile')
+      // /users/me 401은 useCurrentUserQuery에서 null 반환으로 처리 (ProtectedRoute가 리다이렉트)
+      const isMeEndpoint = error.config?.url?.includes('/users/me')
+      if (error.response?.status === 401 && !isLoginEndpoint && !isMeEndpoint) {
+        localStorage.removeItem('userProfile') // 데모 계정 정리
         window.location.href = '/login'
       }
       return Promise.reject(error)

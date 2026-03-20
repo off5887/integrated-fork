@@ -32,7 +32,6 @@ export interface LoginRequest {
 
 /** /api/auth/login 응답의 data 필드 */
 export interface LoginResponse {
-  token: string
   employeeId: string
   name: string
 }

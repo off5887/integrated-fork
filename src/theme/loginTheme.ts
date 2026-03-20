@@ -1,5 +1,12 @@
 // src/theme/loginTheme.ts
 // 로그인 페이지 전용 라이트/다크 색상 토큰
+import type { UserRole } from '@/api/types/auth'
+
+export const ROLE_COLORS: Record<UserRole, string> = {
+  user: '#3b82f6',
+  reviewer: '#8b5cf6',
+  admin: '#10b981',
+}
 
 export function getLoginColors(isDarkMode: boolean) {
   return {

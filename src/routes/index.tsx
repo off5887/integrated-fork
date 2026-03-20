@@ -13,7 +13,7 @@ import ProtectedRoute from '@/components/common/routing/ProtectedRoute'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
-import { isAuthenticated } from '@/utils/auth'
+import { useCurrentUserQuery } from '@/api/queries/useCurrentUser'
 
 const Login = lazy(() => import('@/features/auth/Login'))
 const Dashboard = lazy(() => import('@/features/dashboard/Dashboard'))
@@ -43,13 +43,11 @@ function RootLayout() {
   )
 }
 
-// 루트("/") 리디렉트 — 렌더 시점에 인증 여부 확인
+// 루트("/") 리디렉트 — 인증 여부 확인 후 분기
 function RootRedirect() {
-  return isAuthenticated() ? (
-    <Navigate to="/dashboard" replace />
-  ) : (
-    <Navigate to="/login" replace />
-  )
+  const { data: user, isLoading } = useCurrentUserQuery()
+  if (isLoading) return <LoadingSpinner />
+  return user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
 }
 
 export const router = createBrowserRouter(
