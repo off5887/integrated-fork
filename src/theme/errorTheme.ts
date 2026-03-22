@@ -36,7 +36,7 @@ const errorLight = {
   btnShadow: '0 4px 14px rgba(67,56,202,0.3)',
   btnHoverGradient: 'linear-gradient(135deg, #3730a3 0%, #5b21b6 100%)',
   btnHoverShadow: '0 6px 20px rgba(67,56,202,0.4)',
-} as const
+}
 
 const errorDark = {
   // ── 배경 블롭 ──
@@ -73,7 +73,7 @@ const errorDark = {
   btnShadow: '0 4px 14px rgba(99,102,241,0.4)',
   btnHoverGradient: 'linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%)',
   btnHoverShadow: '0 6px 20px rgba(99,102,241,0.55)',
-} as const
+}
 
 export type ErrorTheme = typeof errorLight
 
