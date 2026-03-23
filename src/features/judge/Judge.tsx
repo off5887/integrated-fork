@@ -175,7 +175,7 @@ export default function Judge() {
     >
       <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
         {/* 페이지 헤더 */}
-        <Box sx={{ mb: { xs: 2.5, md: 4 } }}>
+        <Box sx={{ mb: { xs: 3.5, md: 5 }, pt: { xs: 0.5, md: 1 } }}>
           <PageHeader
             icon={AssignmentTurnedInIcon}
             title="심사하기"

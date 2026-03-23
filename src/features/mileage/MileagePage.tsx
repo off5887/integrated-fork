@@ -96,7 +96,8 @@ export default function MileagePage() {
       <Box
         sx={{
           px: { xs: 2, md: 5 },
-          py: { xs: 3, md: 4 },
+          pt: { xs: 4, md: 5 },
+          pb: { xs: 4, md: 5 },
           maxWidth: 1440, mx: 'auto',
           minHeight: '100vh',
           color: t.textPrimary,

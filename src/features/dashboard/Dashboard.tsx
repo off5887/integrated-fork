@@ -37,8 +37,8 @@ export default function RealDashboard() {
         component="header"
         sx={{
           px: { xs: 3, md: 5 },
-          pt: { xs: 3, md: 4 },
-          pb: { xs: 2, md: 3 },
+          pt: { xs: 4, md: 5 },
+          pb: { xs: 3, md: 4 },
           borderBottom: `1px solid ${dt.borderColor}`,
           bgcolor: dt.headerBg,
           backdropFilter: 'blur(12px)',

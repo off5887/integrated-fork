@@ -113,7 +113,7 @@ export default function IdeaBrowse() {
       {/* ── 헤더 + 필터 ─────────────────────────────────────── */}
       <Box
         sx={{
-          px: { xs: 2, sm: 3, md: 4 }, pt: { xs: 3, md: 4 }, pb: 3,
+          px: { xs: 2, sm: 3, md: 4 }, pt: { xs: 4, md: 5 }, pb: { xs: 4, md: 4.5 },
           borderBottom: `1px solid ${borderColor}`,
           bgcolor: filterBg,
           backdropFilter: 'blur(12px)',
