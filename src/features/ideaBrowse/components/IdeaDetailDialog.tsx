@@ -2,12 +2,15 @@
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import CloseIcon from '@mui/icons-material/Close'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import {
   Avatar,
   Box,
+  Button,
   Dialog,
   DialogContent,
   Divider,
@@ -25,17 +28,32 @@ interface IdeaDetailDialogProps {
   idea: IdeaItem | null
   onClose: () => void
   similarTitles: string[]
+  isOwner?: boolean
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
-export default function IdeaDetailDialog({ idea, onClose, similarTitles }: IdeaDetailDialogProps) {
+export default function IdeaDetailDialog({
+  idea,
+  onClose,
+  similarTitles,
+  isOwner,
+  onEdit,
+  onDelete,
+}: IdeaDetailDialogProps) {
   const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor, cardBg, similar, avatarBg, dialogShadow, backdropBg, similarListColor } = getIdeaTheme(isDarkMode)
+  const {
+    textPrimary, textSecondary, borderColor, cardBg,
+    similar, avatarBg, dialogShadow, backdropBg, similarListColor,
+    inputBg,
+  } = getIdeaTheme(isDarkMode)
   const muiTheme = useTheme()
   const fullScreen = useMediaQuery(muiTheme.breakpoints.down('sm'))
 
   if (!idea) return null
   const cat = getCatConfig(idea.category)
   const stat = IDEA_STATUS_CONFIG[idea.status]
+  const hasComments = (idea.commentsData?.length ?? 0) > 0
 
   return (
     <Dialog
@@ -79,9 +97,41 @@ export default function IdeaDetailDialog({ idea, onClose, similarTitles }: IdeaD
             {idea.title}
           </Typography>
         </Box>
-        <IconButton size="small" onClick={onClose} sx={{ color: textSecondary, flexShrink: 0, mt: -0.5 }}>
-          <CloseIcon sx={{ fontSize: '1.1rem' }} />
-        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0, mt: -0.5 }}>
+          {isOwner && (
+            <>
+              <Button
+                size="small"
+                startIcon={<EditOutlinedIcon sx={{ fontSize: '0.9rem' }} />}
+                onClick={onEdit}
+                sx={{
+                  fontSize: '0.78rem', fontWeight: 600, textTransform: 'none',
+                  color: ideaAccent.primary, px: 1.5, py: 0.5, borderRadius: 1.5,
+                  minWidth: 0,
+                  '&:hover': { bgcolor: `${ideaAccent.primary}12` },
+                }}
+              >
+                수정
+              </Button>
+              <Button
+                size="small"
+                startIcon={<DeleteOutlineIcon sx={{ fontSize: '0.9rem' }} />}
+                onClick={onDelete}
+                sx={{
+                  fontSize: '0.78rem', fontWeight: 600, textTransform: 'none',
+                  color: ideaAccent.danger, px: 1.5, py: 0.5, borderRadius: 1.5,
+                  minWidth: 0,
+                  '&:hover': { bgcolor: `${ideaAccent.danger}12` },
+                }}
+              >
+                삭제
+              </Button>
+            </>
+          )}
+          <IconButton size="small" onClick={onClose} sx={{ color: textSecondary }}>
+            <CloseIcon sx={{ fontSize: '1.1rem' }} />
+          </IconButton>
+        </Box>
       </Box>
 
       <DialogContent sx={{ p: 0 }}>
@@ -172,6 +222,51 @@ export default function IdeaDetailDialog({ idea, onClose, similarTitles }: IdeaD
               </Box>
             ))}
           </Box>
+
+          {/* 댓글 섹션 */}
+          {hasComments && (
+            <>
+              <Divider sx={{ borderColor }} />
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <ChatBubbleOutlineIcon sx={{ fontSize: '0.95rem', color: ideaAccent.primary }} />
+                  <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: textPrimary }}>
+                    댓글 {idea.commentsData!.length}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                  {idea.commentsData!.map((comment) => (
+                    <Box
+                      key={comment.id}
+                      sx={{
+                        display: 'flex', gap: 1.25,
+                        p: 1.5, borderRadius: 2,
+                        bgcolor: inputBg,
+                        border: `1px solid ${borderColor}`,
+                      }}
+                    >
+                      <Avatar sx={{ width: 28, height: 28, bgcolor: avatarBg, fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
+                        {comment.author[0]}
+                      </Avatar>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.4 }}>
+                          <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: textPrimary }}>
+                            {comment.author}
+                          </Typography>
+                          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+                            {comment.createdAt}
+                          </Typography>
+                        </Box>
+                        <Typography sx={{ fontSize: '0.84rem', color: textPrimary, lineHeight: 1.6 }}>
+                          {comment.content}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            </>
+          )}
         </Box>
       </DialogContent>
     </Dialog>

@@ -1,9 +1,13 @@
 // src/routes/dashboard/Dashboard.tsx
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import { Box, Container, Grid, Typography, alpha } from '@mui/material'
+import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { dashboardAccent, getDashboardTheme } from '@/theme/dashboardTheme'
 import PageHeader from '@/components/ui/PageHeader'
+import { IDEAS } from '@/api/mock/ideaBrowse'
+import type { IdeaItem } from '@/api/types/ideaBrowse'
+import IdeaDetailDialog from '@/features/ideaBrowse/components/IdeaDetailDialog'
 
 import ApprovalStatusPie from './components/ApprovalStatusPie'
 import DepartmentTop5Bar from './components/DepartmentTop5Bar'
@@ -22,6 +26,13 @@ import DashboardCard from './components/DashboardCard'
 export default function RealDashboard() {
   const { isDarkMode } = useThemeMode()
   const dt = getDashboardTheme(isDarkMode)
+
+  const [selectedIdea, setSelectedIdea] = useState<IdeaItem | null>(null)
+
+  const handleIdeaClick = (ideaId: number) => {
+    const found = IDEAS.find((i) => i.id === ideaId) ?? null
+    setSelectedIdea(found)
+  }
 
   return (
     <Box
@@ -144,7 +155,7 @@ export default function RealDashboard() {
           {/* Row 3: PopularTop5 (7) + DepartmentBar (5) */}
           <Grid size={{ xs: 12, lg: 7 }}>
             <DashboardCard delay={0.3} sx={{ minHeight: 380, height: '100%' }}>
-              <PopularImaginationTop5 />
+              <PopularImaginationTop5 onIdeaClick={handleIdeaClick} />
             </DashboardCard>
           </Grid>
 
@@ -263,6 +274,12 @@ export default function RealDashboard() {
           </Grid>
         </Grid>
       </Container>
+
+      <IdeaDetailDialog
+        idea={selectedIdea}
+        onClose={() => setSelectedIdea(null)}
+        similarTitles={[]}
+      />
     </Box>
   )
 }

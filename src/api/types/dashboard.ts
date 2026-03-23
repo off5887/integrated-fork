@@ -52,6 +52,7 @@ export type DepartmentData = {
 export type PopularItem = {
   title: string
   likes: number
+  ideaId: number
 }
 
 export type MiniStat = {

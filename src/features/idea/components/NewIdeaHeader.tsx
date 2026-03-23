@@ -15,9 +15,10 @@ interface NewIdeaHeaderProps {
   lastSavedAt: Date | null
   onBack: () => void
   onManualSave: () => void
+  isEditMode?: boolean
 }
 
-export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave }: NewIdeaHeaderProps) {
+export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave, isEditMode }: NewIdeaHeaderProps) {
   const { isDarkMode } = useThemeMode()
   const it = getIdeaTheme(isDarkMode)
   const { textPrimary, textSecondary, borderColor } = it
@@ -53,10 +54,10 @@ export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave }: New
           fontWeight={800}
           sx={{ color: textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
         >
-          새로운 상상 제안
+          {isEditMode ? '상상 수정' : '새로운 상상 제안'}
         </Typography>
         <Typography variant="caption" sx={{ color: textSecondary }}>
-          아이디어를 제안하고 함께 실현해보세요
+          {isEditMode ? '아이디어 내용을 수정해보세요' : '아이디어를 제안하고 함께 실현해보세요'}
         </Typography>
       </Box>
 

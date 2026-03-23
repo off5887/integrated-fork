@@ -1,10 +1,33 @@
 // src/api/mock/ideaBrowse.ts
 
-import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
+import type { CategoryConfig, IdeaComment, IdeaItem } from '@/api/types/ideaBrowse'
 import { DEMO_USER_PROFILE } from './auth'
 
 /** 현재 로그인된 사용자 (auth.ts의 DEMO_USER_PROFILE을 단일 출처로 사용) */
 export const MY_AUTHOR = DEMO_USER_PROFILE.name
+
+// ── 댓글 mock 데이터 ──────────────────────────────────────────────────────────
+const COMMENTS: Record<number, IdeaComment[]> = {
+  1: [
+    { id: 1, author: '김팀장', content: 'LED 교체는 실제로 효과가 큽니다. 타 부서에서도 도입 검토 중이에요.', createdAt: '2026-02-21' },
+    { id: 2, author: '박과장', content: '투자 회수 기간 분석 자료도 함께 첨부하면 심사에 유리할 것 같습니다.', createdAt: '2026-02-22' },
+    { id: 3, author: MY_AUTHOR, content: '네, 추가로 에너지 절감 사례 데이터도 준비하겠습니다!', createdAt: '2026-02-22' },
+  ],
+  2: [
+    { id: 4, author: '이사원', content: '카페 메뉴 다양화 정말 필요합니다. 특히 비건 옵션이 있으면 좋겠어요.', createdAt: '2026-02-18' },
+    { id: 5, author: '최대리', content: '간식 종류도 늘려주면 좋겠습니다! 공감합니다.', createdAt: '2026-02-19' },
+    { id: 6, author: '한주임', content: '음료 구독 서비스와 연계하면 비용을 낮출 수 있을 것 같아요.', createdAt: '2026-02-20' },
+  ],
+  4: [
+    { id: 7, author: '정차장', content: '화상회의 품질 개선은 재택 효율과 직결됩니다. 적극 찬성합니다.', createdAt: '2026-02-14' },
+    { id: 8, author: '송과장', content: '기존 시스템과의 호환성 검토도 필요할 것 같습니다.', createdAt: '2026-02-15' },
+  ],
+  14: [
+    { id: 9, author: '윤팀장', content: '유연근무제 도입은 인재 유치에도 큰 도움이 됩니다.', createdAt: '2026-02-10' },
+    { id: 10, author: '강사원', content: '파일럿 프로그램으로 먼저 시작해보면 어떨까요?', createdAt: '2026-02-11' },
+    { id: 11, author: '임대리', content: '성과 측정 방식도 같이 제안해주시면 더 설득력 있을 것 같아요.', createdAt: '2026-02-12' },
+  ],
+}
 
 export const CATEGORY_CONFIG: CategoryConfig[] = [
   { id: '절감', label: '절감', emoji: '💰', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)' },
@@ -57,6 +80,7 @@ export const IDEAS: IdeaItem[] = [
     likes: 34,
     comments: 8,
     views: 120,
+    commentsData: COMMENTS[1],
   },
   {
     id: 2,
@@ -73,6 +97,7 @@ export const IDEAS: IdeaItem[] = [
     likes: 142,
     comments: 28,
     views: 450,
+    commentsData: COMMENTS[2],
   },
   {
     id: 3,
@@ -107,6 +132,7 @@ export const IDEAS: IdeaItem[] = [
     views: 380,
     ideaScore: 82,
     mileageScore: 1500,
+    commentsData: COMMENTS[4],
   },
   {
     id: 5,
@@ -273,6 +299,7 @@ export const IDEAS: IdeaItem[] = [
     likes: 115,
     comments: 31,
     views: 490,
+    commentsData: COMMENTS[14],
   },
   {
     id: 15,

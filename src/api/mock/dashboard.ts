@@ -33,11 +33,11 @@ export const DEPARTMENT_DATA: DepartmentData[] = [
 ]
 
 export const POPULAR_ITEMS: PopularItem[] = [
-  { title: '사내 카페 메뉴 다양화', likes: 142 },
-  { title: '원격 근무 시간 유연화', likes: 98 },
-  { title: '재택근무 복지 확대', likes: 87 },
-  { title: '회의 문화 개선', likes: 76 },
-  { title: '사내 도서관 디지털화', likes: 65 },
+  { title: '사내 카페 메뉴 다양화 및 간식 음료 확대', likes: 142, ideaId: 2 },
+  { title: '유연근무제 전면 도입으로 재택근무 활성화', likes: 98, ideaId: 14 },
+  { title: '재택근무 원격근무 화상회의 시스템 업그레이드', likes: 87, ideaId: 4 },
+  { title: '임직원 통근 교통비 지원 확대', likes: 76, ideaId: 18 },
+  { title: '사내 도서관 디지털화 프로젝트', likes: 65, ideaId: 6 },
 ]
 
 export const MY_GOMGOMI: MyGomgomi = {

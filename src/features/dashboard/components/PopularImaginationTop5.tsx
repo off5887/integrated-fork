@@ -6,7 +6,11 @@ import { POPULAR_ITEMS as ITEMS } from '@/api/mock/dashboard'
 
 const RANK_COLORS = dashboardAccent.rank
 
-export default function PopularImaginationTop5() {
+interface Props {
+  onIdeaClick?: (ideaId: number) => void
+}
+
+export default function PopularImaginationTop5({ onIdeaClick }: Props) {
   const { isDarkMode } = useThemeMode()
   const dt = getDashboardTheme(isDarkMode)
 
@@ -46,8 +50,10 @@ export default function PopularImaginationTop5() {
           <Box
             key={i}
             tabIndex={0}
-            role="listitem"
+            role="button"
             aria-label={`${i + 1}위: ${item.title} - 공감 ${item.likes}건`}
+            onClick={() => onIdeaClick?.(item.ideaId)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onIdeaClick?.(item.ideaId) }}
             sx={{
               display: 'flex',
               alignItems: 'center',

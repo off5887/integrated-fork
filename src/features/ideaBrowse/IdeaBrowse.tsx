@@ -2,10 +2,12 @@
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { DEPT_BY_DIVISION, IDEAS } from '@/api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { getIdeaTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
@@ -36,7 +38,10 @@ export default function IdeaBrowse() {
   const [showSimilarOnly,  setShowSimilarOnly]  = useState(false)
   const [showMyOnly,       setShowMyOnly]       = useState(false)
   const [selectedIdea,     setSelectedIdea]     = useState<IdeaItem | null>(null)
+  const [deleteTarget,     setDeleteTarget]     = useState<IdeaItem | null>(null)
+  const [ideas,            setIdeas]            = useState<IdeaItem[]>(IDEAS)
   const [isLoading,        setIsLoading]        = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800)
@@ -44,6 +49,18 @@ export default function IdeaBrowse() {
   }, [])
 
   const deptOptions = selectedDivision ? (DEPT_BY_DIVISION[selectedDivision] ?? []) : []
+
+  const handleEdit = (idea: IdeaItem) => {
+    setSelectedIdea(null)
+    navigate('/newIdea', { state: { editIdea: idea } })
+  }
+
+  const handleDeleteConfirm = () => {
+    if (!deleteTarget) return
+    setIdeas((prev) => prev.filter((i) => i.id !== deleteTarget.id))
+    setDeleteTarget(null)
+    setSelectedIdea(null)
+  }
 
   const handleDivisionChange = (e: SelectChangeEvent) => {
     setSelectedDivision(e.target.value)
@@ -53,7 +70,7 @@ export default function IdeaBrowse() {
   // ─── 유사도 맵 (사전 계산) ──────────────────────────────────
   const similarityMap = useMemo(() => {
     const map = new Map<number, string[]>()
-    IDEAS.forEach((idea) => map.set(idea.id, getSimilarity(idea)))
+    ideas.forEach((idea) => map.set(idea.id, getSimilarity(idea)))
     return map
   }, [])
 
@@ -61,7 +78,7 @@ export default function IdeaBrowse() {
   const filteredIdeas = useMemo(() => {
     const q = search.trim().toLowerCase()
 
-    const filtered = IDEAS.filter((idea) => {
+    const filtered = ideas.filter((idea) => {
       if (showMyOnly && idea.author !== (user?.name ?? '')) return false
       if (selectedCategory && idea.category !== selectedCategory) return false
       if (selectedDivision && idea.division !== selectedDivision) return false
@@ -84,15 +101,15 @@ export default function IdeaBrowse() {
         default:         return 0
       }
     })
-  }, [search, selectedCategory, selectedDivision, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap])
+  }, [ideas, search, selectedCategory, selectedDivision, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap])
 
   const similarCount = useMemo(
-    () => IDEAS.filter((i) => (similarityMap.get(i.id)?.length ?? 0) > 0).length,
+    () => ideas.filter((i) => (similarityMap.get(i.id)?.length ?? 0) > 0).length,
     [similarityMap],
   )
 
   const myCount = useMemo(
-    () => IDEAS.filter((i) => i.author === (user?.name ?? '')).length,
+    () => ideas.filter((i) => i.author === (user?.name ?? '')).length,
     [user?.name],
   )
 
@@ -136,7 +153,7 @@ export default function IdeaBrowse() {
               }}
             >
               <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.primary, lineHeight: 1 }}>{IDEAS.length}</Typography>
+                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.primary, lineHeight: 1 }}>{ideas.length}</Typography>
                 <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>전체</Typography>
               </Box>
               <Divider orientation="vertical" flexItem sx={{ borderColor }} />
@@ -299,6 +316,20 @@ export default function IdeaBrowse() {
         idea={selectedIdea}
         onClose={() => setSelectedIdea(null)}
         similarTitles={selectedIdea ? (similarityMap.get(selectedIdea.id) ?? []) : []}
+        isOwner={selectedIdea?.author === (user?.name ?? '')}
+        onEdit={() => selectedIdea && handleEdit(selectedIdea)}
+        onDelete={() => selectedIdea && setDeleteTarget(selectedIdea)}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="아이디어 삭제"
+        message={`"${deleteTarget?.title}" 아이디어를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        confirmLabel="삭제"
+        cancelLabel="취소"
+        variant="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
       />
     </Box>
   )

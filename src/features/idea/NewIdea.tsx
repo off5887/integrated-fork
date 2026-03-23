@@ -3,7 +3,8 @@ import SaveIcon from '@mui/icons-material/Save'
 import SendIcon from '@mui/icons-material/Send'
 import { Box, Button } from '@mui/material'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
@@ -32,14 +33,17 @@ export default function NewIdea() {
   const { isDarkMode } = useThemeMode()
   const { showSnackbar } = useSnackbar()
   const navigate = useNavigate()
+  const location = useLocation()
+  const editIdea = (location.state as { editIdea?: IdeaItem } | null)?.editIdea ?? null
+  const isEditMode = editIdea !== null
 
   // ─── 폼 상태 ───────────────────────────────────────────────────────────────
-  const [title, setTitle] = useState('')
-  const [categories, setCategories] = useState<string[]>([])
-  const [problem, setProblem] = useState('')
-  const [solution, setSolution] = useState('')
+  const [title, setTitle] = useState(editIdea?.title ?? '')
+  const [categories, setCategories] = useState<string[]>(editIdea?.category ? [editIdea.category] : [])
+  const [problem, setProblem] = useState(editIdea?.problem ?? '')
+  const [solution, setSolution] = useState(editIdea?.solution ?? '')
   const [reviewer, setReviewer] = useState<string[]>([])
-  const [security, setSecurity] = useState<'public' | 'private'>('public')
+  const [security, setSecurity] = useState<'public' | 'private'>(editIdea?.security ?? 'public')
   const [plan, setPlan] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<string[]>([])
@@ -83,7 +87,7 @@ export default function NewIdea() {
     setLoading(true)
     setTimeout(() => {
       clearDraft()
-      showSnackbar('제안이 등록되었습니다!', 'success')
+      showSnackbar(isEditMode ? '아이디어가 수정되었습니다!' : '제안이 등록되었습니다!', 'success')
       setLoading(false)
       navigate('/dashboard')
     }, 1500)
@@ -125,6 +129,7 @@ export default function NewIdea() {
           lastSavedAt={lastSavedAt}
           onBack={() => navigate(-1)}
           onManualSave={handleManualSave}
+          isEditMode={isEditMode}
         />
 
         <SimilarIdeaBanner onOpenSearch={() => setSimilarSearchOpen(true)} />
@@ -229,7 +234,7 @@ export default function NewIdea() {
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  {loading ? '등록 중...' : '상상 제안하기'}
+                  {loading ? (isEditMode ? '수정 중...' : '등록 중...') : (isEditMode ? '수정하기' : '상상 제안하기')}
                 </Button>
               </Box>
             </Box>
