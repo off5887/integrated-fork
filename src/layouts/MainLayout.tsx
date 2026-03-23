@@ -3,6 +3,7 @@ import { Box } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import Header from '@/components/common/nav/NavShell'
 import { useThemeMode } from '@/context/ThemeContext'
+import ErrorBoundary from '@/components/common/routing/ErrorBoundary'
 
 export default function MainLayout() {
   const { isDarkMode } = useThemeMode()
@@ -24,7 +25,9 @@ export default function MainLayout() {
           py: 0,
         }}
       >
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </Box>
     </Box>
   )

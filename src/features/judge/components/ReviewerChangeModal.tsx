@@ -15,7 +15,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
@@ -44,10 +44,16 @@ export default function ReviewerChangeModal({
   const theme = getJudgeTheme(isDarkMode)
 
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedTerm, setDebouncedTerm] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedTerm(searchTerm), 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
   const filtered = useMemo(() => {
-    const q = searchTerm.trim().toLowerCase()
+    const q = debouncedTerm.trim().toLowerCase()
     if (!q) return mockCandidates
     return mockCandidates.filter(
       (r) =>
@@ -55,7 +61,7 @@ export default function ReviewerChangeModal({
         r.position.includes(q) ||
         r.department.includes(q),
     )
-  }, [searchTerm])
+  }, [debouncedTerm])
 
   const selectedCandidate = mockCandidates.find((r) => r.id === selectedId) ?? null
   const canConfirm = selectedCandidate !== null && selectedCandidate.name !== proposal?.reviewer

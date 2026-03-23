@@ -44,6 +44,7 @@ export default function NewIdea() {
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState({ title: false, problem: false, solution: false })
 
   // ─── 모달 상태 ─────────────────────────────────────────────────────────────
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
@@ -72,10 +73,13 @@ export default function NewIdea() {
 
   // ─── 제출 ─────────────────────────────────────────────────────────────────
   const handleSubmit = () => {
-    if (!title.trim() || categories.length === 0 || !problem.trim() || !solution.trim()) {
+    const errors = { title: !title.trim(), problem: !problem.trim(), solution: !solution.trim() }
+    if (errors.title || errors.problem || errors.solution || categories.length === 0) {
+      setFieldErrors(errors)
       showSnackbar('필수 항목을 모두 입력해주세요.', 'warning')
       return
     }
+    setFieldErrors({ title: false, problem: false, solution: false })
     setLoading(true)
     setTimeout(() => {
       clearDraft()
@@ -147,11 +151,12 @@ export default function NewIdea() {
 
           <Box sx={{ p: { xs: 3, sm: 5 } }}>
             <BasicInfoSection
-              title={title} setTitle={setTitle}
+              title={title} setTitle={(v) => { setTitle(v); if (fieldErrors.title) setFieldErrors((p) => ({ ...p, title: false })) }}
               categories={categories} setCategories={setCategories}
-              problem={problem} setProblem={setProblem}
-              solution={solution} setSolution={setSolution}
+              problem={problem} setProblem={(v) => { setProblem(v); if (fieldErrors.problem) setFieldErrors((p) => ({ ...p, problem: false })) }}
+              solution={solution} setSolution={(v) => { setSolution(v); if (fieldErrors.solution) setFieldErrors((p) => ({ ...p, solution: false })) }}
               inputSx={inputSx} labelSx={labelSx}
+              fieldErrors={fieldErrors}
             />
             <SectionDivider />
 

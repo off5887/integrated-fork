@@ -15,6 +15,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import { useState, useEffect } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { CATEGORY_CONFIG, DIVISIONS } from '@/api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaStatus } from '@/api/types/ideaBrowse'
@@ -66,6 +67,18 @@ export default function IdeaFilters({
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, filterActiveBg, filterActiveBorder, filterChipBg, similar, inputBg, myOnlyActiveBg, myOnlyCountBg } = getIdeaTheme(isDarkMode)
 
+  // 검색 debounce: 로컬 inputValue를 300ms 지연 후 부모에 전달
+  const [inputValue, setInputValue] = useState(search)
+  useEffect(() => {
+    const timer = setTimeout(() => onSearchChange(inputValue), 300)
+    return () => clearTimeout(timer)
+  }, [inputValue, onSearchChange])
+
+  const handleClearAll = () => {
+    setInputValue('')
+    onClearAll()
+  }
+
   const selectSx = {
     borderRadius: 2,
     fontSize: '0.83rem',
@@ -85,8 +98,8 @@ export default function IdeaFilters({
         fullWidth
         size="small"
         placeholder="제목, 문제점, 해결방안, 작성자, 부서로 검색..."
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
         slotProps={{
           input: {
             startAdornment: (
@@ -94,9 +107,9 @@ export default function IdeaFilters({
                 <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
               </InputAdornment>
             ),
-            endAdornment: search ? (
+            endAdornment: inputValue ? (
               <InputAdornment position="end">
-                <IconButton size="small" onClick={() => onSearchChange('')} sx={{ color: textSecondary }}>
+                <IconButton size="small" onClick={() => { setInputValue(''); onSearchChange('') }} sx={{ color: textSecondary }}>
                   <CloseIcon sx={{ fontSize: '0.9rem' }} />
                 </IconButton>
               </InputAdornment>
@@ -326,10 +339,10 @@ export default function IdeaFilters({
         {/* 필터 초기화 */}
         {hasFilter && (
           <Box
-            onClick={onClearAll}
+            onClick={handleClearAll}
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClearAll() }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClearAll() }}
             sx={{
               display: 'inline-flex', alignItems: 'center', gap: 0.5,
               px: 1.25, py: 0.7, borderRadius: 2, cursor: 'pointer',

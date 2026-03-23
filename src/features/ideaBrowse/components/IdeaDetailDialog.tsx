@@ -13,6 +13,8 @@ import {
   Divider,
   IconButton,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
@@ -28,6 +30,8 @@ interface IdeaDetailDialogProps {
 export default function IdeaDetailDialog({ idea, onClose, similarTitles }: IdeaDetailDialogProps) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg, similar, avatarBg, dialogShadow, backdropBg, similarListColor } = getIdeaTheme(isDarkMode)
+  const muiTheme = useTheme()
+  const fullScreen = useMediaQuery(muiTheme.breakpoints.down('sm'))
 
   if (!idea) return null
   const cat = getCatConfig(idea.category)
@@ -39,15 +43,16 @@ export default function IdeaDetailDialog({ idea, onClose, similarTitles }: IdeaD
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      fullScreen={fullScreen}
       slotProps={{
         paper: {
           sx: {
-            borderRadius: 3,
+            borderRadius: fullScreen ? 0 : 3,
             bgcolor: cardBg,
-            border: `1px solid ${borderColor}`,
-            boxShadow: dialogShadow,
+            border: fullScreen ? 'none' : `1px solid ${borderColor}`,
+            boxShadow: fullScreen ? 'none' : dialogShadow,
             overflow: 'hidden',
-            m: { xs: 2, sm: 3 },
+            m: fullScreen ? 0 : { xs: 2, sm: 3 },
           },
         },
         backdrop: {

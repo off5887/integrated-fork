@@ -17,6 +17,7 @@ interface Props {
   setSolution: (v: string) => void
   inputSx: SxProps<Theme>
   labelSx: SxProps<Theme>
+  fieldErrors?: { title: boolean; problem: boolean; solution: boolean }
 }
 
 export default function BasicInfoSection({
@@ -30,6 +31,7 @@ export default function BasicInfoSection({
   setSolution,
   inputSx,
   labelSx,
+  fieldErrors,
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const it = getIdeaTheme(isDarkMode)
@@ -72,6 +74,8 @@ export default function BasicInfoSection({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
+          error={fieldErrors?.title}
+          helperText={fieldErrors?.title ? '제목을 입력해주세요.' : undefined}
           slotProps={{
             input: { sx: inputSx },
             inputLabel: { sx: labelSx },
@@ -235,6 +239,8 @@ export default function BasicInfoSection({
           value={problem}
           onChange={(e) => setProblem(e.target.value)}
           required
+          error={fieldErrors?.problem}
+          helperText={fieldErrors?.problem ? '문제점을 입력해주세요.' : undefined}
           slotProps={{
             input: { sx: { ...inputSx, '& textarea': { resize: 'vertical', minHeight: '76px' } } },
             inputLabel: { sx: labelSx },
@@ -250,6 +256,8 @@ export default function BasicInfoSection({
           value={solution}
           onChange={(e) => setSolution(e.target.value)}
           required
+          error={fieldErrors?.solution}
+          helperText={fieldErrors?.solution ? '해결 대안을 입력해주세요.' : undefined}
           slotProps={{
             input: { sx: { ...inputSx, '& textarea': { resize: 'vertical', minHeight: '76px' } } },
             inputLabel: { sx: labelSx },
