@@ -14,6 +14,7 @@ export interface AwardItem {
   detail: string
   fish: number
   status: string
+  score?: number
 }
 
 export interface ExchangeItem {
