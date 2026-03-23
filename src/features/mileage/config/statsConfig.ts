@@ -5,7 +5,7 @@ export type { StatCardConfig }
 
 export const STAT_CARD_CONFIGS: StatCardConfig[] = [
   {
-    label:    '내가 잡은 생선',
+    label:    '내가 잡은 생선 (총합)',
     unit:     '마리',
     icon:     '🐟',
     colorKey: 'primaryColor',

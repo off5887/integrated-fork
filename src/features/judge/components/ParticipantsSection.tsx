@@ -5,26 +5,16 @@ import { Box, Chip, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
-import { stageConfig } from '../config/judgeStageConfig'
 
 interface Props {
-  reviewer1: string
-  reviewer2: string
-  reviewer3: string
-  reviewStage: 1 | 2 | 3
+  reviewer: string
   proposers: string[]
 }
 
-export default function ParticipantsSection({ reviewer1, reviewer2, reviewer3, reviewStage, proposers }: Props) {
+export default function ParticipantsSection({ reviewer, proposers }: Props) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
   const theme = getJudgeTheme(isDarkMode)
-
-  const reviewers: { stage: 1 | 2 | 3; name: string }[] = [
-    { stage: 1, name: reviewer1 },
-    { stage: 2, name: reviewer2 },
-    { stage: 3, name: reviewer3 },
-  ]
 
   return (
     <Box>
@@ -45,7 +35,7 @@ export default function ParticipantsSection({ reviewer1, reviewer2, reviewer3, r
       </Box>
 
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
-        {/* 심사자 (1차/2차/3차) */}
+        {/* 심사자 */}
         <Box
           sx={{
             flex: 1, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
@@ -59,64 +49,38 @@ export default function ParticipantsSection({ reviewer1, reviewer2, reviewer3, r
               심사자
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {reviewers.map(({ stage, name }) => {
-              const sc = stageConfig[stage]
-              const isActive = stage === reviewStage
-              return (
-                <Box
-                  key={stage}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    p: 1,
-                    borderRadius: 1.5,
-                    bgcolor: isActive ? sc.activeBg : 'transparent',
-                    border: `1px solid ${isActive ? sc.border : 'transparent'}`,
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  <Chip
-                    label={`${stage}차`}
-                    size="small"
-                    sx={{
-                      bgcolor: sc.bg,
-                      color: sc.color,
-                      border: `1px solid ${sc.border}`,
-                      fontWeight: 700,
-                      fontSize: '0.68rem',
-                      height: 20,
-                      flexShrink: 0,
-                    }}
-                  />
-                  <Typography
-                    sx={{
-                      fontSize: '0.875rem',
-                      fontWeight: isActive ? 700 : 500,
-                      color: isActive ? sc.color : colors.textPrimary,
-                    }}
-                  >
-                    {name}
-                  </Typography>
-                  {isActive && (
-                    <Chip
-                      label="진행 중"
-                      size="small"
-                      sx={{
-                        ml: 'auto',
-                        bgcolor: sc.bg,
-                        color: sc.color,
-                        border: `1px solid ${sc.border}`,
-                        fontWeight: 700,
-                        fontSize: '0.65rem',
-                        height: 18,
-                      }}
-                    />
-                  )}
-                </Box>
-              )
-            })}
+          <Box
+            sx={{
+              display: 'flex', alignItems: 'center', gap: 1,
+              p: 1.25, borderRadius: 1.5,
+              bgcolor: 'rgba(14,165,233,0.1)',
+              border: '1px solid rgba(14,165,233,0.3)',
+            }}
+          >
+            <Box
+              sx={{
+                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                bgcolor: theme.primaryIconColor, color: '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.78rem', fontWeight: 700,
+              }}
+            >
+              {reviewer.charAt(0)}
+            </Box>
+            <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#0ea5e9' }}>
+              {reviewer}
+            </Typography>
+            <Chip
+              label="진행 중"
+              size="small"
+              sx={{
+                ml: 'auto',
+                bgcolor: 'rgba(14,165,233,0.1)',
+                color: '#0ea5e9',
+                border: '1px solid rgba(14,165,233,0.3)',
+                fontWeight: 700, fontSize: '0.65rem', height: 18,
+              }}
+            />
           </Box>
         </Box>
 

@@ -18,7 +18,6 @@ import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
 import { Proposal } from '@/api/types/judge'
 import { statusConfig } from '../config/judgeStatusConfig'
-import { stageConfig } from '../config/judgeStageConfig'
 
 interface JudgeTableProps {
   displayedData: Proposal[]
@@ -89,18 +88,11 @@ export default function JudgeTable({
                 >
                   {item.title}
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, alignItems: 'flex-end', flexShrink: 0 }}>
-                  <Chip
-                    label={status.label}
-                    size="small"
-                    sx={{ bgcolor: status.bg, color: status.color, border: `1px solid ${status.border}`, fontWeight: 700, fontSize: '0.68rem', height: 22 }}
-                  />
-                  <Chip
-                    label={`${item.reviewStage}차 심사`}
-                    size="small"
-                    sx={{ bgcolor: stageConfig[item.reviewStage].bg, color: stageConfig[item.reviewStage].color, border: `1px solid ${stageConfig[item.reviewStage].border}`, fontWeight: 600, fontSize: '0.62rem', height: 18 }}
-                  />
-                </Box>
+                <Chip
+                  label={status.label}
+                  size="small"
+                  sx={{ bgcolor: status.bg, color: status.color, border: `1px solid ${status.border}`, fontWeight: 700, fontSize: '0.68rem', height: 22, flexShrink: 0 }}
+                />
               </Box>
 
               {/* 이관 배지 */}
@@ -317,32 +309,18 @@ export default function JudgeTable({
 
                   {/* 상태 + 심사 단계 */}
                   <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, alignItems: 'flex-start' }}>
-                      <Chip
-                        label={status.label}
-                        size="small"
-                        sx={{
-                          bgcolor: status.bg,
-                          color: status.color,
-                          border: `1px solid ${status.border}`,
-                          fontWeight: 600,
-                          fontSize: '0.75rem',
-                          height: 24,
-                        }}
-                      />
-                      <Chip
-                        label={`${item.reviewStage}차 심사`}
-                        size="small"
-                        sx={{
-                          bgcolor: stageConfig[item.reviewStage].bg,
-                          color: stageConfig[item.reviewStage].color,
-                          border: `1px solid ${stageConfig[item.reviewStage].border}`,
-                          fontWeight: 600,
-                          fontSize: '0.68rem',
-                          height: 20,
-                        }}
-                      />
-                    </Box>
+                    <Chip
+                      label={status.label}
+                      size="small"
+                      sx={{
+                        bgcolor: status.bg,
+                        color: status.color,
+                        border: `1px solid ${status.border}`,
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                        height: 24,
+                      }}
+                    />
                   </TableCell>
 
                   {/* 결재자 변경 */}

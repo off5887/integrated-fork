@@ -8,6 +8,7 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions'
 import { Box, Chip, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme, JUDGE_STAT_CONFIG } from '@/theme/judgeTheme'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
@@ -23,6 +24,7 @@ import { statusConfig, type StatusFilter } from './config/judgeStatusConfig'
 
 export default function Judge() {
   const { isDarkMode } = useThemeMode()
+  const { showSnackbar } = useSnackbar()
   const colors = usePageColors()
   const theme = getJudgeTheme(isDarkMode)
   const user = useCurrentUser()
@@ -40,23 +42,10 @@ export default function Judge() {
     return () => clearTimeout(timer)
   }, [])
 
-  // 내 심사 목록:
-  // 1) 현재 내가 담당 심사자인 건 (심사대기/심사중/승인/반려)
-  // 2) 내 심사 단계를 이미 지났으나 후속 단계(2차·3차)가 아직 진행 중인 건 (심사중 추적)
   const myName = user?.name ?? ''
 
   const myProposals = useMemo(() => {
-    return proposals.filter((p) => {
-      if (p.reviewer === myName) return true
-      if (p.status === '심사중') {
-        const myStage =
-          p.reviewer1 === myName ? 1 :
-          p.reviewer2 === myName ? 2 :
-          p.reviewer3 === myName ? 3 : null
-        if (myStage !== null && p.reviewStage > myStage) return true
-      }
-      return false
-    })
+    return proposals.filter((p) => p.reviewer === myName)
   }, [proposals, myName])
 
   const stats = useMemo(() => ({
@@ -103,49 +92,55 @@ export default function Judge() {
     )
   }
 
-  const handleApprove = (_reason: string, score?: number, mileage?: number) => {
+  const handleApprove = (_reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoroProfitability?: number, mileage?: number) => {
     if (!selectedProposal) return
+    const title = selectedProposal.title
     setProposals((prev) =>
       prev.map((p) =>
         p.id === selectedProposal.id
           ? {
               ...p,
               status: '승인' as const,
-              ...(score !== undefined && { score }),
+              ...(scoreInnovation !== undefined && { scoreInnovation }),
+              ...(scoreFeasibility !== undefined && { scoreFeasibility }),
+              ...(scoroProfitability !== undefined && { scoreProfitability: scoroProfitability }),
               ...(mileage !== undefined && { mileage }),
             }
           : p,
       ),
     )
     setSelectedProposal(null)
-    // TODO: API 연동 시 reason, score, mileage와 함께 서버로 전송
+    showSnackbar(`'${title}' 제안이 승인되었습니다.`, 'success')
   }
 
   const handleReject = (_reason: string) => {
     if (!selectedProposal) return
+    const title = selectedProposal.title
     setProposals((prev) =>
       prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '반려' as const } : p)),
     )
     setSelectedProposal(null)
-    // TODO: API 연동 시 _reason과 함께 서버로 전송
+    showSnackbar(`'${title}' 제안이 반려되었습니다.`, 'error')
   }
 
   const handleWithdrawApprove = (_reason: string) => {
     if (!selectedProposal) return
+    const title = selectedProposal.title
     setProposals((prev) =>
       prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사중' as const } : p)),
     )
     setSelectedProposal(null)
-    // TODO: API 연동 시 _reason과 함께 서버로 전송
+    showSnackbar(`'${title}' 승인이 회수되었습니다.`, 'warning')
   }
 
   const handleWithdrawReject = (_reason: string) => {
     if (!selectedProposal) return
+    const title = selectedProposal.title
     setProposals((prev) =>
       prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사중' as const } : p)),
     )
     setSelectedProposal(null)
-    // TODO: API 연동 시 _reason과 함께 서버로 전송
+    showSnackbar(`'${title}' 반려가 회수되었습니다.`, 'warning')
   }
 
   const selectedIndex = selectedProposal

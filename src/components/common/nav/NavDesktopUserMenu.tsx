@@ -1,6 +1,13 @@
 // src/components/common/nav/NavDesktopUserMenu.tsx
 // 데스크톱 네비게이션 우측 사용자 아바타 + 드롭다운 메뉴 (설정, 테마 전환, 로그아웃 포함)
-import * as MuiIcons from '@mui/icons-material'
+import {
+  KeyboardArrowDownIcon,
+  InfoOutlinedIcon,
+  SettingsIcon,
+  WbSunnyIcon,
+  NightsStayIcon,
+  LogoutIcon,
+} from './navIcons'
 import {
   Avatar,
   Box,
@@ -93,7 +100,7 @@ export default function NavDesktopUserMenu() {
             {user.department ? ` · ${user.department}` : ''}
           </Typography>
         </Box>
-        <MuiIcons.KeyboardArrowDown
+        <KeyboardArrowDownIcon
           sx={{
             fontSize: '1rem',
             color: nt.textColor,
@@ -188,7 +195,7 @@ export default function NavDesktopUserMenu() {
           }}
         >
           <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
-            <MuiIcons.InfoOutlined fontSize="small" />
+            <InfoOutlinedIcon fontSize="small" />
           </ListItemIcon>
           <Typography sx={{ fontSize: '0.85rem', fontWeight: introActive ? 700 : 500 }}>
             시스템소개
@@ -209,7 +216,7 @@ export default function NavDesktopUserMenu() {
             }}
           >
             <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
-              <MuiIcons.Settings fontSize="small" />
+              <SettingsIcon fontSize="small" />
             </ListItemIcon>
             <Typography sx={{ fontSize: '0.85rem', fontWeight: settingsActive ? 700 : 500 }}>
               설정
@@ -233,9 +240,9 @@ export default function NavDesktopUserMenu() {
         >
           <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
             {isDarkMode ? (
-              <MuiIcons.WbSunny fontSize="small" />
+              <WbSunnyIcon fontSize="small" />
             ) : (
-              <MuiIcons.NightsStay fontSize="small" />
+              <NightsStayIcon fontSize="small" />
             )}
           </ListItemIcon>
           <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
@@ -259,7 +266,7 @@ export default function NavDesktopUserMenu() {
           }}
         >
           <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
-            <MuiIcons.Logout fontSize="small" />
+            <LogoutIcon fontSize="small" />
           </ListItemIcon>
           <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>로그아웃</Typography>
         </MuiMenuItem>

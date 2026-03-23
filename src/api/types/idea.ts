@@ -49,15 +49,17 @@ export type OrgDivision = {
 }
 
 export interface DraftData {
+  ideaType: 'idea' | 'complete'
   title: string
   categories: string[]
   problem: string
   solution: string
   reviewer: string[]
-  // coProposers: string[]
-  // startDate: string
-  // endDate: string
+  coProposers: string[]
   security: 'public' | 'private'
   plan: string
+  startDate: string
+  endDate: string
+  expectedOutcome: string
   savedAt: string
 }

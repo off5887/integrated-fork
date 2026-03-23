@@ -7,6 +7,8 @@ import { CATEGORIES } from '@/api/mock/idea'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface Props {
+  ideaType: 'idea' | 'complete'
+  setIdeaType: (v: 'idea' | 'complete') => void
   title: string
   setTitle: (v: string) => void
   categories: string[]
@@ -21,6 +23,8 @@ interface Props {
 }
 
 export default function BasicInfoSection({
+  ideaType,
+  setIdeaType,
   title,
   setTitle,
   categories,
@@ -66,6 +70,62 @@ export default function BasicInfoSection({
       </Box>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+
+        {/* 상상 구분 */}
+        <Box>
+          <Typography sx={{ fontWeight: 700, color: textPrimary, fontSize: '0.82rem', mb: 1.5 }}>
+            상상 구분
+          </Typography>
+          <Box
+            role="radiogroup"
+            aria-label="상상 구분 선택"
+            sx={{ display: 'flex', gap: 1.5, flexDirection: { xs: 'column', sm: 'row' } }}
+          >
+            {([
+              { value: 'idea',     label: '아이디어', emoji: '💡', desc: '새로운 아이디어 제안' },
+              { value: 'complete', label: '실행완료', emoji: '✅', desc: '이미 실행한 내용 공유' },
+            ] as const).map((opt) => {
+              const isSelected = ideaType === opt.value
+              return (
+                <Box
+                  key={opt.value}
+                  role="radio"
+                  aria-checked={isSelected}
+                  tabIndex={0}
+                  onClick={() => setIdeaType(opt.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIdeaType(opt.value) } }}
+                  sx={{
+                    flex: 1, display: 'flex', alignItems: 'center', gap: 1.5,
+                    p: 1.75, borderRadius: 2.5, cursor: 'pointer', outline: 'none',
+                    border: `1.5px solid ${isSelected ? it.accent.color : borderColor}`,
+                    bgcolor: isSelected ? it.accent.bg : it.itemBg,
+                    transition: 'all 0.18s ease',
+                    '&:hover': { borderColor: it.accent.color, bgcolor: it.accent.bg },
+                    '&:focus-visible': { outline: `2px solid ${it.accent.color}`, outlineOffset: 2 },
+                  }}
+                >
+                  <Box sx={{ fontSize: '1.4rem', lineHeight: 1, flexShrink: 0 }}>{opt.emoji}</Box>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: isSelected ? 700 : 600, color: isSelected ? it.accent.color : textPrimary, lineHeight: 1.3 }}>
+                      {opt.label}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.72rem', color: textSecondary, lineHeight: 1.3 }}>{opt.desc}</Typography>
+                  </Box>
+                  <Box sx={{
+                    width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+                    border: `2px solid ${isSelected ? it.accent.color : borderColor}`,
+                    bgcolor: isSelected ? it.accent.color : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.18s ease',
+                  }}>
+                    {isSelected && <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#fff' }} />}
+                  </Box>
+                </Box>
+              )
+            })}
+          </Box>
+        </Box>
+
         {/* 제목 */}
         <TextField
           fullWidth
@@ -235,14 +295,14 @@ export default function BasicInfoSection({
           fullWidth
           label="문제점 도출"
           multiline
-          minRows={3}
+          minRows={2}
           value={problem}
           onChange={(e) => setProblem(e.target.value)}
           required
           error={fieldErrors?.problem}
           helperText={fieldErrors?.problem ? '문제점을 입력해주세요.' : undefined}
           slotProps={{
-            input: { sx: { ...inputSx, '& textarea': { resize: 'vertical', minHeight: '76px' } } },
+            input: { sx: { ...inputSx, '& textarea': { resize: 'vertical', minHeight: '52px' } } },
             inputLabel: { sx: labelSx },
           }}
         />
@@ -252,14 +312,14 @@ export default function BasicInfoSection({
           fullWidth
           label="해결 대안"
           multiline
-          minRows={3}
+          minRows={2}
           value={solution}
           onChange={(e) => setSolution(e.target.value)}
           required
           error={fieldErrors?.solution}
           helperText={fieldErrors?.solution ? '해결 대안을 입력해주세요.' : undefined}
           slotProps={{
-            input: { sx: { ...inputSx, '& textarea': { resize: 'vertical', minHeight: '76px' } } },
+            input: { sx: { ...inputSx, '& textarea': { resize: 'vertical', minHeight: '52px' } } },
             inputLabel: { sx: labelSx },
           }}
         />

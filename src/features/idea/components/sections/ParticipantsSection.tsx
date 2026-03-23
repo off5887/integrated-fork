@@ -13,17 +13,23 @@ import { VISIBILITY_OPTIONS } from '@/features/idea/config/visibilityOptions'
 interface Props {
   reviewer: string[]
   setReviewer: (v: string[]) => void
+  coProposers: string[]
+  setCoProposers: (v: string[]) => void
   security: 'public' | 'private'
   setSecurity: (v: 'public' | 'private') => void
   onOpenReviewerModal: () => void
+  onOpenCoProposerModal: () => void
 }
 
 export default function ParticipantsSection({
   reviewer,
   setReviewer,
+  coProposers,
+  setCoProposers,
   security,
   setSecurity,
   onOpenReviewerModal,
+  onOpenCoProposerModal,
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const it = getIdeaTheme(isDarkMode)
@@ -47,7 +53,8 @@ export default function ParticipantsSection({
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
+      {/* 심사자 + 공동제안자 */}
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 2 }}>
         {/* 심사자 */}
         <Box
           sx={{
@@ -197,15 +204,114 @@ export default function ParticipantsSection({
           </Box>
         </Box>
 
-        {/* 공개 범위 */}
+        {/* 공동 제안자 */}
         <Box
           sx={{
-            flex: 1, minWidth: 0, borderRadius: 2.5,
-            border: `1px solid ${borderColor}`,
-            bgcolor: it.panelBg,
-            overflow: 'hidden',
+            flex: 1, minWidth: 0, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
+            bgcolor: it.accent.bg,
+            border: `1px solid ${it.accent.border}`,
           }}
         >
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <PersonAddIcon sx={{ color: it.accent.color, fontSize: '1.1rem' }} />
+              <Typography variant="body1" fontWeight={700} sx={{ color: textPrimary }}>
+                공동 제안자
+              </Typography>
+              {coProposers.length > 0 && (
+                <Box
+                  aria-label={`${coProposers.length}명 선택됨`}
+                  sx={{
+                    minWidth: 20, height: 20, borderRadius: '50%', px: 0.5,
+                    bgcolor: it.accent.color, color: it.accent.btnColor,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.68rem', fontWeight: 800,
+                  }}
+                >
+                  {coProposers.length}
+                </Box>
+              )}
+            </Box>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<PersonAddIcon sx={{ fontSize: '0.85rem' }} />}
+              onClick={onOpenCoProposerModal}
+              sx={{
+                borderRadius: 1.5, px: 1.5, py: 0.45, fontWeight: 600, fontSize: '0.76rem',
+                borderColor: it.accent.borderHover,
+                color: it.accent.text,
+                '&:hover': { borderColor: it.accent.color, bgcolor: it.accent.bgStrong },
+              }}
+            >
+              추가
+            </Button>
+          </Box>
+
+          {coProposers.length === 0 ? (
+            <Box
+              sx={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                py: 3, gap: 1, borderRadius: 2,
+                border: `1px dashed ${borderColor}`,
+                bgcolor: it.emptyStateBg,
+              }}
+            >
+              <Box sx={{ width: 36, height: 36, borderRadius: '50%', mb: 0.5, bgcolor: it.accent.bgStrong, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <PersonAddIcon sx={{ fontSize: '1.1rem', color: it.accent.borderHover }} />
+              </Box>
+              <Typography sx={{ fontSize: '0.82rem', fontWeight: 600, color: textSecondary }}>공동 제안자를 추가해주세요</Typography>
+              <Typography sx={{ fontSize: '0.73rem', color: textSecondary, opacity: 0.7 }}>조직도에서 팀원을 선택할 수 있습니다</Typography>
+            </Box>
+          ) : (
+            <Box role="list" aria-label="선택된 공동제안자 목록" sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {coProposers.map((name, i) => {
+                const [displayName, deptPart] = name.includes(' (') ? name.split(' (') : [name, '']
+                const dept = deptPart ? deptPart.replace(')', '') : ''
+                return (
+                  <Box
+                    key={i}
+                    role="listitem"
+                    sx={{
+                      display: 'flex', alignItems: 'center', gap: 1.5,
+                      px: 1.5, py: 1, borderRadius: 2,
+                      bgcolor: it.accent.bgStrong,
+                      border: `1px solid ${it.accent.border}`,
+                    }}
+                  >
+                    <Box aria-hidden sx={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, bgcolor: it.accent.color, color: it.accent.btnColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.78rem', fontWeight: 700 }}>
+                      {displayName.trim().charAt(0)}
+                    </Box>
+                    <Box flex={1} minWidth={0}>
+                      <Typography sx={{ fontSize: '0.83rem', fontWeight: 600, color: textPrimary, lineHeight: 1.2 }}>{displayName.trim()}</Typography>
+                      {dept && <Typography sx={{ fontSize: '0.72rem', color: textSecondary, lineHeight: 1.3 }}>{dept}</Typography>}
+                    </Box>
+                    <IconButton
+                      size="small"
+                      onClick={() => setCoProposers(coProposers.filter((_, idx) => idx !== i))}
+                      aria-label={`${displayName.trim()} 공동제안자 제거`}
+                      sx={{ p: 0.5, color: textSecondary, '&:hover': { color: it.danger.color, bgcolor: it.danger.bgSubtle } }}
+                    >
+                      <CloseIcon sx={{ fontSize: '0.9rem' }} />
+                    </IconButton>
+                  </Box>
+                )
+              })}
+            </Box>
+          )}
+        </Box>
+
+      </Box>
+
+      {/* 공개 범위 */}
+      <Box
+        sx={{
+          borderRadius: 2.5,
+          border: `1px solid ${borderColor}`,
+          bgcolor: it.panelBg,
+          overflow: 'hidden',
+        }}
+      >
           {/* 패널 헤더 */}
           <Box
             sx={{
@@ -222,82 +328,81 @@ export default function ParticipantsSection({
           </Box>
 
           {/* 선택 카드 */}
-          <Box
-            sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 1.5 }}
-            role="radiogroup"
-            aria-label="공개 범위 선택"
-          >
-            {VISIBILITY_OPTIONS.map((opt) => {
-              const isSelected = security === opt.value
-              const IconComp = opt.icon
-              const accentBg = isDarkMode ? opt.accentBgDark : opt.accentBg
-              const accentBorder = isDarkMode ? opt.accentBorderDark : opt.accentBorder
-              return (
-                <Box
-                  key={opt.value}
-                  role="radio"
-                  aria-checked={isSelected}
-                  tabIndex={0}
-                  onClick={() => setSecurity(opt.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      setSecurity(opt.value)
-                    }
-                  }}
-                  sx={{
-                    display: 'flex', alignItems: 'center', gap: 2,
-                    p: 2, borderRadius: 2.5,
-                    border: `1.5px solid ${isSelected ? accentBorder : borderColor}`,
-                    bgcolor: isSelected ? accentBg : it.itemBg,
-                    cursor: 'pointer', outline: 'none',
-                    transition: 'all 0.18s ease',
-                    boxShadow: isSelected ? `0 4px 16px ${opt.accentBg}` : 'none',
-                    '&:hover': {
-                      bgcolor: accentBg,
-                      borderColor: accentBorder,
-                    },
-                    '&:focus-visible': { outline: `2px solid ${opt.accentColor}`, outlineOffset: 2 },
-                  }}
-                >
+          <Box sx={{ p: 2.5, pb: 1.5 }}>
+            <Box
+              sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}
+              role="radiogroup"
+              aria-label="공개 범위 선택"
+            >
+              {VISIBILITY_OPTIONS.map((opt) => {
+                const isSelected = security === opt.value
+                const IconComp = opt.icon
+                const accentBg = isDarkMode ? opt.accentBgDark : opt.accentBg
+                const accentBorder = isDarkMode ? opt.accentBorderDark : opt.accentBorder
+                return (
                   <Box
+                    key={opt.value}
+                    role="radio"
+                    aria-checked={isSelected}
+                    tabIndex={0}
+                    onClick={() => setSecurity(opt.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setSecurity(opt.value)
+                      }
+                    }}
                     sx={{
-                      width: 40, height: 40, borderRadius: 2,
-                      bgcolor: isSelected ? accentBg : it.avatarBg,
-                      border: `1px solid ${isSelected ? accentBorder : borderColor}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0, transition: 'all 0.18s ease',
+                      flex: 1, display: 'flex', alignItems: 'center', gap: 2,
+                      p: 2, borderRadius: 2.5,
+                      border: `1.5px solid ${isSelected ? accentBorder : borderColor}`,
+                      bgcolor: isSelected ? accentBg : it.itemBg,
+                      cursor: 'pointer', outline: 'none',
+                      transition: 'all 0.18s ease',
+                      boxShadow: isSelected ? `0 4px 16px ${opt.accentBg}` : 'none',
+                      '&:hover': { bgcolor: accentBg, borderColor: accentBorder },
+                      '&:focus-visible': { outline: `2px solid ${opt.accentColor}`, outlineOffset: 2 },
                     }}
                   >
-                    <IconComp sx={{ fontSize: '1.3rem', color: isSelected ? opt.accentColor : textSecondary, transition: 'color 0.18s ease' }} />
+                    <Box
+                      sx={{
+                        width: 40, height: 40, borderRadius: 2,
+                        bgcolor: isSelected ? accentBg : it.avatarBg,
+                        border: `1px solid ${isSelected ? accentBorder : borderColor}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0, transition: 'all 0.18s ease',
+                      }}
+                    >
+                      <IconComp sx={{ fontSize: '1.3rem', color: isSelected ? opt.accentColor : textSecondary, transition: 'color 0.18s ease' }} />
+                    </Box>
+                    <Box flex={1} minWidth={0}>
+                      <Typography sx={{ fontSize: '0.88rem', fontWeight: isSelected ? 700 : 600, color: isSelected ? opt.accentColor : textPrimary, lineHeight: 1.3, mb: 0.3, transition: 'color 0.18s ease' }}>
+                        {opt.label}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.73rem', color: isSelected ? `${opt.accentColor}bb` : textSecondary, lineHeight: 1.4, transition: 'color 0.18s ease' }}>
+                        {opt.description}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        width: 18, height: 18, borderRadius: '50%',
+                        border: `2px solid ${isSelected ? opt.accentColor : borderColor}`,
+                        bgcolor: isSelected ? opt.accentColor : 'transparent',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0, transition: 'all 0.18s ease',
+                      }}
+                    >
+                      {isSelected && <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#fff' }} />}
+                    </Box>
                   </Box>
-                  <Box flex={1} minWidth={0}>
-                    <Typography sx={{ fontSize: '0.88rem', fontWeight: isSelected ? 700 : 600, color: isSelected ? opt.accentColor : textPrimary, lineHeight: 1.3, mb: 0.3, transition: 'color 0.18s ease' }}>
-                      {opt.label}
-                    </Typography>
-                    <Typography sx={{ fontSize: '0.73rem', color: isSelected ? `${opt.accentColor}bb` : textSecondary, lineHeight: 1.4, transition: 'color 0.18s ease' }}>
-                      {opt.description}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      width: 18, height: 18, borderRadius: '50%',
-                      border: `2px solid ${isSelected ? opt.accentColor : borderColor}`,
-                      bgcolor: isSelected ? opt.accentColor : 'transparent',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0, transition: 'all 0.18s ease',
-                    }}
-                  >
-                    {isSelected && <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#fff' }} />}
-                  </Box>
-                </Box>
-              )
-            })}
+                )
+              })}
+            </Box>
 
             {/* 선택 상태 요약 */}
             <Box
               sx={{
-                mt: 0.5, px: 1.75, py: 1.25, borderRadius: 2,
+                mt: 1.5, px: 1.75, py: 1.25, borderRadius: 2,
                 bgcolor: it.subtleBg,
                 border: `1px dashed ${borderColor}`,
                 display: 'flex', alignItems: 'center', gap: 1,
@@ -315,7 +420,6 @@ export default function ParticipantsSection({
             </Box>
           </Box>
         </Box>
-      </Box>
     </Box>
   )
 }

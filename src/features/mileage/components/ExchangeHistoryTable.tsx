@@ -1,11 +1,12 @@
 // src/routes/Mileage/ExchangeHistoryTable.tsx
-import { Box, Card, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
+import { Box, Button, Card, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getMileageTheme } from '@/theme/mileageTheme'
 import type { ExchangeItem } from '@/api/types/mileage'
 
 interface Props {
   data: ExchangeItem[]
+  onWithdraw?: (id: number) => void
 }
 
 function StatusBadge({ status, style }: { status: string; style: { color: string; bg: string; border: string } }) {
@@ -17,9 +18,9 @@ function StatusBadge({ status, style }: { status: string; style: { color: string
   )
 }
 
-const HEAD_COLS = ['번호', '신청일', '신청 마일리지', '현금 환산', '상태']
+const HEAD_COLS = ['번호', '신청일', '신청 마일리지', '현금 환산', '상태', '']
 
-export default function ExchangeHistoryTable({ data }: Props) {
+export default function ExchangeHistoryTable({ data, onWithdraw }: Props) {
   const { isDarkMode } = useThemeMode()
   const t = getMileageTheme(isDarkMode)
 
@@ -91,12 +92,29 @@ export default function ExchangeHistoryTable({ data }: Props) {
               <TableCell>
                 <StatusBadge status={item.status} style={statusMap[item.status] ?? statusMap['신청중']} />
               </TableCell>
+              <TableCell sx={{ textAlign: 'right' }}>
+                {item.status === '신청중' && onWithdraw && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => onWithdraw(item.id)}
+                    sx={{
+                      fontSize: '0.72rem', fontWeight: 600, borderRadius: 1.5,
+                      py: 0.3, px: 1.25, minWidth: 0,
+                      color: t.statusErrorColor, borderColor: t.statusErrorBorder,
+                      '&:hover': { bgcolor: t.statusErrorBg, borderColor: t.statusErrorColor },
+                    }}
+                  >
+                    회수
+                  </Button>
+                )}
+              </TableCell>
             </TableRow>
           ))}
 
           {data.length === 0 && (
             <TableRow>
-              <TableCell colSpan={5} sx={{ textAlign: 'center', py: 8, border: 'none' }}>
+              <TableCell colSpan={6} sx={{ textAlign: 'center', py: 8, border: 'none' }}>
                 <Typography variant="body2" sx={{ color: t.textSecondary }}>환전 신청 내역이 없습니다</Typography>
               </TableCell>
             </TableRow>

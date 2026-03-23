@@ -21,6 +21,7 @@ import FileUploadSection from './components/sections/FileUploadSection'
 import ParticipantsSection from './components/sections/ParticipantsSection'
 import PlanSection from './components/sections/PlanSection'
 import ReviewerSelectModal from './components/modals/ReviewerSelectModal'
+import CoProposerSelectModal from './components/modals/CoProposerSelectModal'
 import SimilarIdeaSearchModal from './components/modals/SimilarIdeaSearchModal'
 
 function SectionDivider() {
@@ -38,13 +39,18 @@ export default function NewIdea() {
   const isEditMode = editIdea !== null
 
   // ─── 폼 상태 ───────────────────────────────────────────────────────────────
+  const [ideaType, setIdeaType] = useState<'idea' | 'complete'>('idea')
   const [title, setTitle] = useState(editIdea?.title ?? '')
   const [categories, setCategories] = useState<string[]>(editIdea?.category ? [editIdea.category] : [])
   const [problem, setProblem] = useState(editIdea?.problem ?? '')
   const [solution, setSolution] = useState(editIdea?.solution ?? '')
   const [reviewer, setReviewer] = useState<string[]>([])
+  const [coProposers, setCoProposers] = useState<string[]>([])
   const [security, setSecurity] = useState<'public' | 'private'>(editIdea?.security ?? 'public')
   const [plan, setPlan] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [expectedOutcome, setExpectedOutcome] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
@@ -52,6 +58,7 @@ export default function NewIdea() {
 
   // ─── 모달 상태 ─────────────────────────────────────────────────────────────
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
+  const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
   const [similarSearchOpen, setSimilarSearchOpen] = useState(false)
 
   // ─── 임시저장 ──────────────────────────────────────────────────────────────
@@ -59,15 +66,20 @@ export default function NewIdea() {
     savedDraft, lastSavedAt, snackOpen, snackMsg, setSnackOpen,
     handleManualSave, handleRestoreDraft, handleDiscardDraft, clearDraft,
   } = useIdeaDraft(
-    { title, categories, problem, solution, reviewer, security, plan },
+    { ideaType, title, categories, problem, solution, reviewer, coProposers, security, plan, startDate, endDate, expectedOutcome },
     (draft) => {
+      setIdeaType(draft.ideaType ?? 'idea')
       setTitle(draft.title ?? '')
       setCategories(draft.categories ?? [])
       setProblem(draft.problem ?? '')
       setSolution(draft.solution ?? '')
       setReviewer(draft.reviewer ?? [])
+      setCoProposers(draft.coProposers ?? [])
       setSecurity(draft.security ?? 'public')
       setPlan(draft.plan ?? '')
+      setStartDate(draft.startDate ?? '')
+      setEndDate(draft.endDate ?? '')
+      setExpectedOutcome(draft.expectedOutcome ?? '')
     },
   )
 
@@ -156,6 +168,7 @@ export default function NewIdea() {
 
           <Box sx={{ p: { xs: 3, sm: 5 } }}>
             <BasicInfoSection
+              ideaType={ideaType} setIdeaType={setIdeaType}
               title={title} setTitle={(v) => { setTitle(v); if (fieldErrors.title) setFieldErrors((p) => ({ ...p, title: false })) }}
               categories={categories} setCategories={setCategories}
               problem={problem} setProblem={(v) => { setProblem(v); if (fieldErrors.problem) setFieldErrors((p) => ({ ...p, problem: false })) }}
@@ -167,12 +180,19 @@ export default function NewIdea() {
 
             <ParticipantsSection
               reviewer={reviewer} setReviewer={setReviewer}
+              coProposers={coProposers} setCoProposers={setCoProposers}
               security={security} setSecurity={setSecurity}
               onOpenReviewerModal={() => setReviewerModalOpen(true)}
+              onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
             />
             <SectionDivider />
 
-            <PlanSection plan={plan} setPlan={setPlan} />
+            <PlanSection
+              plan={plan} setPlan={setPlan}
+              startDate={startDate} setStartDate={setStartDate}
+              endDate={endDate} setEndDate={setEndDate}
+              expectedOutcome={expectedOutcome} setExpectedOutcome={setExpectedOutcome}
+            />
             <SectionDivider />
 
             <FileUploadSection
@@ -244,6 +264,12 @@ export default function NewIdea() {
 
       {/* 모달 */}
       <SimilarIdeaSearchModal open={similarSearchOpen} onClose={() => setSimilarSearchOpen(false)} initialQuery={title} />
+      <CoProposerSelectModal
+        open={coProposerModalOpen}
+        onClose={() => setCoProposerModalOpen(false)}
+        selected={coProposers}
+        onToggle={(name) => setCoProposers((prev) => prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name])}
+      />
       <ReviewerSelectModal
         open={reviewerModalOpen}
         onClose={() => setReviewerModalOpen(false)}

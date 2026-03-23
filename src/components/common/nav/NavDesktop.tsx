@@ -1,7 +1,7 @@
 // src/components/common/nav/NavDesktop.tsx
 // 데스크톱 네비게이션 바 — NavItem(단일 링크), NavGroup(드롭다운 그룹) 렌더링 및 UserMenu 조합
-import * as MuiIcons from '@mui/icons-material'
 import { Box, Paper, Typography } from '@mui/material'
+import { NAV_ICON_MAP, KeyboardArrowDownIcon } from './navIcons'
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems } from './navConfig'
@@ -17,7 +17,7 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
   const location = useLocation()
   const { nt } = useNavColors()
   const active = location.pathname === item.path
-  const Icon = MuiIcons[item.iconName] ?? MuiIcons.HelpOutline
+  const Icon = NAV_ICON_MAP[item.iconName]
 
   return (
     <Box
@@ -77,7 +77,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const groupActive = item.children.some((c) => location.pathname === c.path)
-  const Icon = MuiIcons[item.iconName] ?? MuiIcons.HelpOutline
+  const Icon = NAV_ICON_MAP[item.iconName]
 
   const handleEnter = () => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current)
@@ -123,7 +123,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
         >
           {item.text}
         </Typography>
-        <MuiIcons.KeyboardArrowDown
+        <KeyboardArrowDownIcon
           sx={{
             fontSize: '1rem',
             color: groupActive || isOpen ? nt.activeColor : nt.textColor,
@@ -176,7 +176,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
         >
           {item.children.map((child) => {
             const childActive = location.pathname === child.path
-            const ChildIcon = MuiIcons[child.iconName] ?? MuiIcons.HelpOutline
+            const ChildIcon = NAV_ICON_MAP[child.iconName]
 
             return (
               <Box

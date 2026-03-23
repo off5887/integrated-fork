@@ -9,7 +9,10 @@ import {
   Button,
   Dialog,
   DialogContent,
+  FormHelperText,
   IconButton,
+  MenuItem,
+  Select,
   TextField,
   Typography,
 } from '@mui/material'
@@ -18,27 +21,28 @@ import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
 import type { DecisionType } from '@/api/types/judge'
-import { stageConfig } from '../config/judgeStageConfig'
 import { decisionConfig } from '../config/judgeDecisionConfig'
 
 interface Props {
   open: boolean
   type: DecisionType | null
   proposalTitle: string
-  reviewStage: 1 | 2 | 3
   onClose: () => void
-  onConfirm: (type: DecisionType, reason: string, score?: number, mileage?: number) => void
+  onConfirm: (type: DecisionType, reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoreProfitability?: number, mileage?: number) => void
 }
 
 const MAX_CHARS = 500
+const MAX_FISH = 500
+const SCORE_OPTIONS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+
+const SCORE_ITEMS = [
+  { key: 'innovation',    label: '혁신성'    },
+  { key: 'feasibility',  label: '실행가능성' },
+  { key: 'profitability', label: '수익성'    },
+] as const
 
 export default function JudgeDecisionModal({
-  open,
-  type,
-  proposalTitle,
-  reviewStage,
-  onClose,
-  onConfirm,
+  open, type, proposalTitle, onClose, onConfirm,
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
@@ -46,25 +50,29 @@ export default function JudgeDecisionModal({
 
   const [reason, setReason] = useState('')
   const [touched, setTouched] = useState(false)
-  const [score, setScore] = useState('')
+  const [scores, setScores] = useState<Record<string, string>>({ innovation: '', feasibility: '', profitability: '' })
   const [mileage, setMileage] = useState('')
 
   const isApprove = type === '승인'
   const isWithdraw = type === '승인회수' || type === '반려회수'
-  const showScoreFields = isApprove && reviewStage === 1
+  const showScoreFields = isApprove
 
   const isError = touched && reason.trim().length === 0
   const charCount = reason.length
   const isOverLimit = charCount > MAX_CHARS
 
-  const scoreNum = score === '' ? NaN : Number(score)
   const mileageNum = mileage === '' ? NaN : Number(mileage)
-  const isScoreError = touched && showScoreFields && (score === '' || isNaN(scoreNum) || scoreNum < 0 || scoreNum > 100)
-  const isMileageError = touched && showScoreFields && (mileage === '' || isNaN(mileageNum) || mileageNum < 0)
+  const isMileageError = touched && showScoreFields && (mileage === '' || isNaN(mileageNum) || mileageNum < 0 || mileageNum > MAX_FISH)
+  const isScoreError = (key: string) => touched && showScoreFields && scores[key] === ''
+  const anyScoreError = SCORE_ITEMS.some(({ key }) => isScoreError(key))
+
+  const totalScore = SCORE_ITEMS.every(({ key }) => scores[key] !== '')
+    ? SCORE_ITEMS.reduce((sum, { key }) => sum + Number(scores[key]), 0)
+    : null
 
   const handleClose = () => {
     setReason('')
-    setScore('')
+    setScores({ innovation: '', feasibility: '', profitability: '' })
     setMileage('')
     setTouched(false)
     onClose()
@@ -73,15 +81,17 @@ export default function JudgeDecisionModal({
   const handleConfirm = () => {
     setTouched(true)
     if (!type || reason.trim().length === 0 || isOverLimit) return
-    if (showScoreFields && (isScoreError || isMileageError)) return
+    if (showScoreFields && (anyScoreError || isMileageError)) return
     onConfirm(
       type,
       reason.trim(),
-      showScoreFields ? scoreNum : undefined,
+      showScoreFields ? Number(scores.innovation) : undefined,
+      showScoreFields ? Number(scores.feasibility) : undefined,
+      showScoreFields ? Number(scores.profitability) : undefined,
       showScoreFields ? mileageNum : undefined,
     )
     setReason('')
-    setScore('')
+    setScores({ innovation: '', feasibility: '', profitability: '' })
     setMileage('')
     setTouched(false)
   }
@@ -89,6 +99,17 @@ export default function JudgeDecisionModal({
   if (!type) return null
 
   const dc = decisionConfig[type]
+
+  const selectSx = {
+    borderRadius: 1.5,
+    bgcolor: theme.decisionInputBg,
+    fontSize: '0.875rem',
+    color: colors.textPrimary,
+    '& .MuiOutlinedInput-notchedOutline': { borderColor: colors.borderColor },
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: theme.inputHoverBorder },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: theme.inputFocusColor },
+    '& .MuiSelect-icon': { color: colors.textSecondary },
+  }
 
   return (
     <Dialog
@@ -133,28 +154,17 @@ export default function JudgeDecisionModal({
       {/* 헤더 */}
       <Box
         sx={{
-          px: { xs: 2.5, sm: 3 },
-          pt: 2.5,
-          pb: 2,
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 1.5,
+          px: { xs: 2.5, sm: 3 }, pt: 2.5, pb: 2,
+          display: 'flex', alignItems: 'flex-start', gap: 1.5,
           borderBottom: `1px solid ${colors.borderColor}`,
         }}
       >
         <Box
           sx={{
-            width: 38,
-            height: 38,
-            borderRadius: '50%',
-            bgcolor: dc.bg,
-            border: `1px solid ${dc.border}`,
-            color: dc.color,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            mt: 0.25,
+            width: 38, height: 38, borderRadius: '50%',
+            bgcolor: dc.bg, border: `1px solid ${dc.border}`, color: dc.color,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0, mt: 0.25,
           }}
         >
           {isApprove
@@ -166,24 +176,10 @@ export default function JudgeDecisionModal({
         </Box>
 
         <Box flex={1} minWidth={0}>
-          <Typography
-            id="judge-decision-dialog-title"
-            fontWeight={700}
-            sx={{ color: dc.color, fontSize: '1rem', lineHeight: 1.3 }}
-          >
+          <Typography id="judge-decision-dialog-title" fontWeight={700} sx={{ color: dc.color, fontSize: '1rem', lineHeight: 1.3 }}>
             {isApprove ? '제안 승인' : isWithdraw ? (type === '승인회수' ? '승인 회수' : '반려 회수') : '제안 반려'}
           </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: colors.textSecondary,
-              display: 'block',
-              mt: 0.3,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
+          <Typography variant="caption" sx={{ color: colors.textSecondary, display: 'block', mt: 0.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {proposalTitle}
           </Typography>
         </Box>
@@ -197,14 +193,9 @@ export default function JudgeDecisionModal({
         {/* 안내 배너 */}
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 1.25,
-            p: 1.75,
-            mb: 2.5,
-            borderRadius: 2,
-            bgcolor: dc.bgLight,
-            border: `1px solid ${dc.border}`,
+            display: 'flex', alignItems: 'flex-start', gap: 1.25,
+            p: 1.75, mb: 2.5, borderRadius: 2,
+            bgcolor: dc.bgLight, border: `1px solid ${dc.border}`,
           }}
         >
           <WarningAmberIcon sx={{ fontSize: '1rem', color: dc.color, flexShrink: 0, mt: 0.1 }} />
@@ -217,83 +208,99 @@ export default function JudgeDecisionModal({
           </Typography>
         </Box>
 
-        {/* 1차 승인 시: 점수 및 마일리지 입력 */}
+        {/* 승인 시: 점수 및 물고기 입력 */}
         {showScoreFields && (
           <Box
             sx={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 2,
-              mb: 2.5,
-              p: 2,
-              borderRadius: 2,
+              mb: 2.5, p: 2, borderRadius: 2,
               bgcolor: theme.scoreFieldsBg,
               border: `1px solid ${theme.scoreFieldsBorder}`,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, gridColumn: '1 / -1', mb: 0.5 }}>
+            {/* 섹션 헤더 */}
+            <Typography variant="caption" sx={{ fontWeight: 700, color: colors.textPrimary, fontSize: '0.8rem', display: 'block', mb: 1.5 }}>
+              항목별 점수 입력
+              <Box component="span" sx={{ color: dc.color, ml: 0.5 }}>*</Box>
+            </Typography>
+
+            {/* 3개 점수 셀렉트 */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 1.5 }}>
+              {SCORE_ITEMS.map(({ key, label }) => {
+                const hasErr = isScoreError(key)
+                return (
+                  <Box key={key}>
+                    <Typography sx={{ fontWeight: 600, color: colors.textPrimary, fontSize: '0.78rem', mb: 0.5 }}>
+                      {label}
+                    </Typography>
+                    <Select
+                      fullWidth
+                      size="small"
+                      displayEmpty
+                      value={scores[key]}
+                      onChange={(e) => setScores((prev) => ({ ...prev, [key]: e.target.value as string }))}
+                      sx={{
+                        ...selectSx,
+                        ...(hasErr && {
+                          '& .MuiOutlinedInput-notchedOutline': { borderColor: theme.inputErrorColor },
+                        }),
+                      }}
+                      renderValue={scores[key] === '' ? () => <span style={{ color: colors.textSecondary, fontSize: '0.85rem' }}>선택</span> : undefined}
+                    >
+                      {SCORE_OPTIONS.map((v) => (
+                        <MenuItem key={v} value={String(v)} sx={{ fontSize: '0.875rem' }}>
+                          {v}점
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {hasErr && (
+                      <FormHelperText error sx={{ fontSize: '0.7rem', mt: 0.4, mx: 0 }}>
+                        점수를 선택해 주세요.
+                      </FormHelperText>
+                    )}
+                  </Box>
+                )
+              })}
+            </Box>
+
+            {/* 총점 표시 */}
+            {totalScore !== null && (
               <Box
                 sx={{
-                  px: 1, py: 0.25, borderRadius: 1,
-                  bgcolor: stageConfig[1].bg,
-                  border: `1px solid ${stageConfig[1].border}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1,
+                  px: 1.5, py: 0.75, mb: 1.5, borderRadius: 1.5,
+                  bgcolor: theme.scoreFieldsBorder,
+                  border: `1px solid ${colors.borderColor}`,
                 }}
               >
-                <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: stageConfig[1].color }}>1차 심사</Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: colors.textSecondary }}>총점</Typography>
+                <Typography sx={{ fontSize: '0.95rem', fontWeight: 800, color: colors.textPrimary }}>
+                  {totalScore}
+                  <Box component="span" sx={{ fontSize: '0.72rem', fontWeight: 500, color: colors.textSecondary, ml: 0.3 }}>/ 300점</Box>
+                </Typography>
               </Box>
-              <Typography variant="caption" sx={{ color: colors.textSecondary }}>
-                1차 심사 승인 시 점수와 마일리지를 입력해 주세요.
-              </Typography>
-            </Box>
+            )}
 
-            {/* 점수 */}
+            {/* 물고기 입력 */}
             <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: colors.textPrimary, fontSize: '0.8rem', display: 'block', mb: 0.75 }}>
-                점수 (0~100)
-                <Box component="span" sx={{ color: dc.color, ml: 0.5 }}>*</Box>
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography sx={{ fontWeight: 600, color: colors.textPrimary, fontSize: '0.78rem' }}>
+                  🐟 물고기 지급 수량
+                  <Box component="span" sx={{ color: dc.color, ml: 0.5 }}>*</Box>
+                </Typography>
+                <Typography sx={{ fontSize: '0.7rem', color: colors.textSecondary }}>
+                  최대 {MAX_FISH}마리
+                </Typography>
+              </Box>
               <TextField
                 fullWidth
                 type="number"
                 size="small"
-                placeholder="예: 85"
-                value={score}
-                onChange={(e) => setScore(e.target.value)}
-                error={isScoreError}
-                helperText={isScoreError ? '0~100 사이의 점수를 입력해 주세요.' : ''}
-                slotProps={{ htmlInput: { min: 0, max: 100, 'aria-label': '점수 (0~100)', 'aria-required': 'true' } }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 1.5,
-                    bgcolor: theme.decisionInputBg,
-                    fontSize: '0.875rem',
-                    color: colors.textPrimary,
-                    '& fieldset': { borderColor: isScoreError ? theme.inputErrorColor : colors.borderColor },
-                    '&:hover fieldset': { borderColor: isScoreError ? theme.inputErrorColor : theme.inputHoverBorder },
-                    '&.Mui-focused fieldset': { borderColor: isScoreError ? theme.inputErrorColor : theme.inputFocusColor },
-                  },
-                  '& .MuiInputBase-input': { color: colors.textPrimary, '&::placeholder': { color: colors.textSecondary, opacity: 1 } },
-                  '& .MuiFormHelperText-root': { fontSize: '0.72rem', mt: 0.5, mx: 0 },
-                }}
-              />
-            </Box>
-
-            {/* 마일리지 */}
-            <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, color: colors.textPrimary, fontSize: '0.8rem', display: 'block', mb: 0.75 }}>
-                마일리지 (원)
-                <Box component="span" sx={{ color: dc.color, ml: 0.5 }}>*</Box>
-              </Typography>
-              <TextField
-                fullWidth
-                type="number"
-                size="small"
-                placeholder="예: 50000"
+                placeholder={`0 ~ ${MAX_FISH}`}
                 value={mileage}
                 onChange={(e) => setMileage(e.target.value)}
                 error={isMileageError}
-                helperText={isMileageError ? '마일리지를 입력해 주세요.' : ''}
-                slotProps={{ htmlInput: { min: 0, 'aria-label': '마일리지 (원)', 'aria-required': 'true' } }}
+                helperText={isMileageError ? `0~${MAX_FISH} 사이로 입력해 주세요.` : ''}
+                slotProps={{ htmlInput: { min: 0, max: MAX_FISH, 'aria-label': '물고기 지급 수량', 'aria-required': 'true' } }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1.5,
@@ -309,26 +316,33 @@ export default function JudgeDecisionModal({
                 }}
               />
             </Box>
+
+            {/* 심사자 리워드 안내 */}
+            <Box
+              sx={{
+                mt: 1.5, display: 'flex', alignItems: 'center', gap: 0.75,
+                px: 1.25, py: 1, borderRadius: 1.5,
+                bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.06)',
+                border: `1px solid rgba(99,102,241,0.2)`,
+              }}
+            >
+              <Typography sx={{ fontSize: '0.75rem', color: colors.textSecondary, lineHeight: 1.5 }}>
+                🐟 심사 완료 시 심사자에게 <Box component="span" sx={{ fontWeight: 700, color: theme.primaryIconColor }}>3마리</Box>가 자동 지급됩니다. 공동제안자에게는 물고기가 지급되지 않습니다.
+              </Typography>
+            </Box>
           </Box>
         )}
 
         {/* 사유 입력 */}
         <Box sx={{ mb: 0.5 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
-            <Typography
-              variant="caption"
-              sx={{ fontWeight: 700, color: colors.textPrimary, fontSize: '0.8rem' }}
-            >
+            <Typography variant="caption" sx={{ fontWeight: 700, color: colors.textPrimary, fontSize: '0.8rem' }}>
               {isApprove ? '승인 사유' : isWithdraw ? '회수 사유' : '반려 사유'}
               <Box component="span" sx={{ color: dc.color, ml: 0.5 }}>*</Box>
             </Typography>
             <Typography
               variant="caption"
-              sx={{
-                color: isOverLimit ? theme.inputErrorColor : colors.textSecondary,
-                fontSize: '0.72rem',
-                fontVariantNumeric: 'tabular-nums',
-              }}
+              sx={{ color: isOverLimit ? theme.inputErrorColor : colors.textSecondary, fontSize: '0.72rem', fontVariantNumeric: 'tabular-nums' }}
             >
               {charCount} / {MAX_CHARS}
             </Typography>
@@ -347,10 +361,7 @@ export default function JudgeDecisionModal({
             }
             slotProps={{ htmlInput: { 'aria-label': isApprove ? '승인 사유' : isWithdraw ? '회수 사유' : '반려 사유', 'aria-required': 'true' } }}
             value={reason}
-            onChange={(e) => {
-              setReason(e.target.value)
-              if (!touched) setTouched(true)
-            }}
+            onChange={(e) => { setReason(e.target.value); if (!touched) setTouched(true) }}
             error={isError || isOverLimit}
             helperText={
               isError
@@ -361,31 +372,13 @@ export default function JudgeDecisionModal({
             }
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                bgcolor: theme.decisionInputBg,
-                fontSize: '0.875rem',
-                color: colors.textPrimary,
-                alignItems: 'flex-start',
-                '& fieldset': {
-                  borderColor: isError || isOverLimit ? theme.inputErrorColor : colors.borderColor,
-                },
-                '&:hover fieldset': {
-                  borderColor: isError || isOverLimit ? theme.inputErrorColor : dc.color + '66',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isError || isOverLimit ? theme.inputErrorColor : dc.color,
-                },
+                borderRadius: 2, bgcolor: theme.decisionInputBg, fontSize: '0.875rem', color: colors.textPrimary, alignItems: 'flex-start',
+                '& fieldset': { borderColor: isError || isOverLimit ? theme.inputErrorColor : colors.borderColor },
+                '&:hover fieldset': { borderColor: isError || isOverLimit ? theme.inputErrorColor : dc.color + '66' },
+                '&.Mui-focused fieldset': { borderColor: isError || isOverLimit ? theme.inputErrorColor : dc.color },
               },
-              '& .MuiInputBase-input': {
-                color: colors.textPrimary,
-                lineHeight: 1.65,
-                '&::placeholder': { color: colors.textSecondary, opacity: 1 },
-              },
-              '& .MuiFormHelperText-root': {
-                fontSize: '0.75rem',
-                mt: 0.5,
-                mx: 0,
-              },
+              '& .MuiInputBase-input': { color: colors.textPrimary, lineHeight: 1.65, '&::placeholder': { color: colors.textSecondary, opacity: 1 } },
+              '& .MuiFormHelperText-root': { fontSize: '0.75rem', mt: 0.5, mx: 0 },
             }}
           />
         </Box>
@@ -394,29 +387,17 @@ export default function JudgeDecisionModal({
       {/* 하단 버튼 */}
       <Box
         sx={{
-          px: { xs: 2.5, sm: 3 },
-          py: 2,
+          px: { xs: 2.5, sm: 3 }, py: 2,
           borderTop: `1px solid ${colors.borderColor}`,
-          display: 'flex',
-          gap: 1.5,
-          justifyContent: 'flex-end',
-          flexWrap: 'wrap',
+          display: 'flex', gap: 1.5, justifyContent: 'flex-end', flexWrap: 'wrap',
           bgcolor: theme.decisionModalFooterBg,
         }}
       >
         <Button
-          variant="outlined"
-          size="small"
-          onClick={handleClose}
+          variant="outlined" size="small" onClick={handleClose}
           sx={{
-            borderRadius: 1.5,
-            px: 2.5,
-            py: 0.85,
-            fontWeight: 600,
-            fontSize: '0.82rem',
-            textTransform: 'none',
-            borderColor: theme.decisionCancelBorder,
-            color: colors.textSecondary,
+            borderRadius: 1.5, px: 2.5, py: 0.85, fontWeight: 600, fontSize: '0.82rem', textTransform: 'none',
+            borderColor: theme.decisionCancelBorder, color: colors.textSecondary,
             '&:hover': { borderColor: colors.textSecondary, bgcolor: 'transparent' },
           }}
         >
@@ -424,57 +405,19 @@ export default function JudgeDecisionModal({
         </Button>
 
         <Button
-          variant="contained"
-          size="small"
-          onClick={handleConfirm}
-          disabled={isOverLimit}
+          variant="contained" size="small" onClick={handleConfirm} disabled={isOverLimit}
           startIcon={
-            isApprove
-              ? <CheckCircleOutlineIcon sx={{ fontSize: '0.95rem' }} />
-              : isWithdraw
-              ? <UndoIcon sx={{ fontSize: '0.95rem' }} />
-              : <DoNotDisturbIcon sx={{ fontSize: '0.95rem' }} />
+            isApprove ? <CheckCircleOutlineIcon sx={{ fontSize: '0.95rem' }} />
+            : isWithdraw ? <UndoIcon sx={{ fontSize: '0.95rem' }} />
+            : <DoNotDisturbIcon sx={{ fontSize: '0.95rem' }} />
           }
           sx={{
-            borderRadius: 1.5,
-            px: 2.5,
-            py: 0.85,
-            fontWeight: 700,
-            fontSize: '0.82rem',
-            textTransform: 'none',
-            boxShadow: 'none',
+            borderRadius: 1.5, px: 2.5, py: 0.85, fontWeight: 700, fontSize: '0.82rem', textTransform: 'none', boxShadow: 'none',
             ...(isApprove
-              ? {
-                  bgcolor: theme.primaryBtnBg,
-                  color: theme.primaryBtnColor,
-                  '&:hover': {
-                    bgcolor: theme.primaryBtnHoverBg,
-                    boxShadow: '0 4px 14px rgba(99,102,241,0.4)',
-                  },
-                }
+              ? { bgcolor: theme.primaryBtnBg, color: theme.primaryBtnColor, '&:hover': { bgcolor: theme.primaryBtnHoverBg, boxShadow: '0 4px 14px rgba(99,102,241,0.4)' } }
               : isWithdraw
-              ? {
-                  bgcolor: dc.bg,
-                  color: dc.color,
-                  border: `1px solid ${dc.border}`,
-                  '&:hover': {
-                    bgcolor: dc.color,
-                    color: theme.primaryBtnColor,
-                    border: `1px solid ${dc.color}`,
-                    boxShadow: `0 4px 14px ${dc.color}59`,
-                  },
-                }
-              : {
-                  bgcolor: theme.rejectBtnBg,
-                  color: theme.rejectColor,
-                  border: `1px solid ${theme.rejectBtnBorder}`,
-                  '&:hover': {
-                    bgcolor: theme.rejectColor,
-                    color: theme.primaryBtnColor,
-                    border: `1px solid ${theme.rejectColor}`,
-                    boxShadow: '0 4px 14px rgba(239,68,68,0.35)',
-                  },
-                }),
+              ? { bgcolor: dc.bg, color: dc.color, border: `1px solid ${dc.border}`, '&:hover': { bgcolor: dc.color, color: theme.primaryBtnColor, border: `1px solid ${dc.color}`, boxShadow: `0 4px 14px ${dc.color}59` } }
+              : { bgcolor: theme.rejectBtnBg, color: theme.rejectColor, border: `1px solid ${theme.rejectBtnBorder}`, '&:hover': { bgcolor: theme.rejectColor, color: theme.primaryBtnColor, border: `1px solid ${theme.rejectColor}`, boxShadow: '0 4px 14px rgba(239,68,68,0.35)' } }),
             '&.Mui-disabled': { opacity: 0.38 },
             transition: 'all 0.2s ease',
           }}

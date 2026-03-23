@@ -17,7 +17,7 @@ interface Props {
   onClose: () => void
   onPrev: () => void
   onNext: () => void
-  onApprove: (reason: string, score?: number, mileage?: number) => void
+  onApprove: (reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoreProfitability?: number, mileage?: number) => void
   onReject: (reason: string) => void
   onWithdrawApprove: (reason: string) => void
   onWithdrawReject: (reason: string) => void
@@ -72,7 +72,6 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
     >
       <JudgeDetailHeader
         title={proposal.title}
-        reviewStage={proposal.reviewStage}
         onClose={onClose}
       />
 
@@ -107,6 +106,8 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4.5 }}>
           <BasicInfoSection
+            ideaType={proposal.ideaType}
+            categories={proposal.categories}
             problem={proposal.problem}
             solution={proposal.solution}
           />
@@ -114,10 +115,7 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
           <SectionDivider />
 
           <ParticipantsSection
-            reviewer1={proposal.reviewer1}
-            reviewer2={proposal.reviewer2}
-            reviewer3={proposal.reviewer3}
-            reviewStage={proposal.reviewStage}
+            reviewer={proposal.reviewer}
             proposers={proposal.proposers}
           />
 
@@ -126,13 +124,14 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
           <ScheduleSection
             startDate={proposal.startDate}
             endDate={proposal.endDate}
-            scope={proposal.scope}
+            security={proposal.security}
           />
 
           <SectionDivider />
 
           <ExecutionPlanSection
             executionPlan={proposal.executionPlan}
+            expectedOutcome={proposal.expectedOutcome}
           />
 
           <SectionDivider />
@@ -145,7 +144,6 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
 
       <JudgeDetailActions
         proposalTitle={proposal.title}
-        reviewStage={proposal.reviewStage}
         status={proposal.status}
         isFirst={isFirst}
         isLast={isLast}

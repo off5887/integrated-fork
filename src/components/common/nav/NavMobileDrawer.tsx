@@ -1,6 +1,14 @@
 import gomgomLogo from '@/assets/gomgom_logo.png'
-import * as MuiIcons from '@mui/icons-material'
 import CloseIcon from '@mui/icons-material/Close'
+import {
+  NAV_ICON_MAP,
+  KeyboardArrowDownIcon,
+  InfoOutlinedIcon,
+  SettingsIcon,
+  WbSunnyIcon,
+  NightsStayIcon,
+  LogoutIcon,
+} from './navIcons'
 import {
   Avatar,
   Box,
@@ -172,7 +180,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
             }
 
             const active = isActive(item.path!)
-            const Icon = MuiIcons[item.iconName] ?? MuiIcons.HelpOutline
+            const Icon = NAV_ICON_MAP[item.iconName]
 
             return (
               <ListItem key={item.text} disablePadding sx={{ mb: 0.25 }}>
@@ -227,7 +235,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
               sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
             >
               <ListItemIcon sx={{ minWidth: 36, color: nt.drawerTextColor }}>
-                <MuiIcons.InfoOutlined fontSize="small" />
+                <InfoOutlinedIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText
                 primary={
@@ -248,7 +256,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                 sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
               >
                 <ListItemIcon sx={{ minWidth: 36, color: nt.drawerTextColor }}>
-                  <MuiIcons.Settings fontSize="small" />
+                  <SettingsIcon fontSize="small" />
                 </ListItemIcon>
                 <ListItemText
                   primary={
@@ -272,9 +280,9 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                 sx={{ minWidth: 36, color: nt.themeIconColor }}
               >
                 {isDarkMode ? (
-                  <MuiIcons.WbSunny fontSize="small" />
+                  <WbSunnyIcon fontSize="small" />
                 ) : (
-                  <MuiIcons.NightsStay fontSize="small" />
+                  <NightsStayIcon fontSize="small" />
                 )}
               </ListItemIcon>
               <ListItemText
@@ -295,7 +303,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
               sx={{ borderRadius: 2, py: 1.1, px: 1.5 }}
             >
               <ListItemIcon sx={{ minWidth: 36, color: nt.logoutColor }}>
-                <MuiIcons.Logout fontSize="small" />
+                <LogoutIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText
                 primary={
@@ -336,7 +344,7 @@ function GroupMenuItem({
   isActive,
 }: GroupMenuItemProps) {
   const { nt } = useNavColors()
-  const Icon = MuiIcons[item.iconName] ?? MuiIcons.HelpOutline
+  const Icon = NAV_ICON_MAP[item.iconName]
 
   return (
     <Box>
@@ -372,7 +380,7 @@ function GroupMenuItem({
               </Typography>
             }
           />
-          <MuiIcons.KeyboardArrowDown
+          <KeyboardArrowDownIcon
             sx={{
               fontSize: '1.1rem',
               color: isGroupActive ? nt.activeColor : nt.drawerTextColor,
@@ -394,7 +402,7 @@ function GroupMenuItem({
         >
           {item.children.map((child) => {
             const childActive = isActive(child.path)
-            const ChildIcon = MuiIcons[child.iconName] ?? MuiIcons.HelpOutline
+            const ChildIcon = NAV_ICON_MAP[child.iconName]
 
             return (
               <ListItem key={child.text} disablePadding sx={{ mb: 0.25 }}>

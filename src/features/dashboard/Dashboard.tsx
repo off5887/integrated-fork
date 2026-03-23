@@ -1,285 +1,193 @@
-// src/routes/dashboard/Dashboard.tsx
+// src/features/dashboard/Dashboard.tsx
+// 콘텐츠 높이 기준 자연 레이아웃 — 잘림·내부스크롤 없음
 import DashboardIcon from '@mui/icons-material/Dashboard'
-import { Box, Container, Grid, Typography, alpha } from '@mui/material'
-import { useState } from 'react'
+import { Box, CircularProgress, Typography, alpha } from '@mui/material'
+import { lazy, Suspense, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { dashboardAccent, getDashboardTheme } from '@/theme/dashboardTheme'
-import PageHeader from '@/components/ui/PageHeader'
-import { IDEAS } from '@/api/mock/ideaBrowse'
-import type { IdeaItem } from '@/api/types/ideaBrowse'
-import IdeaDetailDialog from '@/features/ideaBrowse/components/IdeaDetailDialog'
-
-import ApprovalStatusPie from './components/ApprovalStatusPie'
-import DepartmentTop5Bar from './components/DepartmentTop5Bar'
-import ExecutionCompletionRate from './components/ExecutionCompletionRate'
-import MyGomgomiCard from './components/MyGomgomiCard'
-import PopularImaginationTop5 from './components/PopularImaginationTop5'
-
-import {
-  EXECUTION_RATE,
-  KPI_STATS,
-  MY_GOMGOMI,
-  RECENT_ACTIVITIES,
-} from '@/api/mock/dashboard'
+import { MY_GOMGOMI, TEAM_ACTIVITIES, MY_ACTIVITIES, EXECUTION_RATE } from '@/api/mock/dashboard'
 import DashboardCard from './components/DashboardCard'
+import MyGomgomiCard from './components/MyGomgomiCard'
+import RolePanel from './components/RolePanel'
+
+const DepartmentTop5Bar       = lazy(() => import('./components/DepartmentTop5Bar'))
+const ExecutionCompletionRate = lazy(() => import('./components/ExecutionCompletionRate'))
+
+const ChartFallback = ({ height = 200 }: { height?: number }) => (
+  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height }}>
+    <CircularProgress size={28} />
+  </Box>
+)
 
 export default function RealDashboard() {
   const { isDarkMode } = useThemeMode()
   const dt = getDashboardTheme(isDarkMode)
-
-  const [selectedIdea, setSelectedIdea] = useState<IdeaItem | null>(null)
-
-  const handleIdeaClick = (ideaId: number) => {
-    const found = IDEAS.find((i) => i.id === ideaId) ?? null
-    setSelectedIdea(found)
-  }
+  const [activityTab, setActivityTab] = useState<'team' | 'my'>('team')
+  const activities = activityTab === 'team' ? TEAM_ACTIVITIES : MY_ACTIVITIES
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        width: '100%',
-        bgcolor: dt.bgBase,
-        color: dt.textPrimary,
-      }}
-    >
-      {/* 헤더 */}
-      <Box
-        component="header"
-        sx={{
-          px: { xs: 3, md: 5 },
-          pt: { xs: 4, md: 5 },
-          pb: { xs: 3, md: 4 },
-          borderBottom: `1px solid ${dt.borderColor}`,
-          bgcolor: dt.headerBg,
-          backdropFilter: 'blur(12px)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-        }}
-      >
-        <PageHeader
-          icon={DashboardIcon}
-          title="대시보드"
-          subtitle={`${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} 기준`}
-          right={
-            <Box
-              sx={{
-                px: 2, py: 0.75, borderRadius: 2,
-                bgcolor: dt.realtimeBadgeBg,
-                border: `1px solid ${dt.realtimeBadgeBorder}`,
-              }}
-            >
-              <Typography variant="caption" fontWeight={600} sx={{ color: dashboardAccent.blue }}>
-                실시간 현황
-              </Typography>
-            </Box>
-          }
-        />
+    <Box sx={{
+      minHeight: '100dvh',
+      display: 'flex',
+      flexDirection: 'column',
+      bgcolor: dt.bgBase,
+      color: dt.textPrimary,
+    }}>
+
+      {/* ── Compact Header ─────────────────────────────────── */}
+      <Box sx={{
+        px: { xs: 2, md: 3 },
+        height: 52,
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        borderBottom: `1px solid ${dt.borderColor}`,
+        bgcolor: dt.headerBg,
+        backdropFilter: 'blur(12px)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+      }}>
+        <Box sx={{
+          width: 28, height: 28, borderRadius: 1.5,
+          bgcolor: alpha(dashboardAccent.indigo, 0.15),
+          border: `1px solid ${alpha(dashboardAccent.indigo, 0.2)}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <DashboardIcon sx={{ fontSize: '0.9rem', color: dashboardAccent.indigo }} />
+        </Box>
+        <Typography variant="body2" fontWeight={700} sx={{ color: dt.textPrimary }}>
+          대시보드
+        </Typography>
+        <Typography variant="caption" sx={{ color: dt.textSecondary, display: { xs: 'none', sm: 'block' } }}>
+          {new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} 기준
+        </Typography>
+        <Box sx={{ ml: 'auto', px: 1.5, py: 0.4, borderRadius: 1.5, bgcolor: dt.realtimeBadgeBg, border: `1px solid ${dt.realtimeBadgeBorder}` }}>
+          <Typography variant="caption" fontWeight={600} sx={{ color: dashboardAccent.blue }}>
+            ● 실시간
+          </Typography>
+        </Box>
       </Box>
 
-      <Container
-        maxWidth={false}
-        sx={{ px: { xs: 2, md: 4, lg: 5 }, py: { xs: 3, md: 4 } }}
-      >
-        <Grid container spacing={{ xs: 2, md: 2.5 }}>
-          {/* Row 1: KPI 요약 카드 4개 */}
-          {KPI_STATS.map((stat, i) => (
-            <Grid key={i} size={{ xs: 6, lg: 3 }}>
-              <DashboardCard delay={i * 0.05}>
-                <Box
-                  sx={{
-                    p: { xs: 2, md: 2.5 },
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                  }}
-                >
+      {/* ── Content ─────────────────────────────────────────── */}
+      <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+
+        {/*
+          ── Main Layout (CSS Grid) ─────────────────────────────
+          DashboardCard의 sx는 motion.div inline style로 spread됩니다.
+          MUI 반응형 객체 { md: ... }는 inline style로 작동하지 않으므로
+          gridColumn/gridRow는 plain string으로 전달합니다.
+          (모바일은 display:flex이므로 gridColumn/gridRow 값이 무시됩니다)
+
+          Col1(220px): 나의곰곰이  | Col2(380px): 실행완료율  | Col3(1fr): 부서별TOP5
+          Col1-2 span: 역할별패널                              | Col3: 최근활동
+        */}
+        <Box sx={{
+          display: { xs: 'flex', md: 'grid' },
+          flexDirection: { xs: 'column' },
+          gridTemplateColumns: { md: '220px 380px 1fr' },
+          gap: 1.5,
+        }}>
+
+          {/* ── 나의 곰곰이 (col1 row1) ─────────────────────── */}
+          <DashboardCard delay={0.08} sx={{ gridColumn: '1', gridRow: '1', padding: '14px' }}>
+            <MyGomgomiCard fishTotal={MY_GOMGOMI.fishTotal} />
+          </DashboardCard>
+
+          {/* ── 전체 실행 완료율 (col2 row1) ────────────────── */}
+          <DashboardCard delay={0.15} sx={{ gridColumn: '2', gridRow: '1' }}>
+            <Suspense fallback={<ChartFallback height={240} />}>
+              <ExecutionCompletionRate completionRate={EXECUTION_RATE} />
+            </Suspense>
+          </DashboardCard>
+
+          {/* ── 부서별 TOP5 (col3 row1) ─────────────────────── */}
+          <DashboardCard delay={0.2} sx={{ gridColumn: '3', gridRow: '1' }}>
+            <Suspense fallback={<ChartFallback height={280} />}>
+              <DepartmentTop5Bar />
+            </Suspense>
+          </DashboardCard>
+
+          {/* ── 역할별 패널 (col1-2 span, row2) ─────────────── */}
+          <DashboardCard delay={0.28} sx={{ gridColumn: '1 / span 2', gridRow: '2' }}>
+            <RolePanel />
+          </DashboardCard>
+
+          {/* ── 최근 활동 (col3 row2) ────────────────────────── */}
+          <DashboardCard delay={0.33} sx={{ gridColumn: '3', gridRow: '2' }}>
+            {/* 헤더 + 탭 */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.25 }}>
+              <Typography fontWeight={700} sx={{ color: dt.textPrimary, fontSize: '0.875rem', lineHeight: 1.3 }}>
+                최근 활동
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 0.5 }}>
+                {(['team', 'my'] as const).map((tab) => (
                   <Box
+                    key={tab}
+                    onClick={() => setActivityTab(tab)}
                     sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 2.5,
-                      bgcolor: alpha(stat.color, dt.iconBgAlpha),
-                      border: `1px solid ${alpha(stat.color, 0.2)}`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.4rem',
-                      flexShrink: 0,
+                      px: 1.25, py: 0.3, borderRadius: '999px', cursor: 'pointer',
+                      fontSize: '0.7rem', fontWeight: 600,
+                      transition: 'all 0.15s',
+                      ...(activityTab === tab
+                        ? { bgcolor: alpha(dashboardAccent.indigo, 0.15), color: dashboardAccent.indigo, border: `1px solid ${alpha(dashboardAccent.indigo, 0.3)}` }
+                        : { bgcolor: 'transparent', color: dt.textSecondary, border: `1px solid ${dt.borderColor}` }
+                      ),
                     }}
                   >
-                    {stat.icon}
+                    {tab === 'team' ? '팀' : '개인'}
                   </Box>
-                  <Box>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: dt.textSecondary,
-                        fontWeight: 500,
-                        display: 'block',
-                        mb: 0.25,
-                      }}
-                    >
-                      {stat.label}
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      fontWeight={700}
-                      sx={{ color: stat.color, lineHeight: 1.2 }}
-                    >
-                      {stat.value}
-                    </Typography>
-                  </Box>
-                </Box>
-              </DashboardCard>
-            </Grid>
-          ))}
+                ))}
+              </Box>
+            </Box>
 
-          {/* Row 2: MyGomgomi (5) + ApprovalStatusPie (7) */}
-          <Grid size={{ xs: 12, lg: 5 }}>
-            <DashboardCard delay={0.2} sx={{ minHeight: 400, height: '100%' }}>
-              <MyGomgomiCard
-                fishTotal={MY_GOMGOMI.fishTotal}
-                fishToNextLevel={MY_GOMGOMI.fishToNextLevel}
-              />
-            </DashboardCard>
-          </Grid>
-
-          <Grid size={{ xs: 12, lg: 7 }}>
-            <DashboardCard delay={0.25} sx={{ minHeight: 400, height: '100%' }}>
-              <ApprovalStatusPie />
-            </DashboardCard>
-          </Grid>
-
-          {/* Row 3: PopularTop5 (7) + DepartmentBar (5) */}
-          <Grid size={{ xs: 12, lg: 7 }}>
-            <DashboardCard delay={0.3} sx={{ minHeight: 380, height: '100%' }}>
-              <PopularImaginationTop5 onIdeaClick={handleIdeaClick} />
-            </DashboardCard>
-          </Grid>
-
-          <Grid size={{ xs: 12, lg: 5 }}>
-            <DashboardCard delay={0.35} sx={{ minHeight: 380, height: '100%' }}>
-              <DepartmentTop5Bar />
-            </DashboardCard>
-          </Grid>
-
-          {/* Row 4: ExecutionRate (4) + RecentActivity (8) */}
-          <Grid size={{ xs: 12, lg: 4 }}>
-            <DashboardCard delay={0.4} sx={{ minHeight: 380, height: '100%' }}>
-              <ExecutionCompletionRate completionRate={EXECUTION_RATE} />
-            </DashboardCard>
-          </Grid>
-
-          <Grid size={{ xs: 12, lg: 8 }}>
-            <DashboardCard delay={0.45} sx={{ minHeight: 380, height: '100%' }}>
-              <Box
-                sx={{
-                  p: { xs: 2.5, md: 3 },
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  fontWeight={700}
+            <Box role="list" aria-label="최근 활동 목록">
+              {activities.map((act, i) => (
+                <Box
+                  key={i}
+                  role="listitem"
                   sx={{
-                    color: dt.textPrimary,
-                    mb: 0.5,
-                    letterSpacing: '-0.01em',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.25,
+                    py: 1.1,
+                    px: 0.5,
+                    borderBottom: `1px solid ${dt.dividerColor}`,
                   }}
                 >
-                  최근 활동
-                </Typography>
-                <Typography
-                  variant="caption"
-                  sx={{ color: dt.textSecondary, mb: 3, display: 'block' }}
-                >
-                  팀 내 최신 아이디어 활동 내역입니다
-                </Typography>
-
-                <Box
-                  role="list"
-                  aria-label="최근 활동 목록"
-                  sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}
-                >
-                  {RECENT_ACTIVITIES.map((act, i) => (
-                    <Box
-                      key={i}
-                      role="listitem"
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 2,
-                        py: 2,
-                        borderBottom:
-                          i < RECENT_ACTIVITIES.length - 1
-                            ? `1px solid ${dt.dividerColor}`
-                            : 'none',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: '50%',
-                          bgcolor: alpha(act.color, dt.iconBgAlpha),
-                          border: `1px solid ${alpha(act.color, 0.25)}`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '1rem',
-                          flexShrink: 0,
-                        }}
-                      >
-                        {act.icon}
-                      </Box>
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography
-                          variant="body2"
-                          fontWeight={600}
-                          sx={{ color: dt.textPrimary, lineHeight: 1.4 }}
-                          noWrap
-                        >
-                          {act.user}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: dt.textSecondary }}
-                          noWrap
-                        >
-                          {act.action}
-                        </Typography>
-                      </Box>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: dt.textSecondary,
-                          flexShrink: 0,
-                          px: 1.5,
-                          py: 0.5,
-                          borderRadius: 1.5,
-                          bgcolor: dt.timeBadgeBg,
-                        }}
-                      >
-                        {act.time}
-                      </Typography>
-                    </Box>
-                  ))}
+                  <Box sx={{
+                    width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                    bgcolor: alpha(act.color, dt.iconBgAlpha),
+                    border: `1px solid ${alpha(act.color, 0.25)}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.8rem',
+                  }}>
+                    {act.icon}
+                  </Box>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="body2" fontWeight={600} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
+                      {act.user}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: dt.textSecondary, lineHeight: 1.2 }} noWrap>
+                      {act.action}
+                    </Typography>
+                  </Box>
+                  <Typography variant="caption" sx={{
+                    color: dt.textSecondary, flexShrink: 0,
+                    px: 1, py: 0.35, borderRadius: 1,
+                    bgcolor: dt.timeBadgeBg, fontSize: '0.65rem',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {act.time}
+                  </Typography>
                 </Box>
-              </Box>
-            </DashboardCard>
-          </Grid>
-        </Grid>
-      </Container>
+              ))}
+            </Box>
+          </DashboardCard>
 
-      <IdeaDetailDialog
-        idea={selectedIdea}
-        onClose={() => setSelectedIdea(null)}
-        similarTitles={[]}
-      />
+        </Box>
+      </Box>
     </Box>
   )
 }

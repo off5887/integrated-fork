@@ -90,7 +90,7 @@ export default function ExecutionCompletionRate({ completionRate = 73.4 }: Execu
   ]
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       {/* 헤더 스트립 */}
       <Box
         sx={{

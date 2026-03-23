@@ -89,7 +89,7 @@ export default function DepartmentTop5Bar() {
   const series = [{ name: '실행 건수', data: DATA.map((d) => d.value) }]
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Box
         sx={{
           height: 4,
@@ -106,7 +106,7 @@ export default function DepartmentTop5Bar() {
       <Typography variant="caption" sx={{ color: dt.textSecondary, mb: 2, display: 'block' }}>
         부서의 아이디어 실행 현황을 비교하세요
       </Typography>
-      <Box sx={{ flex: 1 }}>
+      <Box>
         <Chart options={options} series={series} type="bar" height={290} width="100%" />
       </Box>
       <Box

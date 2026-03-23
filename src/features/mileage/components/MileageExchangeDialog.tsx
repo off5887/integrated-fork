@@ -39,12 +39,16 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
   const handleConfirm = () => {
     if (!isValid) return
     onConfirm(amount)
-    setInputValue('')
+    handleClose()
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value.replace(/[^0-9]/g, '')
     setInputValue(v)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleConfirm()
   }
 
   const errorMsg =
@@ -131,6 +135,7 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
           placeholder="숫자 입력"
           value={inputValue}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           error={!!errorMsg}
           helperText={errorMsg || (isValid ? `현금 환산 ≈ ${(amount * 100).toLocaleString()}원` : ' ')}
           slotProps={{
@@ -186,7 +191,7 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
           }}
         >
           <Typography variant="caption" sx={{ color: t.warningTextColor, fontWeight: 600 }}>
-            전환 신청 후에는 취소할 수 없습니다
+            전환 신청 후 관리자 승인 이후에는 취소할 수 없습니다
           </Typography>
         </Box>
 
