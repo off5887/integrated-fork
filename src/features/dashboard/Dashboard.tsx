@@ -1,7 +1,9 @@
 // src/routes/dashboard/Dashboard.tsx
+import DashboardIcon from '@mui/icons-material/Dashboard'
 import { Box, Container, Grid, Typography, alpha } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { dashboardAccent, getDashboardTheme } from '@/theme/dashboardTheme'
+import PageHeader from '@/components/ui/PageHeader'
 
 import ApprovalStatusPie from './components/ApprovalStatusPie'
 import DepartmentTop5Bar from './components/DepartmentTop5Bar'
@@ -38,9 +40,6 @@ export default function RealDashboard() {
           pt: { xs: 3, md: 4 },
           pb: { xs: 2, md: 3 },
           borderBottom: `1px solid ${dt.borderColor}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
           bgcolor: dt.headerBg,
           backdropFilter: 'blur(12px)',
           position: 'sticky',
@@ -48,43 +47,24 @@ export default function RealDashboard() {
           zIndex: 10,
         }}
       >
-        <Box>
-          <Typography
-            variant="h5"
-            fontWeight={700}
-            sx={{ color: dt.textPrimary, letterSpacing: '-0.02em' }}
-          >
-            대시보드
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{ color: dt.textSecondary, mt: 0.25, display: 'block' }}
-          >
-            {new Date().toLocaleDateString('ko-KR', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}{' '}
-            기준
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            px: 2,
-            py: 0.75,
-            borderRadius: 2,
-            bgcolor: dt.realtimeBadgeBg,
-            border: `1px solid ${dt.realtimeBadgeBorder}`,
-          }}
-        >
-          <Typography
-            variant="caption"
-            fontWeight={600}
-            sx={{ color: dashboardAccent.blue }}
-          >
-            실시간 현황
-          </Typography>
-        </Box>
+        <PageHeader
+          icon={DashboardIcon}
+          title="대시보드"
+          subtitle={`${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })} 기준`}
+          right={
+            <Box
+              sx={{
+                px: 2, py: 0.75, borderRadius: 2,
+                bgcolor: dt.realtimeBadgeBg,
+                border: `1px solid ${dt.realtimeBadgeBorder}`,
+              }}
+            >
+              <Typography variant="caption" fontWeight={600} sx={{ color: dashboardAccent.blue }}>
+                실시간 현황
+              </Typography>
+            </Box>
+          }
+        />
       </Box>
 
       <Container

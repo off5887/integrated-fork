@@ -145,6 +145,9 @@ export const ideaAccent = {
   danger: '#ef4444',
   violet: '#8b5cf6',
   purple: '#a78bfa',
+  headerIconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  headerIconShadow: '0 4px 16px rgba(99,102,241,0.35)',
+  headerIconColor: '#fff',
 } as const
 
 export type IdeaBrowseTheme = typeof ideaLight

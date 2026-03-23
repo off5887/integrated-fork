@@ -1,9 +1,11 @@
 // src/routes/ideaBrowse/IdeaBrowse.tsx
+import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { DEPT_BY_DIVISION, IDEAS } from '@/api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import PageHeader from '@/components/ui/PageHeader'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { getIdeaTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
@@ -120,25 +122,11 @@ export default function IdeaBrowse() {
         <Box sx={{ maxWidth: 1280, mx: 'auto' }}>
           {/* 타이틀 + 통계 */}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2, mb: 2.5, flexWrap: 'wrap' }}>
-            <Box>
-              <Typography
-                variant="h5"
-                fontWeight={800}
-                sx={{
-                  background: `linear-gradient(135deg, ${ideaAccent.primary} 0%, ${ideaAccent.violet} 50%, ${ideaAccent.purple} 100%)`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.25,
-                  mb: 0.5,
-                }}
-              >
-                상상 보기
-              </Typography>
-              <Typography sx={{ fontSize: '0.88rem', color: textSecondary }}>
-                모든 아이디어를 탐색하고 내 아이디어와 유사한 건을 확인해 보세요
-              </Typography>
-            </Box>
+            <PageHeader
+              icon={AutoStoriesIcon}
+              title="상상 보기"
+              subtitle="모든 아이디어를 탐색하고 내 아이디어와 유사한 건을 확인해 보세요"
+            />
             <Box
               sx={{
                 display: 'flex', alignItems: 'center', gap: 1.5,

@@ -36,6 +36,11 @@ const dashboardLight = {
   insightBg: 'rgba(99,102,241,0.05)',
   insightBorder: 'rgba(99,102,241,0.1)',
 
+  // ── 페이지 헤더 아이콘 박스 ──
+  headerIconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  headerIconShadow: '0 4px 16px rgba(99,102,241,0.3)',
+  headerIconColor: '#fff',
+
   // ── 실시간 뱃지 ──
   realtimeBadgeBg: 'rgba(59,130,246,0.08)',
   realtimeBadgeBorder: 'rgba(59,130,246,0.2)',
@@ -92,6 +97,11 @@ const dashboardDark = {
   // ── 인사이트 박스 (indigo tint) ──
   insightBg: 'rgba(99,102,241,0.08)',
   insightBorder: 'rgba(99,102,241,0.15)',
+
+  // ── 페이지 헤더 아이콘 박스 ──
+  headerIconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  headerIconShadow: '0 4px 16px rgba(99,102,241,0.45)',
+  headerIconColor: '#fff',
 
   // ── 실시간 뱃지 ──
   realtimeBadgeBg: 'rgba(59,130,246,0.12)',

@@ -34,6 +34,11 @@ export function getPageColors(isDarkMode: boolean) {
     // ── 테이블/목록 행 ──────────────────────────────────────────────────────
     headerBg: isDarkMode ? 'rgba(99,102,241,0.06)' : 'rgba(99,102,241,0.03)',
     rowBg:    isDarkMode ? 'rgba(30,41,59,0.4)'    : '#ffffff',
+
+    // ── 페이지 헤더 아이콘 박스 (전 페이지 공통) ────────────────────────────
+    pageIconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    pageIconShadow:   isDarkMode ? '0 4px 16px rgba(99,102,241,0.45)' : '0 4px 16px rgba(99,102,241,0.3)',
+    pageIconColor:    '#fff',
   }
 }
 

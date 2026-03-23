@@ -14,6 +14,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { judgeData } from '@/api/mock/judge'
 import { Proposal } from '@/api/types/judge'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import PageHeader from '@/components/ui/PageHeader'
 import JudgeDetail from './JudgeDetail'
 import ReviewerChangeModal from './components/ReviewerChangeModal'
 import StatCard from './components/StatCard'
@@ -174,46 +175,25 @@ export default function Judge() {
     >
       <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
         {/* 페이지 헤더 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, mb: { xs: 2.5, md: 4 } }}>
-          <Box
-            sx={{
-              width: { xs: 38, sm: 44 },
-              height: { xs: 38, sm: 44 },
-              borderRadius: 2.5,
-              background: theme.accentGradientDiag,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              boxShadow: theme.iconBoxShadow,
-            }}
-          >
-            <AssignmentTurnedInIcon sx={{ color: theme.primaryBtnColor, fontSize: { xs: '1.2rem', sm: '1.4rem' } }} />
-          </Box>
-          <Box sx={{ minWidth: 0, flex: 1 }}>
-            <Typography
-              fontWeight={800}
-              sx={{ color: colors.textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2, fontSize: { xs: '1.15rem', sm: '1.5rem' } }}
-            >
-              심사하기
-            </Typography>
-            <Typography variant="caption" sx={{ color: colors.textSecondary, display: { xs: 'none', sm: 'block' } }}>
-              제출된 제안을 검토하고 심사 결과를 입력하세요
-            </Typography>
-          </Box>
-          <Box sx={{ flexShrink: 0 }}>
-            <Chip
-              label={`전체 ${myProposals.length}건`}
-              size="small"
-              sx={{
-                bgcolor: theme.totalChipBg,
-                color: theme.totalChipColor,
-                fontWeight: 700,
-                fontSize: '0.78rem',
-                border: `1px solid ${theme.totalChipBorder}`,
-              }}
-            />
-          </Box>
+        <Box sx={{ mb: { xs: 2.5, md: 4 } }}>
+          <PageHeader
+            icon={AssignmentTurnedInIcon}
+            title="심사하기"
+            subtitle="제출된 제안을 검토하고 심사 결과를 입력하세요"
+            right={
+              <Chip
+                label={`전체 ${myProposals.length}건`}
+                size="small"
+                sx={{
+                  bgcolor: theme.totalChipBg,
+                  color: theme.totalChipColor,
+                  fontWeight: 700,
+                  fontSize: '0.78rem',
+                  border: `1px solid ${theme.totalChipBorder}`,
+                }}
+              />
+            }
+          />
         </Box>
 
         {/* 내 결재 현황 요약 */}

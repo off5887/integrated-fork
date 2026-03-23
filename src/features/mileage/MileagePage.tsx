@@ -1,4 +1,5 @@
 // src/routes/Mileage/MileagePage.tsx
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { Box, Button, Tab, Tabs, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -15,6 +16,7 @@ import MileageExchangeDialog from './components/MileageExchangeDialog'
 import MileageFilter from './components/MileageFilter'
 import MileageMobileCards from './components/MileageMobileCards'
 import MileageStatsCards from './components/MileageStatsCards'
+import PageHeader from '@/components/ui/PageHeader'
 
 type TabValue = 'awards' | 'exchanges'
 
@@ -101,37 +103,27 @@ export default function MileagePage() {
         }}
       >
         {/* 페이지 헤더 */}
-        <Box
-          sx={{
-            mb: 5, pb: 4,
-            borderBottom: `1px solid ${t.borderColorStrict}`,
-            display: 'flex', alignItems: 'flex-end',
-            justifyContent: 'space-between', flexWrap: 'wrap', gap: 2,
-          }}
-        >
-          <Box>
-            <Typography variant="h5" fontWeight={700} sx={{ color: t.textPrimary, letterSpacing: '-0.02em', mb: 0.5 }}>
-              마일리지
-            </Typography>
-            <Typography variant="caption" sx={{ color: t.textSecondary }}>
-              보유 생선 현황 및 현금 전환을 관리합니다
-            </Typography>
-          </Box>
-
-          {/* 환전 신청 버튼 */}
-          <Button
-            variant="contained"
-            startIcon={<SwapHorizIcon />}
-            onClick={() => setDialogOpen(true)}
-            sx={{
-              borderRadius: 2, px: 3, py: 1,
-              fontWeight: 600, fontSize: '0.875rem',
-              bgcolor: t.primaryColor, color: t.primaryBtnColor, boxShadow: 'none',
-              '&:hover': { bgcolor: t.primaryHoverBg, boxShadow: t.primaryBtnHoverShadow },
-            }}
-          >
-            현금 전환 신청
-          </Button>
+        <Box sx={{ mb: 5, pb: 4, borderBottom: `1px solid ${t.borderColorStrict}` }}>
+          <PageHeader
+            icon={AttachMoneyIcon}
+            title="마일리지"
+            subtitle="보유 생선 현황 및 현금 전환을 관리합니다"
+            right={
+              <Button
+                variant="contained"
+                startIcon={<SwapHorizIcon />}
+                onClick={() => setDialogOpen(true)}
+                sx={{
+                  borderRadius: 2, px: 3, py: 1,
+                  fontWeight: 600, fontSize: '0.875rem',
+                  bgcolor: t.primaryColor, color: t.primaryBtnColor, boxShadow: 'none',
+                  '&:hover': { bgcolor: t.primaryHoverBg, boxShadow: t.primaryBtnHoverShadow },
+                }}
+              >
+                현금 전환 신청
+              </Button>
+            }
+          />
         </Box>
 
         {/* 통계 카드 */}
