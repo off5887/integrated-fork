@@ -56,6 +56,11 @@ export default function IdeaDetailDialog({
   const fullScreen = useMediaQuery(muiTheme.breakpoints.down('sm'))
 
   const [likesOpen, setLikesOpen] = useState(false)
+  const [showAllLikes, setShowAllLikes] = useState(false)
+  const [showAllComments, setShowAllComments] = useState(false)
+
+  const LIKES_INITIAL = 10
+  const COMMENTS_INITIAL = 3
 
   if (!idea) return null
   const cat = getCatConfig(idea.category)
@@ -272,29 +277,38 @@ export default function IdeaDetailDialog({
                   border: `1px solid ${borderColor}`,
                 }}
               >
-                {idea.likes > idea.likesData!.length && (
-                  <Typography sx={{ fontSize: '0.74rem', color: textSecondary, mb: 1 }}>
-                    전체 {idea.likes}명 중 {idea.likesData!.length}명 표시
-                  </Typography>
-                )}
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                {idea.likesData!.map((name) => (
+                  {(showAllLikes ? idea.likesData! : idea.likesData!.slice(0, LIKES_INITIAL)).map((name) => (
+                    <Box
+                      key={name}
+                      sx={{
+                        display: 'flex', alignItems: 'center', gap: 0.6,
+                        px: 1, py: 0.35, borderRadius: 10,
+                        bgcolor: `${ideaAccent.primary}14`,
+                        border: `1px solid ${ideaAccent.primary}30`,
+                      }}
+                    >
+                      <Avatar sx={{ width: 18, height: 18, fontSize: '0.6rem', fontWeight: 700, bgcolor: avatarBg }}>
+                        {name[0]}
+                      </Avatar>
+                      <Typography sx={{ fontSize: '0.76rem', color: textPrimary, fontWeight: 500 }}>{name}</Typography>
+                    </Box>
+                  ))}
+                </Box>
+                {idea.likesData!.length > LIKES_INITIAL && (
                   <Box
-                    key={name}
+                    onClick={() => setShowAllLikes((v) => !v)}
                     sx={{
-                      display: 'flex', alignItems: 'center', gap: 0.6,
-                      px: 1, py: 0.35, borderRadius: 10,
-                      bgcolor: `${ideaAccent.primary}14`,
-                      border: `1px solid ${ideaAccent.primary}30`,
+                      mt: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 0.5,
+                      fontSize: '0.75rem', fontWeight: 600, color: ideaAccent.primary,
+                      '&:hover': { textDecoration: 'underline' },
                     }}
                   >
-                    <Avatar sx={{ width: 18, height: 18, fontSize: '0.6rem', fontWeight: 700, bgcolor: avatarBg }}>
-                      {name[0]}
-                    </Avatar>
-                    <Typography sx={{ fontSize: '0.76rem', color: textPrimary, fontWeight: 500 }}>{name}</Typography>
+                    {showAllLikes
+                      ? '접기'
+                      : `+${idea.likesData!.length - LIKES_INITIAL}명 더보기`}
                   </Box>
-                ))}
-                </Box>
+                )}
               </Box>
             </Collapse>
           )}
@@ -309,14 +323,9 @@ export default function IdeaDetailDialog({
                   <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: textPrimary }}>
                     댓글 {idea.comments}
                   </Typography>
-                  {idea.comments > idea.commentsData!.length && (
-                    <Typography sx={{ fontSize: '0.75rem', color: textSecondary }}>
-                      (최근 {idea.commentsData!.length}개 표시)
-                    </Typography>
-                  )}
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
-                  {idea.commentsData!.map((comment) => (
+                  {(showAllComments ? idea.commentsData! : idea.commentsData!.slice(0, COMMENTS_INITIAL)).map((comment) => (
                     <Box
                       key={comment.id}
                       sx={{
@@ -345,6 +354,20 @@ export default function IdeaDetailDialog({
                     </Box>
                   ))}
                 </Box>
+                {idea.commentsData!.length > COMMENTS_INITIAL && (
+                  <Box
+                    onClick={() => setShowAllComments((v) => !v)}
+                    sx={{
+                      mt: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 0.5,
+                      fontSize: '0.75rem', fontWeight: 600, color: ideaAccent.primary,
+                      '&:hover': { textDecoration: 'underline' },
+                    }}
+                  >
+                    {showAllComments
+                      ? '접기'
+                      : `댓글 ${idea.commentsData!.length - COMMENTS_INITIAL}개 더보기`}
+                  </Box>
+                )}
               </Box>
             </>
           )}
