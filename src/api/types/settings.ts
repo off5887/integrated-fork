@@ -39,6 +39,7 @@ export interface SpecialMileageHistory {
   employeeNumber: string
   mileage: number
   reason: string
+  revoked?: boolean
 }
 
 // ─── 심사 변경 ────────────────────────────────────────────────────────────────

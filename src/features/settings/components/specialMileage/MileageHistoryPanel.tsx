@@ -3,9 +3,11 @@
 // 모바일: 카드 리스트 / 데스크톱: 고정 높이 테이블 (레이아웃 시프트 없음)
 import HistoryIcon from '@mui/icons-material/History'
 import SearchIcon from '@mui/icons-material/Search'
+import UndoIcon from '@mui/icons-material/Undo'
 import {
   Avatar,
   Box,
+  Button,
   Chip,
   InputAdornment,
   Table,
@@ -16,6 +18,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import { useState as useLocalState } from 'react'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -28,18 +33,28 @@ import type { SpecialMileageHistory } from '@/api/types/settings'
 
 interface Props {
   history: SpecialMileageHistory[]
+  onRevoke: (id: number) => void
 }
 
 const TABLE_BODY_HEIGHT = 360
 
-export default function MileageHistoryPanel({ history }: Props) {
+export default function MileageHistoryPanel({ history, onRevoke }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, rowBg, rowHoverBg, headerBg } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
+  const { showSnackbar } = useSnackbar()
 
   const [fromDate, setFromDate] = useState<Dayjs | null>(null)
   const [toDate, setToDate] = useState<Dayjs | null>(null)
   const [search, setSearch] = useState('')
+  const [revokeTarget, setRevokeTarget] = useLocalState<SpecialMileageHistory | null>(null)
+
+  const handleRevokeConfirm = () => {
+    if (!revokeTarget) return
+    onRevoke(revokeTarget.id)
+    showSnackbar(`${revokeTarget.name}님의 마일리지 ${revokeTarget.mileage.toLocaleString()}점이 환수되었습니다.`, 'warning')
+    setRevokeTarget(null)
+  }
 
   const filtered = useMemo(() => {
     return history.filter((h) => {
@@ -102,7 +117,7 @@ export default function MileageHistoryPanel({ history }: Props) {
     '& .MuiPickersArrowSwitcher-button': { color: textSecondary },
   }
 
-  const columns = ['지급일', '이름 / 사번', '부서', '마일리지', '지급 사유']
+  const columns = ['지급일', '이름 / 사번', '부서', '마일리지', '지급 사유', '']
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -193,12 +208,20 @@ export default function MileageHistoryPanel({ history }: Props) {
                   <Typography sx={{ fontSize: '0.62rem', color: textSecondary, mt: 0.25 }}>마일리지</Typography>
                 </Box>
               </Box>
-              {/* 카드 하단: 날짜 + 사유 */}
+              {/* 카드 하단: 날짜 + 사유 + 환수 */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1.75, py: 1 }}>
                 <Chip label={h.grantedAt} size="small" sx={{ height: 18, fontSize: '0.62rem', fontFamily: 'monospace', flexShrink: 0, bgcolor: st.chipBg, color: textSecondary, border: `1px solid ${st.avatarBorder}`, '& .MuiChip-label': { px: 0.75 } }} />
                 <Typography sx={{ fontSize: '0.78rem', color: textPrimary, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {h.reason || '—'}
                 </Typography>
+                {h.revoked ? (
+                  <Chip label="환수됨" size="small" sx={{ height: 18, fontSize: '0.62rem', fontWeight: 700, flexShrink: 0, bgcolor: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', '& .MuiChip-label': { px: 0.75 } }} />
+                ) : (
+                  <Button size="small" variant="text" startIcon={<UndoIcon sx={{ fontSize: '0.8rem !important' }} />} onClick={() => setRevokeTarget(h)}
+                    sx={{ fontSize: '0.68rem', fontWeight: 600, color: '#ef4444', p: 0.5, minWidth: 0, flexShrink: 0, '&:hover': { bgcolor: 'rgba(239,68,68,0.08)' } }}>
+                    환수
+                  </Button>
+                )}
               </Box>
             </Box>
           ))}
@@ -273,6 +296,16 @@ export default function MileageHistoryPanel({ history }: Props) {
                     <TableCell>
                       <Typography sx={{ fontSize: '0.78rem', color: textPrimary }}>{h.reason || '—'}</Typography>
                     </TableCell>
+                    <TableCell align="right" sx={{ pr: 2 }}>
+                      {h.revoked ? (
+                        <Chip label="환수됨" size="small" sx={{ height: 18, fontSize: '0.62rem', fontWeight: 700, bgcolor: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', '& .MuiChip-label': { px: 0.75 } }} />
+                      ) : (
+                        <Button size="small" variant="outlined" startIcon={<UndoIcon sx={{ fontSize: '0.82rem !important' }} />} onClick={() => setRevokeTarget(h)}
+                          sx={{ fontSize: '0.72rem', fontWeight: 600, borderRadius: 1.5, py: 0.3, px: 1.25, whiteSpace: 'nowrap', color: '#ef4444', borderColor: 'rgba(239,68,68,0.4)', '&:hover': { bgcolor: 'rgba(239,68,68,0.08)', borderColor: '#ef4444' } }}>
+                          환수
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -281,6 +314,17 @@ export default function MileageHistoryPanel({ history }: Props) {
         </Box>
 
       </Box>
+
+      <ConfirmDialog
+        open={revokeTarget !== null}
+        title="마일리지 환수"
+        message={`${revokeTarget?.name ?? ''}님에게 지급된 ${revokeTarget?.mileage.toLocaleString() ?? 0}점을 환수 처리합니다.\n환수 후에는 취소할 수 없습니다.`}
+        confirmLabel="환수"
+        cancelLabel="취소"
+        variant="error"
+        onConfirm={handleRevokeConfirm}
+        onCancel={() => setRevokeTarget(null)}
+      />
     </LocalizationProvider>
   )
 }

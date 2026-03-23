@@ -24,3 +24,23 @@ export interface ExchangeItem {
   cashAmount: number
   status: string
 }
+
+export interface UserAwardItem {
+  id: number
+  awardedAt: string
+  ideaTitle: string
+  reason: string
+  fish: number
+}
+
+export interface AdminExchangeItem {
+  id: number
+  requestDate: string
+  name: string
+  department: string
+  position: string
+  employeeNumber: string
+  amount: number
+  cashAmount: number
+  status: '신청중' | '완료' | '반려'
+}

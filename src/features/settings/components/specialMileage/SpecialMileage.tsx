@@ -66,6 +66,10 @@ export default function SpecialMileage() {
     showSnackbar(`${newEntries.length}명에게 특별 마일리지가 지급되었습니다.`, 'success')
   }
 
+  const handleRevoke = (id: number) => {
+    setHistory((prev) => prev.map((h) => h.id === id ? { ...h, revoked: true } : h))
+  }
+
   return (
     <Box>
       {/* 섹션 헤더 */}
@@ -141,7 +145,7 @@ export default function SpecialMileage() {
       </Grid>
 
       {/* 지급 내역 */}
-      <MileageHistoryPanel history={history} />
+      <MileageHistoryPanel history={history} onRevoke={handleRevoke} />
     </Box>
   )
 }

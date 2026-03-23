@@ -64,7 +64,7 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
           <Typography variant="caption" sx={{ color: dt.textSecondary, lineHeight: 1.3, display: 'block' }} noWrap>
             {[user?.position, user?.department].filter(Boolean).join(' · ')}
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'nowrap', overflow: 'hidden' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
             <Box sx={{ px: 1.1, py: 0.25, borderRadius: '999px', flexShrink: 0, bgcolor: dt.gom.levelBadgeBg, border: `1px solid ${dt.gom.levelBadgeBorder}` }}>
               <Typography sx={{ color: dt.gom.levelBadgeColor, fontSize: '0.65rem', fontWeight: 700, whiteSpace: 'nowrap' }}>곰곰신</Typography>
             </Box>

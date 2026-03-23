@@ -10,6 +10,8 @@ import {
   Button,
   Chip,
   IconButton,
+  MenuItem,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -98,6 +100,43 @@ export default function UserManagement() {
   const handleDelete = (id: number) => {
     setDeleteConfirmId(id)
   }
+
+  const ROLE_OPTIONS = [
+    { value: 'user',     label: '일반 사용자' },
+    { value: 'reviewer', label: '심사자' },
+    { value: 'admin',    label: '관리자' },
+  ]
+
+  const handleRoleChange = (id: number, newRole: string) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, role: newRole } : u))
+    const label = ROLE_OPTIONS.find(r => r.value === newRole)?.label ?? newRole
+    showSnackbar(`권한이 '${label}'으로 변경되었습니다.`, 'success')
+  }
+
+  const RoleSelect = ({ user }: { user: User }) => (
+    <Select
+      value={user.role}
+      onChange={(e) => handleRoleChange(user.id, e.target.value)}
+      size="small"
+      variant="outlined"
+      sx={{
+        fontSize: '0.75rem', fontWeight: 600, height: 26, minWidth: 96,
+        bgcolor: st.chipBg,
+        color: st.primaryColor,
+        '& .MuiOutlinedInput-notchedOutline': { borderColor: st.avatarBorder },
+        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: st.primaryColor },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: st.primaryColor },
+        '& .MuiSelect-icon': { color: st.primaryColor, fontSize: '1rem' },
+        '& .MuiSelect-select': { py: '3px', px: 1 },
+      }}
+    >
+      {ROLE_OPTIONS.map((opt) => (
+        <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: '0.8rem' }}>
+          {opt.label}
+        </MenuItem>
+      ))}
+    </Select>
+  )
 
   const handleDeleteConfirm = () => {
     if (deleteConfirmId !== null) {
@@ -202,16 +241,7 @@ export default function UserManagement() {
             {/* 카드 본문 */}
             <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
-                <Chip
-                  label={user.role}
-                  size="small"
-                  sx={{
-                    bgcolor: st.chipBg,
-                    color: st.primaryColor,
-                    border: `1px solid ${st.avatarBorder}`,
-                    fontWeight: 600, fontSize: '0.72rem',
-                  }}
-                />
+                <RoleSelect user={user} />
                 <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
                   {user.department}
                 </Typography>
@@ -338,16 +368,7 @@ export default function UserManagement() {
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Chip
-                    label={user.role}
-                    size="small"
-                    sx={{
-                      bgcolor: st.chipBg,
-                      color: st.primaryColor,
-                      border: `1px solid ${st.avatarBorder}`,
-                      fontWeight: 600, fontSize: '0.72rem',
-                    }}
-                  />
+                  <RoleSelect user={user} />
                 </TableCell>
                 <TableCell>
                   <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>

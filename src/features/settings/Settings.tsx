@@ -2,6 +2,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import CategoryIcon from '@mui/icons-material/Category'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
+import PaidIcon from '@mui/icons-material/Paid'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { Box, Chip, Container, Tab, Tabs, Typography } from '@mui/material'
@@ -11,6 +12,7 @@ import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
 import CategoryManagement from './components/category/CategoryManagement'
+import ExchangeRequestsManagement from './components/exchangeRequests/ExchangeRequestsManagement'
 import ReviewChange from './components/reviewChange/ReviewChange'
 import ReviewerAssignment from './components/sectionReviewers/ReviewerAssignment'
 import SpecialMileage from './components/specialMileage/SpecialMileage'
@@ -32,6 +34,7 @@ const TABS: TabConfig[] = [
   { id: 'special-mile',   label: '특별 마일리지', Icon: CardGiftcardIcon,      Component: SpecialMileage },
   { id: 'review-change',  label: '심사변경',      Icon: SwapHorizIcon,         Component: ReviewChange },
   { id: 'categories',     label: '카테고리',      Icon: CategoryIcon,          Component: CategoryManagement },
+  { id: 'exchanges',     label: '현금전환 신청', Icon: PaidIcon,              Component: ExchangeRequestsManagement },
 ]
 
 // ─── TabPanel ─────────────────────────────────────────────────────────────────
@@ -167,10 +170,15 @@ export default function Settings() {
                   borderRadius: 1,
                 },
                 '& .MuiTabScrollButton-root': {
-                  color: textSecondary,
-                  opacity: 0.8,
-                  width: 28,
-                  '&.Mui-disabled': { opacity: 0 },
+                  color: accentColor,
+                  opacity: 1,
+                  width: 36,
+                  bgcolor: cardBg,
+                  borderRight: `1px solid ${borderColor}`,
+                  borderLeft: `1px solid ${borderColor}`,
+                  '&:first-of-type': { borderLeft: 'none' },
+                  '&:last-of-type': { borderRight: 'none' },
+                  '&.Mui-disabled': { opacity: 0, width: 0 },
                 },
               }}
             >

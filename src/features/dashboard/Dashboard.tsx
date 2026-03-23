@@ -86,7 +86,7 @@ export default function RealDashboard() {
         <Box sx={{
           display: { xs: 'flex', md: 'grid' },
           flexDirection: { xs: 'column' },
-          gridTemplateColumns: { md: '220px 380px 1fr' },
+          gridTemplateColumns: { md: '250px 380px 1fr' },
           gap: 1.5,
         }}>
 
