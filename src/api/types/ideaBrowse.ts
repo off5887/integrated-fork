@@ -31,6 +31,7 @@ export interface IdeaItem {
   /** 승인·실행중·완료 상태일 때만 존재. 지급된 마일리지 포인트 */
   mileageScore?: number
   commentsData?: IdeaComment[]
+  likesData?: string[]
 }
 
 export interface CategoryConfig {

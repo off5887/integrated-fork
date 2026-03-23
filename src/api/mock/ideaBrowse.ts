@@ -6,6 +6,17 @@ import { DEMO_USER_PROFILE } from './auth'
 /** 현재 로그인된 사용자 (auth.ts의 DEMO_USER_PROFILE을 단일 출처로 사용) */
 export const MY_AUTHOR = DEMO_USER_PROFILE.name
 
+// ── 좋아요 mock 데이터 ─────────────────────────────────────────────────────────
+const LIKES: Record<number, string[]> = {
+  1: ['김팀장', '박과장', '이사원', '최대리', '정차장', '한주임', MY_AUTHOR],
+  2: ['이사원', '최대리', '한주임', '정차장', '송과장', '윤팀장', '강사원', '임대리', '김AI', '박안전', '조부장', '류과장', '엄대리'],
+  3: ['김팀장', '이사원', '박과장', '정차장', '최대리'],
+  4: ['정차장', '송과장', '윤팀장', '강사원', '임대리', '김팀장', MY_AUTHOR, '박과장'],
+  5: ['김팀장', '이사원', '최대리', '한주임', '박안전', '조부장'],
+  6: ['이사원', '최대리', '한주임', MY_AUTHOR, '강사원'],
+  14: ['윤팀장', '강사원', '임대리', '김팀장', '박과장', '이사원', '최대리', '한주임', '정차장', '송과장'],
+}
+
 // ── 댓글 mock 데이터 ──────────────────────────────────────────────────────────
 const COMMENTS: Record<number, IdeaComment[]> = {
   1: [
@@ -81,6 +92,7 @@ export const IDEAS: IdeaItem[] = [
     comments: 8,
     views: 120,
     commentsData: COMMENTS[1],
+    likesData: LIKES[1],
   },
   {
     id: 2,
@@ -98,6 +110,7 @@ export const IDEAS: IdeaItem[] = [
     comments: 28,
     views: 450,
     commentsData: COMMENTS[2],
+    likesData: LIKES[2],
   },
   {
     id: 3,
@@ -114,6 +127,7 @@ export const IDEAS: IdeaItem[] = [
     likes: 87,
     comments: 15,
     views: 310,
+    likesData: LIKES[3],
   },
   {
     id: 4,
@@ -133,6 +147,7 @@ export const IDEAS: IdeaItem[] = [
     ideaScore: 82,
     mileageScore: 1500,
     commentsData: COMMENTS[4],
+    likesData: LIKES[4],
   },
   {
     id: 5,
@@ -151,6 +166,7 @@ export const IDEAS: IdeaItem[] = [
     views: 290,
     ideaScore: 78,
     mileageScore: 1200,
+    likesData: LIKES[5],
   },
   {
     id: 6,
@@ -167,6 +183,7 @@ export const IDEAS: IdeaItem[] = [
     likes: 65,
     comments: 11,
     views: 200,
+    likesData: LIKES[6],
   },
   {
     id: 7,
@@ -300,6 +317,7 @@ export const IDEAS: IdeaItem[] = [
     comments: 31,
     views: 490,
     commentsData: COMMENTS[14],
+    likesData: LIKES[14],
   },
   {
     id: 15,

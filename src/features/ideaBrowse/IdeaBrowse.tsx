@@ -327,7 +327,7 @@ export default function IdeaBrowse() {
         message={`"${deleteTarget?.title}" 아이디어를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
         confirmLabel="삭제"
         cancelLabel="취소"
-        variant="danger"
+        variant="error"
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
       />
