@@ -101,6 +101,7 @@ export default function IdeaFilters({
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         slotProps={{
+          htmlInput: { 'aria-label': '아이디어 검색' },
           input: {
             startAdornment: (
               <InputAdornment position="start">
@@ -109,7 +110,7 @@ export default function IdeaFilters({
             ),
             endAdornment: inputValue ? (
               <InputAdornment position="end">
-                <IconButton size="small" onClick={() => { setInputValue(''); onSearchChange('') }} sx={{ color: textSecondary }}>
+                <IconButton size="small" aria-label="검색어 지우기" onClick={() => { setInputValue(''); onSearchChange('') }} sx={{ color: textSecondary }}>
                   <CloseIcon sx={{ fontSize: '0.9rem' }} />
                 </IconButton>
               </InputAdornment>

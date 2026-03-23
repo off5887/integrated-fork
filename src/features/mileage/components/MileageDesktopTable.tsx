@@ -48,6 +48,7 @@ export default function MileageDesktopTable({
             {HEAD_COLS.map((col) => (
               <TableCell
                 key={col}
+                scope="col"
                 sx={{
                   color: t.textSecondary, fontWeight: 600,
                   fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em',

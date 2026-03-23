@@ -136,6 +136,7 @@ export default function JudgeTable({
                       <IconButton
                         size="small"
                         disabled={!isPending}
+                        aria-label={isPending ? `결재자 변경 (현재: ${item.reviewer})` : '완료된 항목은 변경 불가'}
                         onClick={(e) => { e.stopPropagation(); onReviewerChangeClick(item) }}
                         sx={{
                           width: 30, height: 30,
@@ -153,6 +154,7 @@ export default function JudgeTable({
                   <Tooltip title="상세 보기">
                     <IconButton
                       size="small"
+                      aria-label="상세 보기"
                       onClick={(e) => { e.stopPropagation(); onRowClick(item) }}
                       sx={{
                         width: 30, height: 30,
@@ -187,6 +189,7 @@ export default function JudgeTable({
                 <TableCell
                   key={col.label}
                   align={col.align}
+                  scope="col"
                   sx={{
                     color: colors.textSecondary,
                     fontWeight: 600,
@@ -392,6 +395,7 @@ export default function JudgeTable({
                     <Tooltip title="상세 보기" placement="left">
                       <IconButton
                         size="small"
+                        aria-label="상세 보기"
                         onClick={(e) => {
                           e.stopPropagation()
                           onRowClick(item)

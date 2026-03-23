@@ -96,6 +96,7 @@ export default function JudgeDecisionModal({
       onClose={handleClose}
       maxWidth="sm"
       fullWidth
+      aria-labelledby="judge-decision-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -166,6 +167,7 @@ export default function JudgeDecisionModal({
 
         <Box flex={1} minWidth={0}>
           <Typography
+            id="judge-decision-dialog-title"
             fontWeight={700}
             sx={{ color: dc.color, fontSize: '1rem', lineHeight: 1.3 }}
           >
@@ -186,7 +188,7 @@ export default function JudgeDecisionModal({
           </Typography>
         </Box>
 
-        <IconButton size="small" onClick={handleClose} sx={{ color: colors.textSecondary, flexShrink: 0 }}>
+        <IconButton size="small" aria-label="닫기" onClick={handleClose} sx={{ color: colors.textSecondary, flexShrink: 0 }}>
           <CloseIcon sx={{ fontSize: '1.1rem' }} />
         </IconButton>
       </Box>
@@ -259,7 +261,7 @@ export default function JudgeDecisionModal({
                 onChange={(e) => setScore(e.target.value)}
                 error={isScoreError}
                 helperText={isScoreError ? '0~100 사이의 점수를 입력해 주세요.' : ''}
-                slotProps={{ htmlInput: { min: 0, max: 100 } }}
+                slotProps={{ htmlInput: { min: 0, max: 100, 'aria-label': '점수 (0~100)', 'aria-required': 'true' } }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1.5,
@@ -291,7 +293,7 @@ export default function JudgeDecisionModal({
                 onChange={(e) => setMileage(e.target.value)}
                 error={isMileageError}
                 helperText={isMileageError ? '마일리지를 입력해 주세요.' : ''}
-                slotProps={{ htmlInput: { min: 0 } }}
+                slotProps={{ htmlInput: { min: 0, 'aria-label': '마일리지 (원)', 'aria-required': 'true' } }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 1.5,
@@ -343,6 +345,7 @@ export default function JudgeDecisionModal({
                 ? '회수 사유를 입력해 주세요. (예: 추가 검토가 필요하여 기존 결정을 회수합니다.)'
                 : '반려 사유를 입력해 주세요. (예: 실행 가능성에 대한 근거가 부족합니다. 구체적인 비용 계획 보완 후 재제출 바랍니다.)'
             }
+            slotProps={{ htmlInput: { 'aria-label': isApprove ? '승인 사유' : isWithdraw ? '회수 사유' : '반려 사유', 'aria-required': 'true' } }}
             value={reason}
             onChange={(e) => {
               setReason(e.target.value)

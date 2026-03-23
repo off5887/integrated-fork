@@ -141,7 +141,7 @@ export default function IdeaDetailDialog({
               </Button>
             </>
           )}
-          <IconButton size="small" onClick={onClose} sx={{ color: textSecondary }}>
+          <IconButton size="small" aria-label="닫기" onClick={onClose} sx={{ color: textSecondary }}>
             <CloseIcon sx={{ fontSize: '1.1rem' }} />
           </IconButton>
         </Box>
@@ -226,6 +226,11 @@ export default function IdeaDetailDialog({
             {/* 좋아요 — 클릭 시 목록 토글 */}
             <Box
               onClick={() => hasLikes && setLikesOpen((v) => !v)}
+              onKeyDown={(e) => { if (hasLikes && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setLikesOpen((v) => !v) } }}
+              role={hasLikes ? 'button' : undefined}
+              tabIndex={hasLikes ? 0 : undefined}
+              aria-expanded={hasLikes ? likesOpen : undefined}
+              aria-label={hasLikes ? (likesOpen ? '좋아요 목록 접기' : '좋아요 누른 사람 보기') : undefined}
               sx={{
                 display: 'flex', alignItems: 'center', gap: 0.75,
                 cursor: hasLikes ? 'pointer' : 'default',
@@ -234,7 +239,9 @@ export default function IdeaDetailDialog({
                 py: hasLikes ? 0.4 : 0,
                 mx: hasLikes ? -1 : 0,
                 transition: 'background 0.15s',
+                outline: 'none',
                 '&:hover': hasLikes ? { bgcolor: `${ideaAccent.primary}12` } : {},
+                '&:focus-visible': hasLikes ? { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 } : {},
               }}
             >
               <Box sx={{ color: likesOpen ? ideaAccent.primary : textSecondary }}>
@@ -297,11 +304,17 @@ export default function IdeaDetailDialog({
                 </Box>
                 {idea.likesData!.length > LIKES_INITIAL && (
                   <Box
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={showAllLikes}
                     onClick={() => setShowAllLikes((v) => !v)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowAllLikes((v) => !v) } }}
                     sx={{
                       mt: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 0.5,
                       fontSize: '0.75rem', fontWeight: 600, color: ideaAccent.primary,
+                      outline: 'none',
                       '&:hover': { textDecoration: 'underline' },
+                      '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2, borderRadius: 1 },
                     }}
                   >
                     {showAllLikes
@@ -356,11 +369,17 @@ export default function IdeaDetailDialog({
                 </Box>
                 {idea.commentsData!.length > COMMENTS_INITIAL && (
                   <Box
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={showAllComments}
                     onClick={() => setShowAllComments((v) => !v)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowAllComments((v) => !v) } }}
                     sx={{
                       mt: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 0.5,
                       fontSize: '0.75rem', fontWeight: 600, color: ideaAccent.primary,
+                      outline: 'none',
                       '&:hover': { textDecoration: 'underline' },
+                      '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2, borderRadius: 1 },
                     }}
                   >
                     {showAllComments

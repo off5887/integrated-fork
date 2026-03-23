@@ -80,6 +80,7 @@ export default function ConfirmDialog({
       onClose={onCancel}
       maxWidth="xs"
       fullWidth
+      aria-labelledby="confirm-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -122,6 +123,7 @@ export default function ConfirmDialog({
 
         {/* 제목 */}
         <Typography
+          id="confirm-dialog-title"
           fontWeight={700}
           sx={{ color: textPrimary, fontSize: '1rem', mb: 1, lineHeight: 1.4 }}
         >
