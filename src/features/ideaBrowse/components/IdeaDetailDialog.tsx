@@ -270,11 +270,14 @@ export default function IdeaDetailDialog({
                   borderRadius: 2,
                   bgcolor: inputBg,
                   border: `1px solid ${borderColor}`,
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 0.75,
                 }}
               >
+                {idea.likes > idea.likesData!.length && (
+                  <Typography sx={{ fontSize: '0.74rem', color: textSecondary, mb: 1 }}>
+                    전체 {idea.likes}명 중 {idea.likesData!.length}명 표시
+                  </Typography>
+                )}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
                 {idea.likesData!.map((name) => (
                   <Box
                     key={name}
@@ -291,6 +294,7 @@ export default function IdeaDetailDialog({
                     <Typography sx={{ fontSize: '0.76rem', color: textPrimary, fontWeight: 500 }}>{name}</Typography>
                   </Box>
                 ))}
+                </Box>
               </Box>
             </Collapse>
           )}
@@ -303,8 +307,13 @@ export default function IdeaDetailDialog({
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                   <ChatBubbleOutlineIcon sx={{ fontSize: '0.95rem', color: ideaAccent.primary }} />
                   <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: textPrimary }}>
-                    댓글 {idea.commentsData!.length}
+                    댓글 {idea.comments}
                   </Typography>
+                  {idea.comments > idea.commentsData!.length && (
+                    <Typography sx={{ fontSize: '0.75rem', color: textSecondary }}>
+                      (최근 {idea.commentsData!.length}개 표시)
+                    </Typography>
+                  )}
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
                   {idea.commentsData!.map((comment) => (
