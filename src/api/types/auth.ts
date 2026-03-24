@@ -9,20 +9,25 @@ export interface DemoAccount {
   description: string
 }
 
+/** UI 전반에서 사용하는 사용자 프로필 모델 */
 export interface UserProfile {
   employeeId: string
   name: string
-  position: string
-  department: string
-  role: UserRole
+  email: string
+  position: string      // rollNm (사용자 목록 API) — /me 응답엔 없어서 빈값 허용
+  department: string    // section (팀)
+  businessSite: string  // department (사업소)
+  role: UserRole        // isAdmin/isReviewer로 파생
+  totalMileage: number
+  gomLevel: number
   avatarUrl?: string
 }
 
-/** 모든 API 응답의 공통 래퍼: { data, message, success } */
+/** 모든 API 응답의 공통 래퍼 */
 export interface ApiResponse<T> {
+  status: string
+  message: string | null
   data: T
-  message: string
-  success: boolean
 }
 
 export interface LoginRequest {
@@ -34,4 +39,34 @@ export interface LoginRequest {
 export interface LoginResponse {
   employeeId: string
   name: string
+}
+
+/** GET /api/users/me 응답의 data 필드 (원본 구조) */
+export interface UserMeResponse {
+  employeeId: string
+  name: string
+  email: string
+  department: string   // 사업소
+  section: string      // 팀
+  isAdmin: boolean
+  isReviewer: boolean
+  totalMileage: number
+  gomLevel: number
+  createdAt: string
+  lastSyncAt: string
+}
+
+/** UserMeResponse → UserProfile 변환 */
+export function mapUserProfile(data: UserMeResponse): UserProfile {
+  return {
+    employeeId: data.employeeId,
+    name: data.name,
+    email: data.email,
+    position: '',
+    department: data.section,
+    businessSite: data.department,
+    role: data.isAdmin ? 'admin' : data.isReviewer ? 'reviewer' : 'user',
+    totalMileage: data.totalMileage,
+    gomLevel: data.gomLevel,
+  }
 }

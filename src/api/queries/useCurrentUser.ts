@@ -1,7 +1,8 @@
 // src/api/queries/useCurrentUser.ts
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/api/client'
-import type { ApiResponse, UserProfile } from '@/api/types/auth'
+import type { ApiResponse, UserProfile, UserMeResponse } from '@/api/types/auth'
+import { mapUserProfile } from '@/api/types/auth'
 import { queryKeys } from '@/api/queryKeys'
 
 /**
@@ -25,10 +26,8 @@ export function useCurrentUserQuery() {
       }
 
       try {
-        const res = await api.get<ApiResponse<UserProfile> | UserProfile>('/api/users/me')
-        // 백엔드가 { data: {...} } 래퍼로 오는 경우와 직접 오는 경우 모두 처리
-        const payload = (res.data as ApiResponse<UserProfile>).data ?? res.data
-        return (payload as UserProfile) ?? null
+        const res = await api.get<ApiResponse<UserMeResponse>>('/api/users/me')
+        return mapUserProfile(res.data.data)
       } catch {
         return null
       }

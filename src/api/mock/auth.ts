@@ -9,9 +9,13 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     profile: {
       employeeId: 'demo',
       name: '홍길동',
+      email: 'demo@example.com',
       position: '대리',
       department: '개발팀',
+      businessSite: '서울사업소',
       role: 'user',
+      totalMileage: 1200,
+      gomLevel: 5,
     },
   },
   {
@@ -22,9 +26,13 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     profile: {
       employeeId: 'demo2',
       name: '김심사',
+      email: 'demo2@example.com',
       position: '과장',
       department: '기획팀',
+      businessSite: '서울사업소',
       role: 'reviewer',
+      totalMileage: 800,
+      gomLevel: 2,
     },
   },
   {
@@ -35,9 +43,13 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     profile: {
       employeeId: 'demo3',
       name: '이관리',
+      email: 'demo3@example.com',
       position: '부장',
       department: '경영지원부문',
+      businessSite: '본사',
       role: 'admin',
+      totalMileage: 500,
+      gomLevel: 1,
     },
   },
 ]
