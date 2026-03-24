@@ -116,10 +116,19 @@ export const STAT_PERIODS = PERIODS
 export const STAT_PERIOD_MIN: string = PERIODS[0]
 export const STAT_PERIOD_MAX: string = PERIODS[PERIODS.length - 1]
 
-// ── 구 차트 데이터 (StatsApprovalPie 호환용) ──────────────────────────────────
+// ── 구 차트 데이터 (Stats* 차트 컴포넌트 호환용) ─────────────────────────────
 export const pieChartData: { label: string; value: number }[] = [
   { label: '팀장',   value: 12 },
   { label: '부서장', value: 20 },
   { label: '부문장', value: 68 },
   { label: '경영진', value: 0  },
+]
+
+export const barChartData: { team: string; value: number }[] = [
+  { team: '개발팀',    value: 8 },
+  { team: '기획팀',    value: 6 },
+  { team: '디자인팀',  value: 7 },
+  { team: '영업팀',    value: 7 },
+  { team: '인사팀',    value: 5 },
+  { team: '경영지원팀', value: 2 },
 ]
