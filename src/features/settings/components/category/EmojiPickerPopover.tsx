@@ -44,7 +44,8 @@ export default function EmojiPickerPopover({ anchorEl, onClose, onSelect }: Prop
         value={tabIndex}
         onChange={(_, v) => setTabIndex(v)}
         variant="scrollable"
-        scrollButtons={false}
+        scrollButtons="auto"
+        allowScrollButtonsMobile
         sx={{
           borderBottom: `1px solid ${borderColor}`,
           minHeight: 36,
