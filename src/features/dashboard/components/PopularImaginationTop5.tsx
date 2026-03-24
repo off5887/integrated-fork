@@ -46,9 +46,9 @@ export default function PopularImaginationTop5({ onIdeaClick }: Props) {
 
       {/* 리스트 - overflow 없이 자연스럽게 */}
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        {ITEMS.map((item, i) => (
+        {ITEMS.map((item) => (
           <Box
-            key={i}
+            key={item.ideaId}
             tabIndex={0}
             role="button"
             aria-label={`${i + 1}위: ${item.title} - 공감 ${item.likes}건`}

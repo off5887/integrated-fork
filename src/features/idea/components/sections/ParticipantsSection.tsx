@@ -138,7 +138,7 @@ export default function ParticipantsSection({
                 const initial = displayName.trim().charAt(0)
                 return (
                   <Box
-                    key={i}
+                    key={`${name}-${i}`}
                     role="listitem"
                     sx={{
                       display: 'flex', alignItems: 'center', gap: 1.5,
@@ -270,7 +270,7 @@ export default function ParticipantsSection({
                 const dept = deptPart ? deptPart.replace(')', '') : ''
                 return (
                   <Box
-                    key={i}
+                    key={`${name}-${i}`}
                     role="listitem"
                     sx={{
                       display: 'flex', alignItems: 'center', gap: 1.5,

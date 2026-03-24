@@ -24,8 +24,8 @@ export default function MileageStatsCards({ totalFish, thisMonthFish, thisMonthE
 
   return (
     <Grid container spacing={2.5} sx={{ mb: 5 }}>
-      {cards.map((card, i) => (
-        <Grid key={i} size={{ xs: 12, sm: 4 }}>
+      {cards.map((card) => (
+        <Grid key={card.label} size={{ xs: 12, sm: 4 }}>
           <Box
             sx={{
               p: 2.5,

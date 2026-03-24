@@ -315,7 +315,7 @@ export default function UserManagement() {
             <TableRow sx={{ bgcolor: headerBg }}>
               {['이름', '사번', '이메일', '역할', '부서', '상태', ''].map((label, i) => (
                 <TableCell
-                  key={i}
+                  key={label || `col-${i}`}
                   align={i === 6 ? 'right' : 'left'}
                   sx={{
                     color: textSecondary, fontWeight: 600, fontSize: '0.72rem',

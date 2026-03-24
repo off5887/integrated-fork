@@ -143,9 +143,9 @@ export default function RealDashboard() {
             </Box>
 
             <Box role="list" aria-label="최근 활동 목록">
-              {activities.map((act, i) => (
+              {activities.map((act) => (
                 <Box
-                  key={i}
+                  key={act.action}
                   role="listitem"
                   sx={{
                     display: 'flex',

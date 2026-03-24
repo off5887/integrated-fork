@@ -43,9 +43,9 @@ export default function AttachmentsSection({ attachments }: Props) {
       >
         {attachments.length > 0 ? (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-            {attachments.map((file, idx) => (
+            {attachments.map((file) => (
               <Button
-                key={idx}
+                key={file.url}
                 variant="outlined"
                 startIcon={<InsertDriveFileIcon sx={{ fontSize: '1rem' }} />}
                 onClick={() => window.open(file.url, '_blank')}

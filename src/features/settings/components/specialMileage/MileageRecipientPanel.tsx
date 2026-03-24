@@ -194,7 +194,7 @@ export default function MileageRecipientPanel({ selected, onRemove, onFieldChang
                 <TableRow sx={{ bgcolor: headerBg }}>
                   {['이름 / 사번', '부서', '마일리지', '지급 사유', ''].map((label, i) => (
                     <TableCell
-                      key={i}
+                      key={label || `col-${i}`}
                       align={i === 5 ? 'center' : 'left'}
                       sx={{
                         color: textSecondary, fontWeight: 600, fontSize: '0.7rem',

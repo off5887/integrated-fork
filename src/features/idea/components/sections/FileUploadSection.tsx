@@ -116,7 +116,7 @@ export default function FileUploadSection({
                 const previewUrl = filePreviews[index]
                 return (
                   <Box
-                    key={index}
+                    key={`${file.name}-${index}`}
                     onClick={() => isImage && openPreview(index)}
                     sx={{
                       position: 'relative',

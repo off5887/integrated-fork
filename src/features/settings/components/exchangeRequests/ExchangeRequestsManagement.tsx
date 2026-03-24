@@ -315,8 +315,8 @@ export default function ExchangeRequestsManagement() {
                     { label: '신청일', value: item.requestDate },
                     { label: '마일리지', value: `${item.amount.toLocaleString()}마리`, highlight: true },
                     { label: '현금 환산', value: `${item.cashAmount.toLocaleString()}원` },
-                  ].map((cell, i) => (
-                    <Box key={i} sx={{ px: 1.25, py: 1, borderRight: i < 2 ? `1px solid ${colors.borderColor}` : 'none', bgcolor: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)' }}>
+                  ].map((cell) => (
+                    <Box key={cell.label} sx={{ px: 1.25, py: 1, borderRight: i < 2 ? `1px solid ${colors.borderColor}` : 'none', bgcolor: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)' }}>
                       <Typography sx={{ fontSize: '0.6rem', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.04em', mb: 0.25 }}>{cell.label}</Typography>
                       <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: cell.highlight ? st.primaryColor : colors.textPrimary, lineHeight: 1.2 }}>{cell.value}</Typography>
                     </Box>

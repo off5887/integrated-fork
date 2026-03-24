@@ -102,7 +102,7 @@ export default function ParticipantsSection({ reviewer, proposers }: Props) {
             {proposers.length > 0 ? (
               proposers.map((name, idx) => (
                 <Chip
-                  key={idx}
+                  key={`${name}-${idx}`}
                   label={name}
                   size="medium"
                   sx={{

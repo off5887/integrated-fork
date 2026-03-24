@@ -61,8 +61,8 @@ export default function EmojiPickerPopover({ anchorEl, onClose, onSelect }: Prop
           '& .MuiTabs-indicator': { backgroundColor: st.primaryColor, height: 2 },
         }}
       >
-        {EMOJI_GROUPS.map((g, i) => (
-          <Tab key={i} label={g.label} />
+        {EMOJI_GROUPS.map((g) => (
+          <Tab key={g.label} label={g.label} />
         ))}
       </Tabs>
 
