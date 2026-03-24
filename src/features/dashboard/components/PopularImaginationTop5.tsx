@@ -46,7 +46,7 @@ export default function PopularImaginationTop5({ onIdeaClick }: Props) {
 
       {/* 리스트 - overflow 없이 자연스럽게 */}
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        {ITEMS.map((item) => (
+        {ITEMS.map((item, i) => (
           <Box
             key={item.ideaId}
             tabIndex={0}
