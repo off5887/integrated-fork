@@ -28,9 +28,10 @@ import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import { mockUsers as initialUsers } from '@/api/mock/settings'
+import { useUsers } from '@/api/queries/useUsers'
 import type { User } from '@/api/types/settings'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import UserFormDialog from './UserFormDialog'
 
 export default function UserManagement() {
@@ -39,12 +40,15 @@ export default function UserManagement() {
   const st = getSettingsTheme(isDarkMode)
   const { showSnackbar } = useSnackbar()
 
-  const [users, setUsers] = useState<User[]>(initialUsers)
+  const { data: fetchedUsers = [], isLoading } = useUsers()
+  const [localUsers, setLocalUsers] = useState<User[]>([])
+  const users = localUsers.length > 0 || fetchedUsers.length === 0 ? [...fetchedUsers, ...localUsers.filter(u => !fetchedUsers.some(f => f.id === u.id))] : fetchedUsers
+
   const [open, setOpen] = useState(false)
   const [editUser, setEditUser] = useState<User | null>(null)
   const [formData, setFormData] = useState<Partial<User & { password: string }>>({})
   const [showPassword, setShowPassword] = useState(false)
-  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   // 검색 필터
   const [searchTerm, setSearchTerm] = useState('')
@@ -92,16 +96,21 @@ export default function UserManagement() {
       return
     }
     if (isEditing) {
-      setUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, ...formData } : u))
+      setLocalUsers(prev => {
+        const exists = prev.some(u => u.id === editUser.id)
+        if (exists) return prev.map(u => u.id === editUser.id ? { ...u, ...formData } : u)
+        // fetchedUsers에 있는 항목을 수정하는 경우 localUsers에 추가
+        return [...prev, { ...editUser, ...formData } as User]
+      })
     } else {
       if (!formData.password) {
         showSnackbar('비밀번호를 입력해주세요.', 'warning')
         return
       }
-      setUsers(prev => [
+      setLocalUsers(prev => [
         ...prev,
         {
-          id: prev.length ? Math.max(...prev.map(u => u.id)) + 1 : 1,
+          id: `new_${Date.now()}`,
           name: formData.name!,
           employeeNumber: formData.employeeNumber!,
           email: formData.email!,
@@ -116,11 +125,17 @@ export default function UserManagement() {
     handleClose()
   }
 
-  const handleToggleActive = (id: number) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, active: !u.active } : u))
+  const handleToggleActive = (id: string) => {
+    setLocalUsers(prev => {
+      const exists = prev.some(u => u.id === id)
+      if (exists) return prev.map(u => u.id === id ? { ...u, active: !u.active } : u)
+      const target = fetchedUsers.find(u => u.id === id)
+      if (!target) return prev
+      return [...prev, { ...target, active: !target.active }]
+    })
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     setDeleteConfirmId(id)
   }
 
@@ -130,8 +145,14 @@ export default function UserManagement() {
     { value: 'admin',    label: '관리자' },
   ]
 
-  const handleRoleChange = (id: number, newRole: string) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, role: newRole } : u))
+  const handleRoleChange = (id: string, newRole: string) => {
+    setLocalUsers(prev => {
+      const exists = prev.some(u => u.id === id)
+      if (exists) return prev.map(u => u.id === id ? { ...u, role: newRole as User['role'] } : u)
+      const target = fetchedUsers.find(u => u.id === id)
+      if (!target) return prev
+      return [...prev, { ...target, role: newRole as User['role'] }]
+    })
     const label = ROLE_OPTIONS.find(r => r.value === newRole)?.label ?? newRole
     showSnackbar(`권한이 '${label}'으로 변경되었습니다.`, 'success')
   }
@@ -163,7 +184,7 @@ export default function UserManagement() {
 
   const handleDeleteConfirm = () => {
     if (deleteConfirmId !== null) {
-      setUsers(prev => prev.filter(u => u.id !== deleteConfirmId))
+      setLocalUsers(prev => prev.filter(u => u.id !== deleteConfirmId))
       setDeleteConfirmId(null)
     }
   }
@@ -189,6 +210,8 @@ export default function UserManagement() {
       />
     </Tooltip>
   )
+
+  if (isLoading) return <LoadingSpinner text="사용자 목록을 불러오는 중..." />
 
   return (
     <Box>

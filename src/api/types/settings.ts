@@ -9,16 +9,57 @@ export interface EmojiGroup {
 
 // ─── 사용자 관리 ─────────────────────────────────────────────────────────────
 
+/** GET /api/users 응답 구조 */
+export interface UserApiMember {
+  employeeId: string
+  name: string
+  email: string
+  rollNm: string       // 직급
+  isAdmin: boolean
+  isReviewer: boolean
+}
+
+export interface UserApiTeam {
+  deptCd: string
+  deptNm: string
+  members: UserApiMember[]
+}
+
+export interface UserApiBizArea {
+  bizAreaNm: string
+  teams: UserApiTeam[]
+}
+
+/** UI에서 사용하는 평탄화된 사용자 모델 */
 export interface User {
-  id: number
+  id: string           // employeeId
   name: string
   employeeNumber: string
   email: string
   role: 'user' | 'reviewer' | 'admin'
-  position: string
-  department: string
-  businessSite: string
+  position: string     // rollNm
+  department: string   // deptNm
+  businessSite: string // bizAreaNm
   active: boolean
+}
+
+/** API 응답 → User[] 변환 */
+export function flattenUsers(data: UserApiBizArea[]): User[] {
+  return data.flatMap((biz) =>
+    biz.teams.flatMap((team) =>
+      team.members.map((m) => ({
+        id: m.employeeId,
+        name: m.name,
+        employeeNumber: m.employeeId,
+        email: m.email,
+        role: m.isAdmin ? 'admin' : m.isReviewer ? 'reviewer' : 'user',
+        position: m.rollNm,
+        department: team.deptNm,
+        businessSite: biz.bizAreaNm,
+        active: true,
+      } satisfies User)),
+    ),
+  )
 }
 
 // ─── 특별 마일리지 ────────────────────────────────────────────────────────────

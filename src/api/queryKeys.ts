@@ -7,6 +7,7 @@ export const queryKeys = {
   },
   users: {
     me: () => ['users', 'me'] as const,
+    list: () => ['users', 'list'] as const,
   },
   categories: {
     all: () => ['categories'] as const,
