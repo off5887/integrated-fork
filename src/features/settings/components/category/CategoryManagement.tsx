@@ -41,11 +41,7 @@ export default function CategoryManagement() {
       await updateCategory(cat)
       showSnackbar('카테고리가 수정되었습니다', 'success')
     } else {
-      if (categories.some((c) => c.id === cat.id)) {
-        showSnackbar('이미 존재하는 카테고리 ID입니다', 'error')
-        return
-      }
-      await addCategory(cat)
+      await addCategory({ ...cat, id: crypto.randomUUID() })
       showSnackbar('카테고리가 추가되었습니다', 'success')
     }
     setDialogOpen(false)
@@ -133,7 +129,8 @@ export default function CategoryManagement() {
                 borderRadius: 2.5,
                 border: `1px solid ${borderColor}`,
                 bgcolor: cardBg,
-                transition: 'border-color 0.15s',
+                opacity: cat.active === false ? 0.6 : 1,
+                transition: 'border-color 0.15s, opacity 0.15s',
                 '&:hover': { borderColor: cat.color },
               }}
             >
@@ -164,15 +161,17 @@ export default function CategoryManagement() {
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.25 }}>
                     <Chip
-                      label={cat.id}
+                      label={cat.active === false ? '비활성' : '활성'}
                       size="small"
                       sx={{
                         height: 18,
                         fontSize: '0.68rem',
-                        fontFamily: 'monospace',
-                        bgcolor: cat.bg,
-                        color: cat.color,
-                        border: `1px solid ${cat.border}`,
+                        fontWeight: 600,
+                        bgcolor: cat.active === false
+                          ? (isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(148,163,184,0.1)')
+                          : cat.bg,
+                        color: cat.active === false ? '#94a3b8' : cat.color,
+                        border: `1px solid ${cat.active === false ? 'rgba(148,163,184,0.25)' : cat.border}`,
                       }}
                     />
                     <Box
@@ -182,6 +181,7 @@ export default function CategoryManagement() {
                         borderRadius: '50%',
                         bgcolor: cat.color,
                         flexShrink: 0,
+                        opacity: cat.active === false ? 0.35 : 1,
                       }}
                     />
                   </Box>

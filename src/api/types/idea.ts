@@ -21,6 +21,7 @@ export type CategoryOption = {
   color: string
   bg: string
   border: string
+  active?: boolean
 }
 
 export type Reviewer = {

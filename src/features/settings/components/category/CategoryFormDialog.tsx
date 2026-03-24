@@ -5,6 +5,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
+  Switch,
   TextField,
   Typography,
 } from '@mui/material'
@@ -39,21 +41,21 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
   const st = getSettingsTheme(isDarkMode)
   const isEditing = Boolean(initial)
 
-  const [id, setId] = useState('')
   const [label, setLabel] = useState('')
   const [description, setDescription] = useState('')
   const [emoji, setEmoji] = useState('')
   const [color, setColor] = useState(DEFAULT_COLOR)
+  const [active, setActive] = useState(true)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [emojiAnchor, setEmojiAnchor] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
     if (open) {
-      setId(initial?.id ?? '')
       setLabel(initial?.label ?? '')
       setDescription(initial?.description ?? '')
       setEmoji(initial?.emoji ?? '')
       setColor(initial?.color ?? DEFAULT_COLOR)
+      setActive(initial?.active ?? true)
       setErrors({})
       setEmojiAnchor(null)
     }
@@ -61,7 +63,6 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
 
   const validate = () => {
     const e: Record<string, string> = {}
-    if (!id.trim()) e.id = '카테고리 ID를 입력해주세요'
     if (!label.trim()) e.label = '카테고리 이름을 입력해주세요'
     if (!emoji.trim()) e.emoji = '아이콘을 선택해주세요'
     setErrors(e)
@@ -71,13 +72,14 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
   const handleSave = () => {
     if (!validate()) return
     onSave({
-      id: id.trim(),
+      id: initial?.id ?? '',
       label: label.trim(),
       description: description.trim() || undefined,
       emoji: emoji.trim(),
       color,
       bg: hexToRgba(color, 0.1),
       border: hexToRgba(color, 0.35),
+      active,
     })
   }
 
@@ -122,6 +124,7 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
               border: `1px solid ${hexToRgba(color, 0.35)}`,
               bgcolor: hexToRgba(color, 0.1),
               alignSelf: 'flex-start',
+              opacity: active ? 1 : 0.45,
             }}
           >
             <Typography sx={{ fontSize: '1rem' }}>{emoji || '?'}</Typography>
@@ -130,17 +133,6 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
             </Typography>
           </Box>
 
-          <TextField
-            label="카테고리 ID"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            disabled={isEditing}
-            error={Boolean(errors.id)}
-            helperText={errors.id ?? (isEditing ? '수정 불가' : '예: 절감, 혁신, safety')}
-            size="small"
-            fullWidth
-            sx={inputSx}
-          />
           <TextField
             label="표시 이름"
             value={label}
@@ -228,6 +220,44 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
                 {color}
               </Typography>
             </Box>
+          </Box>
+
+          {/* 활성화 토글 */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 1.5,
+              py: 1,
+              borderRadius: 1.5,
+              border: `1px solid ${borderColor}`,
+              bgcolor: st.inputBg,
+            }}
+          >
+            <Box>
+              <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: textPrimary, lineHeight: 1.3 }}>
+                카테고리 활성화
+              </Typography>
+              <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+                비활성화 시 아이디어 작성에서 선택되지 않습니다
+              </Typography>
+            </Box>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={active}
+                  onChange={(e) => setActive(e.target.checked)}
+                  size="small"
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': { color: st.primaryColor },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: st.primaryColor },
+                  }}
+                />
+              }
+              label=""
+              sx={{ m: 0 }}
+            />
           </Box>
         </DialogContent>
 
