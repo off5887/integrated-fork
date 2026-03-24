@@ -16,6 +16,7 @@ export interface VisibilityOption {
 export type CategoryOption = {
   id: string
   label: string
+  description?: string
   emoji: string
   color: string
   bg: string

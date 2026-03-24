@@ -41,6 +41,7 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
 
   const [id, setId] = useState('')
   const [label, setLabel] = useState('')
+  const [description, setDescription] = useState('')
   const [emoji, setEmoji] = useState('')
   const [color, setColor] = useState(DEFAULT_COLOR)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -50,6 +51,7 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
     if (open) {
       setId(initial?.id ?? '')
       setLabel(initial?.label ?? '')
+      setDescription(initial?.description ?? '')
       setEmoji(initial?.emoji ?? '')
       setColor(initial?.color ?? DEFAULT_COLOR)
       setErrors({})
@@ -71,6 +73,7 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
     onSave({
       id: id.trim(),
       label: label.trim(),
+      description: description.trim() || undefined,
       emoji: emoji.trim(),
       color,
       bg: hexToRgba(color, 0.1),
@@ -146,6 +149,17 @@ export default function CategoryFormDialog({ open, onClose, onSave, initial }: P
             helperText={errors.label ?? '예: 절감 아이디어'}
             size="small"
             fullWidth
+            sx={inputSx}
+          />
+          <TextField
+            label="카테고리 설명"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="카테고리에 대한 간략한 설명을 입력하세요 (선택)"
+            size="small"
+            fullWidth
+            multiline
+            rows={2}
             sx={inputSx}
           />
 
