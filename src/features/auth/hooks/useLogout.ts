@@ -14,7 +14,7 @@ export function useLogout() {
     try {
       await api.post('/api/auth/logout')
     } finally {
-      localStorage.removeItem('userProfile') // 데모 계정 정리
+      localStorage.removeItem('gomgom_user_v1') // 데모 계정 정리
       queryClient.removeQueries({ queryKey: queryKeys.users.me() })
       navigate('/login', { replace: true })
     }

@@ -72,7 +72,7 @@ export default function IdeaBrowse() {
     const map = new Map<number, string[]>()
     ideas.forEach((idea) => map.set(idea.id, getSimilarity(idea)))
     return map
-  }, [])
+  }, [ideas])
 
   // ─── 필터링 + 정렬 ──────────────────────────────────────────
   const filteredIdeas = useMemo(() => {
@@ -105,12 +105,12 @@ export default function IdeaBrowse() {
 
   const similarCount = useMemo(
     () => ideas.filter((i) => (similarityMap.get(i.id)?.length ?? 0) > 0).length,
-    [similarityMap],
+    [ideas, similarityMap],
   )
 
   const myCount = useMemo(
     () => ideas.filter((i) => i.author === (user?.name ?? '')).length,
-    [user?.name],
+    [ideas, user?.name],
   )
 
   const hasFilter = !!(search || selectedCategory || selectedDivision || selectedDept || selectedStatus || showSimilarOnly || showMyOnly)

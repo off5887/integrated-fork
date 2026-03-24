@@ -163,9 +163,10 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
 
         {/* 메인 메뉴 */}
         <List disablePadding sx={{ mb: 1 }}>
-          {menuItems.filter((item) => !item.roles || (user?.role && item.roles.includes(user.role))).map((item) => {
+          {menuItems.flatMap((item) => {
+            if (item.roles && (!user?.role || !item.roles.includes(user.role))) return []
             if (item.children) {
-              return (
+              return [(
                 <GroupMenuItem
                   key={item.text}
                   item={item as MenuItem & { children: SubMenuItem[] }}
@@ -176,13 +177,13 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                   subItemBg={subItemBg}
                   isActive={isActive}
                 />
-              )
+              )]
             }
 
             const active = isActive(item.path!)
             const Icon = NAV_ICON_MAP[item.iconName]
 
-            return (
+            return [(
               <ListItem key={item.text} disablePadding sx={{ mb: 0.25 }}>
                 <ListItemButton
                   onClick={() => handleNavigate(item.path!)}
@@ -216,7 +217,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                   />
                 </ListItemButton>
               </ListItem>
-            )
+            )]
           })}
         </List>
 

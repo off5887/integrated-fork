@@ -15,12 +15,12 @@ export function useCurrentUserQuery() {
     queryKey: queryKeys.users.me(),
     queryFn: async (): Promise<UserProfile | null> => {
       // 데모 계정은 실제 쿠키 세션이 없으므로 localStorage에서 바로 반환
-      const demoRaw = localStorage.getItem('userProfile')
+      const demoRaw = localStorage.getItem('gomgom_user_v1')
       if (demoRaw) {
         try {
           return JSON.parse(demoRaw) as UserProfile
         } catch {
-          localStorage.removeItem('userProfile')
+          localStorage.removeItem('gomgom_user_v1')
         }
       }
 

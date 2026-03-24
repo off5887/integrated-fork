@@ -22,7 +22,7 @@ export function useLogin() {
 
     const demo = findDemoAccount(employeeId, password)
     if (demo) {
-      localStorage.setItem('userProfile', JSON.stringify(demo.profile))
+      localStorage.setItem('gomgom_user_v1', JSON.stringify(demo.profile))
       queryClient.removeQueries({ queryKey: queryKeys.users.me() })
       navigate('/dashboard')
       return null

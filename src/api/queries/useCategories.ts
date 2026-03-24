@@ -12,7 +12,7 @@ import { queryKeys } from '@/api/queryKeys'
 // 백엔드 연동 시 주석 해제:
 // import { api } from '@/api/client'
 
-const STORAGE_KEY = 'gomgom_categories'
+const STORAGE_KEY = 'gomgom_categories_v1'
 
 // ─── 데이터 함수 (백엔드 연동 시 이 부분만 교체) ───────────────────────────────
 

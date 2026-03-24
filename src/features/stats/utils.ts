@@ -1,5 +1,4 @@
 // src/features/stats/utils.ts
-import * as XLSX from 'xlsx'
 import type { PersonStats, PersonStatsRow, TeamStats, TeamStatsRow } from '@/api/types/stats'
 
 // ── 개인 집계 ─────────────────────────────────────────────────────────────────
@@ -66,7 +65,8 @@ export function aggregateTeamStats(records: TeamStats[]): TeamStatsRow[] {
 }
 
 // ── Excel 다운로드 ─────────────────────────────────────────────────────────────
-export function exportPersonStatsExcel(data: PersonStatsRow[], period: string) {
+export async function exportPersonStatsExcel(data: PersonStatsRow[], period: string) {
+  const XLSX = await import('xlsx')
   const rows = data.map((r) => ({
     '이름':           r.name,
     '부서':           r.department,
@@ -81,7 +81,6 @@ export function exportPersonStatsExcel(data: PersonStatsRow[], period: string) {
   }))
 
   const ws = XLSX.utils.json_to_sheet(rows)
-  // 열 너비 자동 조정
   ws['!cols'] = [
     { wch: 8 }, { wch: 12 }, { wch: 8 }, { wch: 12 }, { wch: 10 },
     { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 16 }, { wch: 14 },
@@ -91,7 +90,8 @@ export function exportPersonStatsExcel(data: PersonStatsRow[], period: string) {
   XLSX.writeFile(wb, `개인통계_${period}.xlsx`)
 }
 
-export function exportTeamStatsExcel(data: TeamStatsRow[], period: string) {
+export async function exportTeamStatsExcel(data: TeamStatsRow[], period: string) {
+  const XLSX = await import('xlsx')
   const rows = data.map((r) => ({
     '팀명':            r.team,
     '팀인원(명)':      r.teamSize,

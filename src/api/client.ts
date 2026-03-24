@@ -21,7 +21,7 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
       // /users/me 401은 useCurrentUserQuery에서 null 반환으로 처리 (ProtectedRoute가 리다이렉트)
       const isMeEndpoint = error.config?.url?.includes('/users/me')
       if (error.response?.status === 401 && !isLoginEndpoint && !isMeEndpoint) {
-        localStorage.removeItem('userProfile') // 데모 계정 정리
+        localStorage.removeItem('gomgom_user_v1') // 데모 계정 정리
         window.location.href = '/login'
       }
       return Promise.reject(error)

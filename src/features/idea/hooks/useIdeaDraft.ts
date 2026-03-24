@@ -2,7 +2,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 import type { DraftData } from '@/api/types/idea'
 
-export const DRAFT_KEY = 'gomgom_new_idea_draft'
+export const DRAFT_KEY = 'gomgom_draft_v1'
 const AUTO_SAVE_INTERVAL = 5 * 60 * 1000 // 5분
 
 type FormValues = Omit<DraftData, 'savedAt'>

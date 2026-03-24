@@ -7,6 +7,8 @@ import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
 import { CATEGORIES } from '@/api/mock/idea'
 
+const CATEGORY_MAP = new Map(CATEGORIES.map((c) => [c.id, c]))
+
 interface Props {
   ideaType?: 'idea' | 'complete'
   categories?: string[]
@@ -78,7 +80,7 @@ export default function BasicInfoSection({ ideaType, categories, problem, soluti
             {categories && categories.length > 0 && (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
                 {categories.map((catId) => {
-                  const cat = CATEGORIES.find((c) => c.id === catId)
+                  const cat = CATEGORY_MAP.get(catId)
                   return (
                     <Chip
                       key={catId}

@@ -64,9 +64,9 @@ export default function Stats() {
 
   const periodLabel = dateFrom === dateTo ? dateFrom : `${dateFrom}~${dateTo}`
 
-  const handleExcel = () => {
-    if (tab === 'person') exportPersonStatsExcel(filteredPersonData, periodLabel)
-    else exportTeamStatsExcel(filteredTeamData, periodLabel)
+  const handleExcel = async () => {
+    if (tab === 'person') await exportPersonStatsExcel(filteredPersonData, periodLabel)
+    else await exportTeamStatsExcel(filteredTeamData, periodLabel)
   }
 
   // 요약 수치 — 탭별로 다른 카드
