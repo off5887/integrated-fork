@@ -193,6 +193,14 @@ export default function UserFormDialog({
               ))}
             </Select>
           </FormControl>
+          <TextField
+            label="사업소"
+            fullWidth required size="small"
+            value={formData.businessSite || ''}
+            onChange={(e) => onFormChange({ ...formData, businessSite: e.target.value })}
+            placeholder="예: 본사, 강남지사, 부산지사"
+            sx={inputSx}
+          />
         </Box>
       </DialogContent>
 

@@ -17,6 +17,7 @@ export interface User {
   role: 'user' | 'reviewer' | 'admin'
   position: string
   department: string
+  businessSite: string
   active: boolean
 }
 

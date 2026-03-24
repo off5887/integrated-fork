@@ -54,7 +54,7 @@ export default function UserManagement() {
   const filteredUsers = useMemo(() => {
     const q = searchTerm.trim().toLowerCase()
     return users.filter((u) => {
-      if (q && !u.name.toLowerCase().includes(q) && !u.employeeNumber.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q) && !u.department.toLowerCase().includes(q)) return false
+      if (q && !u.name.toLowerCase().includes(q) && !u.employeeNumber.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q) && !u.department.toLowerCase().includes(q) && !u.businessSite.toLowerCase().includes(q)) return false
       if (roleFilter !== 'all' && u.role !== roleFilter) return false
       if (statusFilter === 'active' && !u.active) return false
       if (statusFilter === 'inactive' && u.active) return false
@@ -87,7 +87,7 @@ export default function UserManagement() {
   }
 
   const handleSave = () => {
-    if (!formData.name || !formData.employeeNumber || !formData.email || !formData.role || !formData.position || !formData.department) {
+    if (!formData.name || !formData.employeeNumber || !formData.email || !formData.role || !formData.position || !formData.department || !formData.businessSite) {
       showSnackbar('모든 필수 항목을 입력해주세요.', 'warning')
       return
     }
@@ -108,6 +108,7 @@ export default function UserManagement() {
           role: formData.role!,
           position: formData.position!,
           department: formData.department!,
+          businessSite: formData.businessSite!,
           active: true,
         },
       ])
@@ -235,7 +236,7 @@ export default function UserManagement() {
         <OutlinedInput
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="이름, 사번, 이메일, 부서 검색"
+          placeholder="이름, 사번, 이메일, 부서, 사업소 검색"
           size="small"
           startAdornment={
             <InputAdornment position="start">
@@ -361,6 +362,9 @@ export default function UserManagement() {
                 <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
                   {user.department}
                 </Typography>
+                <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
+                  {user.businessSite || '-'}
+                </Typography>
               </Box>
               <Typography sx={{ fontSize: '0.75rem', color: textSecondary, fontFamily: 'monospace' }}>
                 {user.email}
@@ -429,10 +433,10 @@ export default function UserManagement() {
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: headerBg }}>
-              {['이름', '사번', '이메일', '역할', '직급', '부서', '상태', ''].map((label, i) => (
+              {['이름', '사번', '이메일', '역할', '직급', '부서', '사업소', '상태', ''].map((label, i) => (
                 <TableCell
                   key={label || `col-${i}`}
-                  align={i === 7 ? 'right' : 'left'}
+                  align={i === 8 ? 'right' : 'left'}
                   sx={{
                     color: textSecondary, fontWeight: 600, fontSize: '0.72rem',
                     letterSpacing: '0.05em', textTransform: 'uppercase',
@@ -494,6 +498,11 @@ export default function UserManagement() {
                 <TableCell>
                   <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>
                     {user.department || '-'}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>
+                    {user.businessSite || '-'}
                   </Typography>
                 </TableCell>
                 <TableCell>
