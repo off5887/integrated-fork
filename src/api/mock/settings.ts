@@ -23,11 +23,21 @@ export const mockOrganization: OrgMember[] = [
 ]
 
 // ── 사용자 관리 ──────────────────────────────────────────────────────────────
+// role: 'user' = 일반 사용자, 'reviewer' = 심사자, 'admin' = 관리자
 export const mockUsers: User[] = [
-  { id: 1, name: '김개발',   employeeNumber: 'DEV001',  email: 'dev1@company.com',    role: '팀장',    department: '개발1팀', active: true  },
-  { id: 2, name: '이코딩',   employeeNumber: 'DEV002',  email: 'front@company.com',   role: '사원',    department: '개발1팀', active: true  },
-  { id: 3, name: '박기획',   employeeNumber: 'PLAN001', email: 'plan@company.com',    role: '팀장',    department: '기획팀', active: true  },
-  { id: 4, name: '최디자인', employeeNumber: 'DES001',  email: 'design@company.com',  role: '디자이너', department: '기획팀', active: false },
+  { id:  1, name: '김개발',   employeeNumber: 'DEV001',  email: 'kim.dev@company.com',      role: 'admin',    department: '개발1팀',   active: true  },
+  { id:  2, name: '이코딩',   employeeNumber: 'DEV002',  email: 'lee.code@company.com',     role: 'reviewer', department: '개발1팀',   active: true  },
+  { id:  3, name: '박프론트', employeeNumber: 'DEV003',  email: 'park.front@company.com',   role: 'user',     department: '개발1팀',   active: true  },
+  { id:  4, name: '최기획',   employeeNumber: 'PLAN001', email: 'choi.plan@company.com',    role: 'reviewer', department: '기획팀',    active: true  },
+  { id:  5, name: '정디자인', employeeNumber: 'PLAN002', email: 'jung.design@company.com',  role: 'user',     department: '기획팀',    active: true  },
+  { id:  6, name: '윤영업',   employeeNumber: 'SALE001', email: 'yoon.sales@company.com',   role: 'reviewer', department: '영업1팀',   active: true  },
+  { id:  7, name: '송세일',   employeeNumber: 'SALE002', email: 'song.sale@company.com',    role: 'user',     department: '영업1팀',   active: true  },
+  { id:  8, name: '한마케팅', employeeNumber: 'MKT001',  email: 'han.mkt@company.com',      role: 'reviewer', department: '마케팅팀',  active: true  },
+  { id:  9, name: '오인사',   employeeNumber: 'HR001',   email: 'oh.hr@company.com',        role: 'reviewer', department: '인사팀',    active: true  },
+  { id: 10, name: '백재무',   employeeNumber: 'FIN001',  email: 'baek.fin@company.com',     role: 'reviewer', department: '재무팀',    active: false },
+  { id: 11, name: '남총무',   employeeNumber: 'GEN001',  email: 'nam.gen@company.com',      role: 'user',     department: '총무팀',    active: true  },
+  { id: 12, name: '서부문장', employeeNumber: 'STR001',  email: 'seo.str@company.com',      role: 'reviewer', department: '전략기획실', active: true  },
+  { id: 13, name: '장임원',   employeeNumber: 'EXE001',  email: 'jang.exe@company.com',     role: 'admin',    department: '경영지원부문', active: true },
 ]
 
 export const mockDepartments: string[] = [

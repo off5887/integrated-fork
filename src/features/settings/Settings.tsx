@@ -6,8 +6,9 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import PaidIcon from '@mui/icons-material/Paid'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
-import { Box, Chip, Container, Tab, Tabs, Typography } from '@mui/material'
-import { type ComponentType, type ReactNode, useState } from 'react'
+import { Box, Chip, Container, FormControl, MenuItem, Select, Typography } from '@mui/material'
+import { type ComponentType, useEffect, useState } from 'react'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { type SvgIconProps } from '@mui/material/SvgIcon'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
@@ -21,45 +22,66 @@ import SpecialMileage from './components/specialMileage/SpecialMileage'
 import UserManagement from './components/user/UserManagement'
 
 // ─── 탭 설정 ──────────────────────────────────────────────────────────────────
-// 새 탭 추가 시 이 배열에만 항목을 추가하면 됩니다.
 
 interface TabConfig {
   id: string
   label: string
+  description: string
   Icon: ComponentType<SvgIconProps>
   Component: ComponentType
 }
 
 const TABS: TabConfig[] = [
-  { id: 'reviewers',      label: '심사자 배정',   Icon: SupervisorAccountIcon, Component: ReviewerAssignment },
-  { id: 'users',          label: '사용자 관리',   Icon: ManageAccountsIcon,    Component: UserManagement },
-  { id: 'special-mile',   label: '특별 마일리지', Icon: CardGiftcardIcon,      Component: SpecialMileage },
-  { id: 'review-change',  label: '심사변경',      Icon: SwapHorizIcon,         Component: ReviewChange },
-  { id: 'categories',     label: '카테고리',      Icon: CategoryIcon,          Component: CategoryManagement },
-  { id: 'exchanges',       label: '현금전환 신청', Icon: PaidIcon,              Component: ExchangeRequestsManagement },
-  { id: 'reviewer-stats', label: '심사자 현황',   Icon: AssessmentIcon,        Component: ReviewerStatsPanel },
+  {
+    id: 'reviewers',
+    label: '심사자 배정',
+    description: '아이디어 심사자를 배정하고 관리합니다',
+    Icon: SupervisorAccountIcon,
+    Component: ReviewerAssignment,
+  },
+  {
+    id: 'users',
+    label: '사용자 관리',
+    description: '시스템 사용자와 권한을 관리합니다',
+    Icon: ManageAccountsIcon,
+    Component: UserManagement,
+  },
+  {
+    id: 'special-mile',
+    label: '특별 마일리지',
+    description: '특별 마일리지를 부여하고 내역을 조회합니다',
+    Icon: CardGiftcardIcon,
+    Component: SpecialMileage,
+  },
+  {
+    id: 'review-change',
+    label: '심사변경',
+    description: '심사자 변경 요청을 처리합니다',
+    Icon: SwapHorizIcon,
+    Component: ReviewChange,
+  },
+  {
+    id: 'categories',
+    label: '카테고리',
+    description: '아이디어 카테고리를 추가·수정합니다',
+    Icon: CategoryIcon,
+    Component: CategoryManagement,
+  },
+  {
+    id: 'exchanges',
+    label: '현금전환 신청',
+    description: '마일리지 현금전환 신청을 처리합니다',
+    Icon: PaidIcon,
+    Component: ExchangeRequestsManagement,
+  },
+  {
+    id: 'reviewer-stats',
+    label: '심사자 현황',
+    description: '심사자별 처리 현황을 확인합니다',
+    Icon: AssessmentIcon,
+    Component: ReviewerStatsPanel,
+  },
 ]
-
-// ─── TabPanel ─────────────────────────────────────────────────────────────────
-
-interface TabPanelProps {
-  children: ReactNode
-  index: number
-  value: number
-}
-
-function TabPanel({ children, value, index }: TabPanelProps) {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`settings-tabpanel-${index}`}
-      aria-labelledby={`settings-tab-${index}`}
-    >
-      {value === index && <Box sx={{ pt: 4 }}>{children}</Box>}
-    </div>
-  )
-}
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
 
@@ -67,7 +89,17 @@ export default function Settings() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, bgBase, cardBg, cardShadow, accentColor } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
-  const [tabValue, setTabValue] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const [activeTab, setActiveTab] = useState(0)
+
+  if (isLoading) return <LoadingSpinner fullPage text="설정을 불러오는 중..." />
+
+  const ActiveComponent = TABS[activeTab].Component
 
   return (
     <Box
@@ -133,7 +165,41 @@ export default function Settings() {
           </Box>
         </Box>
 
-        {/* 탭 네비게이션 */}
+        {/* 모바일 드롭다운 (xs ~ sm) */}
+        <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 3 }}>
+          <FormControl fullWidth size="small">
+            <Select
+              value={activeTab}
+              onChange={(e) => setActiveTab(Number(e.target.value))}
+              sx={{
+                bgcolor: cardBg,
+                borderRadius: 2,
+                '& .MuiOutlinedInput-notchedOutline': { borderColor },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: accentColor },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: accentColor },
+                color: textPrimary,
+              }}
+            >
+              {TABS.map((tab, index) => (
+                <MenuItem key={tab.id} value={index}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <tab.Icon sx={{ fontSize: '1.1rem', color: accentColor }} />
+                    <Box>
+                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: textPrimary, lineHeight: 1.2 }}>
+                        {tab.label}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.72rem', color: textSecondary, lineHeight: 1.3 }}>
+                        {tab.description}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* 본문 레이아웃: 사이드바 + 콘텐츠 */}
         <Box
           sx={{
             bgcolor: cardBg,
@@ -146,64 +212,139 @@ export default function Settings() {
           {/* 상단 그라디언트 스트립 */}
           <Box sx={{ height: 3, background: st.headerGradient }} />
 
-          <Box sx={{ borderBottom: `1px solid ${borderColor}` }}>
-            <Tabs
-              value={tabValue}
-              onChange={(_, v) => setTabValue(v)}
-              variant="scrollable"
-              scrollButtons="auto"
-              allowScrollButtonsMobile
+          <Box sx={{ display: 'flex', minHeight: 600 }}>
+            {/* 왼쪽 사이드바 (md+) */}
+            <Box
               sx={{
-                px: { xs: 0, sm: 1, md: 4 },
-                minHeight: { xs: 48, md: 56 },
-                '& .MuiTab-root': {
-                  color: textSecondary,
-                  fontWeight: 600,
-                  fontSize: { xs: '0.75rem', md: '0.875rem' },
-                  textTransform: 'none',
-                  minHeight: { xs: 48, md: 56 },
-                  minWidth: { xs: 'auto', md: 120 },
-                  px: { xs: 1.5, sm: 2, md: 3 },
-                  gap: { xs: 0.5, md: 1 },
-                  '&.Mui-selected': { color: accentColor },
-                },
-                '& .MuiTabs-indicator': {
-                  backgroundColor: st.primaryColor,
-                  height: 2,
-                  borderRadius: 1,
-                },
-                '& .MuiTabScrollButton-root': {
-                  color: accentColor,
-                  opacity: 1,
-                  width: 36,
-                  bgcolor: cardBg,
-                  borderRight: `1px solid ${borderColor}`,
-                  borderLeft: `1px solid ${borderColor}`,
-                  '&:first-of-type': { borderLeft: 'none' },
-                  '&:last-of-type': { borderRight: 'none' },
-                  '&.Mui-disabled': { opacity: 0, width: 0 },
-                },
+                display: { xs: 'none', md: 'flex' },
+                flexDirection: 'column',
+                width: 240,
+                flexShrink: 0,
+                borderRight: `1px solid ${borderColor}`,
+                p: 1.5,
+                gap: 0.5,
               }}
             >
-              {TABS.map((tab, index) => (
-                <Tab
-                  key={tab.id}
-                  label={tab.label}
-                  id={`settings-tab-${index}`}
-                  aria-controls={`settings-tabpanel-${index}`}
-                  icon={<tab.Icon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
-                  iconPosition="start"
-                />
-              ))}
-            </Tabs>
-          </Box>
+              {TABS.map((tab, index) => {
+                const isActive = activeTab === index
+                return (
+                  <Box
+                    key={tab.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isActive}
+                    onClick={() => setActiveTab(index)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveTab(index) }}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      p: 1.5,
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      bgcolor: isActive ? st.avatarBg : 'transparent',
+                      border: `1px solid ${isActive ? st.adminChipBorder : 'transparent'}`,
+                      '&:hover': {
+                        bgcolor: isActive ? st.avatarBg : st.memberRowHoverBg,
+                      },
+                    }}
+                  >
+                    {/* 아이콘 박스 */}
+                    <Box
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 2,
+                        background: isActive ? st.iconGradient : (isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.07)'),
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        transition: 'background 0.15s ease',
+                      }}
+                    >
+                      <tab.Icon
+                        sx={{
+                          fontSize: '1.1rem',
+                          color: isActive ? '#fff' : accentColor,
+                        }}
+                      />
+                    </Box>
 
-          <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-            {TABS.map((tab, index) => (
-              <TabPanel key={tab.id} value={tabValue} index={index}>
-                <tab.Component />
-              </TabPanel>
-            ))}
+                    {/* 텍스트 */}
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography
+                        sx={{
+                          fontSize: '0.82rem',
+                          fontWeight: isActive ? 700 : 600,
+                          color: isActive ? accentColor : textPrimary,
+                          lineHeight: 1.3,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {tab.label}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: '0.68rem',
+                          color: textSecondary,
+                          lineHeight: 1.3,
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {tab.description}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )
+              })}
+            </Box>
+
+            {/* 오른쪽 콘텐츠 영역 */}
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                p: { xs: 2, sm: 3, md: 4 },
+              }}
+            >
+              {/* 콘텐츠 헤더 */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 4 }}>
+                <Box
+                  sx={{
+                    width: 48, height: 48, borderRadius: 3,
+                    background: st.iconGradient,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 18px rgba(99,102,241,0.28)',
+                    flexShrink: 0,
+                  }}
+                >
+                  {(() => {
+                    const ActiveIcon = TABS[activeTab].Icon
+                    return <ActiveIcon sx={{ color: '#fff', fontSize: '1.6rem' }} />
+                  })()}
+                </Box>
+                <Box>
+                  <Typography
+                    variant="h5"
+                    fontWeight={800}
+                    sx={{ color: textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
+                  >
+                    {TABS[activeTab].label}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: textSecondary }}>
+                    {TABS[activeTab].description}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <ActiveComponent />
+            </Box>
           </Box>
         </Box>
       </Container>

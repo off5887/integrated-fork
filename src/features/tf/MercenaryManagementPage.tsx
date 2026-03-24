@@ -9,7 +9,8 @@ import {
   Tabs,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import {
   mockApplicants,
   mockEmployees,
@@ -28,6 +29,12 @@ import MercenaryInvitePanel from './components/MercenaryInvitePanel'
 export default function MercenaryManagementPage() {
   const colors = usePageColors()
   const { showSnackbar } = useSnackbar()
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
+
   const [tab, setTab] = useState(0)
   const [applicants, setApplicants] = useState<Applicant[]>(mockApplicants)
   const [myIdeas, setMyIdeas] = useState<ExtendedIdea[]>(
@@ -81,6 +88,8 @@ export default function MercenaryManagementPage() {
       ),
     )
   }
+
+  if (isLoading) return <LoadingSpinner fullPage text="TF 관리를 불러오는 중..." />
 
   return (
     <Box

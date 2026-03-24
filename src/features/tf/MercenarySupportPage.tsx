@@ -3,7 +3,8 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import GroupsIcon from '@mui/icons-material/Groups'
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
 import { Box, Chip, Grid, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { usePageColors } from '@/theme/pageColors'
@@ -20,9 +21,17 @@ export default function MercenarySupportPage() {
   const tf = getTFTheme(isDarkMode)
   const { showSnackbar } = useSnackbar()
 
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
+
   const handleApply = (id: number) => {
     showSnackbar(`아이디어 #${id}에 용병 지원 완료되었습니다!`, 'success')
   }
+
+  if (isLoading) return <LoadingSpinner fullPage text="TF 지원 목록을 불러오는 중..." />
 
   return (
     <Box

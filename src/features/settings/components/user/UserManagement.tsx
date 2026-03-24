@@ -4,13 +4,16 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew'
+import SearchIcon from '@mui/icons-material/Search'
 import {
   Avatar,
   Box,
   Button,
   Chip,
   IconButton,
+  InputAdornment,
   MenuItem,
+  OutlinedInput,
   Select,
   Table,
   TableBody,
@@ -20,7 +23,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
@@ -42,6 +45,24 @@ export default function UserManagement() {
   const [formData, setFormData] = useState<Partial<User & { password: string }>>({})
   const [showPassword, setShowPassword] = useState(false)
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
+
+  // 검색 필터
+  const [searchTerm, setSearchTerm] = useState('')
+  const [roleFilter, setRoleFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
+
+  const filteredUsers = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase()
+    return users.filter((u) => {
+      if (q && !u.name.toLowerCase().includes(q) && !u.employeeNumber.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q) && !u.department.toLowerCase().includes(q)) return false
+      if (roleFilter !== 'all' && u.role !== roleFilter) return false
+      if (statusFilter === 'active' && !u.active) return false
+      if (statusFilter === 'inactive' && u.active) return false
+      return true
+    })
+  }, [users, searchTerm, roleFilter, statusFilter])
+
+  const hasFilter = searchTerm !== '' || roleFilter !== 'all' || statusFilter !== 'all'
 
   const isEditing = editUser !== null
 
@@ -180,7 +201,7 @@ export default function UserManagement() {
               사용자 관리
             </Typography>
             <Typography variant="caption" sx={{ color: textSecondary }}>
-              총 {users.length}명 등록됨 · 활성 {users.filter(u => u.active).length}명
+              총 {users.length}명 · 활성 {users.filter(u => u.active).length}명
             </Typography>
           </Box>
         </Box>
@@ -200,9 +221,100 @@ export default function UserManagement() {
         </Button>
       </Box>
 
+      {/* 검색 필터 바 */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 1,
+          mb: 2.5,
+          alignItems: 'center',
+        }}
+      >
+        <OutlinedInput
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="이름, 사번, 이메일, 부서 검색"
+          size="small"
+          startAdornment={
+            <InputAdornment position="start">
+              <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
+            </InputAdornment>
+          }
+          sx={{
+            flex: '1 1 200px',
+            minWidth: 180,
+            fontSize: '0.82rem',
+            bgcolor: st.inputBg,
+            borderRadius: 2,
+            '& .MuiOutlinedInput-notchedOutline': { borderColor },
+            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: st.inputHoverBorder },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: st.inputFocusBorder },
+            color: textPrimary,
+          }}
+        />
+        <Select
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          size="small"
+          sx={{
+            minWidth: 110,
+            fontSize: '0.82rem',
+            bgcolor: st.inputBg,
+            borderRadius: 2,
+            color: textPrimary,
+            '& .MuiOutlinedInput-notchedOutline': { borderColor },
+            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: st.inputHoverBorder },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: st.inputFocusBorder },
+            '& .MuiSelect-icon': { color: textSecondary },
+          }}
+        >
+          <MenuItem value="all" sx={{ fontSize: '0.82rem' }}>전체 역할</MenuItem>
+          <MenuItem value="user" sx={{ fontSize: '0.82rem' }}>일반 사용자</MenuItem>
+          <MenuItem value="reviewer" sx={{ fontSize: '0.82rem' }}>심사자</MenuItem>
+          <MenuItem value="admin" sx={{ fontSize: '0.82rem' }}>관리자</MenuItem>
+        </Select>
+        <Select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          size="small"
+          sx={{
+            minWidth: 90,
+            fontSize: '0.82rem',
+            bgcolor: st.inputBg,
+            borderRadius: 2,
+            color: textPrimary,
+            '& .MuiOutlinedInput-notchedOutline': { borderColor },
+            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: st.inputHoverBorder },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: st.inputFocusBorder },
+            '& .MuiSelect-icon': { color: textSecondary },
+          }}
+        >
+          <MenuItem value="all" sx={{ fontSize: '0.82rem' }}>전체 상태</MenuItem>
+          <MenuItem value="active" sx={{ fontSize: '0.82rem' }}>활성</MenuItem>
+          <MenuItem value="inactive" sx={{ fontSize: '0.82rem' }}>비활성</MenuItem>
+        </Select>
+        {hasFilter && (
+          <Button
+            size="small"
+            onClick={() => { setSearchTerm(''); setRoleFilter('all'); setStatusFilter('all') }}
+            sx={{
+              fontSize: '0.78rem', fontWeight: 600, textTransform: 'none',
+              color: textSecondary, borderRadius: 2,
+              '&:hover': { bgcolor: st.memberRowHoverBg },
+            }}
+          >
+            초기화
+          </Button>
+        )}
+        <Typography sx={{ fontSize: '0.75rem', color: textSecondary, ml: 'auto', whiteSpace: 'nowrap' }}>
+          {hasFilter ? `${filteredUsers.length} / ${users.length}명` : `총 ${users.length}명`}
+        </Typography>
+      </Box>
+
       {/* 모바일 카드 목록 (xs only) */}
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, flexDirection: 'column', gap: 1.5 }}>
-        {users.map(user => (
+        {filteredUsers.map(user => (
           <Box
             key={user.id}
             sx={{
@@ -291,11 +403,11 @@ export default function UserManagement() {
           </Box>
         ))}
 
-        {users.length === 0 && (
+        {filteredUsers.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <ManageAccountsIcon sx={{ fontSize: '2rem', color: textSecondary, opacity: 0.3, mb: 1 }} />
             <Typography variant="body2" sx={{ color: textSecondary }}>
-              등록된 사용자가 없습니다
+              {hasFilter ? '검색 결과가 없습니다' : '등록된 사용자가 없습니다'}
             </Typography>
           </Box>
         )}
@@ -329,7 +441,7 @@ export default function UserManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map(user => (
+            {filteredUsers.map(user => (
               <TableRow
                 key={user.id}
                 sx={{
@@ -423,12 +535,12 @@ export default function UserManagement() {
                 </TableCell>
               </TableRow>
             ))}
-            {users.length === 0 && (
+            {filteredUsers.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={{ py: 8, borderBottomColor: borderColor }}>
                   <ManageAccountsIcon sx={{ fontSize: '2rem', color: textSecondary, opacity: 0.3, mb: 1 }} />
                   <Typography variant="body2" sx={{ color: textSecondary }}>
-                    등록된 사용자가 없습니다
+                    {hasFilter ? '검색 결과가 없습니다' : '등록된 사용자가 없습니다'}
                   </Typography>
                 </TableCell>
               </TableRow>

@@ -1,14 +1,35 @@
 // src/pages/Dashboard/components/MyGomgomiCard.tsx
-import godBear from '@/assets/tarot/god_bear.png'
+import babyBear    from '@/assets/tarot/baby_bear.png'
+import godBear     from '@/assets/tarot/god_bear.png'
+import judgeBear   from '@/assets/tarot/judge_bear.png'
+import kidBear     from '@/assets/tarot/kid_bear.png'
+import masterBear  from '@/assets/tarot/master_bear.png'
+import mechaBear   from '@/assets/tarot/mecha_bear.png'
+import warriorBear from '@/assets/tarot/warrior_bear.png'
 import { Box, Typography, Modal, alpha } from '@mui/material'
 import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getDashboardTheme } from '@/theme/dashboardTheme'
-import { MY_GOMGOMI, KPI_STATS } from '@/api/mock/dashboard'
+import { MY_GOMGOMI_BY_ROLE, KPI_STATS_BY_ROLE } from '@/api/mock/dashboard'
 import type { MyGomgomiCardProps } from '@/api/types/dashboard'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 
-const MINI_STATS = MY_GOMGOMI.miniStats
+// ── 레벨 → 타로 이미지 (일반사용자 전용) ──────────────────────────────────────
+function getUserTarotImage(level: number): string {
+  if (level <= 2) return babyBear
+  if (level <= 4) return kidBear
+  if (level === 5) return godBear
+  if (level <= 7) return warriorBear
+  if (level <= 9) return masterBear
+  return mechaBear
+}
+
+// ── 역할 → 타로 이미지 (심사자·관리자 고정) ───────────────────────────────────
+function getTarotImage(role: string, level: number): string {
+  if (role === 'reviewer') return judgeBear
+  if (role === 'admin')    return mechaBear
+  return getUserTarotImage(level)
+}
 
 const ROLE_LABEL: Record<string, string> = {
   user:     '일반 사용자',
@@ -21,6 +42,11 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
   const dt = getDashboardTheme(isDarkMode)
   const user = useCurrentUser()
   const [open, setOpen] = useState(false)
+
+  const role = user?.role ?? 'user'
+  const gomgomi = MY_GOMGOMI_BY_ROLE[role] ?? MY_GOMGOMI_BY_ROLE['user']
+  const kpiStats = KPI_STATS_BY_ROLE[role] ?? KPI_STATS_BY_ROLE['user']
+  const tarotImage = getTarotImage(role, gomgomi.level)
 
   return (
     <>
@@ -36,7 +62,7 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
         bgcolor: dt.gom.profileBg,
         border: `1px solid ${dt.gom.profileBorder}`,
       }}>
-        {/* 곰 이모티콘 아바타 — 클릭 시 타로카드 모달 */}
+        {/* 타로카드 아바타 — 클릭 시 모달 */}
         <Box
           onClick={() => setOpen(true)}
           title="타로카드 보기"
@@ -46,7 +72,7 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
             border: `1.5px solid ${dt.gom.levelBadgeBorder}`,
             bgcolor: alpha('#6366f1', 0.12),
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1.8rem',
+            overflow: 'hidden',
             cursor: 'pointer',
             transition: 'transform 0.15s, box-shadow 0.15s',
             '&:hover': {
@@ -55,7 +81,11 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
             },
           }}
         >
-          🐻
+          <img
+            src={tarotImage}
+            alt={gomgomi.rankName}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
         </Box>
         <Box sx={{ minWidth: 0 }}>
           <Typography variant="body2" fontWeight={700} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
@@ -66,11 +96,13 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
             <Box sx={{ px: 1.1, py: 0.25, borderRadius: '999px', flexShrink: 0, bgcolor: dt.gom.levelBadgeBg, border: `1px solid ${dt.gom.levelBadgeBorder}` }}>
-              <Typography sx={{ color: dt.gom.levelBadgeColor, fontSize: '0.65rem', fontWeight: 700, whiteSpace: 'nowrap' }}>곰곰신</Typography>
+              <Typography sx={{ color: dt.gom.levelBadgeColor, fontSize: '0.65rem', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                {gomgomi.rankName} · Lv.{gomgomi.level}
+              </Typography>
             </Box>
             <Box sx={{ px: 1.1, py: 0.25, borderRadius: '999px', flexShrink: 0, bgcolor: dt.gom.rankBadgeBg, border: `1px solid ${dt.dividerColor}` }}>
               <Typography sx={{ color: dt.textSecondary, fontSize: '0.65rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                {ROLE_LABEL[user?.role ?? ''] ?? '—'}
+                {ROLE_LABEL[role] ?? '—'}
               </Typography>
             </Box>
           </Box>
@@ -102,7 +134,7 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
 
       {/* 미니 스탯 */}
       <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
-        {MINI_STATS.map((stat) => (
+        {gomgomi.miniStats.map((stat) => (
           <Box key={stat.label} sx={{ p: 1.25, borderRadius: 2, bgcolor: dt.gom.miniStatBg, border: `1px solid ${dt.gom.miniStatBorder}` }}>
             <Typography variant="caption" sx={{ color: dt.textSecondary, display: 'block', mb: 0.25, fontSize: '0.68rem' }}>
               {stat.label}
@@ -123,7 +155,7 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
           현황 요약
         </Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.75 }}>
-          {KPI_STATS.map((kpi) => (
+          {kpiStats.map((kpi) => (
             <Box key={kpi.label} sx={{ p: 1, borderRadius: 1.75, bgcolor: dt.gom.miniStatBg, border: `1px solid ${dt.gom.miniStatBorder}` }}>
               <Typography sx={{ fontSize: '0.82rem', fontWeight: 800, color: kpi.color, lineHeight: 1.2, letterSpacing: '-0.01em' }}>
                 {kpi.value}
@@ -164,12 +196,15 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
           border: `2px solid ${alpha('#a78bfa', 0.5)}`,
         }}>
           <img
-            src={godBear}
-            alt="나의 곰곰이 타로카드"
+            src={tarotImage}
+            alt={`${gomgomi.rankName} 타로카드`}
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </Box>
-        <Typography variant="caption" sx={{ color: alpha('#fff', 0.6) }}>
+        <Typography sx={{ color: alpha('#fff', 0.8), fontWeight: 700, fontSize: '0.9rem' }}>
+          {gomgomi.rankName}
+        </Typography>
+        <Typography variant="caption" sx={{ color: alpha('#fff', 0.5) }}>
           클릭하면 닫힙니다
         </Typography>
       </Box>

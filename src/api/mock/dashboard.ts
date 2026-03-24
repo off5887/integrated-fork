@@ -3,12 +3,35 @@
 
 import type { KpiStat, RecentActivity, ApprovalStage, DepartmentData, PopularItem, MyGomgomi, RoleIdeaItem, RoleJudgeItem, RoleMileageRequest } from '@/api/types/dashboard'
 
+/** 일반사용자 KPI */
 export const KPI_STATS: KpiStat[] = [
-  { label: '전체 아이디어', value: '150건', icon: '💡', color: '#3b82f6' },
-  { label: '승인 완료', value: '68건', icon: '✅', color: '#10b981' },
-  { label: '이번 달 신규', value: '23건', icon: '🚀', color: '#f59e0b' },
-  { label: '전체 실행률', value: '73.4%', icon: '📊', color: '#8b5cf6' },
+  { label: '내 아이디어', value: '5건',     icon: '💡', color: '#3b82f6' },
+  { label: '승인 완료',   value: '2건',     icon: '✅', color: '#10b981' },
+  { label: '심사 중',     value: '2건',     icon: '⏳', color: '#f59e0b' },
+  { label: '획득 마일리지', value: '5,420마리', icon: '🐟', color: '#8b5cf6' },
 ]
+
+/** 심사자 KPI */
+const KPI_STATS_REVIEWER: KpiStat[] = [
+  { label: '심사 할당', value: '5건',   icon: '📋', color: '#6366f1' },
+  { label: '심사 완료', value: '8건',   icon: '✅', color: '#10b981' },
+  { label: '대기 중',   value: '3건',   icon: '⏳', color: '#f59e0b' },
+  { label: '평균 처리', value: '2.3일', icon: '📊', color: '#8b5cf6' },
+]
+
+/** 관리자 KPI */
+const KPI_STATS_ADMIN: KpiStat[] = [
+  { label: '전체 아이디어', value: '150건',  icon: '💡', color: '#3b82f6' },
+  { label: '승인 완료',     value: '68건',   icon: '✅', color: '#10b981' },
+  { label: '이번 달 신규',  value: '23건',   icon: '🚀', color: '#f59e0b' },
+  { label: '전체 실행률',   value: '73.4%',  icon: '📊', color: '#8b5cf6' },
+]
+
+export const KPI_STATS_BY_ROLE: Record<string, KpiStat[]> = {
+  user:     KPI_STATS,
+  reviewer: KPI_STATS_REVIEWER,
+  admin:    KPI_STATS_ADMIN,
+}
 
 export const TEAM_ACTIVITIES: RecentActivity[] = [
   { user: 'John', action: 'Q3 예산 아이디어 승인', time: '2시간 전', icon: '✓', color: '#10b981' },
@@ -52,15 +75,46 @@ export const POPULAR_ITEMS: PopularItem[] = [
   { title: '사내 도서관 디지털화 프로젝트', likes: 65, ideaId: 6 },
 ]
 
+/** 일반사용자 lv.5 — 곰신 */
 export const MY_GOMGOMI: MyGomgomi = {
   fishTotal: 5420,
   fishToNextLevel: 8000,
-  level: 12,
-  rankName: '아기 곰곰이',
+  level: 5,
+  rankName: '곰신',
   miniStats: [
     { label: '이달 획득', value: '320마리', color: '#8b5cf6' },
-    { label: '연속 출석', value: '14일', color: '#a78bfa' },
+    { label: '연속 출석', value: '14일',    color: '#a78bfa' },
   ],
+}
+
+/** 심사자 lv.2 — 심사위원 곰 (레벨과 타로카드는 역할 고정) */
+const MY_GOMGOMI_REVIEWER: MyGomgomi = {
+  fishTotal: 2150,
+  fishToNextLevel: 3000,
+  level: 2,
+  rankName: '심사위원 곰',
+  miniStats: [
+    { label: '심사 완료', value: '8건',  color: '#10b981' },
+    { label: '심사 대기', value: '5건',  color: '#f59e0b' },
+  ],
+}
+
+/** 관리자 lv.1 — 시스템 관리자 곰 (레벨과 타로카드는 역할 고정) */
+const MY_GOMGOMI_ADMIN: MyGomgomi = {
+  fishTotal: 980,
+  fishToNextLevel: 2000,
+  level: 1,
+  rankName: '시스템 관리자 곰',
+  miniStats: [
+    { label: '전체 사용자', value: '13명', color: '#6366f1' },
+    { label: '신청 대기',   value: '3건',  color: '#f59e0b' },
+  ],
+}
+
+export const MY_GOMGOMI_BY_ROLE: Record<string, MyGomgomi> = {
+  user:     MY_GOMGOMI,
+  reviewer: MY_GOMGOMI_REVIEWER,
+  admin:    MY_GOMGOMI_ADMIN,
 }
 
 export const EXECUTION_RATE = 73.4

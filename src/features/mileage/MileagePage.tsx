@@ -5,7 +5,8 @@ import { Box, Button, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getMileageTheme } from '@/theme/mileageTheme'
@@ -28,6 +29,12 @@ export default function MileagePage() {
   const { showSnackbar } = useSnackbar()
   const t = getMileageTheme(isDarkMode)
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   const [tab, setTab] = useState<TabValue>('awards')
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null)
@@ -111,6 +118,8 @@ export default function MileagePage() {
     setTab(newVal)
     setPage(0)
   }
+
+  if (isLoading) return <LoadingSpinner fullPage text="마일리지를 불러오는 중..." />
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

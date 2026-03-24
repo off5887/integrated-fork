@@ -1,6 +1,7 @@
 // src/features/settings/components/exchangeRequests/ExchangeRequestsManagement.tsx
 import BlockIcon from '@mui/icons-material/Block'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong'
 import SearchIcon from '@mui/icons-material/Search'
 import {
   Box,
@@ -159,61 +160,71 @@ export default function ExchangeRequestsManagement() {
 
   return (
     <Box>
-      {/* ── 상태 필터 칩 ── */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 2.5, flexWrap: 'wrap' }}>
-        {STATUS_FILTERS.map((sf) => {
-          const active = statusFilter === sf
-          return (
-            <Chip
-              key={sf}
-              label={`${sf} ${counts[sf] ?? 0}건`}
-              onClick={() => { setStatusFilter(sf); setSelectedIds(new Set()) }}
-              sx={{
-                fontWeight: active ? 700 : 600, fontSize: '0.8rem', height: 34,
-                cursor: 'pointer',
-                bgcolor: active
-                  ? sf === '신청중' ? 'rgba(245,158,11,0.15)' : sf === '완료' ? 'rgba(16,185,129,0.15)'
-                    : sf === '반려' ? 'rgba(239,68,68,0.15)' : isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
-                  : 'transparent',
-                color: chipColor(sf, active),
-                border: `1px solid ${active
-                  ? sf === '신청중' ? 'rgba(245,158,11,0.4)' : sf === '완료' ? 'rgba(16,185,129,0.4)'
-                    : sf === '반려' ? 'rgba(239,68,68,0.4)' : colors.accentColor
-                  : sf === '신청중' && counts['신청중'] > 0 ? 'rgba(245,158,11,0.3)' : colors.borderColor}`,
-              }}
-            />
-          )
-        })}
-      </Box>
-
-      {/* ── 검색 + 날짜 필터 ── */}
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5, mb: 2.5, flexWrap: 'wrap' }}>
-        <TextField
-          size="small" placeholder="이름, 부서, 사원번호 검색" value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: '1rem', color: colors.textSecondary }} /></InputAdornment> } }}
-          sx={{ ...inputSx, flex: '1 1 200px' }}
-        />
-        <Box sx={{ display: 'flex', gap: 1.5, flex: '0 0 auto' }}>
-          <TextField size="small" type="date" label="시작일" value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ ...inputSx, width: { xs: '100%', sm: 150 }, flex: { xs: 1, sm: 'none' } }}
-          />
-          <TextField size="small" type="date" label="종료일" value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ ...inputSx, width: { xs: '100%', sm: 150 }, flex: { xs: 1, sm: 'none' } }}
-          />
+      {/* ── 필터 영역 ── */}
+      <Box
+        sx={{
+          mb: 2.5, p: { xs: 1.5, sm: 2 },
+          borderRadius: 2.5,
+          bgcolor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+          border: `1px solid ${colors.borderColor}`,
+        }}
+      >
+        {/* 상태 칩 */}
+        <Box sx={{ display: 'flex', gap: 1, mb: 1.5, overflowX: 'auto', flexShrink: 0, pb: 0.5, '&::-webkit-scrollbar': { display: 'none' } }}>
+          {STATUS_FILTERS.map((sf) => {
+            const active = statusFilter === sf
+            return (
+              <Chip
+                key={sf}
+                label={`${sf} ${counts[sf] ?? 0}건`}
+                onClick={() => { setStatusFilter(sf); setSelectedIds(new Set()) }}
+                sx={{
+                  fontWeight: active ? 700 : 600, fontSize: '0.8rem', height: 30, flexShrink: 0,
+                  cursor: 'pointer',
+                  bgcolor: active
+                    ? sf === '신청중' ? 'rgba(245,158,11,0.15)' : sf === '완료' ? 'rgba(16,185,129,0.15)'
+                      : sf === '반려' ? 'rgba(239,68,68,0.15)' : isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
+                    : 'transparent',
+                  color: chipColor(sf, active),
+                  border: `1px solid ${active
+                    ? sf === '신청중' ? 'rgba(245,158,11,0.4)' : sf === '완료' ? 'rgba(16,185,129,0.4)'
+                      : sf === '반려' ? 'rgba(239,68,68,0.4)' : colors.accentColor
+                    : sf === '신청중' && counts['신청중'] > 0 ? 'rgba(245,158,11,0.3)' : colors.borderColor}`,
+                }}
+              />
+            )
+          })}
         </Box>
-        {(startDate || endDate || searchTerm) && (
-          <Button size="small" variant="text"
-            onClick={() => { setSearchTerm(''); setStartDate(''); setEndDate('') }}
-            sx={{ fontSize: '0.78rem', color: colors.textSecondary, textTransform: 'none', px: 1, alignSelf: 'center' }}
-          >
-            초기화
-          </Button>
-        )}
+
+        {/* 검색 + 날짜 */}
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1.25, sm: 1 }, flexWrap: 'wrap' }}>
+          <TextField
+            size="small" placeholder="이름, 부서, 사원번호 검색" value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: '1rem', color: colors.textSecondary }} /></InputAdornment> } }}
+            sx={{ ...inputSx, flex: { xs: 'none', sm: '1 1 200px' } }}
+          />
+          <Box sx={{ display: 'flex', gap: 0.75, flex: { xs: '1 1 auto', sm: '0 0 auto' } }}>
+            <TextField size="small" type="date" label="시작일" value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              sx={{ ...inputSx, width: { xs: '100%', sm: 150 }, flex: { xs: 1, sm: 'none' } }}
+            />
+            <TextField size="small" type="date" label="종료일" value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              sx={{ ...inputSx, width: { xs: '100%', sm: 150 }, flex: { xs: 1, sm: 'none' } }}
+            />
+          </Box>
+          {(startDate || endDate || searchTerm) && (
+            <Button size="small" variant="text"
+              onClick={() => { setSearchTerm(''); setStartDate(''); setEndDate('') }}
+              sx={{ fontSize: '0.78rem', color: colors.textSecondary, textTransform: 'none', px: 1, alignSelf: 'center' }}
+            >
+              초기화
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {/* ── 일괄 처리 바 ── */}
@@ -295,10 +306,7 @@ export default function ExchangeRequestsManagement() {
                   )}
                   <Box flex={1} minWidth={0}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                      <Typography
-                        fontWeight={700} sx={{ fontSize: '0.95rem', color: st.primaryColor, cursor: 'pointer', textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: 3 }}
-                        onClick={() => setDrawerUser(item)}
-                      >
+                      <Typography fontWeight={700} sx={{ fontSize: '0.95rem', color: colors.textPrimary }}>
                         {item.name}
                       </Typography>
                       <Chip label={statusStyle.label} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: statusStyle.bg, color: statusStyle.color, border: `1px solid ${statusStyle.border}` }} />
@@ -315,7 +323,7 @@ export default function ExchangeRequestsManagement() {
                     { label: '신청일', value: item.requestDate },
                     { label: '마일리지', value: `${item.amount.toLocaleString()}마리`, highlight: true },
                     { label: '현금 환산', value: `${item.cashAmount.toLocaleString()}원` },
-                  ].map((cell) => (
+                  ].map((cell, i) => (
                     <Box key={cell.label} sx={{ px: 1.25, py: 1, borderRight: i < 2 ? `1px solid ${colors.borderColor}` : 'none', bgcolor: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)' }}>
                       <Typography sx={{ fontSize: '0.6rem', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.04em', mb: 0.25 }}>{cell.label}</Typography>
                       <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: cell.highlight ? st.primaryColor : colors.textPrimary, lineHeight: 1.2 }}>{cell.value}</Typography>
@@ -323,27 +331,37 @@ export default function ExchangeRequestsManagement() {
                   ))}
                 </Box>
 
-                {/* 카드 액션 (신청중만) */}
-                {isPending && (
-                  <Box sx={{ display: 'flex', gap: 1, px: 2, pb: 1.75 }}>
-                    <Button
-                      fullWidth variant="contained" size="medium"
-                      startIcon={<CheckCircleIcon sx={{ fontSize: '1rem !important' }} />}
-                      onClick={() => handleSingleApprove(item)}
-                      sx={{ fontSize: '0.82rem', fontWeight: 700, borderRadius: 2, py: 0.9, bgcolor: st.primaryColor, color: '#fff', boxShadow: 'none', '&:hover': { bgcolor: st.primaryHoverBg, boxShadow: 'none' } }}
-                    >
-                      지급 완료
-                    </Button>
-                    <Button
-                      fullWidth variant="outlined" size="medium"
-                      startIcon={<BlockIcon sx={{ fontSize: '1rem !important' }} />}
-                      onClick={() => handleSingleReject(item)}
-                      sx={{ fontSize: '0.82rem', fontWeight: 700, borderRadius: 2, py: 0.9, color: '#ef4444', borderColor: 'rgba(239,68,68,0.4)', '&:hover': { bgcolor: 'rgba(239,68,68,0.08)', borderColor: '#ef4444' } }}
-                    >
-                      반려
-                    </Button>
-                  </Box>
-                )}
+                {/* 카드 액션 */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, px: 2, pb: 1.75 }}>
+                  {isPending && (
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button
+                        fullWidth variant="contained" size="medium"
+                        startIcon={<CheckCircleIcon sx={{ fontSize: '1rem !important' }} />}
+                        onClick={() => handleSingleApprove(item)}
+                        sx={{ fontSize: '0.82rem', fontWeight: 700, borderRadius: 2, py: 0.9, bgcolor: st.primaryColor, color: '#fff', boxShadow: 'none', '&:hover': { bgcolor: st.primaryHoverBg, boxShadow: 'none' } }}
+                      >
+                        지급 완료
+                      </Button>
+                      <Button
+                        fullWidth variant="outlined" size="medium"
+                        startIcon={<BlockIcon sx={{ fontSize: '1rem !important' }} />}
+                        onClick={() => handleSingleReject(item)}
+                        sx={{ fontSize: '0.82rem', fontWeight: 700, borderRadius: 2, py: 0.9, color: '#ef4444', borderColor: 'rgba(239,68,68,0.4)', '&:hover': { bgcolor: 'rgba(239,68,68,0.08)', borderColor: '#ef4444' } }}
+                      >
+                        반려
+                      </Button>
+                    </Box>
+                  )}
+                  <Button
+                    fullWidth variant="outlined" size="small"
+                    startIcon={<ReceiptLongIcon sx={{ fontSize: '0.9rem !important' }} />}
+                    onClick={() => setDrawerUser(item)}
+                    sx={{ fontSize: '0.78rem', fontWeight: 600, borderRadius: 2, py: 0.7, color: st.primaryColor, borderColor: `${st.primaryColor}50`, '&:hover': { bgcolor: `${st.primaryColor}0a`, borderColor: st.primaryColor } }}
+                  >
+                    마일리지 수령 내역
+                  </Button>
+                </Box>
               </Card>
             )
           })}
@@ -391,8 +409,7 @@ export default function ExchangeRequestsManagement() {
                       <TableCell><Typography variant="body2" sx={{ color: colors.textPrimary }}>{item.requestDate}</Typography></TableCell>
                       <TableCell><Typography variant="body2" sx={{ color: colors.textSecondary, fontFamily: 'monospace', fontSize: '0.8rem' }}>{item.employeeNumber}</Typography></TableCell>
                       <TableCell>
-                        <Typography variant="body2" fontWeight={600} onClick={() => setDrawerUser(item)}
-                          sx={{ color: st.primaryColor, cursor: 'pointer', textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: 3, '&:hover': { opacity: 0.75 } }}>
+                        <Typography variant="body2" fontWeight={600} sx={{ color: colors.textPrimary }}>
                           {item.name}
                         </Typography>
                       </TableCell>
@@ -407,8 +424,8 @@ export default function ExchangeRequestsManagement() {
                         <Chip label={statusStyle.label} size="small" sx={{ bgcolor: statusStyle.bg, color: statusStyle.color, border: `1px solid ${statusStyle.border}`, fontWeight: 700, fontSize: '0.72rem', height: 22 }} />
                       </TableCell>
                       <TableCell sx={{ textAlign: 'right', pr: 2 }}>
-                        {isPending && (
-                          <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'flex-end' }}>
+                        <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'flex-end', alignItems: 'center' }}>
+                          {isPending && (<>
                             <Button size="small" variant="outlined" startIcon={<CheckCircleIcon sx={{ fontSize: '0.85rem !important' }} />} onClick={() => handleSingleApprove(item)}
                               sx={{ fontSize: '0.72rem', fontWeight: 600, borderRadius: 1.5, py: 0.3, px: 1.25, whiteSpace: 'nowrap', color: '#10b981', borderColor: 'rgba(16,185,129,0.4)', '&:hover': { bgcolor: 'rgba(16,185,129,0.08)', borderColor: '#10b981' } }}>
                               지급 완료
@@ -417,8 +434,16 @@ export default function ExchangeRequestsManagement() {
                               sx={{ fontSize: '0.72rem', fontWeight: 600, borderRadius: 1.5, py: 0.3, px: 1.25, whiteSpace: 'nowrap', color: '#ef4444', borderColor: 'rgba(239,68,68,0.4)', '&:hover': { bgcolor: 'rgba(239,68,68,0.08)', borderColor: '#ef4444' } }}>
                               반려
                             </Button>
-                          </Box>
-                        )}
+                          </>)}
+                          <Button
+                            size="small" variant="outlined"
+                            startIcon={<ReceiptLongIcon sx={{ fontSize: '0.85rem !important' }} />}
+                            onClick={() => setDrawerUser(item)}
+                            sx={{ fontSize: '0.72rem', fontWeight: 600, borderRadius: 1.5, py: 0.3, px: 1.25, whiteSpace: 'nowrap', color: st.primaryColor, borderColor: `${st.primaryColor}50`, '&:hover': { bgcolor: `${st.primaryColor}0a`, borderColor: st.primaryColor } }}
+                          >
+                            내역
+                          </Button>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   )

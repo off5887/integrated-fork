@@ -15,7 +15,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { personStatsData, teamStatsData, STAT_PERIOD_MIN, STAT_PERIOD_MAX } from '@/api/mock/stats'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
@@ -35,6 +36,12 @@ export default function Stats() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, bgBase, cardBg, cardShadow, accentColor, accentBg, accentBorder } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
+
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 800)
+    return () => clearTimeout(t)
+  }, [])
 
   const [tab, setTab] = useState<TabValue>('person')
   const [searchTerm, setSearchTerm] = useState('')
@@ -111,6 +118,8 @@ export default function Stats() {
     '& .MuiInputLabel-root': { fontSize: '0.82rem', color: textSecondary },
     '& .MuiInputLabel-root.Mui-focused': { color: accentColor },
   }
+
+  if (isLoading) return <LoadingSpinner fullPage text="통계를 불러오는 중..." />
 
   return (
     <Box
