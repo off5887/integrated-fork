@@ -67,7 +67,7 @@ export default function StatsTeamBar({ t }: Props) {
       background: { enabled: false },
     },
     xaxis: {
-      categories: BAR_DATA.map((d: { team: string; value: number }) => d.team),
+      categories: BAR_DATA.map((d) => d.team),
       axisBorder: { show: false },
       axisTicks: { show: false },
       labels: {
@@ -98,7 +98,7 @@ export default function StatsTeamBar({ t }: Props) {
     },
   }
 
-  const series = [{ name: '실행 건수', data: BAR_DATA.map((d: { team: string; value: number }) => d.value) }]
+  const series = [{ name: '실행 건수', data: BAR_DATA.map((d) => d.value) }]
 
   return (
     <motion.div
