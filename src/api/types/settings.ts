@@ -14,7 +14,8 @@ export interface User {
   name: string
   employeeNumber: string
   email: string
-  role: string
+  role: 'user' | 'reviewer' | 'admin'
+  position: string
   department: string
   active: boolean
 }

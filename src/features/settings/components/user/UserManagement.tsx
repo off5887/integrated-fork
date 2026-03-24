@@ -87,7 +87,7 @@ export default function UserManagement() {
   }
 
   const handleSave = () => {
-    if (!formData.name || !formData.employeeNumber || !formData.email || !formData.role || !formData.department) {
+    if (!formData.name || !formData.employeeNumber || !formData.email || !formData.role || !formData.position || !formData.department) {
       showSnackbar('모든 필수 항목을 입력해주세요.', 'warning')
       return
     }
@@ -106,6 +106,7 @@ export default function UserManagement() {
           employeeNumber: formData.employeeNumber!,
           email: formData.email!,
           role: formData.role!,
+          position: formData.position!,
           department: formData.department!,
           active: true,
         },
@@ -355,6 +356,9 @@ export default function UserManagement() {
               <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
                 <RoleSelect user={user} />
                 <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
+                  {user.position || '-'}
+                </Typography>
+                <Typography sx={{ fontSize: '0.78rem', color: textSecondary }}>
                   {user.department}
                 </Typography>
               </Box>
@@ -425,10 +429,10 @@ export default function UserManagement() {
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: headerBg }}>
-              {['이름', '사번', '이메일', '역할', '부서', '상태', ''].map((label, i) => (
+              {['이름', '사번', '이메일', '역할', '직급', '부서', '상태', ''].map((label, i) => (
                 <TableCell
                   key={label || `col-${i}`}
-                  align={i === 6 ? 'right' : 'left'}
+                  align={i === 7 ? 'right' : 'left'}
                   sx={{
                     color: textSecondary, fontWeight: 600, fontSize: '0.72rem',
                     letterSpacing: '0.05em', textTransform: 'uppercase',
@@ -481,6 +485,11 @@ export default function UserManagement() {
                 </TableCell>
                 <TableCell>
                   <RoleSelect user={user} />
+                </TableCell>
+                <TableCell>
+                  <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>
+                    {user.position || '-'}
+                  </Typography>
                 </TableCell>
                 <TableCell>
                   <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>

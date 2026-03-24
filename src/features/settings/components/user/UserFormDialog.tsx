@@ -162,10 +162,22 @@ export default function UserFormDialog({
             <Select
               labelId="role-label" label="역할"
               value={formData.role || ''}
-              onChange={(e) => onFormChange({ ...formData, role: e.target.value })}
+              onChange={(e) => onFormChange({ ...formData, role: e.target.value as User['role'] })}
             >
-              {['사원', '팀장', '부장', '부문장', '임원'].map(r => (
-                <MenuItem key={r} value={r}>{r}</MenuItem>
+              <MenuItem value="user">일반사용자</MenuItem>
+              <MenuItem value="reviewer">심사자</MenuItem>
+              <MenuItem value="admin">관리자</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth required size="small" sx={inputSx}>
+            <InputLabel id="position-label">직급</InputLabel>
+            <Select
+              labelId="position-label" label="직급"
+              value={formData.position || ''}
+              onChange={(e) => onFormChange({ ...formData, position: e.target.value })}
+            >
+              {['사원', '주임', '대리', '과장', '차장', '부장', '팀장', '부문장', '임원'].map(p => (
+                <MenuItem key={p} value={p}>{p}</MenuItem>
               ))}
             </Select>
           </FormControl>
