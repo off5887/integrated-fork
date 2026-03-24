@@ -1,5 +1,24 @@
 export type DecisionType = '승인' | '반려' | '승인회수' | '반려회수'
 
+export interface ReviewerTeamStats {
+  id: number
+  department: string
+  reviewerName: string
+  reviewerPosition: string
+  // 상상 아이디어
+  ideaPending: number
+  ideaCompleted: number
+  ideaTotal: number
+  ideaRate: number      // %
+  ideaAvgDays: number   // 평균 심사 소요일
+  // 실행완료 아이디어
+  completePending: number
+  completeCompleted: number
+  completeTotal: number
+  completeRate: number
+  completeAvgDays: number
+}
+
 export interface Attachment {
   name: string
   url: string

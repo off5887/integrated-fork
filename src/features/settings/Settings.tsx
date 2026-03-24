@@ -1,4 +1,5 @@
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import AssessmentIcon from '@mui/icons-material/Assessment'
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import CategoryIcon from '@mui/icons-material/Category'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
@@ -15,6 +16,7 @@ import CategoryManagement from './components/category/CategoryManagement'
 import ExchangeRequestsManagement from './components/exchangeRequests/ExchangeRequestsManagement'
 import ReviewChange from './components/reviewChange/ReviewChange'
 import ReviewerAssignment from './components/sectionReviewers/ReviewerAssignment'
+import ReviewerStatsPanel from './components/reviewerStats/ReviewerStatsPanel'
 import SpecialMileage from './components/specialMileage/SpecialMileage'
 import UserManagement from './components/user/UserManagement'
 
@@ -34,7 +36,8 @@ const TABS: TabConfig[] = [
   { id: 'special-mile',   label: '특별 마일리지', Icon: CardGiftcardIcon,      Component: SpecialMileage },
   { id: 'review-change',  label: '심사변경',      Icon: SwapHorizIcon,         Component: ReviewChange },
   { id: 'categories',     label: '카테고리',      Icon: CategoryIcon,          Component: CategoryManagement },
-  { id: 'exchanges',     label: '현금전환 신청', Icon: PaidIcon,              Component: ExchangeRequestsManagement },
+  { id: 'exchanges',       label: '현금전환 신청', Icon: PaidIcon,              Component: ExchangeRequestsManagement },
+  { id: 'reviewer-stats', label: '심사자 현황',   Icon: AssessmentIcon,        Component: ReviewerStatsPanel },
 ]
 
 // ─── TabPanel ─────────────────────────────────────────────────────────────────

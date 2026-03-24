@@ -1,6 +1,7 @@
 // src/components/common/nav/navIcons.ts
 // 네비게이션에서 사용하는 MUI 아이콘만 개별 import — import * as MuiIcons 대체
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
+import BarChartIcon from '@mui/icons-material/BarChart'
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
@@ -25,6 +26,7 @@ export const NAV_ICON_MAP: Record<IconName, SvgIconComponent> = {
   AutoStories:  AutoStoriesIcon,
   AttachMoney:  AttachMoneyIcon,
   RateReview:   RateReviewIcon,
+  BarChart:     BarChartIcon,
   Groups:       GroupsIcon,
   Security:     SecurityIcon,
   GroupAdd:     GroupAddIcon,

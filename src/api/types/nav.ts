@@ -6,6 +6,7 @@ export type IconName =
   | 'AutoStories'
   | 'AttachMoney'
   | 'RateReview'
+  | 'BarChart'
   | 'Groups'
   | 'Security'
   | 'GroupAdd'

@@ -1,4 +1,4 @@
-import type { Proposal, ReviewerCandidate } from '@/api/types/judge'
+import type { Proposal, ReviewerCandidate, ReviewerTeamStats } from '@/api/types/judge'
 import { DEMO_REVIEWER_PROFILE } from './auth'
 
 export const mockCandidates: ReviewerCandidate[] = [
@@ -403,5 +403,80 @@ export const judgeData: Proposal[] = [
     ],
     status: '심사대기',
     submittedAt: '2026-03-20',
+  },
+]
+
+export const reviewerTeamStatsData: ReviewerTeamStats[] = [
+  {
+    id: 1,
+    department: '개발팀',
+    reviewerName: '박부장',
+    reviewerPosition: '부장',
+    ideaPending: 5, ideaCompleted: 8, ideaTotal: 13, ideaRate: 62, ideaAvgDays: 4.2,
+    completePending: 2, completeCompleted: 6, completeTotal: 8, completeRate: 75, completeAvgDays: 3.1,
+  },
+  {
+    id: 2,
+    department: '기획팀',
+    reviewerName: '김과장',
+    reviewerPosition: '과장',
+    ideaPending: 3, ideaCompleted: 5, ideaTotal: 8, ideaRate: 63, ideaAvgDays: 5.8,
+    completePending: 1, completeCompleted: 4, completeTotal: 5, completeRate: 80, completeAvgDays: 4.5,
+  },
+  {
+    id: 3,
+    department: '안전관리팀',
+    reviewerName: '이부장',
+    reviewerPosition: '부장',
+    ideaPending: 4, ideaCompleted: 3, ideaTotal: 7, ideaRate: 43, ideaAvgDays: 7.3,
+    completePending: 0, completeCompleted: 2, completeTotal: 2, completeRate: 100, completeAvgDays: 2.8,
+  },
+  {
+    id: 4,
+    department: '경영지원부문',
+    reviewerName: '최이사',
+    reviewerPosition: '이사',
+    ideaPending: 2, ideaCompleted: 10, ideaTotal: 12, ideaRate: 83, ideaAvgDays: 3.5,
+    completePending: 1, completeCompleted: 7, completeTotal: 8, completeRate: 88, completeAvgDays: 2.9,
+  },
+  {
+    id: 5,
+    department: '인사팀',
+    reviewerName: '박인사',
+    reviewerPosition: '과장',
+    ideaPending: 6, ideaCompleted: 4, ideaTotal: 10, ideaRate: 40, ideaAvgDays: 8.1,
+    completePending: 3, completeCompleted: 3, completeTotal: 6, completeRate: 50, completeAvgDays: 6.4,
+  },
+  {
+    id: 6,
+    department: '설비팀',
+    reviewerName: '이이사',
+    reviewerPosition: '이사',
+    ideaPending: 1, ideaCompleted: 6, ideaTotal: 7, ideaRate: 86, ideaAvgDays: 2.7,
+    completePending: 0, completeCompleted: 3, completeTotal: 3, completeRate: 100, completeAvgDays: 2.2,
+  },
+  {
+    id: 7,
+    department: '감사팀',
+    reviewerName: '김감사',
+    reviewerPosition: '감사',
+    ideaPending: 2, ideaCompleted: 7, ideaTotal: 9, ideaRate: 78, ideaAvgDays: 4.0,
+    completePending: 1, completeCompleted: 4, completeTotal: 5, completeRate: 80, completeAvgDays: 3.6,
+  },
+  {
+    id: 8,
+    department: '복지지원팀',
+    reviewerName: '박복지',
+    reviewerPosition: '팀장',
+    ideaPending: 3, ideaCompleted: 5, ideaTotal: 8, ideaRate: 63, ideaAvgDays: 5.2,
+    completePending: 2, completeCompleted: 2, completeTotal: 4, completeRate: 50, completeAvgDays: 5.9,
+  },
+  {
+    id: 9,
+    department: '전략기획실',
+    reviewerName: '서부문장',
+    reviewerPosition: '부문장',
+    ideaPending: 0, ideaCompleted: 9, ideaTotal: 9, ideaRate: 100, ideaAvgDays: 3.3,
+    completePending: 0, completeCompleted: 5, completeTotal: 5, completeRate: 100, completeAvgDays: 2.5,
   },
 ]

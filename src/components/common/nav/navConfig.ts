@@ -8,7 +8,7 @@ export const menuItems: MenuItem[] = [
   { iconName: 'AutoStories',  text: '상상보기', path: '/ideaBrowse' },
   { iconName: 'AttachMoney',  text: '마일리지', path: '/rqMileage' },
   { iconName: 'RateReview',   text: '심사하기', path: '/judge',   roles: ['reviewer', 'admin'] },
-  // { iconName: 'BarChart',     text: '통계',     path: '/stats' },
+  { iconName: 'BarChart',     text: '통계',     path: '/stats' },
   // {
   //   iconName: 'Groups',
   //   text: 'TF',
