@@ -3,9 +3,10 @@ import type { EmojiGroup } from '@/api/types/settings'
 export type { EmojiGroup }
 
 /**
- * 카테고리 아이콘 피커용 이모지 그룹 목록.
- * 백엔드 연동 시 이 데이터를 DB로 옮기고
- * useQuery(queryKeys.emojiGroups.all()) 로 교체하면 됩니다.
+ * 카테고리 아이콘 피커 UI 전용 이모지 그룹 목록.
+ * DB에 저장되는 값은 이 목록 전체가 아니라,
+ * 사용자가 선택한 이모지 문자 1개 (예: '💡') 가 카테고리의 icon 컬럼에 저장됩니다.
+ * 이 상수는 프론트 피커 UI용이므로 백엔드 연동 후에도 그대로 유지합니다.
  */
 export const EMOJI_GROUPS: EmojiGroup[] = [
   {
