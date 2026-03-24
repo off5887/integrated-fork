@@ -9,11 +9,13 @@ export const useLoginMutation = () => {
     mutationKey: queryKeys.auth.login(),
 
     mutationFn: async (credentials: LoginRequest) => {
-      const response = await api.post<ApiResponse<LoginResponse>>(
+      const response = await api.post<ApiResponse<LoginResponse> | LoginResponse>(
         '/api/auth/login',
         credentials,
       )
-      return response.data.data
+      // 백엔드가 { data: {...} } 래퍼로 오는 경우와 직접 오는 경우 모두 처리
+      const payload = (response.data as ApiResponse<LoginResponse>).data ?? response.data
+      return payload as LoginResponse
     },
   })
 }

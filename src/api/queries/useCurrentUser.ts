@@ -25,8 +25,10 @@ export function useCurrentUserQuery() {
       }
 
       try {
-        const res = await api.get<ApiResponse<UserProfile>>('/api/users/me')
-        return res.data.data
+        const res = await api.get<ApiResponse<UserProfile> | UserProfile>('/api/users/me')
+        // 백엔드가 { data: {...} } 래퍼로 오는 경우와 직접 오는 경우 모두 처리
+        const payload = (res.data as ApiResponse<UserProfile>).data ?? res.data
+        return (payload as UserProfile) ?? null
       } catch {
         return null
       }
