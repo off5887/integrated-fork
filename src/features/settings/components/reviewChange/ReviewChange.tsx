@@ -27,7 +27,7 @@ export default function ReviewChange() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIdeaId, setSelectedIdeaId] = useState<string | null>(null)
   const [ideas, setIdeas] = useState<Idea[]>(mockIdeas)
-  const [changingLevel, setChangingLevel] = useState<1 | 2 | 3 | null>(null)
+  const [changingLevel, setChangingLevel] = useState<1 | null>(null)
 
   const filteredIdeas = useMemo(() => {
     const q = searchTerm.trim().toLowerCase()
@@ -47,7 +47,7 @@ export default function ReviewChange() {
     setIdeas((prev) => prev.map((i) => (i.id === selectedIdeaId ? { ...i, status } : i)))
   }
 
-  const handleReviewerChange = (level: 1 | 2 | 3, reviewer: OrgMember | null) => {
+  const handleReviewerChange = (level: 1, reviewer: OrgMember | null) => {
     if (!selectedIdeaId) return
     setIdeas((prev) =>
       prev.map((i) => {

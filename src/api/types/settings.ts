@@ -47,8 +47,6 @@ export interface SpecialMileageHistory {
 export type IdeaStatus =
   | '임시저장'
   | '1차 심사 대기'
-  | '2차 심사 대기'
-  | '3차 심사 대기'
   | '실행자 선택'
   | '결과등록'
   | '결과심사'
@@ -62,7 +60,5 @@ export interface Idea {
   status: IdeaStatus
   reviewers: {
     level1: OrgMember | null
-    level2: OrgMember | null
-    level3: OrgMember | null
   }
 }

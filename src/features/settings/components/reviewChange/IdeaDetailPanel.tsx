@@ -23,10 +23,10 @@ import { mockReviewerPools } from '@/api/mock/settings'
 
 interface Props {
   idea: Idea
-  changingLevel: 1 | 2 | 3 | null
+  changingLevel: 1 | null
   onStatusChange: (status: IdeaStatus) => void
-  onReviewerChange: (level: 1 | 2 | 3, reviewer: OrgMember | null) => void
-  onChangingLevel: (level: 1 | 2 | 3 | null) => void
+  onReviewerChange: (level: 1, reviewer: OrgMember | null) => void
+  onChangingLevel: (level: 1 | null) => void
   onSave: () => void
 }
 
@@ -178,7 +178,7 @@ export default function IdeaDetailPanel({
 
         {/* 심사자 변경 — 레벨별 */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {([1, 2, 3] as const).map((level) => {
+          {([1] as const).map((level) => {
             const cfg = levelConfig[level]
             const currentReviewer = idea.reviewers[`level${level}`]
             const pool = mockReviewerPools[level]
