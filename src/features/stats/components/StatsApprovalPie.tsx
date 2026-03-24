@@ -69,7 +69,7 @@ export default function StatsApprovalPie({ t }: Props) {
               fontWeight: 600,
               color: t.textSecondary,
               formatter: () =>
-                PIE_DATA.reduce((acc, d) => acc + d.value, 0) + '%',
+                PIE_DATA.reduce((acc, d: { value: number }) => acc + d.value, 0) + '%',
             },
           },
         },

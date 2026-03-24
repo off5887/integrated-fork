@@ -38,8 +38,8 @@ export default function Stats() {
 
   const [tab, setTab] = useState<TabValue>('person')
   const [searchTerm, setSearchTerm] = useState('')
-  const [dateFrom, setDateFrom] = useState(STAT_PERIOD_MIN)
-  const [dateTo, setDateTo] = useState(STAT_PERIOD_MAX)
+  const [dateFrom, setDateFrom] = useState<string>(STAT_PERIOD_MIN)
+  const [dateTo, setDateTo] = useState<string>(STAT_PERIOD_MAX)
 
   // 기간 필터 + 검색 + 집계
   const filteredPersonData = useMemo(() => {

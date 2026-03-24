@@ -113,5 +113,13 @@ export const teamStatsData: TeamStats[] = BASE_TEAMS.flatMap((t) =>
 
 // ── 기간 목록 (UI 셀렉터용) ───────────────────────────────────────────────────
 export const STAT_PERIODS = PERIODS
-export const STAT_PERIOD_MIN = PERIODS[0]
-export const STAT_PERIOD_MAX = PERIODS[PERIODS.length - 1]
+export const STAT_PERIOD_MIN: string = PERIODS[0]
+export const STAT_PERIOD_MAX: string = PERIODS[PERIODS.length - 1]
+
+// ── 구 차트 데이터 (StatsApprovalPie 호환용) ──────────────────────────────────
+export const pieChartData: { label: string; value: number }[] = [
+  { label: '팀장',   value: 12 },
+  { label: '부서장', value: 20 },
+  { label: '부문장', value: 68 },
+  { label: '경영진', value: 0  },
+]
