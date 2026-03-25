@@ -1,4 +1,14 @@
 // src/features/stats/Stats.tsx
+import {
+  personStatsData,
+  STAT_PERIOD_MAX,
+  STAT_PERIOD_MIN,
+  teamStatsData,
+} from '@/api/mock/stats'
+import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { useThemeMode } from '@/context/ThemeContext'
+import { usePageColors } from '@/theme/pageColors'
+import { getSettingsTheme } from '@/theme/settingsTheme'
 import BarChartIcon from '@mui/icons-material/BarChart'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import GroupsIcon from '@mui/icons-material/Groups'
@@ -16,25 +26,30 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import { personStatsData, teamStatsData, STAT_PERIOD_MIN, STAT_PERIOD_MAX } from '@/api/mock/stats'
-import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import PersonStatsTable from './components/PersonStatsTable'
+import TeamStatsTable from './components/TeamStatsTable'
 import {
   aggregatePersonStats,
   aggregateTeamStats,
   exportPersonStatsExcel,
   exportTeamStatsExcel,
 } from './utils'
-import PersonStatsTable from './components/PersonStatsTable'
-import TeamStatsTable from './components/TeamStatsTable'
 
 type TabValue = 'person' | 'team'
 
 export default function Stats() {
   const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor, bgBase, cardBg, cardShadow, accentColor, accentBg, accentBorder } = usePageColors()
+  const {
+    textPrimary,
+    textSecondary,
+    borderColor,
+    bgBase,
+    cardBg,
+    cardShadow,
+    accentColor,
+    accentBg,
+    accentBorder,
+  } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
 
   const [isLoading, setIsLoading] = useState(true)
@@ -53,7 +68,11 @@ export default function Stats() {
     const filtered = personStatsData.filter((r) => {
       const inRange = r.period >= dateFrom && r.period <= dateTo
       const term = searchTerm.trim().toLowerCase()
-      const matchSearch = !term || r.name.toLowerCase().includes(term) || r.department.toLowerCase().includes(term) || r.position.toLowerCase().includes(term)
+      const matchSearch =
+        !term ||
+        r.name.toLowerCase().includes(term) ||
+        r.department.toLowerCase().includes(term) ||
+        r.position.toLowerCase().includes(term)
       return inRange && matchSearch
     })
     return aggregatePersonStats(filtered)
@@ -72,7 +91,8 @@ export default function Stats() {
   const periodLabel = dateFrom === dateTo ? dateFrom : `${dateFrom}~${dateTo}`
 
   const handleExcel = async () => {
-    if (tab === 'person') await exportPersonStatsExcel(filteredPersonData, periodLabel)
+    if (tab === 'person')
+      await exportPersonStatsExcel(filteredPersonData, periodLabel)
     else await exportTeamStatsExcel(filteredTeamData, periodLabel)
   }
 
@@ -81,24 +101,78 @@ export default function Stats() {
     if (tab === 'person') {
       const n = filteredPersonData.length
       return [
-        { label: '참여 인원',     value: n,                                                                         unit: '명',  color: '#6366f1' },
-        { label: '총 게시글',     value: filteredPersonData.reduce((s, r) => s + r.totalPosts, 0),                  unit: '건',  color: '#0ea5e9' },
-        { label: '아이디어 상상', value: filteredPersonData.reduce((s, r) => s + r.ideaCount, 0),                   unit: '건',  color: '#8b5cf6' },
-        { label: '실행완료 상상', value: filteredPersonData.reduce((s, r) => s + r.completeCount, 0),               unit: '건',  color: '#10b981' },
-        { label: '실행건수',      value: filteredPersonData.reduce((s, r) => s + r.executionCount, 0),              unit: '건',  color: '#f59e0b' },
-        { label: '기대성과금액',  value: filteredPersonData.reduce((s, r) => s + r.expectedAmount, 0).toLocaleString(), unit: '만원', color: '#ef4444' },
+        { label: '참여 인원', value: n, unit: '명', color: '#6366f1' },
+        {
+          label: '총 게시글',
+          value: filteredPersonData.reduce((s, r) => s + r.totalPosts, 0),
+          unit: '건',
+          color: '#0ea5e9',
+        },
+        {
+          label: '아이디어 상상',
+          value: filteredPersonData.reduce((s, r) => s + r.ideaCount, 0),
+          unit: '건',
+          color: '#8b5cf6',
+        },
+        {
+          label: '실행완료 상상',
+          value: filteredPersonData.reduce((s, r) => s + r.completeCount, 0),
+          unit: '건',
+          color: '#10b981',
+        },
+        {
+          label: '실행건수',
+          value: filteredPersonData.reduce((s, r) => s + r.executionCount, 0),
+          unit: '건',
+          color: '#f59e0b',
+        },
+        {
+          label: '기대성과금액',
+          value: filteredPersonData
+            .reduce((s, r) => s + r.expectedAmount, 0)
+            .toLocaleString(),
+          unit: '만원',
+          color: '#ef4444',
+        },
       ]
     }
     const n = filteredTeamData.length
     const avgRate = (key: 'participationRate' | 'reviewRate') =>
-      n > 0 ? Math.round(filteredTeamData.reduce((s, r) => s + r[key], 0) / n) : 0
+      n > 0
+        ? Math.round(filteredTeamData.reduce((s, r) => s + r[key], 0) / n)
+        : 0
     return [
-      { label: '참여 팀',       value: n,                                                            unit: '팀',  color: '#6366f1' },
-      { label: '총 게시글',     value: filteredTeamData.reduce((s, r) => s + r.totalPosts, 0),      unit: '건',  color: '#0ea5e9' },
-      { label: '아이디어 상상', value: filteredTeamData.reduce((s, r) => s + r.ideaCount, 0),       unit: '건',  color: '#8b5cf6' },
-      { label: '실행완료 상상', value: filteredTeamData.reduce((s, r) => s + r.completeCount, 0),   unit: '건',  color: '#10b981' },
-      { label: '평균 참여율',   value: avgRate('participationRate'),                                unit: '%',   color: '#f59e0b' },
-      { label: '평균 심사율',   value: avgRate('reviewRate'),                                       unit: '%',   color: '#ef4444' },
+      { label: '참여 팀', value: n, unit: '팀', color: '#6366f1' },
+      {
+        label: '총 게시글',
+        value: filteredTeamData.reduce((s, r) => s + r.totalPosts, 0),
+        unit: '건',
+        color: '#0ea5e9',
+      },
+      {
+        label: '아이디어 상상',
+        value: filteredTeamData.reduce((s, r) => s + r.ideaCount, 0),
+        unit: '건',
+        color: '#8b5cf6',
+      },
+      {
+        label: '실행완료 상상',
+        value: filteredTeamData.reduce((s, r) => s + r.completeCount, 0),
+        unit: '건',
+        color: '#10b981',
+      },
+      {
+        label: '평균 참여율',
+        value: avgRate('participationRate'),
+        unit: '%',
+        color: '#f59e0b',
+      },
+      {
+        label: '평균 심사율',
+        value: avgRate('reviewRate'),
+        unit: '%',
+        color: '#ef4444',
+      },
     ]
   }, [tab, filteredPersonData, filteredTeamData])
 
@@ -145,9 +219,13 @@ export default function Stats() {
         >
           <Box
             sx={{
-              width: 48, height: 48, borderRadius: 3,
+              width: 48,
+              height: 48,
+              borderRadius: 3,
               background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               boxShadow: isDarkMode
                 ? '0 4px 16px rgba(99,102,241,0.45)'
                 : '0 4px 16px rgba(99,102,241,0.3)',
@@ -162,7 +240,11 @@ export default function Stats() {
               <Typography
                 variant="h5"
                 fontWeight={800}
-                sx={{ color: textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
+                sx={{
+                  color: textPrimary,
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2,
+                }}
               >
                 사업소별 그리드 통계
               </Typography>
@@ -209,7 +291,9 @@ export default function Stats() {
             {/* 검색 */}
             <TextField
               size="small"
-              placeholder={tab === 'person' ? '이름·부서·직급 검색' : '팀명 검색'}
+              placeholder={
+                tab === 'person' ? '이름·부서·직급 검색' : '팀명 검색'
+              }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               sx={inputSx}
@@ -217,7 +301,9 @@ export default function Stats() {
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
+                      <SearchIcon
+                        sx={{ fontSize: '1rem', color: textSecondary }}
+                      />
                     </InputAdornment>
                   ),
                 },
@@ -264,7 +350,10 @@ export default function Stats() {
                 borderColor: accentBorder,
                 color: accentColor,
                 bgcolor: accentBg,
-                '&:hover': { borderColor: accentColor, bgcolor: 'rgba(99,102,241,0.14)' },
+                '&:hover': {
+                  borderColor: accentColor,
+                  bgcolor: 'rgba(99,102,241,0.14)',
+                },
                 fontWeight: 700,
                 fontSize: '0.82rem',
                 textTransform: 'none',
@@ -283,7 +372,11 @@ export default function Stats() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(6, 1fr)' },
+            gridTemplateColumns: {
+              xs: 'repeat(2, 1fr)',
+              sm: 'repeat(3, 1fr)',
+              md: 'repeat(6, 1fr)',
+            },
             gap: { xs: 1.5, md: 2 },
             mb: 4,
           }}
@@ -302,14 +395,25 @@ export default function Stats() {
             >
               <Typography
                 fontWeight={800}
-                sx={{ color: card.color, fontSize: { xs: '1.3rem', md: '1.5rem' }, lineHeight: 1.2 }}
+                sx={{
+                  color: card.color,
+                  fontSize: { xs: '1.3rem', md: '1.5rem' },
+                  lineHeight: 1.2,
+                }}
               >
                 {card.value}
-                <Typography component="span" variant="caption" sx={{ color: textSecondary, ml: 0.3 }}>
+                <Typography
+                  component="span"
+                  variant="caption"
+                  sx={{ color: textSecondary, ml: 0.3 }}
+                >
                   {card.unit}
                 </Typography>
               </Typography>
-              <Typography variant="caption" sx={{ color: textSecondary, display: 'block' }}>
+              <Typography
+                variant="caption"
+                sx={{ color: textSecondary, display: 'block' }}
+              >
                 {card.label}
               </Typography>
             </Box>
@@ -355,13 +459,17 @@ export default function Stats() {
               <Tab
                 value="person"
                 label="개인통계"
-                icon={<PersonIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
+                icon={
+                  <PersonIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />
+                }
                 iconPosition="start"
               />
               <Tab
                 value="team"
                 label="팀통계"
-                icon={<GroupsIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />}
+                icon={
+                  <GroupsIcon sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }} />
+                }
                 iconPosition="start"
               />
             </Tabs>
@@ -370,7 +478,10 @@ export default function Stats() {
           <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
             {tab === 'person' && (
               <Box>
-                <Typography variant="body2" sx={{ color: textSecondary, mb: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: textSecondary, mb: 2 }}
+                >
                   {filteredPersonData.length}명 · 컬럼 클릭으로 정렬
                 </Typography>
                 <PersonStatsTable data={filteredPersonData} />
@@ -378,7 +489,10 @@ export default function Stats() {
             )}
             {tab === 'team' && (
               <Box>
-                <Typography variant="body2" sx={{ color: textSecondary, mb: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: textSecondary, mb: 2 }}
+                >
                   {filteredTeamData.length}개 팀 · 컬럼 클릭으로 정렬
                 </Typography>
                 <TeamStatsTable data={filteredTeamData} />

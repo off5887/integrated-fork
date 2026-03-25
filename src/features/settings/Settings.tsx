@@ -16,7 +16,7 @@ import { getSettingsTheme } from '@/theme/settingsTheme'
 import CategoryManagement from './components/category/CategoryManagement'
 import ExchangeRequestsManagement from './components/exchangeRequests/ExchangeRequestsManagement'
 import ReviewChange from './components/reviewChange/ReviewChange'
-import ReviewerAssignment from './components/sectionReviewers/ReviewerAssignment'
+import SectionReviewerManagement from './components/reviewChange/SectionReviewerManagement'
 import ReviewerStatsPanel from './components/reviewerStats/ReviewerStatsPanel'
 import SpecialMileage from './components/specialMileage/SpecialMileage'
 import UserManagement from './components/user/UserManagement'
@@ -37,7 +37,7 @@ const TABS: TabConfig[] = [
     label: '심사자 배정',
     description: '아이디어 심사자를 배정하고 관리합니다',
     Icon: SupervisorAccountIcon,
-    Component: ReviewerAssignment,
+    Component: SectionReviewerManagement,
   },
   {
     id: 'users',

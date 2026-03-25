@@ -13,7 +13,7 @@ import ProtectedRoute from '@/components/common/routing/ProtectedRoute'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
-import { useCurrentUserQuery } from '@/api/queries/useCurrentUser'
+import { useCurrentUserQuery } from '@/api/queries/useAuth'
 
 const Login = lazy(() => import('@/features/auth/Login'))
 const Dashboard = lazy(() => import('@/features/dashboard/Dashboard'))

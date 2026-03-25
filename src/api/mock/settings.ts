@@ -1,5 +1,5 @@
 import type { OrgMember } from '@/api/types/reviewer'
-import type { User, MileageMember, Idea } from '@/api/types/settings'
+import type { User, MileageMember, Idea, SectionReviewer } from '@/api/types/settings'
 
 // ── 조직도 ───────────────────────────────────────────────────────────────────
 export const mockOrganization: OrgMember[] = [
@@ -25,19 +25,19 @@ export const mockOrganization: OrgMember[] = [
 // ── 사용자 관리 ──────────────────────────────────────────────────────────────
 // role: 'user' = 일반 사용자, 'reviewer' = 심사자, 'admin' = 관리자
 export const mockUsers: User[] = [
-  { id:  1, name: '김개발',   employeeNumber: 'DEV001',  email: 'kim.dev@company.com',      role: 'admin',    position: '팀장',  department: '개발1팀',    businessSite: '본사',   active: true  },
-  { id:  2, name: '이코딩',   employeeNumber: 'DEV002',  email: 'lee.code@company.com',     role: 'reviewer', position: '사원',  department: '개발1팀',    businessSite: '본사',   active: true  },
-  { id:  3, name: '박프론트', employeeNumber: 'DEV003',  email: 'park.front@company.com',   role: 'user',     position: '사원',  department: '개발1팀',    businessSite: '본사',   active: true  },
-  { id:  4, name: '최기획',   employeeNumber: 'PLAN001', email: 'choi.plan@company.com',    role: 'reviewer', position: '팀장',  department: '기획팀',     businessSite: '본사',   active: true  },
-  { id:  5, name: '정디자인', employeeNumber: 'PLAN002', email: 'jung.design@company.com',  role: 'user',     position: '사원',  department: '기획팀',     businessSite: '본사',   active: true  },
-  { id:  6, name: '윤영업',   employeeNumber: 'SALE001', email: 'yoon.sales@company.com',   role: 'reviewer', position: '팀장',  department: '영업1팀',    businessSite: '강남지사', active: true  },
-  { id:  7, name: '송세일',   employeeNumber: 'SALE002', email: 'song.sale@company.com',    role: 'user',     position: '사원',  department: '영업1팀',    businessSite: '강남지사', active: true  },
-  { id:  8, name: '한마케팅', employeeNumber: 'MKT001',  email: 'han.mkt@company.com',      role: 'reviewer', position: '팀장',  department: '마케팅팀',   businessSite: '강남지사', active: true  },
-  { id:  9, name: '오인사',   employeeNumber: 'HR001',   email: 'oh.hr@company.com',        role: 'reviewer', position: '팀장',  department: '인사팀',     businessSite: '본사',   active: true  },
-  { id: 10, name: '백재무',   employeeNumber: 'FIN001',  email: 'baek.fin@company.com',     role: 'user',     position: '팀장',  department: '재무팀',     businessSite: '본사',   active: false },
-  { id: 11, name: '남총무',   employeeNumber: 'GEN001',  email: 'nam.gen@company.com',      role: 'user',     position: '사원',  department: '총무팀',     businessSite: '부산지사', active: true  },
-  { id: 12, name: '서부문장', employeeNumber: 'STR001',  email: 'seo.str@company.com',      role: 'reviewer', position: '부문장', department: '전략기획실', businessSite: '본사',   active: true  },
-  { id: 13, name: '장임원',   employeeNumber: 'EXE001',  email: 'jang.exe@company.com',     role: 'admin',    position: '임원',  department: '경영지원부문', businessSite: '본사',  active: true  },
+  { id: 'DEV001',  name: '김개발',   employeeNumber: 'DEV001',  email: 'kim.dev@company.com',      role: 'admin',    position: '팀장',   department: '개발1팀',     businessSite: '본사',     active: true  },
+  { id: 'DEV002',  name: '이코딩',   employeeNumber: 'DEV002',  email: 'lee.code@company.com',     role: 'reviewer', position: '사원',   department: '개발1팀',     businessSite: '본사',     active: true  },
+  { id: 'DEV003',  name: '박프론트', employeeNumber: 'DEV003',  email: 'park.front@company.com',   role: 'user',     position: '사원',   department: '개발1팀',     businessSite: '본사',     active: true  },
+  { id: 'PLAN001', name: '최기획',   employeeNumber: 'PLAN001', email: 'choi.plan@company.com',    role: 'reviewer', position: '팀장',   department: '기획팀',      businessSite: '본사',     active: true  },
+  { id: 'PLAN002', name: '정디자인', employeeNumber: 'PLAN002', email: 'jung.design@company.com',  role: 'user',     position: '사원',   department: '기획팀',      businessSite: '본사',     active: true  },
+  { id: 'SALE001', name: '윤영업',   employeeNumber: 'SALE001', email: 'yoon.sales@company.com',   role: 'reviewer', position: '팀장',   department: '영업1팀',     businessSite: '강남지사', active: true  },
+  { id: 'SALE002', name: '송세일',   employeeNumber: 'SALE002', email: 'song.sale@company.com',    role: 'user',     position: '사원',   department: '영업1팀',     businessSite: '강남지사', active: true  },
+  { id: 'MKT001',  name: '한마케팅', employeeNumber: 'MKT001',  email: 'han.mkt@company.com',      role: 'reviewer', position: '팀장',   department: '마케팅팀',    businessSite: '강남지사', active: true  },
+  { id: 'HR001',   name: '오인사',   employeeNumber: 'HR001',   email: 'oh.hr@company.com',        role: 'reviewer', position: '팀장',   department: '인사팀',      businessSite: '본사',     active: true  },
+  { id: 'FIN001',  name: '백재무',   employeeNumber: 'FIN001',  email: 'baek.fin@company.com',     role: 'user',     position: '팀장',   department: '재무팀',      businessSite: '본사',     active: false },
+  { id: 'GEN001',  name: '남총무',   employeeNumber: 'GEN001',  email: 'nam.gen@company.com',      role: 'user',     position: '사원',   department: '총무팀',      businessSite: '부산지사', active: true  },
+  { id: 'STR001',  name: '서부문장', employeeNumber: 'STR001',  email: 'seo.str@company.com',      role: 'reviewer', position: '부문장', department: '전략기획실',  businessSite: '본사',     active: true  },
+  { id: 'EXE001',  name: '장임원',   employeeNumber: 'EXE001',  email: 'jang.exe@company.com',     role: 'admin',    position: '임원',   department: '경영지원부문', businessSite: '본사',    active: true  },
 ]
 
 export const mockDepartments: string[] = [
@@ -72,6 +72,14 @@ export const mockReviewerPools: Record<1, OrgMember[]> = {
     { id: '9',  name: '오인사',  position: '인사팀장',  department: '인사팀',   division: '경영지원부문'   },
   ],
 }
+
+export const mockSectionReviewers: SectionReviewer[] = [
+  { id: 1, deptCd: 'D0', deptNm: '개발1팀',  employeeId: '1', name: '김개발',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
+  { id: 2, deptCd: 'D1', deptNm: '기획팀',   employeeId: '4', name: '최기획',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
+  { id: 3, deptCd: 'D2', deptNm: '영업1팀',  employeeId: '6', name: '윤영업',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
+  { id: 4, deptCd: 'D3', deptNm: '마케팅팀', employeeId: '8', name: '한마케팅', rollNm: '팀장', reviewStage: 1, assignedBy: '1', isActive: false, createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
+  { id: 5, deptCd: 'D4', deptNm: '인사팀',   employeeId: '9', name: '오인사',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
+]
 
 export const mockIdeas: Idea[] = [
   {

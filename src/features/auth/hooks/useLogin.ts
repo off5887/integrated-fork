@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { findDemoAccount } from '@/api/mock/auth'
 import { queryKeys } from '@/api/queryKeys'
-import { getLoginErrorMessage, useLoginMutation } from '@/api/queries/useLoginMutation'
+import { getLoginErrorMessage, useLoginMutation } from '@/api/queries/useAuth'
+import { setDemoProfile, clearDemoProfile } from '@/utils/demoMode'
 
 /**
  * 로그인 핸들러와 pending 상태를 반환합니다.
@@ -22,7 +23,7 @@ export function useLogin() {
 
     const demo = findDemoAccount(employeeId, password)
     if (demo) {
-      localStorage.setItem('gomgom_user_v1', JSON.stringify(demo.profile))
+      setDemoProfile(demo.profile)
       queryClient.removeQueries({ queryKey: queryKeys.users.me() })
       navigate('/dashboard')
       return null
@@ -30,6 +31,11 @@ export function useLogin() {
 
     try {
       await mutation.mutateAsync({ employeeId, password })
+      // 데모 세션 잔여 데이터 제거 — isDemoMode()가 false가 되어야 실제 API 데이터를 조회함
+      clearDemoProfile()
+      // 실제 계정으로 전환 시 데모 mock 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.me() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.list() })
       navigate('/dashboard')
       return null
     } catch (err) {

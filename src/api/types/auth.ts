@@ -25,7 +25,7 @@ export interface UserProfile {
 
 /** 모든 API 응답의 공통 래퍼 */
 export interface ApiResponse<T> {
-  status: string
+  success: boolean
   message: string | null
   data: T
 }
@@ -45,15 +45,16 @@ export interface LoginResponse {
 export interface UserMeResponse {
   employeeId: string
   name: string
-  email: string
-  department: string   // 사업소
-  section: string      // 팀
+  email?: string            // 일부 계정은 이메일 없을 수 있음
+  department?: string       // 사업소
+  section?: string          // 팀
+  rollNm?: string           // 직급 (null 허용)
   isAdmin: boolean
-  isReviewer: boolean
-  totalMileage: number
-  gomLevel: number
-  createdAt: string
-  lastSyncAt: string
+  isReviewer: boolean | null
+  totalMileage?: number
+  gomLevel?: number
+  createdAt?: string
+  lastSyncAt?: string
 }
 
 /** UserMeResponse → UserProfile 변환 */
@@ -61,12 +62,12 @@ export function mapUserProfile(data: UserMeResponse): UserProfile {
   return {
     employeeId: data.employeeId,
     name: data.name,
-    email: data.email,
-    position: '',
-    department: data.section,
-    businessSite: data.department,
+    email: data.email ?? '',
+    position: data.rollNm ?? '',
+    department: data.section ?? '',
+    businessSite: data.department ?? '',
     role: data.isAdmin ? 'admin' : data.isReviewer ? 'reviewer' : 'user',
-    totalMileage: data.totalMileage,
-    gomLevel: data.gomLevel,
+    totalMileage: data.totalMileage ?? 0,
+    gomLevel: data.gomLevel ?? 0,
   }
 }

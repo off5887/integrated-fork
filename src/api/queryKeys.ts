@@ -8,8 +8,16 @@ export const queryKeys = {
   users: {
     me: () => ['users', 'me'] as const,
     list: () => ['users', 'list'] as const,
+    update: () => ['users', 'update'] as const,
   },
   categories: {
     all: () => ['categories'] as const,
+  },
+  org: {
+    rollNm: () => ['org', 'rollNm'] as const,
+    teams:  () => ['org', 'teams']  as const,
+  },
+  sectionReviewers: {
+    list: (deptCd?: string) => deptCd ? ['sectionReviewers', deptCd] as const : ['sectionReviewers'] as const,
   },
 } as const

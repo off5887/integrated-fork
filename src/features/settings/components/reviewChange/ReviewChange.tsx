@@ -70,41 +70,13 @@ export default function ReviewChange() {
 
   return (
     <Box>
-      {/* 섹션 헤더 */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', sm: 'center' },
-          gap: 2,
-          mb: 4,
-          pb: 3,
-          borderBottom: `1px solid ${borderColor}`,
-        }}
-      >
+      <Box sx={{ mt: 5, mb: 3, pb: 3, borderBottom: `1px solid ${borderColor}` }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box
-            sx={{
-              width: 26,
-              height: 26,
-              borderRadius: '50%',
-              bgcolor: st.primaryColor,
-              color: st.primaryBtnColor,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
+          <Box sx={{ width: 26, height: 26, borderRadius: '50%', bgcolor: st.primaryColor, color: st.primaryBtnColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <SwapHorizIcon sx={{ fontSize: '0.9rem' }} />
           </Box>
           <Box>
-            <Typography
-              variant="subtitle1"
-              fontWeight={700}
-              sx={{ color: textPrimary, lineHeight: 1.3 }}
-            >
+            <Typography variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, lineHeight: 1.3 }}>
               아이디어별 심사자 변경
             </Typography>
             <Typography variant="caption" sx={{ color: textSecondary }}>

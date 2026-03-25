@@ -1,9 +1,9 @@
 // src/features/stats/components/StatsApprovalPie.tsx
+import { pieChartData as PIE_DATA } from '@/api/mock/stats'
+import type { StatsTheme } from '@/theme/statsTheme'
 import { Card, CardContent, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
 import Chart from 'react-apexcharts'
-import type { StatsTheme } from '@/theme/statsTheme'
-import { pieChartData as PIE_DATA } from '@/api/mock/stats'
 
 const PIE_COLORS = ['#6366f1', '#a78bfa', '#f472b6', '#fb7185']
 

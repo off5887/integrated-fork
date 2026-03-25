@@ -24,6 +24,12 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
         localStorage.removeItem('gomgom_user_v1') // 데모 계정 정리
         window.location.href = '/login'
       }
+      if (error.response?.status >= 500) {
+        console.error(
+          `[API ${error.response.status}] ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+          error.response.data,
+        )
+      }
       return Promise.reject(error)
     },
   )

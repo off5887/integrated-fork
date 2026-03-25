@@ -146,7 +146,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
                   lineHeight: 1.3,
                 }}
               >
-                {user.position}{user.department ? ` · ${user.department}` : ''}
+                {[user.position, user.department].filter(Boolean).join(' · ')}
               </Typography>
               <Typography
                 sx={{

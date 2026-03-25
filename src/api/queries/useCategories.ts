@@ -23,7 +23,14 @@ const categoryApi = {
     // return api.get<CategoryOption[]>('/api/categories').then((r) => r.data)
 
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) return JSON.parse(stored) as CategoryOption[]
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored)
+        if (Array.isArray(parsed)) return parsed as CategoryOption[]
+      } catch {
+        localStorage.removeItem(STORAGE_KEY) // 손상된 데이터 제거
+      }
+    }
     return CATEGORIES as CategoryOption[]
   },
 

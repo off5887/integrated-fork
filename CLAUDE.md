@@ -130,6 +130,35 @@ mutationKey: ['auth', 'login']  // 인라인 하드코딩
 queryKey: ['ideas', id]
 ```
 
+### API 연동 시 데모 모드 분기 — `withDemoFallback` 필수
+- 백엔드 API를 연동하는 **모든 `useQuery`의 `queryFn`** 은 반드시 `withDemoFallback`으로 감싼다.
+- 데모 계정(localStorage 기반)이면 mock 데이터를, 실제 API 계정이면 실제 API를 호출한다.
+- `useMutation`은 분기 불필요.
+- **`withDemoFallback`을 사용하는 쿼리는 반드시 `staleTime: 0`을 명시한다.**
+  - 전역 staleTime(현재 1분)으로 인해 데모 세션의 mock 데이터가 캐시에 남아 실제 API 계정에서도 재조회 없이 mock 데이터가 표시되는 버그가 발생한다.
+  - `staleTime: 0`이면 컴포넌트 마운트 시 항상 `queryFn`이 실행되어 `isDemoMode()` 결과가 최신 상태로 반영된다.
+
+```ts
+// ✅ 올바른 방식
+import { withDemoFallback } from '@/utils/demoMode'
+import { mockUsers } from '@/api/mock/settings'
+
+queryFn: () =>
+  withDemoFallback(
+    mockUsers,
+    async () => {
+      const res = await api.get<ApiResponse<UserApiBizArea[]>>('/api/users')
+      return flattenUsers(res.data.data)
+    },
+  ),
+
+// ❌ 잘못된 방식
+queryFn: async () => {
+  const res = await api.get('/api/users')  // 데모 계정에서도 실제 API 호출
+  return res.data.data
+}
+```
+
 ### 피처 전용 유틸 → `features/{피처}/utils.ts`
 - 피처 내에서만 사용하는 유틸 함수는 해당 피처 폴더의 `utils.ts`에 둔다.
 - 전역에서 재사용되는 유틸은 `src/utils/`에 둔다.
@@ -246,6 +275,7 @@ npm run test:watch  # 파일 변경 감지 모드
 - [ ] Leaf 컴포넌트가 `isDarkMode`를 props로 받지 않고 직접 hook을 호출하는가?
 - [ ] 컴포넌트 파일이 500줄 이하인가?
 - [ ] 크로스 모듈 import에 `@/` alias를 사용하는가?
+- [ ] `useQuery`의 `queryFn`에 `withDemoFallback`을 사용하는가?
 - [ ] `npx tsc --noEmit` 통과 여부 확인했는가?
 - [ ] `npm test` 통과 여부 확인했는가?
 - [ ] `tsc -b && vite build` 통과 여부 확인했는가? (Vercel 배포 전 필수)

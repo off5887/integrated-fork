@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import { useCurrentUserQuery } from '@/api/queries/useCurrentUser'
+import { useCurrentUserQuery } from '@/api/queries/useAuth'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import type { UserRole } from '@/api/types/auth'
 

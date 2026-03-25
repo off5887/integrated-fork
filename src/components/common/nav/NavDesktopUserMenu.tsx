@@ -96,8 +96,7 @@ export default function NavDesktopUserMenu() {
               whiteSpace: 'nowrap',
             }}
           >
-            {user.position}
-            {user.department ? ` · ${user.department}` : ''}
+            {[user.position, user.department].filter(Boolean).join(' · ')}
           </Typography>
         </Box>
         <KeyboardArrowDownIcon
@@ -164,8 +163,7 @@ export default function NavDesktopUserMenu() {
               <Typography
                 sx={{ fontSize: '0.75rem', color: nt.textColor, lineHeight: 1.3 }}
               >
-                {user.position}
-                {user.department ? ` · ${user.department}` : ''}
+                {[user.position, user.department].filter(Boolean).join(' · ')}
               </Typography>
               <Typography
                 sx={{

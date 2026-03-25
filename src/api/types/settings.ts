@@ -14,9 +14,10 @@ export interface UserApiMember {
   employeeId: string
   name: string
   email: string
-  rollNm: string       // 직급
+  rollNm: string           // 직급
   isAdmin: boolean
   isReviewer: boolean
+  isActive?: boolean       // 활성화 여부 (없으면 true로 간주)
 }
 
 export interface UserApiTeam {
@@ -43,23 +44,30 @@ export interface User {
   active: boolean
 }
 
-/** API 응답 → User[] 변환 */
-export function flattenUsers(data: UserApiBizArea[]): User[] {
-  return data.flatMap((biz) =>
-    biz.teams.flatMap((team) =>
-      team.members.map((m) => ({
-        id: m.employeeId,
-        name: m.name,
-        employeeNumber: m.employeeId,
-        email: m.email,
-        role: m.isAdmin ? 'admin' : m.isReviewer ? 'reviewer' : 'user',
-        position: m.rollNm,
-        department: team.deptNm,
-        businessSite: biz.bizAreaNm,
-        active: true,
-      } satisfies User)),
-    ),
-  )
+
+// ─── 부서별 심사자 ────────────────────────────────────────────────────────────
+
+/** GET /api/section-reviewers 응답 항목 */
+export interface SectionReviewer {
+  id: number
+  deptCd: string
+  employeeId: string
+  name: string
+  rollNm: string
+  deptNm: string
+  reviewStage: number
+  assignedBy: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+/** POST /api/section-reviewers, PUT /api/section-reviewers/{id} 요청 바디 */
+export interface SectionReviewerRequest {
+  deptCd: string
+  sectionName: string        // 팀명 (deptNm)
+  reviewerEmployeeId: string // 심사자 사번
+  reviewStage: number
 }
 
 // ─── 특별 마일리지 ────────────────────────────────────────────────────────────
