@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   getSectionReviewerErrorMessage,
   useCreateSectionReviewer,
@@ -53,15 +53,15 @@ export default function useSectionReviewer() {
 
   const closeForm = () => setFormOpen(false)
 
-  const handleDeptSelect = (deptCd: string, deptNm: string) => {
+  const handleDeptSelect = useCallback((deptCd: string, deptNm: string) => {
     setFormDeptCd(deptCd)
     setFormDeptNm(deptNm)
-  }
+  }, [])
 
-  const handleOrgSelect = (user: User) => {
+  const handleOrgSelect = useCallback((user: User) => {
     setFormEmployeeId(user.id)
     setFormEmployeeName(user.name)
-  }
+  }, [])
 
   const handleSave = async () => {
     if (!formDeptCd || !formEmployeeId) {
