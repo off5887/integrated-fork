@@ -10,7 +10,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useState , useMemo } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
@@ -38,7 +38,7 @@ const DEFAULT_COLOR = '#6366f1'
 export default function CategoryFormDialog({ open, onClose, onSave, initial }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const isEditing = Boolean(initial)
 
   const [label, setLabel] = useState('')

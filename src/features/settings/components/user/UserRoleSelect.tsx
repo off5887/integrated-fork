@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { MenuItem, Select } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
@@ -11,7 +12,7 @@ interface Props {
 
 export default function UserRoleSelect({ user, onChange }: Props) {
   const { isDarkMode } = useThemeMode()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   return (
     <Select

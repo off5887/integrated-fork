@@ -7,7 +7,7 @@ import {
   Chip,
   Typography,
 } from '@mui/material'
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
@@ -54,7 +54,7 @@ const TeamRow = memo(function TeamRow({ team, isSelected, onSelect, st, textPrim
 export default function DeptPickerPanel({ bizTeams, selectedDeptCd, onSelect }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   return (
     <Box
@@ -84,7 +84,7 @@ export default function DeptPickerPanel({ bizTeams, selectedDeptCd, onSelect }: 
           defaultExpanded
           disableGutters
           elevation={0}
-          TransitionProps={{ unmountOnExit: false, timeout: 150 }}
+          slotProps={{ transition: { unmountOnExit: false, timeout: 150 } }}
           sx={{
             bgcolor: st.panelAccordionBg,
             border: `1px solid ${borderColor}`,

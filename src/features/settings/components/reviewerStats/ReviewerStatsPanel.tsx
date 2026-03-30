@@ -254,7 +254,7 @@ function MobileCard({ row, borderColor, textPrimary, textSecondary, cardBg, st }
 export default function ReviewerStatsPanel() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const muiTheme = useTheme()
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'))
 

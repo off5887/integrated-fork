@@ -8,7 +8,7 @@ import {
   Grid,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import { useState , useMemo } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
@@ -22,7 +22,7 @@ import MileageHistoryPanel from './MileageHistoryPanel'
 export default function SpecialMileage() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const { showSnackbar } = useSnackbar()
 
   const [searchTerm, setSearchTerm] = useState('')

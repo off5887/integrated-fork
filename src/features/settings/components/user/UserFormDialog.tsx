@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import Visibility from '@mui/icons-material/Visibility'
@@ -45,7 +46,7 @@ export default function UserFormDialog({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   const { data: rollNmList = [] } = useRollNm()
   const { data: orgTeams = [] } = useOrgTeams()

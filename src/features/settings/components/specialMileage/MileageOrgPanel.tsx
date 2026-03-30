@@ -38,7 +38,7 @@ export default function MileageOrgPanel({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   const isMobile = useMediaQuery('(max-width: 1199px)')
   const [orgPanelOpen, setOrgPanelOpen] = useState(false)

@@ -41,7 +41,7 @@ const TABLE_BODY_HEIGHT = 360
 export default function MileageHistoryPanel({ history, onRevoke }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, rowBg, rowHoverBg, headerBg } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const { showSnackbar } = useSnackbar()
 
   const [fromDate, setFromDate] = useState<Dayjs | null>(null)

@@ -133,7 +133,7 @@ export default function ConfirmDialog({
         {/* 메시지 */}
         <Typography
           variant="body2"
-          sx={{ color: textSecondary, lineHeight: 1.7, mb: 3.5, fontSize: '0.875rem' }}
+          sx={{ color: textSecondary, lineHeight: 1.7, mb: 3.5, fontSize: '0.875rem', whiteSpace: 'pre-line' }}
         >
           {message}
         </Typography>

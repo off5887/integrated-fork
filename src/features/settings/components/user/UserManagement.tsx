@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
@@ -39,7 +40,7 @@ import UserActiveChip from './UserActiveChip'
 export default function UserManagement() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg, rowBg, rowHoverBg, headerBg } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   const {
     users, filteredUsers, pagedUsers, isLoading, isRefreshing,
@@ -367,7 +368,7 @@ export default function UserManagement() {
             open={toggleActiveConfirmId !== null}
             title={target?.active ? '사용자 비활성화' : '사용자 활성화'}
             message={target?.active
-              ? `${target.name} 사용자를 비활성화하시겠습니까?`
+              ? `${target.name} 사용자를 비활성화하시겠습니까?\n확인 시 사용자 관리 목록에서 즉시 제외됩니다.`
               : `${target?.name} 사용자를 활성화하시겠습니까?`
             }
             confirmLabel={target?.active ? '비활성화' : '활성화'}

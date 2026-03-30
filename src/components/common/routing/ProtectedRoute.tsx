@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import { useCurrentUserQuery } from '@/api/queries/useAuth'
+import { useCurrentUserWithLoading } from '@/features/auth/hooks/useCurrentUser'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import type { UserRole } from '@/api/types/auth'
 
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function ProtectedRoute({ roles }: Props) {
-  const { data: user, isLoading } = useCurrentUserQuery()
+  const { user, isLoading } = useCurrentUserWithLoading()
 
   if (isLoading) return <LoadingSpinner />
   if (!user) return <Navigate to="/login" replace />

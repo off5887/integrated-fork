@@ -1,5 +1,5 @@
 import { Box, Popover, Tab, Tabs, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useState , useMemo } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
@@ -14,7 +14,7 @@ interface Props {
 export default function EmojiPickerPopover({ anchorEl, onClose, onSelect }: Props) {
   const { isDarkMode } = useThemeMode()
   const { borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const [tabIndex, setTabIndex] = useState(0)
 
   const group = EMOJI_GROUPS[tabIndex]

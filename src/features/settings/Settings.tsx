@@ -7,7 +7,7 @@ import PaidIcon from '@mui/icons-material/Paid'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { Box, Chip, Container, FormControl, MenuItem, Select, Typography } from '@mui/material'
-import { type ComponentType, useEffect, useState } from 'react'
+import { type ComponentType, useEffect, useState , useMemo } from 'react'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { type SvgIconProps } from '@mui/material/SvgIcon'
 import { usePageColors } from '@/theme/pageColors'
@@ -88,7 +88,7 @@ const TABS: TabConfig[] = [
 export default function Settings() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, bgBase, cardBg, cardShadow, accentColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800)

@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Chip, Tooltip } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
@@ -10,7 +11,7 @@ interface Props {
 
 export default function UserActiveChip({ user, onToggle }: Props) {
   const { isDarkMode } = useThemeMode()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   return (
     <Tooltip title={user.active ? '클릭하여 비활성화' : '클릭하여 활성화'} placement="top">

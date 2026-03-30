@@ -8,7 +8,7 @@ vi.mock('@mui/icons-material/CardGiftcard', () => ({ default: () => null }))
 vi.mock('@mui/icons-material/SwapHoriz', () => ({ default: () => null }))
 
 // 복잡한 서브 컴포넌트들은 mock으로 대체 (자체 테스트 파일에서 테스트)
-vi.mock('./components/sectionReviewers/ReviewerAssignment', () => ({
+vi.mock('./components/reviewChange/SectionReviewerManagement', () => ({
   default: () => null,
 }))
 vi.mock('./components/user/UserManagement', () => ({

@@ -13,7 +13,7 @@ import ProtectedRoute from '@/components/common/routing/ProtectedRoute'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
-import { useCurrentUserQuery } from '@/api/queries/useAuth'
+import { useCurrentUserWithLoading } from '@/features/auth/hooks/useCurrentUser'
 
 const Login = lazy(() => import('@/features/auth/Login'))
 const Dashboard = lazy(() => import('@/features/dashboard/Dashboard'))
@@ -45,7 +45,7 @@ function RootLayout() {
 
 // 루트("/") 리디렉트 — 인증 여부 확인 후 분기
 function RootRedirect() {
-  const { data: user, isLoading } = useCurrentUserQuery()
+  const { user, isLoading } = useCurrentUserWithLoading()
   if (isLoading) return <LoadingSpinner />
   return user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
 }

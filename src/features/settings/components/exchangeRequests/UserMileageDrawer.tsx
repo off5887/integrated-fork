@@ -100,7 +100,7 @@ function AwardRow({ item, colors, st }: { item: UserAwardItem; colors: ReturnTyp
 export default function UserMileageDrawer({ user, onClose }: Props) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   const [search, setSearch] = useState('')
   const [startDate, setStartDate] = useState('')

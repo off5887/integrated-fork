@@ -64,7 +64,7 @@ const MemberRow = memo(function MemberRow({ user, isSelected, onSelect, st, text
 export default function OrgPickerPanel({ onSelect, selectedEmployeeId }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   const { data: users = [] } = useUsers()
   const [search, setSearch] = useState('')
@@ -149,7 +149,7 @@ export default function OrgPickerPanel({ onSelect, selectedEmployeeId }: Props) 
             defaultExpanded
             disableGutters
             elevation={0}
-            TransitionProps={{ unmountOnExit: false, timeout: 150 }}
+            slotProps={{ transition: { unmountOnExit: false, timeout: 150 } }}
             sx={{
               bgcolor: st.panelAccordionBg,
               border: `1px solid ${borderColor}`,

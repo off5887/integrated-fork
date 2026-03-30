@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined'
@@ -40,7 +41,7 @@ export default function IdeaDetailPanel({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
   return (
     <Box

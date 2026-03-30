@@ -21,7 +21,7 @@ import IdeaDetailPanel from './IdeaDetailPanel'
 export default function ReviewChange() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const { showSnackbar } = useSnackbar()
 
   const [searchTerm, setSearchTerm] = useState('')

@@ -43,7 +43,7 @@ const STATUS_FILTERS: StatusFilter[] = ['전체', '신청중', '완료', '반려
 export default function ExchangeRequestsManagement() {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const { showSnackbar } = useSnackbar()
   const muiTheme = useTheme()
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'))
