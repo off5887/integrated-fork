@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import { IDEAS } from '@/api/mock/ideaBrowse'
 import { useOrgUsersTree } from '@/api/queries/useUsers'
 import { useIdeaStatuses, useMyIdeas } from '@/api/queries/useIdeas'
-import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
+import { useCategories } from '@/api/queries/useCategories'
+import type { IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -30,6 +31,7 @@ export default function IdeaBrowse() {
   const user = useCurrentUser()
   const { data: orgTree } = useOrgUsersTree()
   const { data: statusOptions = [] } = useIdeaStatuses()
+  const { categories: categoryOptions } = useCategories()
   const { data: myIdeasPage } = useMyIdeas()
   const myIdeaIds = useMemo(
     () => new Set((myIdeasPage?.content ?? []).map((i) => i.ideaId)),
@@ -39,7 +41,7 @@ export default function IdeaBrowse() {
 
   // ─── 필터 상태 ──────────────────────────────────────────────
   const [search,           setSearch]           = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<IdeaCategory | ''>('')
+  const [selectedCategory, setSelectedCategory] = useState('')  // CategoryOption.id (categoryId string)
   const [selectedBizArea,  setSelectedBizArea]  = useState('')
   const [selectedDept,     setSelectedDept]     = useState('')
   const [selectedStatus,   setSelectedStatus]   = useState<IdeaStatus | ''>('')
@@ -97,7 +99,7 @@ export default function IdeaBrowse() {
 
     const filtered = ideas.filter((idea) => {
       if (showMyOnly && !myIdeaIds.has(idea.id)) return false
-      if (selectedCategory && idea.category !== selectedCategory) return false
+      if (selectedCategory && String(idea.categoryId) !== selectedCategory) return false
       if (selectedBizArea && idea.bizArea !== selectedBizArea) return false
       if (selectedDept && idea.department !== selectedDept) return false
       if (selectedStatus && idea.status !== selectedStatus) return false
@@ -197,6 +199,7 @@ export default function IdeaBrowse() {
             similarCount={similarCount}
             myCount={myCount}
             hasFilter={hasFilter}
+            categoryOptions={categoryOptions}
             bizAreaOptions={bizAreaOptions}
             deptOptions={deptOptions}
             statusOptions={statusOptions}

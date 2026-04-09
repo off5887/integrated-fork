@@ -17,13 +17,13 @@ import {
 } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
-import { CATEGORY_CONFIG } from '@/api/mock/ideaBrowse'
-import type { IdeaCategory, IdeaStatus } from '@/api/types/ideaBrowse'
+import type { IdeaStatus } from '@/api/types/ideaBrowse'
+import type { CategoryOption } from '@/api/types/idea'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 
 interface IdeaFiltersProps {
   search: string
-  selectedCategory: IdeaCategory | ''
+  selectedCategory: string
   selectedBizArea: string
   selectedDept: string
   selectedStatus: IdeaStatus | ''
@@ -36,7 +36,8 @@ interface IdeaFiltersProps {
   deptOptions: string[]
   statusOptions: string[]
   onSearchChange: (v: string) => void
-  onCategoryChange: (v: IdeaCategory | '') => void
+  categoryOptions: CategoryOption[]
+  onCategoryChange: (v: string) => void
   onBizAreaChange: (e: SelectChangeEvent) => void
   onDeptChange: (v: string) => void
   onStatusChange: (v: IdeaStatus | '') => void
@@ -60,6 +61,7 @@ export default function IdeaFilters({
   deptOptions,
   statusOptions,
   onSearchChange,
+  categoryOptions,
   onCategoryChange,
   onBizAreaChange,
   onDeptChange,
@@ -166,15 +168,15 @@ export default function IdeaFilters({
           </Typography>
         </Box>
 
-        {CATEGORY_CONFIG.map((cat) => {
+        {categoryOptions.map((cat) => {
           const isActive = selectedCategory === cat.id
           return (
             <Box
               key={cat.id}
-              onClick={() => onCategoryChange(isActive ? '' : cat.id as IdeaCategory)}
+              onClick={() => onCategoryChange(isActive ? '' : cat.id)}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onCategoryChange(isActive ? '' : cat.id as IdeaCategory) }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onCategoryChange(isActive ? '' : cat.id) }}
               aria-pressed={isActive}
               sx={{
                 display: 'inline-flex', alignItems: 'center', gap: 0.5,

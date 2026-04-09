@@ -114,7 +114,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 1,
     title: '생산라인 LED 조명 교체로 전기요금 절감',
-    category: '절감',
+    categoryId: 1, category: '절감',
     problem: '현재 형광등 사용으로 전기요금이 연간 2,400만원 이상 발생하고 있으며, 노후 조명으로 작업 환경이 불량합니다.',
     solution: 'LED 교체 시 연간 1,200만원 절감 예상. 3년 이내 투자 회수 가능. 작업 조도 개선으로 생산성 향상 기대.',
     author: MY_AUTHOR,
@@ -132,7 +132,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 2,
     title: '사내 카페 메뉴 다양화 및 간식 음료 확대',
-    category: '복지',
+    categoryId: 4, category: '복지',
     problem: '카페 메뉴가 단조로워 직원 만족도 낮음. 음료와 간식 종류가 부족하여 직원들이 외부 구매를 선호하고 있습니다.',
     solution: '계절 메뉴 + 건강 식음료·간식 확대. 월별 신메뉴 도입으로 직원 만족도 향상 예상.',
     author: '최복지',
@@ -150,7 +150,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 3,
     title: '사무실 공기청정기 추가 설치',
-    category: '안전',
+    categoryId: 3, category: '안전',
     problem: '미세먼지 농도 높아 직원 건강 우려. 최근 측정 결과 WHO 권고치의 1.8배 초과.',
     solution: '고성능 공기청정기 10대 설치. 연간 건강보험 비용 절감 및 결근 감소 기대.',
     author: '박안전',
@@ -167,7 +167,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 4,
     title: '재택근무 원격근무 화상회의 시스템 업그레이드',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '현재 시스템 화질·지연 문제로 재택근무 및 원격근무 회의 효율 저하. 원격 협업 생산성 30% 하락 추정.',
     solution: 'Microsoft Teams Premium 도입. AI 기반 회의 요약 및 재택근무 환경 개선.',
     author: MY_AUTHOR,
@@ -187,7 +187,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 5,
     title: 'AI 기반 고객 상담 챗봇 도입',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '고객 문의 응대 지연 및 인력 부족으로 고객 불만이 증가하고 있습니다.',
     solution: 'ChatGPT 기반 챗봇 + 사내 지식베이스 연동으로 1차 응대 자동화.',
     author: '김AI',
@@ -206,7 +206,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 6,
     title: '사내 도서관 디지털화 프로젝트',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '종이 책 관리 비용 과다 및 공간 부족. 직원 독서율도 저조한 상황.',
     solution: '전자책 플랫폼 도입 + RFID 대출 시스템으로 편의성 향상 및 공간 절약.',
     author: '정도서',
@@ -223,7 +223,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 7,
     title: '사옥 옥상 태양광 패널 설치',
-    category: '환경',
+    categoryId: 6, category: '환경',
     problem: '전기요금 지속 상승 및 ESG 목표 미달성. 탄소중립 목표 달성 필요.',
     solution: '옥상 전체에 태양광 패널 설치 → 연간 800kWh 발전, 전기요금 25% 절감.',
     author: '한환경',
@@ -239,7 +239,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 8,
     title: '점심 배달 사내 식사 서비스 제휴',
-    category: '복지',
+    categoryId: 4, category: '복지',
     problem: '점심시간이 부족하여 직원들이 빠른 식사를 위해 불균형 식사를 하는 경우가 많음. 배달 비용도 개인이 부담.',
     solution: '인근 식당과 제휴하여 사내 배달 서비스 제공. 그룹 주문 할인 혜택 포함하여 점심 식사 환경 개선.',
     author: '이복지',
@@ -255,7 +255,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 9,
     title: '안전 보호구 교체 주기 단축',
-    category: '안전',
+    categoryId: 3, category: '안전',
     problem: '노후 안전 보호구 사용으로 작업 중 사고 위험 증가. 최근 3건의 경미한 부상 발생.',
     solution: '보호구 교체 주기를 1년에서 6개월로 단축. 작업자 안전 사고 50% 감소 목표.',
     author: '박안전',
@@ -271,7 +271,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 10,
     title: '설비 예방보전 스케줄 최적화',
-    category: '절감',
+    categoryId: 1, category: '절감',
     problem: '설비 고장으로 인한 비계획 정지가 월 평균 12시간 발생. 생산 손실 연간 5억원 추정.',
     solution: 'IoT 센서 기반 예지 보전 시스템 도입으로 고장 사전 감지. 유지보수 비용 30% 절감.',
     author: '이생산',
@@ -287,7 +287,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 11,
     title: '신규 고객 온보딩 가이드 개선',
-    category: '품질',
+    categoryId: 5, category: '품질',
     problem: '신규 고객 이탈률 높음. 온보딩 첫 2주 내 이탈률이 35%에 달함.',
     solution: '인터랙티브 튜토리얼 + 1:1 안내 콜 도입으로 온보딩 완료율 80% 달성 목표.',
     author: '박고객',
@@ -305,7 +305,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 12,
     title: '영업팀 CRM 시스템 도입',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '고객 정보가 엑셀에 분산 관리되어 영업 기회 누락 및 중복 접촉 빈번.',
     solution: 'Salesforce 도입으로 고객 통합 관리. 영업 성과 20% 향상 예상.',
     author: '최영업',
@@ -323,7 +323,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 13,
     title: '탄소 배출량 실시간 모니터링 대시보드',
-    category: '환경',
+    categoryId: 6, category: '환경',
     problem: '탄소 배출량 파악이 분기 단위로만 이루어져 적시 대응이 불가능.',
     solution: '실시간 에너지 모니터링 대시보드 구축으로 탄소 배출 이상 즉시 감지 및 대응.',
     author: '한환경',
@@ -339,7 +339,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 14,
     title: '유연근무제 전면 도입으로 재택근무 활성화',
-    category: '복지',
+    categoryId: 4, category: '복지',
     problem: '고정된 출퇴근 시간으로 직원 스트레스 증가. 재택근무 및 원격근무 수요가 높지만 제도 미비.',
     solution: '코어 타임(10-16시) 유지하는 유연근무제 + 재택근무 월 8일 허용. 워크-라이프 밸런스 향상.',
     author: '이인사',
@@ -357,7 +357,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 15,
     title: '사내 기술 세미나 정기화',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '부서 간 기술 공유가 없어 중복 개발 및 기술 편차 발생. 사내 지식 사일로 현상.',
     solution: '격주 기술 세미나 운영. 발표자 마일리지 보상, 세미나 영상 사내 공유.',
     author: '박개발',
@@ -375,7 +375,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 16,
     title: '불량률 감소를 위한 공정 개선',
-    category: '품질',
+    categoryId: 5, category: '품질',
     problem: '현재 불량률 2.3%로 업계 평균 1.5% 대비 높음. 재작업 비용 연간 3억원 발생.',
     solution: '공정별 체크포인트 강화 + SPC 통계적 공정 관리 시스템 도입으로 불량률 1.0% 달성.',
     author: '김품질',
@@ -391,7 +391,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 17,
     title: '직원 건강검진 항목 확대',
-    category: '복지',
+    categoryId: 4, category: '복지',
     problem: '기본 건강검진 항목 미흡으로 직원들의 조기 질병 발견이 어려움.',
     solution: '종합건강검진 비용 지원 확대. 암 조기 검진 항목 추가로 직원 건강 보호.',
     author: '박인사',
@@ -409,7 +409,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 18,
     title: '임직원 통근 교통비 지원 확대',
-    category: '복지',
+    categoryId: 4, category: '복지',
     problem: '원거리 통근 직원의 교통비 부담 증가로 이직률 상승. 특히 신입사원 이탈이 심각.',
     solution: '월 최대 20만원 교통비 지원 상향. 대중교통 이용 직원 우대 혜택 부여.',
     author: '최인사',
@@ -425,7 +425,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 19,
     title: '사무실 재활용 분리수거 강화',
-    category: '환경',
+    categoryId: 6, category: '환경',
     problem: '현재 분리수거 참여율 40%에 불과. 환경 목표 달성을 위해 개선 필요.',
     solution: '분리수거 구역 재배치 + 직원 교육 + 우수 부서 마일리지 보상으로 참여율 80% 목표.',
     author: '이환경',
@@ -441,7 +441,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 20,
     title: 'VOC 자동 분류 및 우선순위 시스템',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '고객 민원이 하루 평균 200건 이상으로 수동 분류에 한계. 중요 민원 대응 지연.',
     solution: 'NLP 기반 자동 분류 시스템으로 민원 긴급도 자동 판별 및 담당자 자동 배정.',
     author: '김AI',
@@ -457,7 +457,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 21,
     title: '제품 QA 체크리스트 표준화',
-    category: '품질',
+    categoryId: 5, category: '품질',
     problem: '부서마다 QA 기준이 달라 제품 품질 불균일. 고객 불만 중 품질 관련 비율 40%.',
     solution: 'ISO 기반 표준 체크리스트 구축 및 디지털화. 체크리스트 준수율 100% 목표.',
     author: '이품질',
@@ -475,7 +475,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 22,
     title: '마케팅 SNS 자동화 도구 도입',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: 'SNS 운영에 담당자가 주당 20시간 이상 소요. 콘텐츠 일관성도 부족.',
     solution: 'Buffer/Hootsuite 도입으로 게시물 스케줄링 자동화. 업무 시간 60% 단축 예상.',
     author: '윤마케팅',
@@ -491,7 +491,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 23,
     title: '사무용 소모품 통합 구매 제도',
-    category: '절감',
+    categoryId: 1, category: '절감',
     problem: '부서별 개별 구매로 소모품 비용 과다 지출. 연간 소모품 비용 1.2억원 발생.',
     solution: '전사 통합 구매 시스템 도입으로 벌크 구매 할인 적용. 연간 3천만원 절감 예상.',
     author: '박재무',
@@ -507,7 +507,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 24,
     title: '야간 설비 에너지 절감 자동화',
-    category: '절감',
+    categoryId: 1, category: '절감',
     problem: '야간 가동 불필요한 설비가 계속 전력 소모. 야간 전력비 월 800만원 낭비.',
     solution: '자동 전원 차단 스케줄러 도입으로 야간 전력 사용량 40% 절감 목표.',
     author: '이생산',
@@ -525,7 +525,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 25,
     title: '개발 코드 리뷰 가이드라인 및 CI/CD 파이프라인 고도화',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '배포 시간이 평균 45분으로 개발 생산성 저하. 코드 리뷰 기준이 없어 품질 편차 발생.',
     solution: '코드 리뷰 가이드라인 수립 + GitHub Actions CI/CD 자동화. 배포 시간 5분, 리뷰 효율 50% 향상.',
     author: '박개발',
@@ -543,7 +543,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 26,
     title: '연차 휴가 자동 승인 시스템 도입',
-    category: '복지',
+    categoryId: 4, category: '복지',
     problem: '연차 신청 후 승인까지 평균 3일 소요. 급한 휴가 사용이 어려워 직원 불만이 높음.',
     solution: '특정 조건(잔여 연차 보유, 사전 신청)에서 자동승인 처리. 1일 전 신청도 가능하도록 개선.',
     author: '최인사',
@@ -559,7 +559,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 27,
     title: 'UX 리서치 기반 앱 개선 프로세스 정규화',
-    category: '품질',
+    categoryId: 5, category: '품질',
     problem: '사용자 피드백 없이 기능 개발이 진행되어 실사용률이 낮은 기능이 다수 존재.',
     solution: '분기별 UX 리서치 + 사용성 테스트 의무화. 데이터 기반 개선 사이클 구축.',
     author: '김UX',
@@ -575,7 +575,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 28,
     title: '사내 셔틀버스 노선 확대',
-    category: '복지',
+    categoryId: 4, category: '복지',
     problem: '출퇴근 시간대 지하철 혼잡 및 지각 증가. 원거리 직원의 출퇴근 부담이 심각.',
     solution: '오전/오후 추가 노선 2개 신설. 수요 기반 탄력 노선 운영으로 직원 만족도 향상.',
     author: '최교통',
@@ -592,7 +592,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 101,
     title: '개발팀 온보딩 프로세스 디지털화',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '신입 개발자 온보딩이 수작업·구두 전달에 의존해 인수인계 품질이 들쭉날쭉함.',
     solution: '노션 기반 온보딩 위키 + 자동 체크리스트 시스템 구축. 평균 온보딩 기간 2주 → 1주로 단축.',
     author: MY_AUTHOR,
@@ -608,7 +608,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 102,
     title: '코드 리뷰 가이드라인 표준화',
-    category: '품질',
+    categoryId: 5, category: '품질',
     problem: '팀원마다 코드 리뷰 기준이 달라 리뷰 시간이 길고 피드백 일관성이 부족함.',
     solution: '리뷰 체크리스트 + 자동 린트 룰 세트 제정. PR당 평균 리뷰 시간 40% 단축 목표.',
     author: MY_AUTHOR,
@@ -626,7 +626,7 @@ export const IDEAS: IdeaItem[] = [
   {
     id: 103,
     title: '사내 기술 블로그 운영 제안',
-    category: '혁신',
+    categoryId: 2, category: '혁신',
     problem: '개발팀 내 지식이 개인에 집중되고 외부 공유 채널이 없어 채용 브랜딩 취약.',
     solution: '주 1회 기술 포스팅 의무화 + 외부 블로그 플랫폼 연동. 분기별 우수 포스팅 포상.',
     author: MY_AUTHOR,
