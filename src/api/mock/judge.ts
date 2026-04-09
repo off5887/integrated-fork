@@ -53,7 +53,7 @@ export const judgeData: Proposal[] = [
     executionPlan: '설문 → 메뉴 선정 → 시범 운영',
     expectedOutcome: '직원 식당 이용률 20% 향상 및 점심 외출 감소',
     attachments: [{ name: '설문결과.pdf', url: '#' }],
-    status: '심사중',
+    status: '심사대기',
     submittedAt: '2026-02-22',
   },
   {
@@ -151,7 +151,7 @@ export const judgeData: Proposal[] = [
     executionPlan: '노선 설계 → 버스 업체 계약 → 시범 운행 → 정식 운영',
     expectedOutcome: '출근 지각률 60% 감소, 직원 통근 만족도 향상',
     attachments: [{ name: '노선도_제안.pdf', url: '#' }],
-    status: '심사중',
+    status: '심사대기',
     submittedAt: '2026-03-10',
   },
   {
@@ -215,7 +215,7 @@ export const judgeData: Proposal[] = [
       { name: '발전량_시뮬레이션.xlsx', url: '#' },
       { name: '설치_허가서.pdf', url: '#' },
     ],
-    status: '심사중',
+    status: '심사대기',
     submittedAt: '2026-03-22',
   },
   {
@@ -274,7 +274,7 @@ export const judgeData: Proposal[] = [
       { name: '교육_수요조사.pdf', url: '#' },
       { name: '예산안.xlsx', url: '#' },
     ],
-    status: '심사중',
+    status: '심사대기',
     submittedAt: '2026-03-12',
   },
   {
@@ -380,7 +380,7 @@ export const judgeData: Proposal[] = [
       { name: '비용_절감_분석.xlsx', url: '#' },
       { name: 'PoC_결과보고서.pdf', url: '#' },
     ],
-    status: '심사중',
+    status: '심사대기',
     submittedAt: '2026-02-10',
   },
   {

@@ -7,12 +7,6 @@ export const statusConfig = {
     color: '#f59e0b',
     border: 'rgba(245,158,11,0.25)',
   },
-  심사중: {
-    label: '심사중',
-    bg: 'rgba(99,102,241,0.1)',
-    color: '#6366f1',
-    border: 'rgba(99,102,241,0.25)',
-  },
   승인: {
     label: '승인',
     bg: 'rgba(16,185,129,0.1)',
@@ -27,4 +21,4 @@ export const statusConfig = {
   },
 } as const
 
-export type StatusFilter = '전체' | '심사대기' | '심사중' | '승인' | '반려'
+export type StatusFilter = '전체' | '심사대기' | '승인' | '반려'

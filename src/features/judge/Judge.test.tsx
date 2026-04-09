@@ -74,10 +74,9 @@ describe('Judge', () => {
   })
 
   describe('상태 요약 카드', () => {
-    it('4개의 상태 카드(심사대기, 심사중, 승인, 반려) 레이블이 모두 렌더된다', () => {
+    it('3개의 상태 카드(심사대기, 승인, 반려) 레이블이 모두 렌더된다', () => {
       render(<Judge />)
       expect(screen.getByText('심사대기')).toBeInTheDocument()
-      expect(screen.getByText('심사중')).toBeInTheDocument()
       expect(screen.getByText('승인')).toBeInTheDocument()
       expect(screen.getByText('반려')).toBeInTheDocument()
     })

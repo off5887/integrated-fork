@@ -189,7 +189,6 @@ const judgeLight = {
 // ── Judge 내 결재 현황 StatCard 상태별 색상 (light/dark 동일) ────────────────
 export const JUDGE_STAT_CONFIG = [
   { key: '심사대기', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)',    border: 'rgba(245,158,11,0.25)' },
-  { key: '심사중',   color: '#6366f1', bg: 'rgba(99,102,241,0.08)',    border: 'rgba(99,102,241,0.25)' },
   { key: '승인',     color: '#10b981', bg: 'rgba(16,185,129,0.08)',    border: 'rgba(16,185,129,0.25)' },
   { key: '반려',     color: '#ef4444', bg: 'rgba(239,68,68,0.08)',     border: 'rgba(239,68,68,0.25)'  },
 ] as const

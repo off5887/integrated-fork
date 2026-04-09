@@ -252,7 +252,7 @@ export default function IdeaFilters({
             )}
           >
             <MenuItem value=""><Typography sx={{ fontSize: '0.83rem' }}>상태 전체</Typography></MenuItem>
-            {(['심사대기', '심사중', '승인', '반려', '실행중', '완료'] as IdeaStatus[]).map((s) => (
+            {(['심사대기', '승인', '반려', '실행중', '완료'] as IdeaStatus[]).map((s) => (
               <MenuItem key={s} value={s}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                   <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: IDEA_STATUS_CONFIG[s].color, flexShrink: 0 }} />

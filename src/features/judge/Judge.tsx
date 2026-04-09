@@ -4,7 +4,6 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
-import PendingActionsIcon from '@mui/icons-material/PendingActions'
 import { Box, Chip, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
@@ -49,28 +48,15 @@ export default function Judge() {
   }, [proposals, myName])
 
   const stats = useMemo(() => ({
-    // 심사대기: 아직 내가 심사 안 한 건 (status=심사대기 또는 status=심사중이지만 내가 현재 담당자)
-    심사대기: myProposals.filter(
-      (p) => p.status === '심사대기' || (p.status === '심사중' && p.reviewer === myName),
-    ).length,
-    // 심사중: 내가 이미 심사를 마치고 후속 단계가 진행 중인 건
-    심사중: myProposals.filter((p) => p.status === '심사중' && p.reviewer !== myName).length,
+    심사대기: myProposals.filter((p) => p.status === '심사대기').length,
     승인: myProposals.filter((p) => p.status === '승인').length,
     반려: myProposals.filter((p) => p.status === '반려').length,
-  }), [myProposals, myName])
+  }), [myProposals])
 
   const filteredProposals = useMemo(() => {
     if (statusFilter === '전체') return myProposals
-    if (statusFilter === '심사대기') {
-      return myProposals.filter(
-        (p) => p.status === '심사대기' || (p.status === '심사중' && p.reviewer === myName),
-      )
-    }
-    if (statusFilter === '심사중') {
-      return myProposals.filter((p) => p.status === '심사중' && p.reviewer !== myName)
-    }
     return myProposals.filter((p) => p.status === statusFilter)
-  }, [myProposals, statusFilter, myName])
+  }, [myProposals, statusFilter])
 
   const displayedData = filteredProposals.slice(
     page * rowsPerPage,
@@ -127,7 +113,7 @@ export default function Judge() {
     if (!selectedProposal) return
     const title = selectedProposal.title
     setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사중' as const } : p)),
+      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사대기' as const } : p)),
     )
     setSelectedProposal(null)
     showSnackbar(`'${title}' 승인이 회수되었습니다.`, 'warning')
@@ -137,7 +123,7 @@ export default function Judge() {
     if (!selectedProposal) return
     const title = selectedProposal.title
     setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사중' as const } : p)),
+      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사대기' as const } : p)),
     )
     setSelectedProposal(null)
     showSnackbar(`'${title}' 반려가 회수되었습니다.`, 'warning')
@@ -217,7 +203,6 @@ export default function Judge() {
           {JUDGE_STAT_CONFIG.map(({ key, color, bg, border }) => {
             const iconMap = {
               심사대기: <HourglassEmptyIcon sx={{ fontSize: '1.1rem' }} />,
-              심사중: <PendingActionsIcon sx={{ fontSize: '1.1rem' }} />,
               승인: <CheckCircleOutlineIcon sx={{ fontSize: '1.1rem' }} />,
               반려: <DoNotDisturbIcon sx={{ fontSize: '1.1rem' }} />,
             } as const

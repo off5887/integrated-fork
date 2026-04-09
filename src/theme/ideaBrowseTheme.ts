@@ -170,11 +170,6 @@ export const IDEA_STATUS_CONFIG: Record<IdeaStatus, { color: string; bg: string;
     bg: 'rgba(245,158,11,0.08)',
     border: 'rgba(245,158,11,0.3)',
   },
-  심사중: {
-    color: '#6366f1',
-    bg: 'rgba(99,102,241,0.08)',
-    border: 'rgba(99,102,241,0.3)',
-  },
   승인: {
     color: '#10b981',
     bg: 'rgba(16,185,129,0.08)',

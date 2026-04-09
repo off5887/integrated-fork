@@ -60,7 +60,7 @@ export default function JudgeTable({
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, flexDirection: 'column', gap: 1.25, p: 1.5 }}>
         {displayedData.map((item) => {
           const status = statusConfig[item.status]
-          const isPending = item.status === '심사대기' || item.status === '심사중'
+          const isPending = item.status === '심사대기'
           return (
             <Box
               key={item.id}
@@ -203,7 +203,7 @@ export default function JudgeTable({
           <TableBody>
             {displayedData.map((item) => {
               const status = statusConfig[item.status]
-              const isPending = item.status === '심사대기' || item.status === '심사중'
+              const isPending = item.status === '심사대기'
               return (
                 <TableRow
                   key={item.id}
