@@ -44,7 +44,7 @@ const baseIdea: IdeaItem = {
   problem: '문제 설명',
   solution: '해결 방안',
   author: '테스터',
-  division: 'A부문',
+  bizArea: '본사',
   department: '개발팀',
   status: '심사대기',
   security: 'public',

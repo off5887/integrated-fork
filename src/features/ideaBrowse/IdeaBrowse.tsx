@@ -3,7 +3,7 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DEPT_BY_DIVISION, IDEAS } from '@/api/mock/ideaBrowse'
+import { DEPT_BY_BIZ_AREA, IDEAS } from '@/api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
@@ -31,7 +31,7 @@ export default function IdeaBrowse() {
   // ─── 필터 상태 ──────────────────────────────────────────────
   const [search,           setSearch]           = useState('')
   const [selectedCategory, setSelectedCategory] = useState<IdeaCategory | ''>('')
-  const [selectedDivision, setSelectedDivision] = useState('')
+  const [selectedBizArea,  setSelectedBizArea]  = useState('')
   const [selectedDept,     setSelectedDept]     = useState('')
   const [selectedStatus,   setSelectedStatus]   = useState<IdeaStatus | ''>('')
   const [sortBy,           setSortBy]           = useState<SortKey>('latest')
@@ -48,7 +48,7 @@ export default function IdeaBrowse() {
     return () => clearTimeout(timer)
   }, [])
 
-  const deptOptions = selectedDivision ? (DEPT_BY_DIVISION[selectedDivision] ?? []) : []
+  const deptOptions = selectedBizArea ? (DEPT_BY_BIZ_AREA[selectedBizArea] ?? []) : []
 
   const handleEdit = (idea: IdeaItem) => {
     setSelectedIdea(null)
@@ -62,8 +62,8 @@ export default function IdeaBrowse() {
     setSelectedIdea(null)
   }
 
-  const handleDivisionChange = (e: SelectChangeEvent) => {
-    setSelectedDivision(e.target.value)
+  const handleBizAreaChange = (e: SelectChangeEvent) => {
+    setSelectedBizArea(e.target.value)
     setSelectedDept('')
   }
 
@@ -81,7 +81,7 @@ export default function IdeaBrowse() {
     const filtered = ideas.filter((idea) => {
       if (showMyOnly && idea.author !== (user?.name ?? '')) return false
       if (selectedCategory && idea.category !== selectedCategory) return false
-      if (selectedDivision && idea.division !== selectedDivision) return false
+      if (selectedBizArea && idea.bizArea !== selectedBizArea) return false
       if (selectedDept && idea.department !== selectedDept) return false
       if (selectedStatus && idea.status !== selectedStatus) return false
       if (showSimilarOnly && (similarityMap.get(idea.id)?.length ?? 0) === 0) return false
@@ -101,7 +101,7 @@ export default function IdeaBrowse() {
         default:         return 0
       }
     })
-  }, [ideas, search, selectedCategory, selectedDivision, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap])
+  }, [ideas, search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap])
 
   const similarCount = useMemo(
     () => ideas.filter((i) => (similarityMap.get(i.id)?.length ?? 0) > 0).length,
@@ -113,12 +113,12 @@ export default function IdeaBrowse() {
     [ideas, user?.name],
   )
 
-  const hasFilter = !!(search || selectedCategory || selectedDivision || selectedDept || selectedStatus || showSimilarOnly || showMyOnly)
+  const hasFilter = !!(search || selectedCategory || selectedBizArea || selectedDept || selectedStatus || showSimilarOnly || showMyOnly)
 
   const clearAll = () => {
     setSearch('')
     setSelectedCategory('')
-    setSelectedDivision('')
+    setSelectedBizArea('')
     setSelectedDept('')
     setSelectedStatus('')
     setShowSimilarOnly(false)
@@ -172,7 +172,7 @@ export default function IdeaBrowse() {
           <IdeaFilters
             search={search}
             selectedCategory={selectedCategory}
-            selectedDivision={selectedDivision}
+            selectedBizArea={selectedBizArea}
             selectedDept={selectedDept}
             selectedStatus={selectedStatus}
             showSimilarOnly={showSimilarOnly}
@@ -183,7 +183,7 @@ export default function IdeaBrowse() {
             deptOptions={deptOptions}
             onSearchChange={setSearch}
             onCategoryChange={setSelectedCategory}
-            onDivisionChange={handleDivisionChange}
+            onBizAreaChange={handleBizAreaChange}
             onDeptChange={setSelectedDept}
             onStatusChange={setSelectedStatus}
             onSimilarToggle={() => setShowSimilarOnly((v) => !v)}

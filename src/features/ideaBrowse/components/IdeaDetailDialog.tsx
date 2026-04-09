@@ -186,7 +186,7 @@ export default function IdeaDetailDialog({
                 {idea.author}
               </Typography>
               <Typography sx={{ fontSize: '0.75rem', color: textSecondary }}>
-                {idea.division} · {idea.department}
+                {idea.bizArea} · {idea.department}
               </Typography>
             </Box>
             <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 0.5 }}>

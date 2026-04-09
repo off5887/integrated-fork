@@ -17,14 +17,14 @@ import {
 } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
-import { CATEGORY_CONFIG, DIVISIONS } from '@/api/mock/ideaBrowse'
+import { CATEGORY_CONFIG, BIZ_AREAS } from '@/api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaStatus } from '@/api/types/ideaBrowse'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 
 interface IdeaFiltersProps {
   search: string
   selectedCategory: IdeaCategory | ''
-  selectedDivision: string
+  selectedBizArea: string
   selectedDept: string
   selectedStatus: IdeaStatus | ''
   showSimilarOnly: boolean
@@ -35,7 +35,7 @@ interface IdeaFiltersProps {
   deptOptions: string[]
   onSearchChange: (v: string) => void
   onCategoryChange: (v: IdeaCategory | '') => void
-  onDivisionChange: (e: SelectChangeEvent) => void
+  onBizAreaChange: (e: SelectChangeEvent) => void
   onDeptChange: (v: string) => void
   onStatusChange: (v: IdeaStatus | '') => void
   onSimilarToggle: () => void
@@ -46,7 +46,7 @@ interface IdeaFiltersProps {
 export default function IdeaFilters({
   search,
   selectedCategory,
-  selectedDivision,
+  selectedBizArea,
   selectedDept,
   selectedStatus,
   showSimilarOnly,
@@ -57,7 +57,7 @@ export default function IdeaFilters({
   deptOptions,
   onSearchChange,
   onCategoryChange,
-  onDivisionChange,
+  onBizAreaChange,
   onDeptChange,
   onStatusChange,
   onSimilarToggle,
@@ -191,31 +191,31 @@ export default function IdeaFilters({
         })}
       </Box>
 
-      {/* 부문/부서/상태 셀렉트 + 유사 토글 + 초기화 */}
+      {/* 사업소/부서/상태 셀렉트 + 유사 토글 + 초기화 */}
       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
-        {/* 부문 */}
+        {/* 사업소 */}
         <FormControl size="small" sx={{ minWidth: 120 }}>
           <Select
-            value={selectedDivision}
-            onChange={onDivisionChange}
+            value={selectedBizArea}
+            onChange={onBizAreaChange}
             displayEmpty
             IconComponent={ExpandMoreIcon}
             sx={selectSx}
             renderValue={(v) => (
               <Typography sx={{ fontSize: '0.83rem', color: v ? textPrimary : textSecondary, WebkitTextFillColor: v ? textPrimary : textSecondary }}>
-                {v || '부문 전체'}
+                {v || '사업소 전체'}
               </Typography>
             )}
           >
-            <MenuItem value=""><Typography sx={{ fontSize: '0.83rem' }}>부문 전체</Typography></MenuItem>
-            {DIVISIONS.map((d) => (
+            <MenuItem value=""><Typography sx={{ fontSize: '0.83rem' }}>사업소 전체</Typography></MenuItem>
+            {BIZ_AREAS.map((d) => (
               <MenuItem key={d} value={d}><Typography sx={{ fontSize: '0.83rem' }}>{d}</Typography></MenuItem>
             ))}
           </Select>
         </FormControl>
 
         {/* 부서 */}
-        <FormControl size="small" sx={{ minWidth: 120 }} disabled={!selectedDivision}>
+        <FormControl size="small" sx={{ minWidth: 120 }} disabled={!selectedBizArea}>
           <Select
             value={selectedDept}
             onChange={(e) => onDeptChange(e.target.value)}

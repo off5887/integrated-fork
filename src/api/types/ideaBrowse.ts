@@ -18,7 +18,7 @@ export interface IdeaItem {
   problem: string
   solution: string
   author: string
-  division: string
+  bizArea: string
   department: string
   status: IdeaStatus
   submittedAt: string
