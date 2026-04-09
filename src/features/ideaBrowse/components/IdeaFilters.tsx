@@ -17,7 +17,7 @@ import {
 } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
-import { CATEGORY_CONFIG, BIZ_AREAS } from '@/api/mock/ideaBrowse'
+import { CATEGORY_CONFIG } from '@/api/mock/ideaBrowse'
 import type { IdeaCategory, IdeaStatus } from '@/api/types/ideaBrowse'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 
@@ -32,6 +32,7 @@ interface IdeaFiltersProps {
   similarCount: number
   myCount: number
   hasFilter: boolean
+  bizAreaOptions: string[]
   deptOptions: string[]
   onSearchChange: (v: string) => void
   onCategoryChange: (v: IdeaCategory | '') => void
@@ -54,6 +55,7 @@ export default function IdeaFilters({
   similarCount,
   myCount,
   hasFilter,
+  bizAreaOptions,
   deptOptions,
   onSearchChange,
   onCategoryChange,
@@ -208,7 +210,7 @@ export default function IdeaFilters({
             )}
           >
             <MenuItem value=""><Typography sx={{ fontSize: '0.83rem' }}>사업소 전체</Typography></MenuItem>
-            {BIZ_AREAS.map((d) => (
+            {bizAreaOptions.map((d) => (
               <MenuItem key={d} value={d}><Typography sx={{ fontSize: '0.83rem' }}>{d}</Typography></MenuItem>
             ))}
           </Select>

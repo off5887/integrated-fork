@@ -3,7 +3,8 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DEPT_BY_BIZ_AREA, IDEAS } from '@/api/mock/ideaBrowse'
+import { IDEAS } from '@/api/mock/ideaBrowse'
+import { useOrgUsersTree } from '@/api/queries/useUsers'
 import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
@@ -26,6 +27,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 export default function IdeaBrowse() {
   const { isDarkMode } = useThemeMode()
   const user = useCurrentUser()
+  const { data: orgTree } = useOrgUsersTree()
   const { textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg, similar, statsBg, statsBorder, myOnlyActiveBg } = getIdeaTheme(isDarkMode)
 
   // ─── 필터 상태 ──────────────────────────────────────────────
@@ -48,7 +50,15 @@ export default function IdeaBrowse() {
     return () => clearTimeout(timer)
   }, [])
 
-  const deptOptions = selectedBizArea ? (DEPT_BY_BIZ_AREA[selectedBizArea] ?? []) : []
+  const bizAreaOptions = useMemo(() => (orgTree ?? []).map((b) => b.bizAreaNm), [orgTree])
+  const deptByBizArea = useMemo(() => {
+    const map: Record<string, string[]> = {}
+    for (const b of (orgTree ?? [])) {
+      map[b.bizAreaNm] = b.teams.map((t) => t.deptNm)
+    }
+    return map
+  }, [orgTree])
+  const deptOptions = selectedBizArea ? (deptByBizArea[selectedBizArea] ?? []) : []
 
   const handleEdit = (idea: IdeaItem) => {
     setSelectedIdea(null)
@@ -180,6 +190,7 @@ export default function IdeaBrowse() {
             similarCount={similarCount}
             myCount={myCount}
             hasFilter={hasFilter}
+            bizAreaOptions={bizAreaOptions}
             deptOptions={deptOptions}
             onSearchChange={setSearch}
             onCategoryChange={setSelectedCategory}
