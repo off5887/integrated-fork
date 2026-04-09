@@ -2,6 +2,15 @@
 
 import type { CategoryApiItem, CategoryOption, OrgDivision, Reviewer } from '@/api/types/idea'
 
+/** GET /api/ideas/statuses 데모 모드 응답 — API 키:라벨 매핑 */
+export const mockIdeaStatuses: Record<string, string> = {
+  pending:     '심사대기',
+  approved:    '승인',
+  rejected:    '반려',
+  in_progress: '실행중',
+  completed:   '완료',
+}
+
 /** GET /api/categories/all 형태 mock (데모 모드용) */
 // icon 필드는 ASCII 식별자 (이모지 아님) — 실제 API와 동일한 형태
 export const mockCategoryApiItems: CategoryApiItem[] = [

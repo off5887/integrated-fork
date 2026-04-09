@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IDEAS } from '@/api/mock/ideaBrowse'
 import { useOrgUsersTree } from '@/api/queries/useUsers'
+import { useIdeaStatuses } from '@/api/queries/useIdeas'
 import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
@@ -28,6 +29,7 @@ export default function IdeaBrowse() {
   const { isDarkMode } = useThemeMode()
   const user = useCurrentUser()
   const { data: orgTree } = useOrgUsersTree()
+  const { data: statusOptions = [] } = useIdeaStatuses()
   const { textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg, similar, statsBg, statsBorder, myOnlyActiveBg } = getIdeaTheme(isDarkMode)
 
   // ─── 필터 상태 ──────────────────────────────────────────────
@@ -192,6 +194,7 @@ export default function IdeaBrowse() {
             hasFilter={hasFilter}
             bizAreaOptions={bizAreaOptions}
             deptOptions={deptOptions}
+            statusOptions={statusOptions}
             onSearchChange={setSearch}
             onCategoryChange={setSelectedCategory}
             onBizAreaChange={handleBizAreaChange}

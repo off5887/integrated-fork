@@ -33,7 +33,8 @@ export const queryKeys = {
     all: (status?: string) => status ? ['withdrawals', 'all', status] as const : ['withdrawals', 'all'] as const,
   },
   ideas: {
-    list:   (params?: object) => params ? ['ideas', 'list', params] as const : ['ideas', 'list'] as const,
-    detail: (id: number) => ['ideas', 'detail', id] as const,
+    statuses: () => ['ideas', 'statuses'] as const,
+    list:     (params?: object) => params ? ['ideas', 'list', params] as const : ['ideas', 'list'] as const,
+    detail:   (id: number) => ['ideas', 'detail', id] as const,
   },
 } as const
