@@ -79,3 +79,43 @@ export type ErrorTheme = typeof errorLight
 
 export const getErrorTheme = (isDarkMode: boolean): ErrorTheme =>
   isDarkMode ? errorDark : errorLight
+
+// ─── ErrorFallback (런타임 오류 바운더리) 전용 토큰 ──────────────────────────
+
+export const getErrorFallbackTheme = (isDarkMode: boolean) => ({
+  red:           isDarkMode ? '#ef4444' : '#dc2626',
+  amber:         isDarkMode ? '#f97316' : '#ea580c',
+  blobOpacity:   isDarkMode ? 0.16 : 0.1,
+  gridDot:       isDarkMode ? 'rgba(148,163,184,0.07)' : 'rgba(100,116,139,0.1)',
+  toggleBg:      isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+  toggleBorder:  isDarkMode ? 'rgba(255,255,255,0.1)'  : 'rgba(0,0,0,0.08)',
+  toggleHoverBg: isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+  emojiFilter:   isDarkMode
+    ? 'drop-shadow(0 0 10px rgba(239,68,68,0.4))'
+    : 'drop-shadow(0 4px 8px rgba(220,38,38,0.2))',
+  dividerGradient: isDarkMode
+    ? 'linear-gradient(90deg, #ef4444, #f97316)'
+    : 'linear-gradient(90deg, #dc2626, #ea580c)',
+  errorBoxBorder:    isDarkMode ? 'rgba(239,68,68,0.2)'  : 'rgba(239,68,68,0.15)',
+  errorHeaderBg:     isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.07)',
+  errorHeaderBorder: isDarkMode ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)',
+  errorBodyBg:       isDarkMode ? 'rgba(239,68,68,0.06)' : 'rgba(239,68,68,0.03)',
+  errorTextColor:    isDarkMode ? '#fca5a5' : '#dc2626',
+  errorMonoColor:    isDarkMode ? '#fca5a5' : '#b91c1c',
+  outlinedBorder:    isDarkMode ? 'rgba(239,68,68,0.35)' : 'rgba(220,38,38,0.3)',
+  outlinedColor:     isDarkMode ? '#fca5a5' : '#dc2626',
+  outlinedHoverBorder: isDarkMode ? '#ef4444' : '#dc2626',
+  outlinedHoverBg:   isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(220,38,38,0.06)',
+  btnGradient:       isDarkMode
+    ? 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)'
+    : 'linear-gradient(135deg, #dc2626 0%, #ea580c 100%)',
+  btnShadow:         isDarkMode
+    ? '0 4px 14px rgba(239,68,68,0.4)'
+    : '0 4px 14px rgba(220,38,38,0.3)',
+  btnHoverGradient:  isDarkMode
+    ? 'linear-gradient(135deg, #dc2626 0%, #ea580c 100%)'
+    : 'linear-gradient(135deg, #b91c1c 0%, #c2410c 100%)',
+  btnHoverShadow:    isDarkMode
+    ? '0 6px 20px rgba(239,68,68,0.55)'
+    : '0 6px 20px rgba(220,38,38,0.4)',
+})

@@ -20,7 +20,7 @@ import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import { mockMileageMembers } from '@/api/mock/settings'
+import { useUsers } from '@/api/queries/useUsers'
 import type { MileageMember } from '@/api/types/settings'
 
 interface Props {
@@ -40,6 +40,19 @@ export default function MileageOrgPanel({
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
   const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
 
+  const { data: users = [] } = useUsers()
+  const members: MileageMember[] = useMemo(
+    () => users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      position: u.position,
+      department: u.department,
+      division: u.businessSite,
+      employeeNumber: u.employeeNumber,
+    })),
+    [users],
+  )
+
   const isMobile = useMediaQuery('(max-width: 1199px)')
   const [orgPanelOpen, setOrgPanelOpen] = useState(false)
   const showOrgContent = !isMobile || orgPanelOpen
@@ -48,7 +61,7 @@ export default function MileageOrgPanel({
   const grouped = useMemo(() => {
     const q = searchTerm.trim().toLowerCase()
     const filtered = q
-      ? mockMileageMembers.filter(
+      ? members.filter(
           (m) =>
             m.name.toLowerCase().includes(q) ||
             m.employeeNumber.toLowerCase().includes(q) ||
@@ -56,7 +69,7 @@ export default function MileageOrgPanel({
             m.division.toLowerCase().includes(q) ||
             m.position.toLowerCase().includes(q),
         )
-      : mockMileageMembers
+      : members
 
     // 부문 → 팀 → 사람 2단계 Map
     const divisionMap = new Map<string, Map<string, MileageMember[]>>()
@@ -104,7 +117,7 @@ export default function MileageOrgPanel({
           조직도 인원
         </Typography>
         <Chip
-          label={`${mockMileageMembers.length}명`}
+          label={`${members.length}명`}
           size="small"
           sx={{
             ml: 'auto', height: 18, fontSize: '0.65rem', fontWeight: 700,

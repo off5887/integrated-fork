@@ -10,11 +10,6 @@ import {
   Checkbox,
   Chip,
   InputAdornment,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
   useMediaQuery,
@@ -26,9 +21,12 @@ import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
-import { adminExchangeData } from '@/api/mock/mileage'
+import { useAllWithdrawals, useApproveWithdrawal, useRejectWithdrawal } from '@/api/queries/useMileage'
+import { useUsers } from '@/api/queries/useUsers'
+import { WITHDRAWAL_STATUS_KR } from '@/api/types/mileage'
 import type { AdminExchangeItem } from '@/api/types/mileage'
 import UserMileageDrawer from './UserMileageDrawer'
+import ExchangeDesktopTable from './ExchangeDesktopTable'
 
 type StatusFilter = '전체' | '신청중' | '완료' | '반려'
 
@@ -48,7 +46,33 @@ export default function ExchangeRequestsManagement() {
   const muiTheme = useTheme()
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'))
 
-  const [items, setItems] = useState<AdminExchangeItem[]>(adminExchangeData)
+  const { data: withdrawalRecordsData } = useAllWithdrawals()
+  const { data: usersData } = useUsers()
+  const withdrawalRecords = withdrawalRecordsData ?? []
+  const users = usersData ?? []
+  const approveMutation = useApproveWithdrawal()
+  const rejectMutation  = useRejectWithdrawal()
+
+  // WithdrawalRecord + User → AdminExchangeItem
+  const items = useMemo<AdminExchangeItem[]>(() => {
+    const userMap = new Map(users.map((u) => [u.id, u]))
+    return withdrawalRecords.map((r) => {
+      const user = userMap.get(r.employeeId)
+      return {
+        id: r.withdrawalId,
+        employeeId: r.employeeId,
+        requestDate: r.requestDate.split('T')[0],
+        name: user?.name ?? r.employeeId,
+        department: user?.department ?? '',
+        position: user?.position ?? '',
+        employeeNumber: user?.employeeNumber ?? r.employeeId,
+        amount: r.requestPoints,
+        cashAmount: r.requestPoints * 100,
+        status: WITHDRAWAL_STATUS_KR[r.status],
+      }
+    })
+  }, [withdrawalRecords, users])
+
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('전체')
   const [searchTerm, setSearchTerm] = useState('')
   const [startDate, setStartDate] = useState('')
@@ -103,25 +127,27 @@ export default function ExchangeRequestsManagement() {
   const handleBulkApprove = () => setConfirmMode('bulk-approve')
   const handleBulkReject  = () => setConfirmMode('bulk-reject')
 
-  const handleConfirm = () => {
-    if (confirmMode === 'single-approve' && confirmTarget) {
-      setItems((prev) => prev.map((i) => i.id === confirmTarget.id ? { ...i, status: '완료' as const } : i))
-      setSelectedIds((prev) => { const next = new Set(prev); next.delete(confirmTarget.id); return next })
-      showSnackbar(`${confirmTarget.name}님의 현금 전환 신청이 지급 완료 처리되었습니다.`, 'success')
-    } else if (confirmMode === 'single-reject' && confirmTarget) {
-      setItems((prev) => prev.map((i) => i.id === confirmTarget.id ? { ...i, status: '반려' as const } : i))
-      setSelectedIds((prev) => { const next = new Set(prev); next.delete(confirmTarget.id); return next })
-      showSnackbar(`${confirmTarget.name}님의 현금 전환 신청이 반려 처리되었습니다.`, 'error')
-    } else if (confirmMode === 'bulk-approve') {
-      const ids = new Set(selectedPendingIds)
-      setItems((prev) => prev.map((i) => ids.has(i.id) ? { ...i, status: '완료' as const } : i))
-      setSelectedIds((prev) => { const next = new Set(prev); ids.forEach((id) => next.delete(id)); return next })
-      showSnackbar(`${ids.size}건의 현금 전환 신청이 일괄 지급 완료 처리되었습니다.`, 'success')
-    } else if (confirmMode === 'bulk-reject') {
-      const ids = new Set(selectedPendingIds)
-      setItems((prev) => prev.map((i) => ids.has(i.id) ? { ...i, status: '반려' as const } : i))
-      setSelectedIds((prev) => { const next = new Set(prev); ids.forEach((id) => next.delete(id)); return next })
-      showSnackbar(`${ids.size}건의 현금 전환 신청이 일괄 반려 처리되었습니다.`, 'error')
+  const handleConfirm = async () => {
+    try {
+      if (confirmMode === 'single-approve' && confirmTarget) {
+        await approveMutation.mutateAsync({ id: confirmTarget.id })
+        setSelectedIds((prev) => { const next = new Set(prev); next.delete(confirmTarget.id); return next })
+        showSnackbar(`${confirmTarget.name}님의 현금 전환 신청이 지급 완료 처리되었습니다.`, 'success')
+      } else if (confirmMode === 'single-reject' && confirmTarget) {
+        await rejectMutation.mutateAsync({ id: confirmTarget.id })
+        setSelectedIds((prev) => { const next = new Set(prev); next.delete(confirmTarget.id); return next })
+        showSnackbar(`${confirmTarget.name}님의 현금 전환 신청이 반려 처리되었습니다.`, 'error')
+      } else if (confirmMode === 'bulk-approve') {
+        await Promise.all(selectedPendingIds.map((id) => approveMutation.mutateAsync({ id })))
+        setSelectedIds((prev) => { const next = new Set(prev); selectedPendingIds.forEach((id) => next.delete(id)); return next })
+        showSnackbar(`${selectedPendingIds.length}건의 현금 전환 신청이 일괄 지급 완료 처리되었습니다.`, 'success')
+      } else if (confirmMode === 'bulk-reject') {
+        await Promise.all(selectedPendingIds.map((id) => rejectMutation.mutateAsync({ id })))
+        setSelectedIds((prev) => { const next = new Set(prev); selectedPendingIds.forEach((id) => next.delete(id)); return next })
+        showSnackbar(`${selectedPendingIds.length}건의 현금 전환 신청이 일괄 반려 처리되었습니다.`, 'error')
+      }
+    } catch {
+      showSnackbar('처리 중 오류가 발생했습니다.', 'error')
     }
     setConfirmMode(null)
     setConfirmTarget(null)
@@ -165,7 +191,7 @@ export default function ExchangeRequestsManagement() {
         sx={{
           mb: 2.5, p: { xs: 1.5, sm: 2 },
           borderRadius: 2.5,
-          bgcolor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+          bgcolor: st.subtleBg,
           border: `1px solid ${colors.borderColor}`,
         }}
       >
@@ -183,7 +209,7 @@ export default function ExchangeRequestsManagement() {
                   cursor: 'pointer',
                   bgcolor: active
                     ? sf === '신청중' ? 'rgba(245,158,11,0.15)' : sf === '완료' ? 'rgba(16,185,129,0.15)'
-                      : sf === '반려' ? 'rgba(239,68,68,0.15)' : isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
+                      : sf === '반려' ? 'rgba(239,68,68,0.15)' : st.activeAllChipBg
                     : 'transparent',
                   color: chipColor(sf, active),
                   border: `1px solid ${active
@@ -232,8 +258,8 @@ export default function ExchangeRequestsManagement() {
         <Box sx={{
           display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 },
           flexWrap: 'wrap', px: 2, py: 1.5, mb: 2, borderRadius: 2,
-          bgcolor: isDarkMode ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.07)',
-          border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.25)'}`,
+          bgcolor: st.chipBg,
+          border: `1px solid ${st.bulkBarBorder}`,
         }}>
           <Typography variant="body2" fontWeight={600} sx={{ color: colors.accentColor, flex: 1, minWidth: 120 }}>
             신청중 {selectedPendingIds.length}건 선택됨
@@ -289,10 +315,8 @@ export default function ExchangeRequestsManagement() {
                 elevation={0}
                 sx={{
                   borderRadius: 2.5, overflow: 'hidden',
-                  bgcolor: isSelected
-                    ? isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.05)'
-                    : colors.cardBg,
-                  border: `1px solid ${isSelected ? (isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)') : colors.borderColor}`,
+                  bgcolor: isSelected ? st.selectedCardBg : colors.cardBg,
+                  border: `1px solid ${isSelected ? st.selectedCardBorder : colors.borderColor}`,
                   transition: 'all 0.15s',
                 }}
               >
@@ -324,7 +348,7 @@ export default function ExchangeRequestsManagement() {
                     { label: '마일리지', value: `${item.amount.toLocaleString()}마리`, highlight: true },
                     { label: '현금 환산', value: `${item.cashAmount.toLocaleString()}원` },
                   ].map((cell, i) => (
-                    <Box key={cell.label} sx={{ px: 1.25, py: 1, borderRight: i < 2 ? `1px solid ${colors.borderColor}` : 'none', bgcolor: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)' }}>
+                    <Box key={cell.label} sx={{ px: 1.25, py: 1, borderRight: i < 2 ? `1px solid ${colors.borderColor}` : 'none', bgcolor: st.subtlerBg }}>
                       <Typography sx={{ fontSize: '0.6rem', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.04em', mb: 0.25 }}>{cell.label}</Typography>
                       <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: cell.highlight ? st.primaryColor : colors.textPrimary, lineHeight: 1.2 }}>{cell.value}</Typography>
                     </Box>
@@ -368,99 +392,21 @@ export default function ExchangeRequestsManagement() {
         </Box>
       ) : (
         /* ── 데스크탑 테이블 ── */
-        <Card elevation={0} sx={{ borderRadius: 3, overflow: 'hidden', bgcolor: colors.cardBg, border: `1px solid ${colors.borderColor}`, boxShadow: colors.shadowSmall }}>
-          <Box sx={{ overflowX: 'auto' }}>
-            <Table sx={{ minWidth: 820 }}>
-              <TableHead>
-                <TableRow sx={{ bgcolor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
-                  <TableCell padding="checkbox" sx={{ borderBottom: `1px solid ${colors.borderColor}`, pl: 2 }}>
-                    <Checkbox size="small" checked={allPendingSelected} indeterminate={!allPendingSelected && somePendingSelected}
-                      onChange={handleToggleAll} disabled={pendingInView.length === 0}
-                      sx={{ color: colors.textSecondary, '&.Mui-checked': { color: colors.accentColor }, '&.MuiCheckbox-indeterminate': { color: colors.accentColor } }}
-                    />
-                  </TableCell>
-                  {['신청일', '사원번호', '이름', '부서 / 직급', '신청 마일리지', '현금 환산', '상태', ''].map((col) => (
-                    <TableCell key={col} sx={{ color: colors.textSecondary, fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${colors.borderColor}`, py: 1.75, whiteSpace: 'nowrap' }}>
-                      {col}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filtered.map((item) => {
-                  const statusStyle = STATUS_MAP[item.status] ?? STATUS_MAP['신청중']
-                  const isPending = item.status === '신청중'
-                  const isSelected = selectedIds.has(item.id)
-                  return (
-                    <TableRow key={item.id} sx={{
-                      transition: 'background-color 0.15s',
-                      bgcolor: isSelected ? (isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)') : 'transparent',
-                      '&:hover': { bgcolor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' },
-                      '& .MuiTableCell-root': { borderBottom: `1px solid ${colors.borderColor}`, color: colors.textPrimary, py: 1.5, fontSize: '0.875rem' },
-                      '&:last-child .MuiTableCell-root': { borderBottom: 'none' },
-                    }}>
-                      <TableCell padding="checkbox" sx={{ pl: 2 }}>
-                        {isPending && (
-                          <Checkbox size="small" checked={isSelected} onChange={() => handleToggleRow(item.id)}
-                            sx={{ color: colors.textSecondary, '&.Mui-checked': { color: colors.accentColor } }}
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell><Typography variant="body2" sx={{ color: colors.textPrimary }}>{item.requestDate}</Typography></TableCell>
-                      <TableCell><Typography variant="body2" sx={{ color: colors.textSecondary, fontFamily: 'monospace', fontSize: '0.8rem' }}>{item.employeeNumber}</Typography></TableCell>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={600} sx={{ color: colors.textPrimary }}>
-                          {item.name}
-                        </Typography>
-                      </TableCell>
-                      <TableCell><Typography variant="body2" sx={{ color: colors.textSecondary }}>{item.department} · {item.position}</Typography></TableCell>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={700} sx={{ color: st.primaryColor }}>
-                          {item.amount.toLocaleString()}<Box component="span" sx={{ fontWeight: 500, color: colors.textSecondary, ml: 0.5 }}>마리</Box>
-                        </Typography>
-                      </TableCell>
-                      <TableCell><Typography variant="body2" fontWeight={600} sx={{ color: colors.textPrimary }}>{item.cashAmount.toLocaleString()}원</Typography></TableCell>
-                      <TableCell>
-                        <Chip label={statusStyle.label} size="small" sx={{ bgcolor: statusStyle.bg, color: statusStyle.color, border: `1px solid ${statusStyle.border}`, fontWeight: 700, fontSize: '0.72rem', height: 22 }} />
-                      </TableCell>
-                      <TableCell sx={{ textAlign: 'right', pr: 2 }}>
-                        <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'flex-end', alignItems: 'center' }}>
-                          {isPending && (<>
-                            <Button size="small" variant="outlined" startIcon={<CheckCircleIcon sx={{ fontSize: '0.85rem !important' }} />} onClick={() => handleSingleApprove(item)}
-                              sx={{ fontSize: '0.72rem', fontWeight: 600, borderRadius: 1.5, py: 0.3, px: 1.25, whiteSpace: 'nowrap', color: '#10b981', borderColor: 'rgba(16,185,129,0.4)', '&:hover': { bgcolor: 'rgba(16,185,129,0.08)', borderColor: '#10b981' } }}>
-                              지급 완료
-                            </Button>
-                            <Button size="small" variant="outlined" startIcon={<BlockIcon sx={{ fontSize: '0.85rem !important' }} />} onClick={() => handleSingleReject(item)}
-                              sx={{ fontSize: '0.72rem', fontWeight: 600, borderRadius: 1.5, py: 0.3, px: 1.25, whiteSpace: 'nowrap', color: '#ef4444', borderColor: 'rgba(239,68,68,0.4)', '&:hover': { bgcolor: 'rgba(239,68,68,0.08)', borderColor: '#ef4444' } }}>
-                              반려
-                            </Button>
-                          </>)}
-                          <Button
-                            size="small" variant="outlined"
-                            startIcon={<ReceiptLongIcon sx={{ fontSize: '0.85rem !important' }} />}
-                            onClick={() => setDrawerUser(item)}
-                            sx={{ fontSize: '0.72rem', fontWeight: 600, borderRadius: 1.5, py: 0.3, px: 1.25, whiteSpace: 'nowrap', color: st.primaryColor, borderColor: `${st.primaryColor}50`, '&:hover': { bgcolor: `${st.primaryColor}0a`, borderColor: st.primaryColor } }}
-                          >
-                            내역
-                          </Button>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-                {filtered.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={9} sx={{ textAlign: 'center', py: 8, border: 'none' }}>
-                      <Typography variant="body2" sx={{ color: colors.textSecondary }}>
-                        {searchTerm || startDate || endDate ? '검색 결과가 없습니다' : '현금 전환 신청 내역이 없습니다'}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </Box>
-        </Card>
+        <ExchangeDesktopTable
+          filtered={filtered}
+          allPendingSelected={allPendingSelected}
+          somePendingSelected={somePendingSelected}
+          pendingInViewCount={pendingInView.length}
+          selectedIds={selectedIds}
+          hasFilter={!!(searchTerm || startDate || endDate)}
+          colors={colors}
+          st={st}
+          onToggleAll={handleToggleAll}
+          onToggleRow={handleToggleRow}
+          onApprove={handleSingleApprove}
+          onReject={handleSingleReject}
+          onViewHistory={setDrawerUser}
+        />
       )}
 
       <ConfirmDialog

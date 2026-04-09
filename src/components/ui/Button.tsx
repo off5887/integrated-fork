@@ -1,6 +1,7 @@
 // src/components/ui/Button.tsx
 import { Button as MuiButton, type ButtonProps as MuiButtonProps } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
+import { getButtonTheme } from '@/theme/uiTheme'
 import LoadingSpinner from './LoadingSpinner'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -20,48 +21,37 @@ const SIZE_MAP: Record<Size, { fontSize: string; px: number; py: number; minW: n
 }
 
 function useVariantStyles(variant: Variant, isDark: boolean) {
+  const t = getButtonTheme(isDark)
   switch (variant) {
     case 'primary':
       return {
-        bgcolor: isDark ? '#6366f1' : '#6366f1',
-        color: '#ffffff',
-        border: 'none',
-        '&:hover': { bgcolor: isDark ? '#4f46e5' : '#4f46e5' },
-        '&:active': { bgcolor: '#4338ca' },
-        boxShadow: isDark
-          ? '0 2px 12px rgba(99,102,241,0.35)'
-          : '0 2px 8px rgba(99,102,241,0.28)',
+        bgcolor: t.primary.bgcolor,
+        color:   t.primary.color,
+        border:  'none',
+        '&:hover':  { bgcolor: t.primary.hoverBg },
+        '&:active': { bgcolor: t.primary.activeBg },
+        boxShadow: t.primary.shadow,
       }
     case 'secondary':
       return {
-        bgcolor: isDark ? 'rgba(99,102,241,0.12)' : 'rgba(99,102,241,0.08)',
-        color: isDark ? '#a5b4fc' : '#4f46e5',
-        border: `1px solid ${isDark ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)'}`,
-        '&:hover': {
-          bgcolor: isDark ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.14)',
-          borderColor: isDark ? 'rgba(99,102,241,0.55)' : 'rgba(99,102,241,0.4)',
-        },
+        bgcolor: t.secondary.bgcolor,
+        color:   t.secondary.color,
+        border:  `1px solid ${t.secondary.border}`,
+        '&:hover': { bgcolor: t.secondary.hoverBg, borderColor: t.secondary.hoverBorder },
       }
     case 'ghost':
       return {
         bgcolor: 'transparent',
-        color: isDark ? '#94a3b8' : '#64748b',
-        border: `1px solid ${isDark ? 'rgba(148,163,184,0.2)' : 'rgba(203,213,225,0.6)'}`,
-        '&:hover': {
-          bgcolor: isDark ? 'rgba(148,163,184,0.08)' : 'rgba(241,245,249,0.8)',
-          color: isDark ? '#cbd5e1' : '#475569',
-          borderColor: isDark ? 'rgba(148,163,184,0.35)' : 'rgba(148,163,184,0.5)',
-        },
+        color:   t.ghost.color,
+        border:  `1px solid ${t.ghost.border}`,
+        '&:hover': { bgcolor: t.ghost.hoverBg, color: t.ghost.hoverColor, borderColor: t.ghost.hoverBorder },
       }
     case 'danger':
       return {
-        bgcolor: isDark ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.08)',
-        color: isDark ? '#fca5a5' : '#dc2626',
-        border: `1px solid ${isDark ? 'rgba(239,68,68,0.35)' : 'rgba(239,68,68,0.25)'}`,
-        '&:hover': {
-          bgcolor: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.14)',
-          borderColor: isDark ? 'rgba(239,68,68,0.55)' : 'rgba(239,68,68,0.45)',
-        },
+        bgcolor: t.danger.bgcolor,
+        color:   t.danger.color,
+        border:  `1px solid ${t.danger.border}`,
+        '&:hover': { bgcolor: t.danger.hoverBg, borderColor: t.danger.hoverBorder },
       }
   }
 }

@@ -25,7 +25,7 @@ export function useRollNm() {
         [...POSITION_OPTIONS],
         async () => {
           const res = await api.get<ApiResponse<string[]>>('/api/org/roll-nm')
-          return res.data.data
+          return res.data.data ?? []
         },
       ),
     staleTime: 0,
@@ -41,7 +41,7 @@ export function useOrgTeams() {
         [{ bizAreaNm: '본사', teams: mockDepartments.map((d, i) => ({ deptCd: `D${i}`, deptNm: d })) }],
         async () => {
           const res = await api.get<ApiResponse<OrgBizArea[]>>('/api/org/teams')
-          return res.data.data
+          return res.data.data ?? []
         },
       ),
     staleTime: 0,

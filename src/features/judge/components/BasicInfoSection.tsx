@@ -5,9 +5,7 @@ import { Box, Chip, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
-import { CATEGORIES } from '@/api/mock/idea'
-
-const CATEGORY_MAP = new Map(CATEGORIES.map((c) => [c.id, c]))
+import { useCategories } from '@/api/queries/useCategories'
 
 interface Props {
   ideaType?: 'idea' | 'complete'
@@ -20,6 +18,8 @@ export default function BasicInfoSection({ ideaType, categories, problem, soluti
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
   const theme = getJudgeTheme(isDarkMode)
+  const { categories: allCategories } = useCategories()
+  const CATEGORY_MAP = new Map(allCategories.map((c) => [c.id, c]))
 
   return (
     <Box>

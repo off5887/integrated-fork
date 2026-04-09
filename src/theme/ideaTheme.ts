@@ -31,9 +31,10 @@ const ideaLight = {
   cardShadow: '0 4px 24px rgba(0,0,0,0.06)',
 
   // ── 입력 필드 ──
-  inputBg:          'rgba(248,250,252,0.8)',
-  inputBorder:      'rgba(203,213,225,0.7)',
-  inputHoverBorder: 'rgba(148,163,184,0.5)',
+  inputBg:              'rgba(248,250,252,0.8)',
+  inputBorder:          'rgba(203,213,225,0.7)',
+  inputHoverBorder:     'rgba(148,163,184,0.5)',
+  cancelBtnHoverBorder: 'rgba(148,163,184,0.6)',
 
   // ── 모달 ──
   modalBg:      '#ffffff',
@@ -148,9 +149,10 @@ const ideaDark = {
   cardShadow: '0 8px 32px rgba(0,0,0,0.4)',
 
   // ── 입력 필드 ──
-  inputBg:          'rgba(15,23,42,0.4)',
-  inputBorder:      'rgba(148,163,184,0.18)',
-  inputHoverBorder: 'rgba(148,163,184,0.35)',
+  inputBg:              'rgba(15,23,42,0.4)',
+  inputBorder:          'rgba(148,163,184,0.18)',
+  inputHoverBorder:     'rgba(148,163,184,0.35)',
+  cancelBtnHoverBorder: 'rgba(148,163,184,0.3)',
 
   // ── 모달 ──
   modalBg:      'rgba(22,30,46,0.98)',

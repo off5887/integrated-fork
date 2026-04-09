@@ -148,6 +148,10 @@ export const ideaAccent = {
   headerIconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
   headerIconShadow: '0 4px 16px rgba(99,102,241,0.35)',
   headerIconColor: '#fff',
+  // ── IdeaFilters 인풋/셀렉트 공통 ──
+  accentHoverBorder:   'rgba(99,102,241,0.35)',
+  scrollbarThumb:      'rgba(99,102,241,0.25)',
+  myOnlyActiveBorder:  'rgba(16,185,129,0.45)',
 } as const
 
 export type IdeaBrowseTheme = typeof ideaLight

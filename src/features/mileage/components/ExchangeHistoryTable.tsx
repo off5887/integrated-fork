@@ -116,14 +116,12 @@ export default function ExchangeHistoryTable({ data, onWithdraw }: Props) {
           borderRadius: 3,
           overflow: 'hidden',
           border: `1px solid ${t.borderColorStrict}`,
-          bgcolor: isDarkMode ? 'rgba(15,23,42,0.6)' : '#fff',
-          boxShadow: isDarkMode
-            ? '0 2px 12px rgba(0,0,0,0.25)'
-            : '0 1px 8px rgba(99,102,241,0.06)',
+          bgcolor: t.filterCardBg,
+          boxShadow: t.filterCardShadow,
         }}
       >
         {/* 상단 그라디언트 스트립 */}
-        <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+        <Box sx={{ height: 3, background: t.headerGradient }} />
 
         <Box sx={{ p: { xs: 1.5, sm: 2 } }}>
           {/* 상태 필터 버튼 그룹 */}
@@ -154,17 +152,13 @@ export default function ExchangeHistoryTable({ data, onWithdraw }: Props) {
                       ? (sf === '전체' ? t.primaryColor : meta.activeBorder)
                       : t.borderColorStrict}`,
                     bgcolor: active
-                      ? (sf === '전체'
-                          ? (isDarkMode ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.1)')
-                          : meta.activeBg)
+                      ? (sf === '전체' ? t.filterAllActiveBg : meta.activeBg)
                       : 'transparent',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                     outline: 'none',
                     '&:hover': {
-                      bgcolor: active
-                        ? undefined
-                        : (isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'),
+                      bgcolor: active ? undefined : t.filterBtnHoverBg,
                     },
                   }}
                 >
@@ -194,7 +188,7 @@ export default function ExchangeHistoryTable({ data, onWithdraw }: Props) {
                     px: 0.5,
                     bgcolor: active
                       ? (sf === '전체' ? t.primaryColor : meta.color)
-                      : (isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)'),
+                      : t.countBadgeInactiveBg,
                   }}>
                     <Typography sx={{
                       fontSize: '0.62rem', fontWeight: 800, lineHeight: 1,
@@ -233,7 +227,7 @@ export default function ExchangeHistoryTable({ data, onWithdraw }: Props) {
                 sx={{
                   fontSize: '0.72rem', fontWeight: 600, color: t.textSecondary,
                   textTransform: 'none', px: 1, borderRadius: 1.5, flexShrink: 0,
-                  '&:hover': { bgcolor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)' },
+                  '&:hover': { bgcolor: t.resetBtnHoverBg },
                 }}
               >
                 초기화

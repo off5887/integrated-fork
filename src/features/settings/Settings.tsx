@@ -256,7 +256,7 @@ export default function Settings() {
                         width: 36,
                         height: 36,
                         borderRadius: 2,
-                        background: isActive ? st.iconGradient : (isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.07)'),
+                        background: isActive ? st.iconGradient : st.iconInactiveBg,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

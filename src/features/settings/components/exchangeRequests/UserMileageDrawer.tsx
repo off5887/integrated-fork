@@ -17,7 +17,8 @@ import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import { userAwardMap } from '@/api/mock/mileage'
+import { useUserMileages } from '@/api/queries/useMileage'
+import { toUserAwardItem } from '@/api/types/mileage'
 import type { AdminExchangeItem, UserAwardItem } from '@/api/types/mileage'
 
 const INITIAL_LIMIT = 5
@@ -97,7 +98,7 @@ function AwardRow({ item, colors, st }: { item: UserAwardItem; colors: ReturnTyp
   )
 }
 
-export default function UserMileageDrawer({ user, onClose }: Props) {
+function DrawerContent({ user, onClose }: { user: AdminExchangeItem; onClose: () => void }) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
   const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
@@ -107,7 +108,8 @@ export default function UserMileageDrawer({ user, onClose }: Props) {
   const [endDate, setEndDate] = useState('')
   const [showAll, setShowAll] = useState(false)
 
-  const awards: UserAwardItem[] = user ? (userAwardMap[user.employeeNumber] ?? []) : []
+  const { data: mileageRecords = [] } = useUserMileages(user.employeeId)
+  const awards: UserAwardItem[] = useMemo(() => mileageRecords.map(toUserAwardItem), [mileageRecords])
 
   const hasFilter = search || startDate || endDate
 
@@ -128,14 +130,6 @@ export default function UserMileageDrawer({ user, onClose }: Props) {
 
   const totalFish = awards.reduce((sum, i) => sum + i.fish, 0)
 
-  const handleClose = () => {
-    setSearch('')
-    setStartDate('')
-    setEndDate('')
-    setShowAll(false)
-    onClose()
-  }
-
   const inputSx = {
     '& .MuiOutlinedInput-root': {
       borderRadius: 1.5,
@@ -154,6 +148,151 @@ export default function UserMileageDrawer({ user, onClose }: Props) {
   }
 
   return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* 헤더 */}
+      <Box
+        sx={{
+          px: 2.5, py: 2,
+          borderBottom: `1px solid ${colors.borderColor}`,
+          bgcolor: colors.cardBg,
+          display: 'flex', alignItems: 'center', gap: 1.5,
+        }}
+      >
+        <Box
+          sx={{
+            width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
+            bgcolor: `${st.primaryColor}18`,
+            border: `1px solid ${st.primaryColor}40`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.1rem', fontWeight: 700, color: st.primaryColor,
+          }}
+        >
+          {user.name[0]}
+        </Box>
+        <Box flex={1} minWidth={0}>
+          <Typography fontWeight={700} sx={{ color: colors.textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
+            {user.name}
+          </Typography>
+          <Typography variant="caption" sx={{ color: colors.textSecondary }}>
+            {user.department} · {user.position} · <Box component="span" sx={{ fontFamily: 'monospace' }}>{user.employeeNumber}</Box>
+          </Typography>
+        </Box>
+        <IconButton size="small" onClick={onClose} sx={{ color: colors.textSecondary }}>
+          <CloseIcon sx={{ fontSize: '1.1rem' }} />
+        </IconButton>
+      </Box>
+
+      {/* 요약 */}
+      <Box
+        sx={{
+          mx: 2.5, mt: 2, mb: 0, px: 2, py: 1.25, borderRadius: 2,
+          bgcolor: `${st.primaryColor}10`,
+          border: `1px solid ${st.primaryColor}30`,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        }}
+      >
+        <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+          총 수령 마일리지
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+          <Typography fontWeight={800} sx={{ fontSize: '1.2rem', color: st.primaryColor }}>
+            {totalFish.toLocaleString()}
+          </Typography>
+          <Typography variant="caption" sx={{ color: colors.textSecondary }}>마리</Typography>
+        </Box>
+      </Box>
+
+      {/* 필터 */}
+      <Box sx={{ px: 2.5, pt: 2, pb: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <TextField
+          size="small"
+          placeholder="아이디어명, 지급 사유 검색"
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setShowAll(false) }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: '0.95rem', color: colors.textSecondary }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={inputSx}
+        />
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <TextField
+            size="small" type="date" label="시작일" value={startDate}
+            onChange={(e) => { setStartDate(e.target.value); setShowAll(false) }}
+            slotProps={{ inputLabel: { shrink: true } }}
+            sx={{ ...inputSx, flex: 1 }}
+          />
+          <TextField
+            size="small" type="date" label="종료일" value={endDate}
+            onChange={(e) => { setEndDate(e.target.value); setShowAll(false) }}
+            slotProps={{ inputLabel: { shrink: true } }}
+            sx={{ ...inputSx, flex: 1 }}
+          />
+        </Box>
+        {hasFilter && (
+          <Button
+            size="small" variant="text"
+            onClick={() => { setSearch(''); setStartDate(''); setEndDate('') }}
+            sx={{ alignSelf: 'flex-start', fontSize: '0.75rem', color: colors.textSecondary, p: 0, textTransform: 'none' }}
+          >
+            필터 초기화
+          </Button>
+        )}
+      </Box>
+
+      <Divider sx={{ borderColor: colors.borderColor }} />
+
+      {/* 결과 헤더 */}
+      <Box sx={{ px: 2.5, py: 1.25, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Typography variant="caption" fontWeight={600} sx={{ color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          {hasFilter ? `검색 결과 ${filtered.length}건` : `최신 ${Math.min(displayed.length, INITIAL_LIMIT)}건 / 전체 ${awards.length}건`}
+        </Typography>
+      </Box>
+
+      {/* 목록 */}
+      <Box sx={{ flex: 1, overflowY: 'auto', px: 2.5, pb: 3, display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {displayed.length === 0 ? (
+          <Box sx={{ py: 8, textAlign: 'center' }}>
+            <EmojiEventsIcon sx={{ fontSize: '2rem', color: colors.textSecondary, opacity: 0.25, mb: 1 }} />
+            <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+              {hasFilter ? '검색 결과가 없습니다' : '마일리지 수령 내역이 없습니다'}
+            </Typography>
+          </Box>
+        ) : (
+          displayed.map((item) => (
+            <AwardRow key={item.id} item={item} colors={colors} st={st} />
+          ))
+        )}
+
+        {hasMore && (
+          <Button
+            variant="text"
+            onClick={() => setShowAll(true)}
+            sx={{
+              mt: 0.5, fontSize: '0.8rem', fontWeight: 600,
+              color: st.primaryColor, textTransform: 'none',
+              '&:hover': { bgcolor: `${st.primaryColor}10` },
+            }}
+          >
+            나머지 {filtered.length - INITIAL_LIMIT}건 더 보기
+          </Button>
+        )}
+      </Box>
+    </Box>
+  )
+}
+
+export default function UserMileageDrawer({ user, onClose }: Props) {
+  const colors = usePageColors()
+
+  const handleClose = () => onClose()
+
+  return (
     <Drawer
       anchor="right"
       open={user !== null}
@@ -168,145 +307,7 @@ export default function UserMileageDrawer({ user, onClose }: Props) {
         },
       }}
     >
-      {user && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-
-          {/* 헤더 */}
-          <Box
-            sx={{
-              px: 2.5, py: 2,
-              borderBottom: `1px solid ${colors.borderColor}`,
-              bgcolor: colors.cardBg,
-              display: 'flex', alignItems: 'center', gap: 1.5,
-            }}
-          >
-            <Box
-              sx={{
-                width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
-                bgcolor: `${st.primaryColor}18`,
-                border: `1px solid ${st.primaryColor}40`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.1rem', fontWeight: 700, color: st.primaryColor,
-              }}
-            >
-              {user.name[0]}
-            </Box>
-            <Box flex={1} minWidth={0}>
-              <Typography fontWeight={700} sx={{ color: colors.textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
-                {user.name}
-              </Typography>
-              <Typography variant="caption" sx={{ color: colors.textSecondary }}>
-                {user.department} · {user.position} · <Box component="span" sx={{ fontFamily: 'monospace' }}>{user.employeeNumber}</Box>
-              </Typography>
-            </Box>
-            <IconButton size="small" onClick={handleClose} sx={{ color: colors.textSecondary }}>
-              <CloseIcon sx={{ fontSize: '1.1rem' }} />
-            </IconButton>
-          </Box>
-
-          {/* 요약 */}
-          <Box
-            sx={{
-              mx: 2.5, mt: 2, mb: 0, px: 2, py: 1.25, borderRadius: 2,
-              bgcolor: `${st.primaryColor}10`,
-              border: `1px solid ${st.primaryColor}30`,
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            }}
-          >
-            <Typography variant="body2" sx={{ color: colors.textSecondary }}>
-              총 수령 마일리지
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-              <Typography fontWeight={800} sx={{ fontSize: '1.2rem', color: st.primaryColor }}>
-                {totalFish.toLocaleString()}
-              </Typography>
-              <Typography variant="caption" sx={{ color: colors.textSecondary }}>마리</Typography>
-            </Box>
-          </Box>
-
-          {/* 필터 */}
-          <Box sx={{ px: 2.5, pt: 2, pb: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <TextField
-              size="small"
-              placeholder="아이디어명, 지급 사유 검색"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setShowAll(false) }}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ fontSize: '0.95rem', color: colors.textSecondary }} />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              sx={inputSx}
-            />
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <TextField
-                size="small" type="date" label="시작일" value={startDate}
-                onChange={(e) => { setStartDate(e.target.value); setShowAll(false) }}
-                slotProps={{ inputLabel: { shrink: true } }}
-                sx={{ ...inputSx, flex: 1 }}
-              />
-              <TextField
-                size="small" type="date" label="종료일" value={endDate}
-                onChange={(e) => { setEndDate(e.target.value); setShowAll(false) }}
-                slotProps={{ inputLabel: { shrink: true } }}
-                sx={{ ...inputSx, flex: 1 }}
-              />
-            </Box>
-            {hasFilter && (
-              <Button
-                size="small" variant="text"
-                onClick={() => { setSearch(''); setStartDate(''); setEndDate('') }}
-                sx={{ alignSelf: 'flex-start', fontSize: '0.75rem', color: colors.textSecondary, p: 0, textTransform: 'none' }}
-              >
-                필터 초기화
-              </Button>
-            )}
-          </Box>
-
-          <Divider sx={{ borderColor: colors.borderColor }} />
-
-          {/* 결과 헤더 */}
-          <Box sx={{ px: 2.5, py: 1.25, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="caption" fontWeight={600} sx={{ color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              {hasFilter ? `검색 결과 ${filtered.length}건` : `최신 ${Math.min(displayed.length, INITIAL_LIMIT)}건 / 전체 ${awards.length}건`}
-            </Typography>
-          </Box>
-
-          {/* 목록 */}
-          <Box sx={{ flex: 1, overflowY: 'auto', px: 2.5, pb: 3, display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {displayed.length === 0 ? (
-              <Box sx={{ py: 8, textAlign: 'center' }}>
-                <EmojiEventsIcon sx={{ fontSize: '2rem', color: colors.textSecondary, opacity: 0.25, mb: 1 }} />
-                <Typography variant="body2" sx={{ color: colors.textSecondary }}>
-                  {hasFilter ? '검색 결과가 없습니다' : '마일리지 수령 내역이 없습니다'}
-                </Typography>
-              </Box>
-            ) : (
-              displayed.map((item) => (
-                <AwardRow key={item.id} item={item} colors={colors} st={st} />
-              ))
-            )}
-
-            {hasMore && (
-              <Button
-                variant="text"
-                onClick={() => setShowAll(true)}
-                sx={{
-                  mt: 0.5, fontSize: '0.8rem', fontWeight: 600,
-                  color: st.primaryColor, textTransform: 'none',
-                  '&:hover': { bgcolor: `${st.primaryColor}10` },
-                }}
-              >
-                나머지 {filtered.length - INITIAL_LIMIT}건 더 보기
-              </Button>
-            )}
-          </Box>
-        </Box>
-      )}
+      {user && <DrawerContent user={user} onClose={handleClose} />}
     </Drawer>
   )
 }

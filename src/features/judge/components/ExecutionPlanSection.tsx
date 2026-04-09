@@ -61,8 +61,8 @@ export default function ExecutionPlanSection({ executionPlan, expectedOutcome }:
           <Box
             sx={{
               p: 3, borderRadius: 2.5,
-              bgcolor: isDarkMode ? 'rgba(16,185,129,0.06)' : 'rgba(16,185,129,0.05)',
-              border: `1px solid ${isDarkMode ? 'rgba(16,185,129,0.2)' : 'rgba(16,185,129,0.25)'}`,
+              bgcolor: theme.outcomeBoxBg,
+              border: `1px solid ${theme.outcomeBoxBorder}`,
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>

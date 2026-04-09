@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
+import { getStatsTheme, STATS_SUMMARY_COLORS } from '@/theme/statsTheme'
 import BarChartIcon from '@mui/icons-material/BarChart'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import GroupsIcon from '@mui/icons-material/Groups'
@@ -28,6 +29,7 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import PersonStatsTable from './components/PersonStatsTable'
 import TeamStatsTable from './components/TeamStatsTable'
+import StatsSummaryCards from './components/StatsSummaryCards'
 import {
   aggregatePersonStats,
   aggregateTeamStats,
@@ -51,6 +53,7 @@ export default function Stats() {
     accentBorder,
   } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
+  const stt = getStatsTheme(isDarkMode)
 
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
@@ -101,30 +104,30 @@ export default function Stats() {
     if (tab === 'person') {
       const n = filteredPersonData.length
       return [
-        { label: '참여 인원', value: n, unit: '명', color: '#6366f1' },
+        { label: '참여 인원', value: n, unit: '명', color: STATS_SUMMARY_COLORS.indigo },
         {
           label: '총 게시글',
           value: filteredPersonData.reduce((s, r) => s + r.totalPosts, 0),
           unit: '건',
-          color: '#0ea5e9',
+          color: STATS_SUMMARY_COLORS.sky,
         },
         {
           label: '아이디어 상상',
           value: filteredPersonData.reduce((s, r) => s + r.ideaCount, 0),
           unit: '건',
-          color: '#8b5cf6',
+          color: STATS_SUMMARY_COLORS.purple,
         },
         {
           label: '실행완료 상상',
           value: filteredPersonData.reduce((s, r) => s + r.completeCount, 0),
           unit: '건',
-          color: '#10b981',
+          color: STATS_SUMMARY_COLORS.green,
         },
         {
           label: '실행건수',
           value: filteredPersonData.reduce((s, r) => s + r.executionCount, 0),
           unit: '건',
-          color: '#f59e0b',
+          color: STATS_SUMMARY_COLORS.amber,
         },
         {
           label: '기대성과금액',
@@ -132,7 +135,7 @@ export default function Stats() {
             .reduce((s, r) => s + r.expectedAmount, 0)
             .toLocaleString(),
           unit: '만원',
-          color: '#ef4444',
+          color: STATS_SUMMARY_COLORS.red,
         },
       ]
     }
@@ -142,36 +145,36 @@ export default function Stats() {
         ? Math.round(filteredTeamData.reduce((s, r) => s + r[key], 0) / n)
         : 0
     return [
-      { label: '참여 팀', value: n, unit: '팀', color: '#6366f1' },
+      { label: '참여 팀', value: n, unit: '팀', color: STATS_SUMMARY_COLORS.indigo },
       {
         label: '총 게시글',
         value: filteredTeamData.reduce((s, r) => s + r.totalPosts, 0),
         unit: '건',
-        color: '#0ea5e9',
+        color: STATS_SUMMARY_COLORS.sky,
       },
       {
         label: '아이디어 상상',
         value: filteredTeamData.reduce((s, r) => s + r.ideaCount, 0),
         unit: '건',
-        color: '#8b5cf6',
+        color: STATS_SUMMARY_COLORS.purple,
       },
       {
         label: '실행완료 상상',
         value: filteredTeamData.reduce((s, r) => s + r.completeCount, 0),
         unit: '건',
-        color: '#10b981',
+        color: STATS_SUMMARY_COLORS.green,
       },
       {
         label: '평균 참여율',
         value: avgRate('participationRate'),
         unit: '%',
-        color: '#f59e0b',
+        color: STATS_SUMMARY_COLORS.amber,
       },
       {
         label: '평균 심사율',
         value: avgRate('reviewRate'),
         unit: '%',
-        color: '#ef4444',
+        color: STATS_SUMMARY_COLORS.red,
       },
     ]
   }, [tab, filteredPersonData, filteredTeamData])
@@ -222,13 +225,11 @@ export default function Stats() {
               width: 48,
               height: 48,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              background: stt.iconGradient,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: isDarkMode
-                ? '0 4px 16px rgba(99,102,241,0.45)'
-                : '0 4px 16px rgba(99,102,241,0.3)',
+              boxShadow: stt.iconShadow,
               flexShrink: 0,
             }}
           >
@@ -352,7 +353,7 @@ export default function Stats() {
                 bgcolor: accentBg,
                 '&:hover': {
                   borderColor: accentColor,
-                  bgcolor: 'rgba(99,102,241,0.14)',
+                  bgcolor: stt.excelHoverBg,
                 },
                 fontWeight: 700,
                 fontSize: '0.82rem',
@@ -369,56 +370,13 @@ export default function Stats() {
         </Box>
 
         {/* 요약 카드 */}
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: 'repeat(2, 1fr)',
-              sm: 'repeat(3, 1fr)',
-              md: 'repeat(6, 1fr)',
-            },
-            gap: { xs: 1.5, md: 2 },
-            mb: 4,
-          }}
-        >
-          {summaryCards.map((card) => (
-            <Box
-              key={card.label}
-              sx={{
-                bgcolor: cardBg,
-                border: `1px solid ${borderColor}`,
-                borderRadius: 2,
-                boxShadow: cardShadow,
-                p: { xs: 1.5, md: 2 },
-                textAlign: 'center',
-              }}
-            >
-              <Typography
-                fontWeight={800}
-                sx={{
-                  color: card.color,
-                  fontSize: { xs: '1.3rem', md: '1.5rem' },
-                  lineHeight: 1.2,
-                }}
-              >
-                {card.value}
-                <Typography
-                  component="span"
-                  variant="caption"
-                  sx={{ color: textSecondary, ml: 0.3 }}
-                >
-                  {card.unit}
-                </Typography>
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: textSecondary, display: 'block' }}
-              >
-                {card.label}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
+        <StatsSummaryCards
+          cards={summaryCards}
+          cardBg={cardBg}
+          borderColor={borderColor}
+          cardShadow={cardShadow}
+          textSecondary={textSecondary}
+        />
 
         {/* 탭 컨테이너 */}
         <Box

@@ -322,7 +322,7 @@ export default function JudgeDecisionModal({
               sx={{
                 mt: 1.5, display: 'flex', alignItems: 'center', gap: 0.75,
                 px: 1.25, py: 1, borderRadius: 1.5,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.06)',
+                bgcolor: theme.rewardBoxBg,
                 border: `1px solid rgba(99,102,241,0.2)`,
               }}
             >

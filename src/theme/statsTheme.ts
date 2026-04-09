@@ -1,6 +1,16 @@
 // src/theme/statsTheme.ts
 // Stats 페이지 전용 라이트/다크 팔레트
 
+// ── 요약 카드 색상 (라이트/다크 공통) ──
+export const STATS_SUMMARY_COLORS = {
+  indigo: '#6366f1',
+  sky:    '#0ea5e9',
+  purple: '#8b5cf6',
+  green:  '#10b981',
+  amber:  '#f59e0b',
+  red:    '#ef4444',
+} as const
+
 const statsLight = {
   // ── 배경 ──
   bgBase: '#f8fafc',
@@ -25,6 +35,12 @@ const statsLight = {
   strokeColor: '#ffffff',
   gridBorderColor: 'rgba(0,0,0,0.08)',
 
+  // ── 페이지 아이콘 ──
+  iconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  iconShadow:   '0 4px 16px rgba(99,102,241,0.3)',
+
+  // ── 엑셀 버튼 ──
+  excelHoverBg: 'rgba(99,102,241,0.14)',
 } as const
 
 const statsDark = {
@@ -50,6 +66,13 @@ const statsDark = {
   chartShade: 'dark' as const,
   strokeColor: '#1e293b',
   gridBorderColor: 'rgba(255,255,255,0.09)',
+
+  // ── 페이지 아이콘 ──
+  iconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  iconShadow:   '0 4px 16px rgba(99,102,241,0.45)',
+
+  // ── 엑셀 버튼 ──
+  excelHoverBg: 'rgba(99,102,241,0.14)',
 } as const
 
 export type StatsTheme = typeof statsLight

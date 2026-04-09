@@ -2,7 +2,7 @@
 // 역할별 맞춤 패널: 일반사용자(내 아이디어) / 심사자(심사 대기) / 관리자(마일리지 신청)
 import { Box, Typography, alpha } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
-import { getDashboardTheme } from '@/theme/dashboardTheme'
+import { getDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import {
   MY_RECENT_IDEAS,
@@ -18,9 +18,9 @@ export default function RolePanel() {
 
   return (
     <Box>
-      {role === 'user'     && <UserPanel     dt={dt} isDarkMode={isDarkMode} />}
-      {role === 'reviewer' && <ReviewerPanel dt={dt} isDarkMode={isDarkMode} />}
-      {role === 'admin'    && <AdminPanel    dt={dt} isDarkMode={isDarkMode} />}
+      {role === 'user'     && <UserPanel     dt={dt} />}
+      {role === 'reviewer' && <ReviewerPanel dt={dt} />}
+      {role === 'admin'    && <AdminPanel    dt={dt} />}
     </Box>
   )
 }
@@ -28,7 +28,7 @@ export default function RolePanel() {
 // ─── 타입 ───────────────────────────────────────────────────────────────────
 
 type DT = ReturnType<typeof getDashboardTheme>
-interface PanelProps { dt: DT; isDarkMode: boolean }
+interface PanelProps { dt: DT }
 
 // ─── 일반 사용자: 내가 최근에 올린 아이디어 ─────────────────────────────────
 
@@ -113,8 +113,8 @@ function ReviewerPanel({ dt }: PanelProps) {
             {/* 긴급 여부 */}
             <Box sx={{
               width: 28, height: 28, borderRadius: 1.25, flexShrink: 0,
-              bgcolor: item.urgent ? alpha('#ef4444', 0.12) : alpha('#6366f1', 0.1),
-              border: `1px solid ${item.urgent ? alpha('#ef4444', 0.3) : alpha('#6366f1', 0.2)}`,
+              bgcolor: item.urgent ? alpha(dashboardAccent.red, 0.12) : alpha(dashboardAccent.indigo, 0.1),
+              border: `1px solid ${item.urgent ? alpha(dashboardAccent.red, 0.3) : alpha(dashboardAccent.indigo, 0.2)}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '0.75rem',
             }}>
@@ -134,9 +134,9 @@ function ReviewerPanel({ dt }: PanelProps) {
             {/* 마감 */}
             <Typography sx={{
               fontSize: '0.63rem', fontWeight: 700, flexShrink: 0, whiteSpace: 'nowrap',
-              color: item.urgent ? '#ef4444' : dt.textSecondary,
+              color: item.urgent ? dashboardAccent.red : dt.textSecondary,
               px: 0.75, py: 0.2, borderRadius: 0.75,
-              bgcolor: item.urgent ? alpha('#ef4444', 0.1) : 'transparent',
+              bgcolor: item.urgent ? alpha(dashboardAccent.red, 0.1) : 'transparent',
             }}>
               {item.dueDate}
             </Typography>
@@ -169,11 +169,11 @@ function AdminPanel({ dt }: PanelProps) {
             {/* 이니셜 아바타 */}
             <Box sx={{
               width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-              bgcolor: alpha('#8b5cf6', 0.15),
-              border: `1px solid ${alpha('#8b5cf6', 0.25)}`,
+              bgcolor: alpha(dashboardAccent.purple, 0.15),
+              border: `1px solid ${alpha(dashboardAccent.purple, 0.25)}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#8b5cf6' }}>
+              <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: dashboardAccent.purple }}>
                 {item.name.charAt(0)}
               </Typography>
             </Box>
@@ -190,7 +190,7 @@ function AdminPanel({ dt }: PanelProps) {
 
             {/* 금액 + 시간 */}
             <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
-              <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#8b5cf6', lineHeight: 1.2 }}>
+              <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: dashboardAccent.purple, lineHeight: 1.2 }}>
                 {item.cashAmount.toLocaleString()}원
               </Typography>
               <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.63rem' }}>

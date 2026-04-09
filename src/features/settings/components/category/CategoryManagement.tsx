@@ -8,7 +8,7 @@ import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getSettingsTheme } from '@/theme/settingsTheme'
-import { useCategories } from '@/api/queries/useCategories'
+import { useAllCategories } from '@/api/queries/useCategories'
 import type { CategoryOption } from '@/api/types/idea'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import EmptyState from '@/components/ui/EmptyState'
@@ -20,7 +20,7 @@ export default function CategoryManagement() {
   const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
   const { showSnackbar } = useSnackbar()
 
-  const { categories, addCategory, updateCategory, deleteCategory } = useCategories()
+  const { categories, addCategory, updateCategory, deleteCategory } = useAllCategories()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<CategoryOption | null>(null)
@@ -39,9 +39,13 @@ export default function CategoryManagement() {
   const handleSave = async (cat: CategoryOption) => {
     if (editTarget) {
       await updateCategory(cat)
+      // active 토글이 활성→비활성으로 바뀐 경우 DELETE로 비활성화
+      if (editTarget.active && !cat.active) {
+        await deleteCategory(cat.id)
+      }
       showSnackbar('카테고리가 수정되었습니다', 'success')
     } else {
-      await addCategory({ ...cat, id: crypto.randomUUID() })
+      await addCategory(cat)
       showSnackbar('카테고리가 추가되었습니다', 'success')
     }
     setDialogOpen(false)

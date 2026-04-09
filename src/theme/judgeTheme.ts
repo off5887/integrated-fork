@@ -157,7 +157,12 @@ const judgeLight = {
   closeBtnBorder: 'rgba(203,213,225,0.7)',
   closeBtnHoverBorder: 'rgba(148,163,184,0.5)',
 
+  // ── ExecutionPlanSection ─────────────────────────────────────────────────
+  outcomeBoxBg:     'rgba(16,185,129,0.05)',
+  outcomeBoxBorder: 'rgba(16,185,129,0.25)',
+
   // ── JudgeDecisionModal ───────────────────────────────────────────────────
+  rewardBoxBg:           'rgba(99,102,241,0.06)',
   decisionModalFooterBg: 'rgba(248,250,252,0.8)',
   decisionInputBg:       '#f8fafc',
   decisionCancelBorder:  'rgba(203,213,225,0.7)',
@@ -319,6 +324,10 @@ const judgeDark = {
   closeBtnBorder: 'rgba(148,163,184,0.25)',
   closeBtnHoverBorder: 'rgba(148,163,184,0.4)',
 
+  outcomeBoxBg:     'rgba(16,185,129,0.06)',
+  outcomeBoxBorder: 'rgba(16,185,129,0.2)',
+
+  rewardBoxBg:           'rgba(99,102,241,0.08)',
   decisionModalFooterBg: 'rgba(15,23,42,0.3)',
   decisionInputBg:       'rgba(15,23,42,0.5)',
   decisionCancelBorder:  'rgba(148,163,184,0.25)',

@@ -4,6 +4,7 @@ import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined'
 import LightModeOutlined from '@mui/icons-material/LightModeOutlined'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
+import { getErrorFallbackTheme } from '@/theme/errorTheme'
 
 interface ErrorFallbackProps {
   error: Error | null
@@ -13,10 +14,7 @@ interface ErrorFallbackProps {
 export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
   const { isDarkMode, toggleTheme } = useThemeMode()
   const { textPrimary, textSecondary, bgBase } = usePageColors()
-
-  const red = isDarkMode ? '#ef4444' : '#dc2626'
-  const amber = isDarkMode ? '#f97316' : '#ea580c'
-  const blobOpacity = isDarkMode ? 0.16 : 0.1
+  const et = getErrorFallbackTheme(isDarkMode)
 
   return (
     <Box
@@ -42,10 +40,10 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
             right: 20,
             zIndex: 2,
             color: textSecondary,
-            bgcolor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-            border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+            bgcolor: et.toggleBg,
+            border: `1px solid ${et.toggleBorder}`,
             '&:hover': {
-              bgcolor: isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+              bgcolor: et.toggleHoverBg,
             },
           }}
         >
@@ -62,9 +60,9 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
           width: { xs: 300, md: 480 },
           height: { xs: 300, md: 480 },
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${red}, transparent 70%)`,
+          background: `radial-gradient(circle, ${et.red}, transparent 70%)`,
           filter: 'blur(60px)',
-          opacity: blobOpacity,
+          opacity: et.blobOpacity,
           pointerEvents: 'none',
         }}
       />
@@ -76,9 +74,9 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
           width: { xs: 260, md: 420 },
           height: { xs: 260, md: 420 },
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${amber}, transparent 70%)`,
+          background: `radial-gradient(circle, ${et.amber}, transparent 70%)`,
           filter: 'blur(60px)',
-          opacity: blobOpacity,
+          opacity: et.blobOpacity,
           pointerEvents: 'none',
         }}
       />
@@ -88,7 +86,7 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
         sx={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: `radial-gradient(circle, ${isDarkMode ? 'rgba(148,163,184,0.07)' : 'rgba(100,116,139,0.1)'} 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle, ${et.gridDot} 1px, transparent 1px)`,
           backgroundSize: '28px 28px',
           pointerEvents: 'none',
         }}
@@ -121,9 +119,7 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
             fontSize: '5rem',
             lineHeight: 1,
             mb: 3,
-            filter: isDarkMode
-              ? 'drop-shadow(0 0 10px rgba(239,68,68,0.4))'
-              : 'drop-shadow(0 4px 8px rgba(220,38,38,0.2))',
+            filter: et.emojiFilter,
             userSelect: 'none',
           }}
         >
@@ -150,9 +146,7 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
             width: 40,
             height: 3,
             borderRadius: 2,
-            background: isDarkMode
-              ? 'linear-gradient(90deg, #ef4444, #f97316)'
-              : 'linear-gradient(90deg, #dc2626, #ea580c)',
+            background: et.dividerGradient,
             my: 2.5,
             opacity: 0.65,
           }}
@@ -175,7 +169,7 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
               mb: 4,
               borderRadius: 2.5,
               overflow: 'hidden',
-              border: `1px solid ${isDarkMode ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.15)'}`,
+              border: `1px solid ${et.errorBoxBorder}`,
             }}
           >
             {/* 박스 헤더 */}
@@ -183,8 +177,8 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
               sx={{
                 px: 2,
                 py: 0.75,
-                bgcolor: isDarkMode ? 'rgba(239,68,68,0.12)' : 'rgba(239,68,68,0.07)',
-                borderBottom: `1px solid ${isDarkMode ? 'rgba(239,68,68,0.15)' : 'rgba(239,68,68,0.1)'}`,
+                bgcolor: et.errorHeaderBg,
+                borderBottom: `1px solid ${et.errorHeaderBorder}`,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 0.75,
@@ -194,7 +188,7 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
               <Typography
                 variant="caption"
                 sx={{
-                  color: isDarkMode ? '#fca5a5' : '#dc2626',
+                  color: et.errorTextColor,
                   fontFamily: 'monospace',
                   fontWeight: 600,
                   fontSize: '0.68rem',
@@ -206,12 +200,12 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
               </Typography>
             </Box>
             {/* 에러 메시지 */}
-            <Box sx={{ px: 2, py: 1.5, bgcolor: isDarkMode ? 'rgba(239,68,68,0.06)' : 'rgba(239,68,68,0.03)' }}>
+            <Box sx={{ px: 2, py: 1.5, bgcolor: et.errorBodyBg }}>
               <Typography
                 variant="caption"
                 sx={{
                   fontFamily: 'monospace',
-                  color: isDarkMode ? '#fca5a5' : '#b91c1c',
+                  color: et.errorMonoColor,
                   wordBreak: 'break-all',
                   display: 'block',
                   textAlign: 'left',
@@ -236,13 +230,13 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
               fontWeight: 600,
               borderRadius: 2.5,
               fontSize: '0.875rem',
-              border: `1.5px solid ${isDarkMode ? 'rgba(239,68,68,0.35)' : 'rgba(220,38,38,0.3)'}`,
-              color: isDarkMode ? '#fca5a5' : '#dc2626',
+              border: `1.5px solid ${et.outlinedBorder}`,
+              color: et.outlinedColor,
               bgcolor: 'transparent',
               transition: 'all 0.2s',
               '&:hover': {
-                border: `1.5px solid ${isDarkMode ? '#ef4444' : '#dc2626'}`,
-                bgcolor: isDarkMode ? 'rgba(239,68,68,0.1)' : 'rgba(220,38,38,0.06)',
+                border: `1.5px solid ${et.outlinedHoverBorder}`,
+                bgcolor: et.outlinedHoverBg,
                 transform: 'translateY(-1px)',
               },
             }}
@@ -258,21 +252,13 @@ export default function ErrorFallback({ error, onReload }: ErrorFallbackProps) {
               fontWeight: 700,
               borderRadius: 2.5,
               fontSize: '0.875rem',
-              background: isDarkMode
-                ? 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)'
-                : 'linear-gradient(135deg, #dc2626 0%, #ea580c 100%)',
+              background: et.btnGradient,
               color: '#fff',
-              boxShadow: isDarkMode
-                ? '0 4px 14px rgba(239,68,68,0.4)'
-                : '0 4px 14px rgba(220,38,38,0.3)',
+              boxShadow: et.btnShadow,
               transition: 'all 0.2s',
               '&:hover': {
-                background: isDarkMode
-                  ? 'linear-gradient(135deg, #dc2626 0%, #ea580c 100%)'
-                  : 'linear-gradient(135deg, #b91c1c 0%, #c2410c 100%)',
-                boxShadow: isDarkMode
-                  ? '0 6px 20px rgba(239,68,68,0.55)'
-                  : '0 6px 20px rgba(220,38,38,0.4)',
+                background: et.btnHoverGradient,
+                boxShadow: et.btnHoverShadow,
                 transform: 'translateY(-1px)',
               },
             }}

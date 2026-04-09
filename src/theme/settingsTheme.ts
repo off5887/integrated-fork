@@ -58,6 +58,17 @@ const settingsLight = {
   reviewerItemBg:       '#ffffff',
   reviewerAvatarDefaultBg: 'rgba(241,245,249,0.9)',
 
+  // ── 테이블 / 카드 (ExchangeRequestsManagement) ──────────────────────────────
+  activeAllChipBg:      'rgba(0,0,0,0.08)',
+  subtleBg:             'rgba(0,0,0,0.02)',
+  subtlerBg:            'rgba(0,0,0,0.015)',
+  tableRowHoverBg:      'rgba(0,0,0,0.02)',
+  selectedRowBg:        'rgba(99,102,241,0.04)',
+  selectedCardBg:       'rgba(99,102,241,0.05)',
+  selectedCardBorder:   'rgba(99,102,241,0.3)',
+  bulkBarBorder:        'rgba(99,102,241,0.25)',
+  iconInactiveBg:       'rgba(99,102,241,0.07)',
+
   // ── 상수 (dark / light 동일) ─────────────────────────────────────────────────
   primaryColor:           '#6366f1',
   primaryHoverBg:         '#4f46e5',
@@ -126,6 +137,17 @@ const settingsDark = {
   dropZoneBg:           'rgba(15,23,42,0.3)',
   reviewerItemBg:       'rgba(30,41,59,0.5)',
   reviewerAvatarDefaultBg: 'rgba(30,41,59,0.8)',
+
+  // ── 테이블 / 카드 (ExchangeRequestsManagement) ──────────────────────────────
+  activeAllChipBg:      'rgba(255,255,255,0.12)',
+  subtleBg:             'rgba(255,255,255,0.03)',
+  subtlerBg:            'rgba(255,255,255,0.02)',
+  tableRowHoverBg:      'rgba(255,255,255,0.04)',
+  selectedRowBg:        'rgba(99,102,241,0.08)',
+  selectedCardBg:       'rgba(99,102,241,0.1)',
+  selectedCardBorder:   'rgba(99,102,241,0.4)',
+  bulkBarBorder:        'rgba(99,102,241,0.3)',
+  iconInactiveBg:       'rgba(99,102,241,0.1)',
 
   // ── 상수 (dark / light 동일) ─────────────────────────────────────────────────
   primaryColor:           '#6366f1',

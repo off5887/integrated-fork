@@ -34,7 +34,7 @@ export function useLogin() {
       // 데모 세션 잔여 데이터 제거 — isDemoMode()가 false가 되어야 실제 API 데이터를 조회함
       clearDemoProfile()
       // 실제 계정으로 전환 시 데모 mock 캐시 무효화
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.me() })
+      queryClient.removeQueries({ queryKey: queryKeys.users.me() })
       queryClient.invalidateQueries({ queryKey: queryKeys.users.list() })
       navigate('/dashboard')
       return null

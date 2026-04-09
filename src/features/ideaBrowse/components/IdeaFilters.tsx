@@ -85,7 +85,7 @@ export default function IdeaFilters({
     color: textPrimary,
     bgcolor: inputBg,
     '& .MuiOutlinedInput-notchedOutline': { borderColor },
-    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(99,102,241,0.35)' },
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: ideaAccent.accentHoverBorder },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: ideaAccent.primary },
     '& .MuiSelect-icon': { color: textSecondary },
     '& .MuiSelect-select': { color: textPrimary, WebkitTextFillColor: textPrimary },
@@ -125,7 +125,7 @@ export default function IdeaFilters({
             fontSize: '0.875rem',
             height: 44,
             '& fieldset': { borderColor },
-            '&:hover fieldset': { borderColor: 'rgba(99,102,241,0.35)' },
+            '&:hover fieldset': { borderColor: ideaAccent.accentHoverBorder },
             '&.Mui-focused fieldset': { borderColor: ideaAccent.primary },
           },
           '& .MuiInputBase-input': { color: textPrimary, WebkitTextFillColor: textPrimary },
@@ -138,7 +138,7 @@ export default function IdeaFilters({
           display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 2,
           overflowX: 'auto', pb: 0.5,
           '&::-webkit-scrollbar': { height: 3 },
-          '&::-webkit-scrollbar-thumb': { background: 'rgba(99,102,241,0.25)', borderRadius: 9999 },
+          '&::-webkit-scrollbar-thumb': { background: ideaAccent.scrollbarThumb, borderRadius: 9999 },
         }}
       >
         {/* 전체 */}
@@ -272,10 +272,10 @@ export default function IdeaFilters({
             sx={{
               display: 'inline-flex', alignItems: 'center', gap: 0.75,
               px: 1.5, py: 0.7, borderRadius: 2, cursor: 'pointer', userSelect: 'none',
-              border: `1px solid ${showMyOnly ? 'rgba(16,185,129,0.45)' : borderColor}`,
+              border: `1px solid ${showMyOnly ? ideaAccent.myOnlyActiveBorder : borderColor}`,
               bgcolor: showMyOnly ? myOnlyActiveBg : filterChipBg,
               transition: 'all 0.15s ease', outline: 'none',
-              '&:hover': { borderColor: 'rgba(16,185,129,0.45)', bgcolor: myOnlyActiveBg },
+              '&:hover': { borderColor: ideaAccent.myOnlyActiveBorder, bgcolor: myOnlyActiveBg },
               '&:focus-visible': { outline: `2px solid ${ideaAccent.success}`, outlineOffset: 2 },
             }}
           >
