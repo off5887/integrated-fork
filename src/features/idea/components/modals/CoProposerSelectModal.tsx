@@ -10,6 +10,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Collapse,
   Dialog,
   DialogContent,
@@ -18,24 +19,23 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
-import { ORG_STRUCTURE } from '@/api/mock/idea'
+import { useOrgUsersTree } from '@/api/queries/useUsers'
+import type { UserApiMember } from '@/api/types/settings'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 import { onKeyboardClick } from '@/utils/keyboardClick'
 
-// 검색을 위한 플랫 멤버 목록
-const allMembers = ORG_STRUCTURE.flatMap((div) =>
-  div.teams.flatMap((team) =>
-    team.members.map((m) => ({ ...m, divName: div.name, teamName: team.name })),
-  ),
-)
+interface FlatMember extends UserApiMember {
+  bizAreaNm: string
+  deptNm: string
+}
 
 interface CoProposerSelectModalProps {
   open: boolean
   onClose: () => void
-  selected: string[]
-  onToggle: (name: string) => void
+  selected: string[]          // "이름 (팀)" 형식 목록 (UI 표시용)
+  onToggle: (label: string, employeeId: string) => void
 }
 
 export default function CoProposerSelectModal({
@@ -46,8 +46,10 @@ export default function CoProposerSelectModal({
 }: CoProposerSelectModalProps) {
   const { isDarkMode } = useThemeMode()
   const [search, setSearch] = useState('')
-  const [expandedDivs, setExpandedDivs] = useState<string[]>(['div1', 'div2'])
-  const [expandedTeams, setExpandedTeams] = useState<string[]>(['team-a1', 'team-b1'])
+  const [expandedDivs, setExpandedDivs] = useState<string[]>([])
+  const [expandedTeams, setExpandedTeams] = useState<string[]>([])
+
+  const { data: orgTree, isLoading } = useOrgUsersTree()
 
   const it = getIdeaTheme(isDarkMode)
   const { textPrimary, textSecondary, borderColor } = it
@@ -57,19 +59,39 @@ export default function CoProposerSelectModal({
     onClose()
   }
 
-  const handleToggleDiv = (id: string) => {
+  const handleToggleDiv = (name: string) => {
     setExpandedDivs((prev) =>
-      prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id],
+      prev.includes(name) ? prev.filter((d) => d !== name) : [...prev, name],
     )
   }
 
-  const handleToggleTeam = (id: string) => {
+  const handleToggleTeam = (deptCd: string) => {
     setExpandedTeams((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
+      prev.includes(deptCd) ? prev.filter((t) => t !== deptCd) : [...prev, deptCd],
     )
   }
+
+  // 첫 로드 시 첫 번째 부문/팀 자동 펼치기
+  useEffect(() => {
+    if (!orgTree || orgTree.length === 0) return
+    setExpandedDivs([orgTree[0].bizAreaNm])
+    if (orgTree[0].teams.length > 0) {
+      setExpandedTeams([orgTree[0].teams[0].deptCd])
+    }
+  }, [orgTree])
 
   const isSearching = search.trim().length > 0
+
+  const allMembers: FlatMember[] = useMemo(() => {
+    if (!orgTree) return []
+    return orgTree.flatMap((biz) =>
+      biz.teams.flatMap((team) =>
+        team.members
+          .filter((m) => m.isActive !== false)
+          .map((m) => ({ ...m, bizAreaNm: biz.bizAreaNm, deptNm: team.deptNm })),
+      ),
+    )
+  }, [orgTree])
 
   const filteredMembers = useMemo(() => {
     if (!isSearching) return null
@@ -77,33 +99,32 @@ export default function CoProposerSelectModal({
     return allMembers.filter(
       (m) =>
         m.name.includes(q) ||
-        m.teamName.includes(q) ||
-        m.divName.includes(q) ||
-        m.position.toLowerCase().includes(q),
+        m.deptNm.includes(q) ||
+        m.bizAreaNm.includes(q) ||
+        m.rollNm.toLowerCase().includes(q),
     )
-  }, [search, isSearching])
+  }, [search, isSearching, allMembers])
 
   const MemberRow = ({
     member,
-    indent = 0,
   }: {
-    member: (typeof allMembers)[number]
-    indent?: number
+    member: FlatMember
   }) => {
-    const isSelected = selected.includes(member.name)
+    const label = `${member.name} (${member.deptNm})`
+    const isSelected = selected.includes(label)
     return (
       <Box
         role="checkbox"
         aria-checked={isSelected}
-        aria-label={`${member.name} ${member.position} ${isSelected ? '선택됨' : '선택 안됨'}`}
+        aria-label={`${member.name} ${member.rollNm} ${isSelected ? '선택됨' : '선택 안됨'}`}
         tabIndex={0}
-        onClick={() => onToggle(member.name)}
-        onKeyDown={onKeyboardClick(() => onToggle(member.name))}
+        onClick={() => onToggle(label, member.employeeId)}
+        onKeyDown={onKeyboardClick(() => onToggle(label, member.employeeId))}
         sx={{
           display: 'flex',
           alignItems: 'center',
           gap: 1.25,
-          pl: indent ? `${indent * 16 + 8}px` : 1.25,
+          pl: 1.25,
           pr: 1.25,
           py: 1,
           borderRadius: 1.5,
@@ -111,9 +132,7 @@ export default function CoProposerSelectModal({
           outline: 'none',
           border: `1px solid ${isSelected ? it.accent.borderHover : borderColor}`,
           '&:focus-visible': { outline: `2px solid ${it.accent.border}`, outlineOffset: 2 },
-          bgcolor: isSelected
-            ? it.accent.bgSelected
-            : it.listItemBg,
+          bgcolor: isSelected ? it.accent.bgSelected : it.listItemBg,
           transition: 'all 0.12s ease',
           '&:hover': {
             bgcolor: it.accent.bgHover,
@@ -126,12 +145,8 @@ export default function CoProposerSelectModal({
             width: 34,
             height: 34,
             flexShrink: 0,
-            bgcolor: isSelected
-              ? it.accent.bgAvatarSelected
-              : it.avatarBg,
-            color: isSelected
-              ? it.accent.text
-              : textSecondary,
+            bgcolor: isSelected ? it.accent.bgAvatarSelected : it.avatarBg,
+            color: isSelected ? it.accent.text : textSecondary,
             fontSize: '0.8rem',
             fontWeight: 700,
             border: `1px solid ${isSelected ? it.accent.border : borderColor}`,
@@ -152,14 +167,12 @@ export default function CoProposerSelectModal({
             {member.name}
           </Typography>
           <Typography sx={{ fontSize: '0.72rem', color: textSecondary, fontFamily: 'monospace' }}>
-            {isSearching ? `${member.divName} · ${member.teamName}` : member.position}
+            {isSearching ? `${member.bizAreaNm} · ${member.deptNm}` : member.rollNm}
           </Typography>
         </Box>
 
         {isSelected && (
-          <CheckIcon
-            sx={{ fontSize: '1rem', color: it.accent.text, flexShrink: 0 }}
-          />
+          <CheckIcon sx={{ fontSize: '1rem', color: it.accent.text, flexShrink: 0 }} />
         )}
       </Box>
     )
@@ -248,7 +261,7 @@ export default function CoProposerSelectModal({
         <TextField
           fullWidth
           size="small"
-          placeholder="이름, 부문, 팀, 직무로 검색"
+          placeholder="이름, 사업소, 팀, 직급으로 검색"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           slotProps={{
@@ -300,10 +313,14 @@ export default function CoProposerSelectModal({
             scrollbarColor: `${it.accent.border} transparent`,
           }}
         >
-          {/* 검색 결과 */}
-          {isSearching ? (
+          {isLoading ? (
+            <Box sx={{ py: 6, display: 'flex', justifyContent: 'center' }}>
+              <CircularProgress size={28} sx={{ color: it.accent.color }} />
+            </Box>
+          ) : isSearching ? (
+            /* 검색 결과 */
             filteredMembers && filteredMembers.length > 0 ? (
-              filteredMembers.map((m) => <MemberRow key={m.id} member={m} />)
+              filteredMembers.map((m) => <MemberRow key={m.employeeId} member={m} />)
             ) : (
               <Box sx={{ py: 5, textAlign: 'center' }}>
                 <Typography variant="caption" sx={{ color: textSecondary }}>
@@ -313,16 +330,16 @@ export default function CoProposerSelectModal({
             )
           ) : (
             /* 조직도 트리 */
-            ORG_STRUCTURE.map((div) => (
-              <Box key={div.id} sx={{ mb: 0.5 }}>
-                {/* 부문 헤더 */}
+            (orgTree ?? []).map((biz) => (
+              <Box key={biz.bizAreaNm} sx={{ mb: 0.5 }}>
+                {/* 사업소(부문) 헤더 */}
                 <Box
                   role="button"
-                  aria-expanded={expandedDivs.includes(div.id)}
-                  aria-label={`${div.name} 부문 ${expandedDivs.includes(div.id) ? '접기' : '펼치기'}`}
+                  aria-expanded={expandedDivs.includes(biz.bizAreaNm)}
+                  aria-label={`${biz.bizAreaNm} ${expandedDivs.includes(biz.bizAreaNm) ? '접기' : '펼치기'}`}
                   tabIndex={0}
-                  onClick={() => handleToggleDiv(div.id)}
-                  onKeyDown={onKeyboardClick(() => handleToggleDiv(div.id))}
+                  onClick={() => handleToggleDiv(biz.bizAreaNm)}
+                  onKeyDown={onKeyboardClick(() => handleToggleDiv(biz.bizAreaNm))}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -332,10 +349,8 @@ export default function CoProposerSelectModal({
                     borderRadius: 1.5,
                     cursor: 'pointer',
                     outline: 'none',
-                    border: `1px solid ${expandedDivs.includes(div.id) ? it.accent.border : borderColor}`,
-                    bgcolor: expandedDivs.includes(div.id)
-                      ? it.accent.bgHover
-                      : it.categoryCardBg,
+                    border: `1px solid ${expandedDivs.includes(biz.bizAreaNm) ? it.accent.border : borderColor}`,
+                    bgcolor: expandedDivs.includes(biz.bizAreaNm) ? it.accent.bgHover : it.categoryCardBg,
                     transition: 'all 0.12s ease',
                     '&:hover': { bgcolor: it.accent.bgHover, borderColor: it.accent.border },
                     '&:focus-visible': { outline: `2px solid ${it.accent.border}`, outlineOffset: 2 },
@@ -346,30 +361,30 @@ export default function CoProposerSelectModal({
                       flex: 1,
                       fontSize: '0.83rem',
                       fontWeight: 700,
-                      color: expandedDivs.includes(div.id) ? it.accent.text : textPrimary,
+                      color: expandedDivs.includes(biz.bizAreaNm) ? it.accent.text : textPrimary,
                     }}
                   >
-                    {div.name}
+                    {biz.bizAreaNm}
                   </Typography>
-                  {expandedDivs.includes(div.id) ? (
+                  {expandedDivs.includes(biz.bizAreaNm) ? (
                     <ExpandLessIcon sx={{ fontSize: '1rem', color: textSecondary }} />
                   ) : (
                     <ExpandMoreIcon sx={{ fontSize: '1rem', color: textSecondary }} />
                   )}
                 </Box>
 
-                <Collapse in={expandedDivs.includes(div.id)} timeout="auto" unmountOnExit>
+                <Collapse in={expandedDivs.includes(biz.bizAreaNm)} timeout="auto" unmountOnExit>
                   <Box sx={{ pl: 1.5, pt: 0.5, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                    {div.teams.map((team) => (
-                      <Box key={team.id}>
+                    {biz.teams.map((team) => (
+                      <Box key={team.deptCd}>
                         {/* 팀 헤더 */}
                         <Box
                           role="button"
-                          aria-expanded={expandedTeams.includes(team.id)}
-                          aria-label={`${team.name} 팀 ${expandedTeams.includes(team.id) ? '접기' : '펼치기'}`}
+                          aria-expanded={expandedTeams.includes(team.deptCd)}
+                          aria-label={`${team.deptNm} ${expandedTeams.includes(team.deptCd) ? '접기' : '펼치기'}`}
                           tabIndex={0}
-                          onClick={() => handleToggleTeam(team.id)}
-                          onKeyDown={onKeyboardClick(() => handleToggleTeam(team.id))}
+                          onClick={() => handleToggleTeam(team.deptCd)}
+                          onKeyDown={onKeyboardClick(() => handleToggleTeam(team.deptCd))}
                           sx={{
                             display: 'flex',
                             alignItems: 'center',
@@ -396,32 +411,25 @@ export default function CoProposerSelectModal({
                               letterSpacing: '0.01em',
                             }}
                           >
-                            {team.name}
+                            {team.deptNm}
                           </Typography>
-                          {expandedTeams.includes(team.id) ? (
+                          {expandedTeams.includes(team.deptCd) ? (
                             <ExpandLessIcon sx={{ fontSize: '0.85rem', color: textSecondary }} />
                           ) : (
                             <ExpandMoreIcon sx={{ fontSize: '0.85rem', color: textSecondary }} />
                           )}
                         </Box>
 
-                        <Collapse
-                          in={expandedTeams.includes(team.id)}
-                          timeout="auto"
-                          unmountOnExit
-                        >
-                          <Box
-                            sx={{
-                              pl: 1,
-                              mb: 0.5,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: 0.5,
-                            }}
-                          >
-                            {team.members.map((member) => (
-                              <MemberRow key={member.id} member={{ ...member, divName: div.name, teamName: team.name }} />
-                            ))}
+                        <Collapse in={expandedTeams.includes(team.deptCd)} timeout="auto" unmountOnExit>
+                          <Box sx={{ pl: 1, mb: 0.5, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                            {team.members
+                              .filter((m) => m.isActive !== false)
+                              .map((member) => (
+                                <MemberRow
+                                  key={member.employeeId}
+                                  member={{ ...member, bizAreaNm: biz.bizAreaNm, deptNm: team.deptNm }}
+                                />
+                              ))}
                           </Box>
                         </Collapse>
                       </Box>

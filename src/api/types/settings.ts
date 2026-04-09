@@ -47,11 +47,11 @@ export interface User {
 
 // ─── 부서별 심사자 ────────────────────────────────────────────────────────────
 
-/** GET /api/section-reviewers 응답 항목 */
+/** GET /api/section-reviewers, GET /api/section-reviewers/my-department 응답 항목 */
 export interface SectionReviewer {
   id: number
   deptCd: string
-  employeeId: string
+  reviewerEmployeeId: string
   name: string
   rollNm: string
   deptNm: string
@@ -59,7 +59,7 @@ export interface SectionReviewer {
   assignedBy: string
   isActive: boolean
   createdAt: string
-  updatedAt: string
+  updatedAt: string | null
 }
 
 /** POST /api/section-reviewers, PUT /api/section-reviewers/{id} 요청 바디 */

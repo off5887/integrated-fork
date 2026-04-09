@@ -1,5 +1,5 @@
 import type { OrgMember } from '@/api/types/reviewer'
-import type { User, MileageMember, Idea, SectionReviewer } from '@/api/types/settings'
+import type { User, UserApiBizArea, MileageMember, Idea, SectionReviewer } from '@/api/types/settings'
 
 // ── 조직도 ───────────────────────────────────────────────────────────────────
 export const mockOrganization: OrgMember[] = [
@@ -40,6 +40,77 @@ export const mockUsers: User[] = [
   { id: 'EXE001',  name: '장임원',   employeeNumber: 'EXE001',  email: 'jang.exe@company.com',     role: 'admin',    position: '임원',   department: '경영지원부문', businessSite: '본사',    active: true  },
 ]
 
+/** GET /api/users 데모 모드 — 조직도 트리 형태 (공동제안자 선택용) */
+export const mockUsersBizArea: UserApiBizArea[] = [
+  {
+    bizAreaNm: '본사',
+    teams: [
+      {
+        deptCd: 'D0', deptNm: '개발1팀',
+        members: [
+          { employeeId: 'DEV001', name: '김개발',   email: 'kim.dev@company.com',    rollNm: '팀장',   isAdmin: true,  isReviewer: false, isActive: true  },
+          { employeeId: 'DEV002', name: '이코딩',   email: 'lee.code@company.com',   rollNm: '사원',   isAdmin: false, isReviewer: true,  isActive: true  },
+          { employeeId: 'DEV003', name: '박프론트', email: 'park.front@company.com', rollNm: '사원',   isAdmin: false, isReviewer: false, isActive: true  },
+        ],
+      },
+      {
+        deptCd: 'D1', deptNm: '기획팀',
+        members: [
+          { employeeId: 'PLAN001', name: '최기획',   email: 'choi.plan@company.com',   rollNm: '팀장', isAdmin: false, isReviewer: true, isActive: true },
+          { employeeId: 'PLAN002', name: '정디자인', email: 'jung.design@company.com', rollNm: '사원', isAdmin: false, isReviewer: false, isActive: true },
+        ],
+      },
+      {
+        deptCd: 'D4', deptNm: '인사팀',
+        members: [
+          { employeeId: 'HR001', name: '오인사', email: 'oh.hr@company.com', rollNm: '팀장', isAdmin: false, isReviewer: true, isActive: true },
+        ],
+      },
+      {
+        deptCd: 'D5', deptNm: '재무팀',
+        members: [
+          { employeeId: 'FIN001', name: '백재무', email: 'baek.fin@company.com', rollNm: '팀장', isAdmin: false, isReviewer: false, isActive: false },
+        ],
+      },
+      {
+        deptCd: 'D6', deptNm: '전략기획실',
+        members: [
+          { employeeId: 'STR001', name: '서부문장', email: 'seo.str@company.com', rollNm: '부문장', isAdmin: false, isReviewer: true, isActive: true },
+        ],
+      },
+    ],
+  },
+  {
+    bizAreaNm: '강남지사',
+    teams: [
+      {
+        deptCd: 'D2', deptNm: '영업1팀',
+        members: [
+          { employeeId: 'SALE001', name: '윤영업', email: 'yoon.sales@company.com', rollNm: '팀장', isAdmin: false, isReviewer: true,  isActive: true },
+          { employeeId: 'SALE002', name: '송세일', email: 'song.sale@company.com',  rollNm: '사원', isAdmin: false, isReviewer: false, isActive: true },
+        ],
+      },
+      {
+        deptCd: 'D3', deptNm: '마케팅팀',
+        members: [
+          { employeeId: 'MKT001', name: '한마케팅', email: 'han.mkt@company.com', rollNm: '팀장', isAdmin: false, isReviewer: true, isActive: true },
+        ],
+      },
+    ],
+  },
+  {
+    bizAreaNm: '부산지사',
+    teams: [
+      {
+        deptCd: 'D7', deptNm: '총무팀',
+        members: [
+          { employeeId: 'GEN001', name: '남총무', email: 'nam.gen@company.com', rollNm: '사원', isAdmin: false, isReviewer: false, isActive: true },
+        ],
+      },
+    ],
+  },
+]
+
 export const mockDepartments: string[] = [
   '개발1팀', '개발2팀', '기획팀', '디자인팀',
   '영업1팀', '마케팅팀', '인사팀', '재무팀', '총무팀',
@@ -74,11 +145,18 @@ export const mockReviewerPools: Record<1, OrgMember[]> = {
 }
 
 export const mockSectionReviewers: SectionReviewer[] = [
-  { id: 1, deptCd: 'D0', deptNm: '개발1팀',  employeeId: '1', name: '김개발',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
-  { id: 2, deptCd: 'D1', deptNm: '기획팀',   employeeId: '4', name: '최기획',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
-  { id: 3, deptCd: 'D2', deptNm: '영업1팀',  employeeId: '6', name: '윤영업',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
-  { id: 4, deptCd: 'D3', deptNm: '마케팅팀', employeeId: '8', name: '한마케팅', rollNm: '팀장', reviewStage: 1, assignedBy: '1', isActive: false, createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
-  { id: 5, deptCd: 'D4', deptNm: '인사팀',   employeeId: '9', name: '오인사',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: '2026-01-01T00:00:00' },
+  { id: 1, deptCd: 'D0', deptNm: '개발1팀',  reviewerEmployeeId: '1', name: '김개발',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: null },
+  { id: 2, deptCd: 'D1', deptNm: '기획팀',   reviewerEmployeeId: '4', name: '최기획',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: null },
+  { id: 3, deptCd: 'D2', deptNm: '영업1팀',  reviewerEmployeeId: '6', name: '윤영업',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: null },
+  { id: 4, deptCd: 'D3', deptNm: '마케팅팀', reviewerEmployeeId: '8', name: '한마케팅', rollNm: '팀장', reviewStage: 1, assignedBy: '1', isActive: false, createdAt: '2026-01-01T00:00:00', updatedAt: null },
+  { id: 5, deptCd: 'D4', deptNm: '인사팀',   reviewerEmployeeId: '9', name: '오인사',  rollNm: '팀장',  reviewStage: 1, assignedBy: '1', isActive: true,  createdAt: '2026-01-01T00:00:00', updatedAt: null },
+]
+
+/** 데모 모드 — 내 부서 심사자 목록 (my-department) */
+export const mockMyDeptReviewers: SectionReviewer[] = [
+  { id: 1, deptCd: 'D0', deptNm: '개발1팀', reviewerEmployeeId: '22210051', name: '김태섭', rollNm: '과장',  reviewStage: 1, assignedBy: '11110001', isActive: true, createdAt: '2026-03-01T09:00:00', updatedAt: null },
+  { id: 2, deptCd: 'D0', deptNm: '개발1팀', reviewerEmployeeId: '22210052', name: '이승재', rollNm: '차장',  reviewStage: 2, assignedBy: '11110001', isActive: true, createdAt: '2026-03-01T09:00:00', updatedAt: null },
+  { id: 3, deptCd: 'D0', deptNm: '개발1팀', reviewerEmployeeId: '22210053', name: '박지영', rollNm: '부장',  reviewStage: 3, assignedBy: '11110001', isActive: true, createdAt: '2026-03-01T09:00:00', updatedAt: null },
 ]
 
 export const mockIdeas: Idea[] = [

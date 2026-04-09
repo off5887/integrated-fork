@@ -12,6 +12,7 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
 
 import { useIdeaDraft, DRAFT_KEY } from './hooks/useIdeaDraft'
+import { useCreateIdea, useUpdateIdea } from '@/api/queries/useIdeas'
 import DraftSnackbar from './components/DraftSnackbar'
 import DraftRestoreBanner from './components/DraftRestoreBanner'
 import NewIdeaHeader from './components/NewIdeaHeader'
@@ -45,7 +46,8 @@ export default function NewIdea() {
   const [problem, setProblem] = useState(editIdea?.problem ?? '')
   const [solution, setSolution] = useState(editIdea?.solution ?? '')
   const [reviewer, setReviewer] = useState<string[]>([])
-  const [coProposers, setCoProposers] = useState<string[]>([])
+  const [coProposers, setCoProposers] = useState<string[]>([])       // UI 표시용 레이블
+  const [coProposerIds, setCoProposerIds] = useState<string[]>([])   // API 전송용 사번
   const [security, setSecurity] = useState<'public' | 'private'>(editIdea?.security ?? 'public')
   const [plan, setPlan] = useState('')
   const [startDate, setStartDate] = useState('')
@@ -87,8 +89,12 @@ export default function NewIdea() {
   const isDirty = !loading && !!(title.trim() || problem.trim() || solution.trim())
   const { isBlocked, proceed, reset } = useUnsavedChanges(isDirty)
 
+  // ─── API 훅 ───────────────────────────────────────────────────────────────
+  const createIdea = useCreateIdea()
+  const updateIdea = useUpdateIdea(editIdea?.id ?? 0)
+
   // ─── 제출 ─────────────────────────────────────────────────────────────────
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const errors = { title: !title.trim(), problem: !problem.trim(), solution: !solution.trim() }
     if (errors.title || errors.problem || errors.solution || categories.length === 0) {
       setFieldErrors(errors)
@@ -97,12 +103,31 @@ export default function NewIdea() {
     }
     setFieldErrors({ title: false, problem: false, solution: false })
     setLoading(true)
-    setTimeout(() => {
+
+    const body = {
+      title: title.trim(),
+      problem: problem.trim(),
+      description: solution.trim(),
+      categoryId: parseInt(categories[0], 10),
+      type: (ideaType === 'complete' ? 'completed' : 'idea') as 'idea' | 'completed',
+      security: (security === 'private' ? 'Y' : 'N') as 'N' | 'Y',
+      coProposerIds: coProposerIds.length > 0 ? coProposerIds : undefined,
+    }
+
+    try {
+      if (isEditMode && editIdea) {
+        await updateIdea.mutateAsync(body)
+      } else {
+        await createIdea.mutateAsync(body)
+      }
       clearDraft()
       showSnackbar(isEditMode ? '아이디어가 수정되었습니다!' : '제안이 등록되었습니다!', 'success')
+      navigate('/ideaBrowse')
+    } catch {
+      showSnackbar('제출 중 오류가 발생했습니다. 다시 시도해주세요.', 'error')
+    } finally {
       setLoading(false)
-      navigate('/dashboard')
-    }, 1500)
+    }
   }
 
   // ─── 스타일 ───────────────────────────────────────────────────────────────
@@ -236,7 +261,7 @@ export default function NewIdea() {
                   sx={{
                     borderRadius: 2, px: 3, py: 1.25, fontWeight: 600, textTransform: 'none',
                     borderColor: borderColor, color: textSecondary,
-                    '&:hover': { borderColor: isDarkMode ? 'rgba(148,163,184,0.3)' : 'rgba(148,163,184,0.6)', bgcolor: 'transparent' },
+                    '&:hover': { borderColor: it.cancelBtnHoverBorder, bgcolor: 'transparent' },
                   }}
                 >
                   취소
@@ -268,7 +293,14 @@ export default function NewIdea() {
         open={coProposerModalOpen}
         onClose={() => setCoProposerModalOpen(false)}
         selected={coProposers}
-        onToggle={(name) => setCoProposers((prev) => prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name])}
+        onToggle={(label, employeeId) => {
+          setCoProposers((prev) =>
+            prev.includes(label) ? prev.filter((n) => n !== label) : [...prev, label],
+          )
+          setCoProposerIds((prev) =>
+            prev.includes(employeeId) ? prev.filter((id) => id !== employeeId) : [...prev, employeeId],
+          )
+        }}
       />
       <ReviewerSelectModal
         open={reviewerModalOpen}

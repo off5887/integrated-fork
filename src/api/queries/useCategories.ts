@@ -1,104 +1,99 @@
 /**
- * useCategories
+ * useCategories / useAllCategories
  *
- * 현재: localStorage 기반 mock
- * 백엔드 연동 시: categoryApi 함수들만 아래 주석처럼 교체하면 됩니다.
- * 컴포넌트(CategoryManagement) 코드는 변경 없음.
+ * - useCategories    : GET  /api/categories         (활성 카테고리만, 일반 사용자)
+ * - useAllCategories : GET  /api/categories/all     (전체 포함 비활성, 관리자)
+ * - useAddCategory   : POST /api/categories
+ * - useUpdateCategory: PUT  /api/categories/{id}
+ * - useDeleteCategory: DELETE /api/categories/{id}  (비활성화, 하드 삭제 아님)
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CATEGORIES } from '@/api/mock/idea'
-import type { CategoryOption } from '@/api/types/idea'
+import { api } from '@/api/client'
 import { queryKeys } from '@/api/queryKeys'
-// 백엔드 연동 시 주석 해제:
-// import { api } from '@/api/client'
+import { mockCategoryApiItems } from '@/api/mock/idea'
+import type { ApiResponse } from '@/api/types/auth'
+import type { CategoryApiItem, CategoryOption, CategoryRequest } from '@/api/types/idea'
+import { toCategoryOption, toCategoryRequest } from '@/api/types/idea'
+import { withDemoFallback } from '@/utils/demoMode'
 
-const STORAGE_KEY = 'gomgom_categories_v1'
-
-// ─── 데이터 함수 (백엔드 연동 시 이 부분만 교체) ───────────────────────────────
-
-const categoryApi = {
-  /** 전체 조회 */
-  getAll: async (): Promise<CategoryOption[]> => {
-    // 백엔드 연동 시:
-    // return api.get<CategoryOption[]>('/api/categories').then((r) => r.data)
-
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        if (Array.isArray(parsed)) return parsed as CategoryOption[]
-      } catch {
-        localStorage.removeItem(STORAGE_KEY) // 손상된 데이터 제거
-      }
-    }
-    return CATEGORIES as CategoryOption[]
-  },
-
-  /** 추가 */
-  add: async (category: CategoryOption): Promise<CategoryOption> => {
-    // 백엔드 연동 시:
-    // return api.post<CategoryOption>('/api/categories', category).then((r) => r.data)
-
-    const current = await categoryApi.getAll()
-    const next = [...current, category]
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    return category
-  },
-
-  /** 수정 */
-  update: async (category: CategoryOption): Promise<CategoryOption> => {
-    // 백엔드 연동 시:
-    // return api.put<CategoryOption>(`/api/categories/${category.id}`, category).then((r) => r.data)
-
-    const current = await categoryApi.getAll()
-    const next = current.map((c) => (c.id === category.id ? category : c))
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    return category
-  },
-
-  /** 삭제 */
-  remove: async (id: string): Promise<void> => {
-    // 백엔드 연동 시:
-    // return api.delete(`/api/categories/${id}`).then(() => undefined)
-
-    const current = await categoryApi.getAll()
-    const next = current.filter((c) => c.id !== id)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-  },
-}
-
-// ─── React Query 훅 ────────────────────────────────────────────────────────────
+// ─── 활성 카테고리 목록 (일반 사용자) ────────────────────────────────────────
 
 export function useCategories() {
-  const queryClient = useQueryClient()
-
   const { data: categories = [], isLoading } = useQuery({
     queryKey: queryKeys.categories.all(),
-    queryFn: categoryApi.getAll,
+    queryFn: () =>
+      withDemoFallback<CategoryOption[]>(
+        mockCategoryApiItems.filter((c) => c.isActive).map(toCategoryOption),
+        async () => {
+          const res = await api.get<ApiResponse<CategoryApiItem[]>>('/api/categories')
+          return (res.data.data ?? []).map(toCategoryOption)
+        },
+      ),
+    staleTime: 0,
   })
+  return { categories, isLoading }
+}
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() })
+// ─── 전체 카테고리 목록 (관리자, 비활성 포함) ─────────────────────────────────
 
-  const addMutation = useMutation({
-    mutationFn: categoryApi.add,
+function useAddCategory(invalidate: () => void) {
+  return useMutation({
+    mutationFn: async (opt: CategoryOption) => {
+      const req: CategoryRequest = toCategoryRequest(opt)
+      const res = await api.post<ApiResponse<CategoryApiItem>>('/api/categories', req)
+      return toCategoryOption(res.data.data)
+    },
     onSuccess: invalidate,
   })
+}
 
-  const updateMutation = useMutation({
-    mutationFn: categoryApi.update,
+function useUpdateCategory(invalidate: () => void) {
+  return useMutation({
+    mutationFn: async (opt: CategoryOption) => {
+      const req: CategoryRequest = toCategoryRequest(opt)
+      const res = await api.put<ApiResponse<CategoryApiItem>>(`/api/categories/${opt.id}`, req)
+      return toCategoryOption(res.data.data)
+    },
     onSuccess: invalidate,
   })
+}
 
-  const deleteMutation = useMutation({
-    mutationFn: categoryApi.remove,
+function useDeactivateCategory(invalidate: () => void) {
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/api/categories/${id}`),
     onSuccess: invalidate,
   })
+}
+
+export function useAllCategories() {
+  const queryClient = useQueryClient()
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.categories.admin() })
+    queryClient.invalidateQueries({ queryKey: queryKeys.categories.all() })
+  }
+
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: queryKeys.categories.admin(),
+    queryFn: () =>
+      withDemoFallback<CategoryOption[]>(
+        mockCategoryApiItems.map(toCategoryOption),
+        async () => {
+          const res = await api.get<ApiResponse<CategoryApiItem[]>>('/api/categories/all')
+          return (res.data.data ?? []).map(toCategoryOption)
+        },
+      ),
+    staleTime: 0,
+  })
+
+  const addMutation        = useAddCategory(invalidate)
+  const updateMutation     = useUpdateCategory(invalidate)
+  const deactivateMutation = useDeactivateCategory(invalidate)
 
   return {
     categories,
     isLoading,
-    addCategory: addMutation.mutateAsync,
-    updateCategory: updateMutation.mutateAsync,
-    deleteCategory: deleteMutation.mutateAsync,
+    addCategory:      addMutation.mutateAsync,
+    updateCategory:   updateMutation.mutateAsync,
+    deleteCategory:   deactivateMutation.mutateAsync,
   }
 }

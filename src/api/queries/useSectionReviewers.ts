@@ -6,14 +6,14 @@ import { api } from '@/api/client'
 import { queryKeys } from '@/api/queryKeys'
 import { getApiErrorMessage } from '@/utils/apiError'
 import { withDemoFallback } from '@/utils/demoMode'
-import { mockSectionReviewers } from '@/api/mock/settings'
+import { mockSectionReviewers, mockMyDeptReviewers } from '@/api/mock/settings'
 import type { ApiResponse } from '@/api/types/auth'
 import type { SectionReviewer, SectionReviewerRequest } from '@/api/types/settings'
 
 async function fetchSectionReviewers(deptCd?: string): Promise<SectionReviewer[]> {
   const params = deptCd ? { deptCd } : undefined
   const res = await api.get<ApiResponse<SectionReviewer[]>>('/api/section-reviewers', { params })
-  return res.data.data
+  return res.data.data ?? []
 }
 
 export function useSectionReviewers(deptCd?: string) {
@@ -52,6 +52,22 @@ export function useDeleteSectionReviewer() {
     mutationFn: (id: number) =>
       api.delete(`/api/section-reviewers/${id}`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.sectionReviewers.list() }),
+  })
+}
+
+/** GET /api/section-reviewers/my-department — 내 부서 심사자 목록 */
+export function useMyDeptReviewers() {
+  return useQuery({
+    queryKey: queryKeys.sectionReviewers.myDept(),
+    queryFn: () =>
+      withDemoFallback<SectionReviewer[]>(
+        mockMyDeptReviewers,
+        async () => {
+          const res = await api.get<ApiResponse<SectionReviewer[]>>('/api/section-reviewers/my-department')
+          return res.data.data ?? []
+        },
+      ),
+    staleTime: 0,
   })
 }
 

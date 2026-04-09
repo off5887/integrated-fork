@@ -1,6 +1,18 @@
 // src/api/mock/idea.ts
 
-import type { CategoryOption, OrgDivision, Reviewer } from '@/api/types/idea'
+import type { CategoryApiItem, CategoryOption, OrgDivision, Reviewer } from '@/api/types/idea'
+
+/** GET /api/categories/all 형태 mock (데모 모드용) */
+// icon 필드는 ASCII 식별자 (이모지 아님) — 실제 API와 동일한 형태
+export const mockCategoryApiItems: CategoryApiItem[] = [
+  { categoryId: 1, categoryName: '절감 아이디어', description: '비용 절감 관련 아이디어',     icon: 'money',  color: '#f59e0b', displayOrder: 1, isActive: true  },
+  { categoryId: 2, categoryName: '혁신 아이디어', description: '프로세스 혁신 관련 아이디어', icon: 'rocket', color: '#6366f1', displayOrder: 2, isActive: true  },
+  { categoryId: 3, categoryName: '안전 아이디어', description: '안전 관련 아이디어',           icon: 'shield', color: '#10b981', displayOrder: 3, isActive: true  },
+  { categoryId: 4, categoryName: '복지 아이디어', description: '직원 복지 관련 아이디어',     icon: 'heart',  color: '#ec4899', displayOrder: 4, isActive: true  },
+  { categoryId: 5, categoryName: '품질 아이디어', description: '품질 향상 관련 아이디어',     icon: 'star',   color: '#eab308', displayOrder: 5, isActive: true  },
+  { categoryId: 6, categoryName: '환경 아이디어', description: '환경 보호 관련 아이디어',     icon: 'plant',  color: '#14b8a6', displayOrder: 6, isActive: true  },
+  { categoryId: 7, categoryName: '기타',          description: null,                           icon: 'pin',    color: '#94a3b8', displayOrder: 7, isActive: true  },
+]
 
 export const CATEGORIES: CategoryOption[] = [
   { id: '절감', label: '절감 아이디어', emoji: '💰', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.35)' },
@@ -32,9 +44,9 @@ export const ORG_STRUCTURE: OrgDivision[] = [
         id: 'team-a1',
         name: 'A팀',
         members: [
-          { id: 101, name: '김프로',     dept: 'A팀', position: 'Product Owner' },
-          { id: 102, name: '박디자이너', dept: 'A팀', position: 'Senior Designer' },
-          { id: 103, name: '최기획',     dept: 'A팀', position: 'Planner' },
+          { id: 101, employeeId: '22210101', name: '김프로',     dept: 'A팀', position: 'Product Owner' },
+          { id: 102, employeeId: '22210102', name: '박디자이너', dept: 'A팀', position: 'Senior Designer' },
+          { id: 103, employeeId: '22210103', name: '최기획',     dept: 'A팀', position: 'Planner' },
         ],
       },
     ],
@@ -47,16 +59,16 @@ export const ORG_STRUCTURE: OrgDivision[] = [
         id: 'team-b1',
         name: 'B팀',
         members: [
-          { id: 201, name: '이프론트',   dept: 'B팀', position: 'Frontend Lead' },
-          { id: 202, name: '윤백엔드',   dept: 'B팀', position: 'Backend Engineer' },
+          { id: 201, employeeId: '22210201', name: '이프론트',   dept: 'B팀', position: 'Frontend Lead' },
+          { id: 202, employeeId: '22210202', name: '윤백엔드',   dept: 'B팀', position: 'Backend Engineer' },
         ],
       },
       {
         id: 'team-b2',
         name: 'C팀',
         members: [
-          { id: 301, name: '정모바일',   dept: 'C팀', position: 'iOS Developer' },
-          { id: 302, name: '한안드로이드', dept: 'C팀', position: 'Android Developer' },
+          { id: 301, employeeId: '22210301', name: '정모바일',   dept: 'C팀', position: 'iOS Developer' },
+          { id: 302, employeeId: '22210302', name: '한안드로이드', dept: 'C팀', position: 'Android Developer' },
         ],
       },
     ],
@@ -69,7 +81,7 @@ export const ORG_STRUCTURE: OrgDivision[] = [
         id: 'team-c1',
         name: '마케팅팀',
         members: [
-          { id: 401, name: '윤그로스', dept: '마케팅팀', position: 'Growth Hacker' },
+          { id: 401, employeeId: '22210401', name: '윤그로스', dept: '마케팅팀', position: 'Growth Hacker' },
         ],
       },
     ],

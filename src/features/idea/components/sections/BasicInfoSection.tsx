@@ -1,9 +1,9 @@
 // src/features/idea/components/sections/BasicInfoSection.tsx
 // 제목·카테고리·문제 상황·해결 방안 입력 섹션 (기본 정보)
-import { Box, TextField, Typography } from '@mui/material'
+import { Box, Skeleton, TextField, Typography } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
-import { CATEGORIES } from '@/api/mock/idea'
+import { useCategories } from '@/api/queries/useCategories'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 
 interface Props {
@@ -39,6 +39,7 @@ export default function BasicInfoSection({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const it = getIdeaTheme(isDarkMode)
+  const { categories: CATEGORIES, isLoading: categoriesLoading } = useCategories()
   const { textPrimary, textSecondary, borderColor, categoryCardBg } = it
 
   const handleToggle = (id: string) => {
@@ -181,7 +182,12 @@ export default function BasicInfoSection({
               gap: 1,
             }}
           >
-            {CATEGORIES.map((cat) => {
+            {categoriesLoading
+              ? Array.from({ length: 7 }).map((_, i) => (
+                  <Skeleton key={i} variant="rounded" height={72} sx={{ borderRadius: 2.5 }} />
+                ))
+              : null}
+            {!categoriesLoading && CATEGORIES.map((cat) => {
               const isSelected = categories.includes(cat.id)
               return (
                 <Box
@@ -272,7 +278,7 @@ export default function BasicInfoSection({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {cat.id}
+                    {cat.label}
                   </Typography>
                 </Box>
               )

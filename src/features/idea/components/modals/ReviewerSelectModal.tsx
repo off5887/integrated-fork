@@ -8,6 +8,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   IconButton,
@@ -17,7 +18,7 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
-import { REVIEWERS } from '@/api/mock/idea'
+import { useMyDeptReviewers } from '@/api/queries/useSectionReviewers'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 import { onKeyboardClick } from '@/utils/keyboardClick'
 
@@ -35,13 +36,19 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
   const it = getIdeaTheme(isDarkMode)
   const { textPrimary, textSecondary, borderColor } = it
 
+  const { data: reviewers = [], isLoading } = useMyDeptReviewers()
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return REVIEWERS
-    return REVIEWERS.filter(
-      (r) => r.name.includes(q) || r.dept.includes(q) || r.position.toLowerCase().includes(q),
+    const active = reviewers.filter((r) => r.isActive)
+    if (!q) return active
+    return active.filter(
+      (r) =>
+        r.name.includes(q) ||
+        r.deptNm.includes(q) ||
+        r.rollNm.includes(q),
     )
-  }, [search])
+  }, [search, reviewers])
 
   const handleClose = () => {
     setSearch('')
@@ -160,10 +167,14 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
             scrollbarColor: `${it.accent.border} transparent`,
           }}
         >
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <Box sx={{ py: 5, textAlign: 'center' }}>
+              <CircularProgress size={24} sx={{ color: it.accent.color }} />
+            </Box>
+          ) : filtered.length === 0 ? (
             <Box sx={{ py: 5, textAlign: 'center' }}>
               <Typography variant="caption" sx={{ color: textSecondary }}>
-                검색 결과가 없습니다
+                {reviewers.length === 0 ? '배정된 심사자가 없습니다' : '검색 결과가 없습니다'}
               </Typography>
             </Box>
           ) : (
@@ -174,7 +185,7 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
                   key={r.id}
                   role="checkbox"
                   aria-checked={isSelected}
-                  aria-label={`${r.name} ${r.dept} ${r.position} ${isSelected ? '선택됨' : '선택 안됨'}`}
+                  aria-label={`${r.name} ${r.deptNm} ${r.rollNm} ${isSelected ? '선택됨' : '선택 안됨'}`}
                   tabIndex={0}
                   onClick={() => onToggle(r.name)}
                   onKeyDown={onKeyboardClick(() => onToggle(r.name))}
@@ -216,7 +227,7 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
                       {r.name}
                     </Typography>
                     <Typography sx={{ fontSize: '0.72rem', color: textSecondary, fontFamily: 'monospace' }}>
-                      {r.dept} · {r.position}
+                      {r.deptNm} · {r.rollNm} ({r.reviewStage}차)
                     </Typography>
                   </Box>
 

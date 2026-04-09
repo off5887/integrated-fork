@@ -9,7 +9,7 @@ import { queryKeys } from '@/api/queryKeys'
 import { type UserApiBizArea, type User } from '@/api/types/settings'
 import { flattenUsers } from '@/utils/userUtils'
 import type { ApiResponse } from '@/api/types/auth'
-import { mockUsers } from '@/api/mock/settings'
+import { mockUsers, mockUsersBizArea } from '@/api/mock/settings'
 import { withDemoFallback } from '@/utils/demoMode'
 
 // ─── GET /api/users ───────────────────────────────────────────────────────────
@@ -22,7 +22,24 @@ export function useUsers() {
         mockUsers,
         async () => {
           const res = await api.get<ApiResponse<UserApiBizArea[]>>('/api/users')
-          return flattenUsers(res.data.data)
+          return flattenUsers(res.data.data ?? [])
+        },
+      ),
+    staleTime: 0,
+  })
+}
+
+// ─── GET /api/users (org tree — 공동제안자 선택용) ──────────────────────────
+
+export function useOrgUsersTree() {
+  return useQuery({
+    queryKey: queryKeys.users.tree(),
+    queryFn: () =>
+      withDemoFallback<UserApiBizArea[]>(
+        mockUsersBizArea,
+        async () => {
+          const res = await api.get<ApiResponse<UserApiBizArea[]>>('/api/users')
+          return res.data.data ?? []
         },
       ),
     staleTime: 0,
