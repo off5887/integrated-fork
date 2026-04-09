@@ -10,7 +10,7 @@ import {
 
 import ErrorBoundary from '@/components/common/routing/ErrorBoundary'
 import ProtectedRoute from '@/components/common/routing/ProtectedRoute'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import TopProgressBar from '@/components/common/routing/TopProgressBar'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
 import { useCurrentUserWithLoading } from '@/features/auth/hooks/useCurrentUser'
@@ -36,7 +36,7 @@ const NotFoundPage = lazy(() => import('@/features/error/NotFoundPage'))
 function RootLayout() {
   return (
     <ErrorBoundary>
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<TopProgressBar />}>
         <Outlet />
       </Suspense>
     </ErrorBoundary>
@@ -46,7 +46,7 @@ function RootLayout() {
 // 루트("/") 리디렉트 — 인증 여부 확인 후 분기
 function RootRedirect() {
   const { user, isLoading } = useCurrentUserWithLoading()
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <TopProgressBar />
   return user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
 }
 

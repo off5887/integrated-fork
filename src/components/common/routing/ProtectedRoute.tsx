@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useCurrentUserWithLoading } from '@/features/auth/hooks/useCurrentUser'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import TopProgressBar from './TopProgressBar'
 import type { UserRole } from '@/api/types/auth'
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 export default function ProtectedRoute({ roles }: Props) {
   const { user, isLoading } = useCurrentUserWithLoading()
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <TopProgressBar />
   if (!user) return <Navigate to="/login" replace />
   if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" replace />
 

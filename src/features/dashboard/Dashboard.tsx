@@ -2,7 +2,7 @@
 // 콘텐츠 높이 기준 자연 레이아웃 — 잘림·내부스크롤 없음
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import { Box, CircularProgress, Typography, alpha } from '@mui/material'
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { dashboardAccent, getDashboardTheme } from '@/theme/dashboardTheme'
 import { MY_GOMGOMI, TEAM_ACTIVITIES, MY_ACTIVITIES, EXECUTION_RATE } from '@/api/mock/dashboard'
@@ -24,6 +24,11 @@ export default function RealDashboard() {
   const dt = getDashboardTheme(isDarkMode)
   const [activityTab, setActivityTab] = useState<'team' | 'my'>('team')
   const activities = activityTab === 'team' ? TEAM_ACTIVITIES : MY_ACTIVITIES
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), 3000)
+    return () => clearTimeout(t)
+  }, [])
 
   return (
     <Box sx={{
@@ -70,8 +75,24 @@ export default function RealDashboard() {
         </Box>
       </Box>
 
+      {/* ── 헤더 하단 프로그레스바 (3초 로딩) ─────────────────── */}
+      {!ready && (
+        <Box sx={{ position: 'relative', height: 3, bgcolor: 'rgba(99,102,241,0.12)', overflow: 'hidden', flexShrink: 0 }}>
+          <Box sx={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+            transformOrigin: 'left center',
+            animation: 'dashboard-bar 3s cubic-bezier(0.4,0,0.2,1) forwards',
+            '@keyframes dashboard-bar': {
+              '0%':   { transform: 'scaleX(0)',    transformOrigin: 'left center' },
+              '100%': { transform: 'scaleX(1)',    transformOrigin: 'left center' },
+            },
+          }} />
+        </Box>
+      )}
+
       {/* ── Content ─────────────────────────────────────────── */}
-      <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+      <Box sx={{ p: { xs: 1.5, md: 2 }, display: ready ? 'block' : 'none' }}>
 
         {/*
           ── Main Layout (CSS Grid) ─────────────────────────────

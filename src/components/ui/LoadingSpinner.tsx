@@ -1,6 +1,7 @@
 // src/components/ui/LoadingSpinner.tsx
 import { Box, CircularProgress, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
+import { getSpinnerTheme } from '@/theme/uiTheme'
 
 interface LoadingSpinnerProps {
   /** 스피너 크기 (px) */
@@ -20,9 +21,10 @@ export default function LoadingSpinner({
   color,
 }: LoadingSpinnerProps) {
   const { isDarkMode: isDark } = useThemeMode()
+  const st = getSpinnerTheme(isDark)
 
-  const spinnerColor = color ?? (isDark ? '#818cf8' : '#6366f1')
-  const textColor = isDark ? '#94a3b8' : '#64748b'
+  const spinnerColor = color ?? st.spinnerColor
+  const textColor = st.textColor
 
   const content = (
     <Box
@@ -63,7 +65,7 @@ export default function LoadingSpinner({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: isDark ? '#0b121f' : '#f1f5f9',
+        bgcolor: st.fullPageBg,
       }}
     >
       {content}
