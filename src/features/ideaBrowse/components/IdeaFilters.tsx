@@ -257,7 +257,7 @@ export default function IdeaFilters({
             {statusOptions.map((s) => (
               <MenuItem key={s} value={s}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: IDEA_STATUS_CONFIG[s].color, flexShrink: 0 }} />
+                  <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: IDEA_STATUS_CONFIG[s as IdeaStatus]?.color ?? '#94a3b8', flexShrink: 0 }} />
                   <Typography sx={{ fontSize: '0.83rem' }}>{s}</Typography>
                 </Box>
               </MenuItem>

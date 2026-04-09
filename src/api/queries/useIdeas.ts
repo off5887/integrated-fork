@@ -14,6 +14,21 @@ import { mockIdeaStatuses } from '@/api/mock/idea'
 
 // ─── GET /api/ideas/statuses ──────────────────────────────────────────────────
 
+/** API key → IdeaStatus 라벨 정규화 테이블 (공백 제거 포함) */
+const API_STATUS_KEY_MAP: Record<string, string> = {
+  pending:     '심사대기',
+  approved:    '승인',
+  rejected:    '반려',
+  in_progress: '실행중',
+  completed:   '완료',
+}
+
+function normalizeStatuses(raw: Record<string, string>): string[] {
+  return Object.entries(raw)
+    .map(([key]) => API_STATUS_KEY_MAP[key] ?? null)
+    .filter((v): v is string => v !== null)
+}
+
 export function useIdeaStatuses() {
   return useQuery({
     queryKey: queryKeys.ideas.statuses(),
@@ -22,7 +37,7 @@ export function useIdeaStatuses() {
         Object.values(mockIdeaStatuses),
         async () => {
           const res = await api.get<ApiResponse<Record<string, string>>>('/api/ideas/statuses')
-          return Object.values(res.data.data ?? {})
+          return normalizeStatuses(res.data.data ?? {})
         },
       ),
     staleTime: 0,
