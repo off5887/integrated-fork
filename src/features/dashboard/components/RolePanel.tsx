@@ -1,11 +1,11 @@
 // src/features/dashboard/components/RolePanel.tsx
 // 역할별 맞춤 패널: 일반사용자(내 아이디어) / 심사자(심사 대기) / 관리자(마일리지 신청)
-import { Box, Typography, alpha } from '@mui/material'
+import { Box, CircularProgress, Typography, alpha } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import { useMyIdeas } from '@/api/queries/useIdeas'
 import {
-  MY_RECENT_IDEAS,
   PENDING_REVIEW_IDEAS,
   MILEAGE_REQUESTS,
 } from '@/api/mock/dashboard'
@@ -30,63 +30,83 @@ export default function RolePanel() {
 type DT = ReturnType<typeof getDashboardTheme>
 interface PanelProps { dt: DT }
 
+// ─── 상태 API key → 표시 라벨 + 색상 ───────────────────────────────────────
+
+const STATUS_DISPLAY: Record<string, { label: string; color: string }> = {
+  pending:     { label: '심사대기', color: '#f59e0b' },
+  approved:    { label: '승인',     color: '#10b981' },
+  rejected:    { label: '반려',     color: '#ef4444' },
+  in_progress: { label: '실행중',   color: '#6366f1' },
+  completed:   { label: '완료',     color: '#94a3b8' },
+}
+
 // ─── 일반 사용자: 내가 최근에 올린 아이디어 ─────────────────────────────────
 
 function UserPanel({ dt }: PanelProps) {
+  const { data: myIdeasPage, isLoading } = useMyIdeas(0, 5)
+  const items = myIdeasPage?.content ?? []
+
   return (
     <>
       <PanelHeader title="내 상상 아이디어" subtitle="최근 제안한 아이디어" dt={dt} />
-      <Box>
-        {MY_RECENT_IDEAS.map((item, i) => (
-          <Box
-            key={item.id}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.25,
-              py: 1.1,
-              px: 0.5,
-              borderBottom: i < MY_RECENT_IDEAS.length - 1 ? `1px solid ${dt.dividerColor}` : 'none',
-            }}
-          >
-            {/* 상태 점 */}
-            <Box sx={{
-              width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-              bgcolor: item.statusColor,
-              boxShadow: `0 0 6px ${item.statusColor}80`,
-            }} />
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+          <CircularProgress size={22} sx={{ color: dashboardAccent.indigo }} />
+        </Box>
+      ) : items.length === 0 ? (
+        <Typography variant="caption" sx={{ color: dt.textSecondary, px: 0.5 }}>
+          아직 제안한 아이디어가 없습니다.
+        </Typography>
+      ) : (
+        <Box>
+          {items.map((item, i) => {
+            const s = STATUS_DISPLAY[item.status] ?? { label: item.status, color: '#94a3b8' }
+            const dateStr = new Date(item.submitDate).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+            return (
+              <Box
+                key={item.ideaId}
+                sx={{
+                  display: 'flex', alignItems: 'center', gap: 1.25,
+                  py: 1.1, px: 0.5,
+                  borderBottom: i < items.length - 1 ? `1px solid ${dt.dividerColor}` : 'none',
+                }}
+              >
+                {/* 상태 점 */}
+                <Box sx={{
+                  width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                  bgcolor: s.color, boxShadow: `0 0 6px ${s.color}80`,
+                }} />
 
-            {/* 제목 */}
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="body2" fontWeight={500} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
-                {item.title}
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.2 }}>
-                <Typography sx={{
-                  fontSize: '0.65rem', fontWeight: 700,
-                  color: item.statusColor,
-                  px: 0.75, py: 0.15, borderRadius: 0.75,
-                  bgcolor: alpha(item.statusColor, 0.12),
-                  lineHeight: 1.4,
+                {/* 제목 */}
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" fontWeight={500} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
+                    {item.title}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.2 }}>
+                    <Typography sx={{
+                      fontSize: '0.65rem', fontWeight: 700, color: s.color,
+                      px: 0.75, py: 0.15, borderRadius: 0.75,
+                      bgcolor: alpha(s.color, 0.12), lineHeight: 1.4,
+                    }}>
+                      {s.label}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.65rem' }}>
+                      🐟 {item.mileagePoints.toLocaleString()}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* 날짜 */}
+                <Typography variant="caption" sx={{
+                  color: dt.textSecondary, flexShrink: 0, fontSize: '0.63rem', whiteSpace: 'nowrap',
                 }}>
-                  {item.status}
-                </Typography>
-                <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.65rem' }}>
-                  ♥ {item.likes}
+                  {dateStr}
                 </Typography>
               </Box>
-            </Box>
-
-            {/* 날짜 */}
-            <Typography variant="caption" sx={{
-              color: dt.textSecondary, flexShrink: 0,
-              fontSize: '0.63rem', whiteSpace: 'nowrap',
-            }}>
-              {item.date}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
+            )
+          })}
+        </Box>
+      )}
     </>
   )
 }

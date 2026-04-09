@@ -1,6 +1,6 @@
 // src/api/mock/idea.ts
 
-import type { CategoryApiItem, CategoryOption, OrgDivision, Reviewer } from '@/api/types/idea'
+import type { CategoryApiItem, CategoryOption, IdeaApiItem, MyIdeasPage, OrgDivision, Reviewer } from '@/api/types/idea'
 
 /** GET /api/ideas/statuses 데모 모드 응답 — API 키:라벨 매핑 */
 export const mockIdeaStatuses: Record<string, string> = {
@@ -96,3 +96,70 @@ export const ORG_STRUCTURE: OrgDivision[] = [
     ],
   },
 ]
+
+/** GET /api/ideas/my 데모 모드 응답 */
+const mockMyIdeaItems: IdeaApiItem[] = [
+  {
+    ideaId: 101, title: '개발팀 온보딩 프로세스 디지털화',
+    problem: '신입 개발자 온보딩이 수작업·구두 전달에 의존해 인수인계 품질이 들쭉날쭉함.',
+    description: '노션 기반 온보딩 위키 + 자동 체크리스트 시스템 구축.',
+    categoryId: 2, categoryName: '혁신 아이디어',
+    category: { categoryId: 2, categoryName: '혁신 아이디어' },
+    type: 'idea', status: 'pending', security: 'N',
+    submittedBy: 'DEMO001', mileagePoints: 0,
+    submitDate: '2026-03-05T09:00:00', createdAt: '2026-03-05T09:00:00', updatedAt: '2026-03-05T09:00:00',
+    coProposers: [],
+  },
+  {
+    ideaId: 102, title: '코드 리뷰 가이드라인 표준화',
+    problem: '팀원마다 코드 리뷰 기준이 달라 리뷰 시간이 길고 피드백 일관성이 부족함.',
+    description: '리뷰 체크리스트 + 자동 린트 룰 세트 제정.',
+    categoryId: 5, categoryName: '품질 아이디어',
+    category: { categoryId: 5, categoryName: '품질 아이디어' },
+    type: 'idea', status: 'approved', security: 'N',
+    submittedBy: 'DEMO001', mileagePoints: 20000,
+    submitDate: '2026-01-20T10:00:00', createdAt: '2026-01-20T10:00:00', updatedAt: '2026-02-01T10:00:00',
+    coProposers: [],
+  },
+  {
+    ideaId: 103, title: '사내 기술 블로그 운영 제안',
+    problem: '개발팀 내 지식이 개인에 집중되고 외부 공유 채널이 없어 채용 브랜딩 취약.',
+    description: '주 1회 기술 포스팅 의무화 + 외부 블로그 플랫폼 연동.',
+    categoryId: 2, categoryName: '혁신 아이디어',
+    category: { categoryId: 2, categoryName: '혁신 아이디어' },
+    type: 'idea', status: 'pending', security: 'N',
+    submittedBy: 'DEMO001', mileagePoints: 0,
+    submitDate: '2026-03-14T14:00:00', createdAt: '2026-03-14T14:00:00', updatedAt: '2026-03-14T14:00:00',
+    coProposers: [],
+  },
+  {
+    ideaId: 4, title: '재택근무 원격근무 화상회의 시스템 업그레이드',
+    problem: '현재 시스템 화질·지연 문제로 재택근무 및 원격근무 회의 효율 저하.',
+    description: 'Microsoft Teams Premium 도입. AI 기반 회의 요약.',
+    categoryId: 2, categoryName: '혁신 아이디어',
+    category: { categoryId: 2, categoryName: '혁신 아이디어' },
+    type: 'idea', status: 'approved', security: 'N',
+    submittedBy: 'DEMO001', mileagePoints: 1500,
+    submitDate: '2026-02-10T09:00:00', createdAt: '2026-02-10T09:00:00', updatedAt: '2026-02-20T09:00:00',
+    coProposers: [],
+  },
+  {
+    ideaId: 1, title: '생산라인 LED 조명 교체로 전기요금 절감',
+    problem: '현재 형광등 사용으로 전기요금이 연간 2,400만원 이상 발생.',
+    description: 'LED 교체 시 연간 1,200만원 절감 예상.',
+    categoryId: 1, categoryName: '절감 아이디어',
+    category: { categoryId: 1, categoryName: '절감 아이디어' },
+    type: 'idea', status: 'rejected', security: 'N',
+    submittedBy: 'DEMO001', mileagePoints: 0,
+    submitDate: '2026-02-20T09:00:00', createdAt: '2026-02-20T09:00:00', updatedAt: '2026-02-25T09:00:00',
+    coProposers: [],
+  },
+]
+
+export const mockMyIdeasPage: MyIdeasPage = {
+  content: mockMyIdeaItems,
+  pageable: { pageNumber: 0, pageSize: 20 },
+  totalElements: mockMyIdeaItems.length,
+  totalPages: 1,
+  last: true,
+}

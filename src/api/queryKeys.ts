@@ -34,6 +34,7 @@ export const queryKeys = {
   },
   ideas: {
     statuses: () => ['ideas', 'statuses'] as const,
+    my:       (page?: number) => page !== undefined ? ['ideas', 'my', page] as const : ['ideas', 'my'] as const,
     list:     (params?: object) => params ? ['ideas', 'list', params] as const : ['ideas', 'list'] as const,
     detail:   (id: number) => ['ideas', 'detail', id] as const,
   },

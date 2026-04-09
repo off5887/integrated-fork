@@ -9,8 +9,8 @@ import { api } from '@/api/client'
 import { queryKeys } from '@/api/queryKeys'
 import { isDemoMode, withDemoFallback } from '@/utils/demoMode'
 import type { ApiResponse } from '@/api/types/auth'
-import type { IdeaApiItem, IdeaCreateRequest } from '@/api/types/idea'
-import { mockIdeaStatuses } from '@/api/mock/idea'
+import type { IdeaApiItem, IdeaCreateRequest, MyIdeasPage } from '@/api/types/idea'
+import { mockIdeaStatuses, mockMyIdeasPage } from '@/api/mock/idea'
 
 // ─── GET /api/ideas/statuses ──────────────────────────────────────────────────
 
@@ -38,6 +38,25 @@ export function useIdeaStatuses() {
         async () => {
           const res = await api.get<ApiResponse<Record<string, string>>>('/api/ideas/statuses')
           return normalizeStatuses(res.data.data ?? {})
+        },
+      ),
+    staleTime: 0,
+  })
+}
+
+// ─── GET /api/ideas/my ───────────────────────────────────────────────────────
+
+export function useMyIdeas(page = 0, size = 20) {
+  return useQuery({
+    queryKey: queryKeys.ideas.my(page),
+    queryFn: () =>
+      withDemoFallback<MyIdeasPage>(
+        mockMyIdeasPage,
+        async () => {
+          const res = await api.get<ApiResponse<MyIdeasPage>>('/api/ideas/my', {
+            params: { page, size },
+          })
+          return res.data.data
         },
       ),
     staleTime: 0,

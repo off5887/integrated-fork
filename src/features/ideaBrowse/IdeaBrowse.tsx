@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IDEAS } from '@/api/mock/ideaBrowse'
 import { useOrgUsersTree } from '@/api/queries/useUsers'
-import { useIdeaStatuses } from '@/api/queries/useIdeas'
+import { useIdeaStatuses, useMyIdeas } from '@/api/queries/useIdeas'
 import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
@@ -30,6 +30,11 @@ export default function IdeaBrowse() {
   const user = useCurrentUser()
   const { data: orgTree } = useOrgUsersTree()
   const { data: statusOptions = [] } = useIdeaStatuses()
+  const { data: myIdeasPage } = useMyIdeas()
+  const myIdeaIds = useMemo(
+    () => new Set((myIdeasPage?.content ?? []).map((i) => i.ideaId)),
+    [myIdeasPage],
+  )
   const { textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg, similar, statsBg, statsBorder, myOnlyActiveBg } = getIdeaTheme(isDarkMode)
 
   // ─── 필터 상태 ──────────────────────────────────────────────
@@ -91,7 +96,7 @@ export default function IdeaBrowse() {
     const q = search.trim().toLowerCase()
 
     const filtered = ideas.filter((idea) => {
-      if (showMyOnly && idea.author !== (user?.name ?? '')) return false
+      if (showMyOnly && !myIdeaIds.has(idea.id)) return false
       if (selectedCategory && idea.category !== selectedCategory) return false
       if (selectedBizArea && idea.bizArea !== selectedBizArea) return false
       if (selectedDept && idea.department !== selectedDept) return false
@@ -113,7 +118,7 @@ export default function IdeaBrowse() {
         default:         return 0
       }
     })
-  }, [ideas, search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap])
+  }, [ideas, search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap, myIdeaIds])
 
   const similarCount = useMemo(
     () => ideas.filter((i) => (similarityMap.get(i.id)?.length ?? 0) > 0).length,
@@ -121,8 +126,8 @@ export default function IdeaBrowse() {
   )
 
   const myCount = useMemo(
-    () => ideas.filter((i) => i.author === (user?.name ?? '')).length,
-    [ideas, user?.name],
+    () => myIdeasPage?.totalElements ?? ideas.filter((i) => myIdeaIds.has(i.id)).length,
+    [myIdeasPage, ideas, myIdeaIds],
   )
 
   const hasFilter = !!(search || selectedCategory || selectedBizArea || selectedDept || selectedStatus || showSimilarOnly || showMyOnly)

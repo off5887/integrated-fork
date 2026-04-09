@@ -154,7 +154,7 @@ export interface IdeaCreateRequest {
   coProposerIds?: string[]   // 공동제안자 사번 목록
 }
 
-/** GET /api/ideas 응답의 단일 아이디어 */
+/** GET /api/ideas, POST /api/ideas 응답의 단일 아이디어 */
 export interface IdeaApiItem {
   ideaId: number
   title: string
@@ -163,13 +163,24 @@ export interface IdeaApiItem {
   categoryId: number
   categoryName: string
   type: 'idea' | 'completed'
-  status: 'pending' | 'approved' | 'rejected'
+  status: 'pending' | 'approved' | 'rejected' | 'in_progress' | 'completed'
   security: 'N' | 'Y'
   submittedBy: string
   mileagePoints: number
   submitDate: string
   createdAt: string
+  updatedAt?: string
+  category?: { categoryId: number; categoryName: string }
   coProposers: { employeeId: string; name: string; rollNm: string }[]
+}
+
+/** GET /api/ideas/my 응답 페이지 */
+export interface MyIdeasPage {
+  content: IdeaApiItem[]
+  pageable: { pageNumber: number; pageSize: number }
+  totalElements: number
+  totalPages: number
+  last: boolean
 }
 
 export type OrgTeam = {
