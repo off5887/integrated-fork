@@ -4,6 +4,7 @@ import { render, type RenderOptions } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter } from 'react-router-dom'
 import { ThemeProvider } from '@/context/ThemeContext'
+import { SnackbarProvider } from '@/context/SnackbarContext'
 import type { ReactNode } from 'react'
 
 function createTestQueryClient() {
@@ -25,7 +26,9 @@ function AllProviders({ children, initialEntries = ['/'] }: WrapperProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        <SnackbarProvider>
+          <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        </SnackbarProvider>
       </ThemeProvider>
     </QueryClientProvider>
   )

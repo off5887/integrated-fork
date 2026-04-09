@@ -5,6 +5,7 @@ import { vi, describe, it, expect } from 'vitest'
 vi.mock('@mui/icons-material', () => ({
   DarkModeOutlined: () => null,
   LightModeOutlined: () => null,
+  ExpandMore: () => null,
 }))
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -19,7 +20,7 @@ function renderLogin() {
   return render(
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/welcome" element={<div>환영 페이지</div>} />
+      <Route path="/dashboard" element={<div>환영 페이지</div>} />
     </Routes>,
     { initialEntries: ['/'] },
   )
@@ -27,7 +28,7 @@ function renderLogin() {
 
 describe('Login', () => {
   describe('데모 계정 로그인', () => {
-    it('demo / demo1234 입력 시 토큰이 저장되고 /welcome으로 이동한다', async () => {
+    it('demo / demo1234 입력 시 토큰이 저장되고 /dashboard로 이동한다', async () => {
       const user = userEvent.setup()
       renderLogin()
 
@@ -38,12 +39,13 @@ describe('Login', () => {
       await waitFor(() => {
         expect(screen.getByText('환영 페이지')).toBeInTheDocument()
       })
-      expect(localStorage.getItem('accessToken')).toBe('demo-token')
+      // 데모 계정은 gomgom_user_v1 키에 프로필 저장 (accessToken 없음)
+      expect(localStorage.getItem('gomgom_user_v1')).not.toBeNull()
     })
   })
 
   describe('실제 API 로그인', () => {
-    it('올바른 자격증명으로 로그인 성공 시 /welcome으로 이동한다', async () => {
+    it('올바른 자격증명으로 로그인 성공 시 /dashboard로 이동한다', async () => {
       const user = userEvent.setup()
       renderLogin()
 
@@ -54,7 +56,8 @@ describe('Login', () => {
       await waitFor(() => {
         expect(screen.getByText('환영 페이지')).toBeInTheDocument()
       })
-      expect(localStorage.getItem('accessToken')).toBe('mock-access-token')
+      // 실제 계정은 쿠키 기반 — localStorage에 토큰 없음
+      expect(localStorage.getItem('gomgom_user_v1')).toBeNull()
     })
 
     it('로그인 실패 시 서버 에러 메시지가 화면에 표시된다', async () => {
