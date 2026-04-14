@@ -118,6 +118,16 @@ const StyledToast = forwardRef<HTMLDivElement, {
   )
 })
 
+/**
+ * React 트리 밖(axios 인터셉터 등)에서 스낵바를 띄울 수 있도록
+ * Provider 마운트 시점에 함수 참조를 모듈 레벨에 등록합니다.
+ */
+let _showSnackbar: ((message: string, severity?: Severity) => void) | null = null
+
+export function globalShowSnackbar(message: string, severity: Severity = 'info') {
+  _showSnackbar?.(message, severity)
+}
+
 export function SnackbarProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState('')
@@ -128,6 +138,9 @@ export function SnackbarProvider({ children }: { children: React.ReactNode }) {
     setSeverity(sev)
     setOpen(true)
   }, [])
+
+  // 모듈 레벨 참조 등록
+  _showSnackbar = showSnackbar
 
   return (
     <SnackbarContext.Provider value={{ showSnackbar }}>

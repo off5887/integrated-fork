@@ -4,10 +4,12 @@
  * - useCurrentUserQuery : GET /api/users/me (또는 localStorage 데모 프로필)
  */
 import { useMutation, useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import { api } from '@/api/client'
 import { queryKeys } from '@/api/queryKeys'
 import { getApiErrorMessage } from '@/utils/apiError'
 import { DEMO_STORAGE_KEY, clearDemoProfile } from '@/utils/demoMode'
+import { handleSessionExpired } from '@/utils/sessionExpired'
 import type { ApiResponse, LoginRequest, LoginResponse, UserProfile, UserMeResponse } from '@/api/types/auth'
 import { mapUserProfile } from '@/api/types/auth'
 
@@ -51,7 +53,10 @@ export function useCurrentUserQuery() {
       try {
         const res = await api.get<ApiResponse<UserMeResponse>>('/api/users/me')
         return mapUserProfile(res.data.data)
-      } catch {
+      } catch (err) {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          await handleSessionExpired(() => api.post('/api/auth/logout'))
+        }
         return null
       }
     },

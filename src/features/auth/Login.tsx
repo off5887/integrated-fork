@@ -12,6 +12,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { DEMO_ACCOUNTS } from '@/api/mock/auth'
 import type { DemoAccount } from '@/api/types/auth'
 import { useThemeMode } from '@/context/ThemeContext'
@@ -237,6 +238,9 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
+  const [searchParams] = useSearchParams()
+  const sessionExpired = searchParams.get('reason') === 'session_expired'
+
   const { isDarkMode, toggleTheme } = useThemeMode()
   const colors = getLoginColors(isDarkMode)
   const { login, isPending } = useLogin()
@@ -315,6 +319,31 @@ export default function Login() {
           <LoginLogo colors={colors} />
 
           <DemoHint accounts={DEMO_ACCOUNTS} colors={colors} onSelect={handleDemoSelect} />
+
+          {sessionExpired && (
+            <Box
+              sx={{
+                mb: 4,
+                p: 2.5,
+                borderRadius: 3,
+                bgcolor: isDarkMode ? 'rgba(245,158,11,0.1)' : 'rgba(245,158,11,0.08)',
+                border: `1px solid ${isDarkMode ? 'rgba(245,158,11,0.35)' : 'rgba(245,158,11,0.3)'}`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+              }}
+            >
+              <Typography sx={{ fontSize: '1.1rem', flexShrink: 0 }}>⏱️</Typography>
+              <Box>
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: isDarkMode ? '#fbbf24' : '#b45309', lineHeight: 1.3 }}>
+                  세션이 만료되었습니다
+                </Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: isDarkMode ? '#fde68a' : '#92400e', mt: 0.25 }}>
+                  보안을 위해 자동으로 로그아웃되었습니다. 다시 로그인해주세요.
+                </Typography>
+              </Box>
+            </Box>
+          )}
 
           {errorMsg && (
             <Box

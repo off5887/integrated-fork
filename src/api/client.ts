@@ -1,5 +1,7 @@
 // src/api/client.ts
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
+import { handleSessionExpired } from '@/utils/sessionExpired'
+import { globalShowSnackbar } from '@/context/SnackbarContext'
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
@@ -9,7 +11,7 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true, // 필요하면 (쿠키/세션 사용할 때)
+    withCredentials: true,
     ...config,
   })
 
@@ -17,16 +19,21 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-      const isLoginEndpoint = error.config?.url?.includes('/auth/login')
-      // /users/me 401은 useCurrentUserQuery에서 null 반환으로 처리 (ProtectedRoute가 리다이렉트)
-      const isMeEndpoint = error.config?.url?.includes('/users/me')
-      if (error.response?.status === 401 && !isLoginEndpoint && !isMeEndpoint) {
-        localStorage.removeItem('gomgom_user_v1') // 데모 계정 정리
-        window.location.href = '/login'
+      const url: string = error.config?.url ?? ''
+      const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/logout')
+      // /users/me 401·403 은 useCurrentUserQuery 에서 직접 처리
+      const isMeEndpoint = url.includes('/users/me')
+
+      const status: number = error.response?.status
+      if (status === 401 && !isAuthEndpoint && !isMeEndpoint) {
+        handleSessionExpired(() => axiosInstance.post('/api/auth/logout'))
       }
-      if (error.response?.status >= 500) {
+      if (status === 403) {
+        globalShowSnackbar('접근 권한이 없습니다.', 'error')
+      }
+      if (status >= 500) {
         console.error(
-          `[API ${error.response.status}] ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+          `[API ${status}] ${error.config?.method?.toUpperCase()} ${url}`,
           error.response.data,
         )
       }
