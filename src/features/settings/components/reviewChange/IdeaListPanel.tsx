@@ -19,10 +19,10 @@ import type { Idea } from '@/api/types/settings'
 
 interface Props {
   ideas: Idea[]
-  selectedIdeaId: string | null
+  selectedIdeaId: number | null
   searchTerm: string
   onSearchChange: (v: string) => void
-  onSelect: (id: string) => void
+  onSelect: (id: number) => void
 }
 
 export default function IdeaListPanel({

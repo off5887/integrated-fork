@@ -1,5 +1,14 @@
 export type DecisionType = '승인' | '반려' | '승인회수' | '반려회수'
 
+/** GET /api/ideas/{id}/approver 응답 */
+export interface IdeaApprover {
+  ideaApproverId: number
+  ideaId: number
+  approverId: string
+  approverName: string
+  assignedDate: string
+}
+
 export interface ReviewerTeamStats {
   id: number
   department: string

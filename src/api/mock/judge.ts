@@ -1,4 +1,4 @@
-import type { Proposal, ReviewerCandidate, ReviewerTeamStats } from '@/api/types/judge'
+import type { IdeaApprover, Proposal, ReviewerCandidate, ReviewerTeamStats } from '@/api/types/judge'
 import { DEMO_REVIEWER_PROFILE } from './auth'
 
 export const mockCandidates: ReviewerCandidate[] = [
@@ -405,6 +405,25 @@ export const judgeData: Proposal[] = [
     submittedAt: '2026-03-20',
   },
 ]
+
+/** GET /api/ideas/{id}/approver 데모 모드 응답 (ideaId → IdeaApprover) */
+export const mockApproverMap: Record<number, IdeaApprover> = {
+  101: { ideaApproverId: 1,  ideaId: 101, approverId: 'DEV001',  approverName: '김개발', assignedDate: '2026-03-01T09:00:00' },
+  102: { ideaApproverId: 2,  ideaId: 102, approverId: 'DEV002',  approverName: '이코딩', assignedDate: '2026-03-02T09:00:00' },
+  103: { ideaApproverId: 3,  ideaId: 103, approverId: 'PLAN001', approverName: '최기획', assignedDate: '2026-03-03T09:00:00' },
+  104: { ideaApproverId: 4,  ideaId: 104, approverId: 'EXE001',  approverName: '장임원', assignedDate: '2026-03-04T09:00:00' },
+  106: { ideaApproverId: 5,  ideaId: 106, approverId: 'DEV001',  approverName: '김개발', assignedDate: '2026-03-05T09:00:00' },
+  107: { ideaApproverId: 6,  ideaId: 107, approverId: 'DEV002',  approverName: '이코딩', assignedDate: '2026-03-06T09:00:00' },
+  109: { ideaApproverId: 7,  ideaId: 109, approverId: 'PLAN001', approverName: '최기획', assignedDate: '2026-03-07T09:00:00' },
+  110: { ideaApproverId: 8,  ideaId: 110, approverId: 'EXE001',  approverName: '장임원', assignedDate: '2026-03-08T09:00:00' },
+  201: { ideaApproverId: 9,  ideaId: 201, approverId: 'DEV001',  approverName: '김개발', assignedDate: '2026-03-10T09:00:00' },
+  202: { ideaApproverId: 10, ideaId: 202, approverId: 'DEV002',  approverName: '이코딩', assignedDate: '2026-03-12T09:00:00' },
+  203: { ideaApproverId: 11, ideaId: 203, approverId: 'PLAN001', approverName: '최기획', assignedDate: '2026-02-28T09:00:00' },
+  205: { ideaApproverId: 12, ideaId: 205, approverId: 'DEV001',  approverName: '김개발', assignedDate: '2026-02-25T09:00:00' },
+  206: { ideaApproverId: 13, ideaId: 206, approverId: 'EXE001',  approverName: '장임원', assignedDate: '2026-03-08T09:00:00' },
+  207: { ideaApproverId: 14, ideaId: 207, approverId: 'DEV002',  approverName: '이코딩', assignedDate: '2026-02-10T09:00:00' },
+  208: { ideaApproverId: 15, ideaId: 208, approverId: 'PLAN001', approverName: '최기획', assignedDate: '2026-03-20T09:00:00' },
+}
 
 export const reviewerTeamStatsData: ReviewerTeamStats[] = [
   {

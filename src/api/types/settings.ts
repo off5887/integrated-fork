@@ -9,6 +9,32 @@ export interface EmojiGroup {
 
 // ─── 사용자 관리 ─────────────────────────────────────────────────────────────
 
+/** GET /api/users/admins 응답 항목 — 쪽지 수신자 선택용 */
+export interface AdminUserItem {
+  employeeId: string
+  name: string
+}
+
+/** GET /api/users/roles 응답 항목 */
+export interface UserRoleItem {
+  employeeId: string
+  name: string
+  department: string
+  section: string
+  rollNm: string
+  email: string
+  isAdmin: boolean
+  isReviewer: boolean
+  totalMileage: number
+  gomLevel: number
+}
+
+/** GET /api/users/roles 응답 data */
+export interface UserRolesData {
+  admins: UserRoleItem[]
+  reviewers: UserRoleItem[]
+}
+
 /** GET /api/users 응답 구조 */
 export interface UserApiMember {
   employeeId: string
@@ -95,21 +121,15 @@ export interface SpecialMileageHistory {
 
 // ─── 심사 변경 ────────────────────────────────────────────────────────────────
 
-export type IdeaStatus =
-  | '임시저장'
-  | '1차 심사 대기'
-  | '실행자 선택'
-  | '결과등록'
-  | '결과심사'
+/** 실제 API 상태값과 동일 */
+export type IdeaStatus = '심사대기' | '승인' | '반려' | '실행중' | '완료'
 
 export interface Idea {
-  id: string
+  id: number
   title: string
   submitter: string
   department: string
+  deptCd: string
   submittedAt: string
   status: IdeaStatus
-  reviewers: {
-    level1: OrgMember | null
-  }
 }

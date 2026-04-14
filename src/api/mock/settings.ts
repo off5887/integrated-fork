@@ -1,5 +1,5 @@
 import type { OrgMember } from '@/api/types/reviewer'
-import type { User, UserApiBizArea, MileageMember, Idea, SectionReviewer } from '@/api/types/settings'
+import type { AdminUserItem, UserRoleItem, UserRolesData, User, UserApiBizArea, MileageMember, Idea, SectionReviewer } from '@/api/types/settings'
 
 // ── 조직도 ───────────────────────────────────────────────────────────────────
 export const mockOrganization: OrgMember[] = [
@@ -24,6 +24,28 @@ export const mockOrganization: OrgMember[] = [
 
 // ── 사용자 관리 ──────────────────────────────────────────────────────────────
 // role: 'user' = 일반 사용자, 'reviewer' = 심사자, 'admin' = 관리자
+/** GET /api/users/admins 데모 모드 */
+export const mockAdminUsers: AdminUserItem[] = [
+  { employeeId: 'DEV001', name: '김개발' },
+  { employeeId: 'EXE001', name: '장임원' },
+]
+
+/** GET /api/users/roles 데모 모드 */
+export const mockUserRoles: UserRolesData = {
+  admins: [
+    { employeeId: 'DEV001', name: '김개발',  department: '본사', section: '개발1팀', rollNm: '팀장', email: 'kim.dev@company.com',  isAdmin: true,  isReviewer: false, totalMileage: 1200, gomLevel: 3 },
+    { employeeId: 'EXE001', name: '장임원',  department: '본사', section: '경영지원부문', rollNm: '임원', email: 'jang.exe@company.com', isAdmin: true,  isReviewer: false, totalMileage: 800,  gomLevel: 2 },
+  ] satisfies UserRoleItem[],
+  reviewers: [
+    { employeeId: 'DEV002',  name: '이코딩',   department: '본사',     section: '개발1팀',   rollNm: '사원',   email: 'lee.code@company.com',   isAdmin: false, isReviewer: true, totalMileage: 650, gomLevel: 1 },
+    { employeeId: 'PLAN001', name: '최기획',   department: '본사',     section: '기획팀',    rollNm: '팀장',   email: 'choi.plan@company.com',  isAdmin: false, isReviewer: true, totalMileage: 430, gomLevel: 1 },
+    { employeeId: 'SALE001', name: '윤영업',   department: '강남지사',  section: '영업1팀',   rollNm: '팀장',   email: 'yoon.sales@company.com', isAdmin: false, isReviewer: true, totalMileage: 310, gomLevel: 1 },
+    { employeeId: 'MKT001',  name: '한마케팅', department: '강남지사',  section: '마케팅팀',  rollNm: '팀장',   email: 'han.mkt@company.com',    isAdmin: false, isReviewer: true, totalMileage: 290, gomLevel: 1 },
+    { employeeId: 'HR001',   name: '오인사',   department: '본사',     section: '인사팀',    rollNm: '팀장',   email: 'oh.hr@company.com',      isAdmin: false, isReviewer: true, totalMileage: 180, gomLevel: 1 },
+    { employeeId: 'STR001',  name: '서부문장', department: '본사',     section: '전략기획실', rollNm: '부문장', email: 'seo.str@company.com',    isAdmin: false, isReviewer: true, totalMileage: 520, gomLevel: 2 },
+  ] satisfies UserRoleItem[],
+}
+
 export const mockUsers: User[] = [
   { id: 'DEV001',  name: '김개발',   employeeNumber: 'DEV001',  email: 'kim.dev@company.com',      role: 'admin',    position: '팀장',   department: '개발1팀',     businessSite: '본사',     active: true  },
   { id: 'DEV002',  name: '이코딩',   employeeNumber: 'DEV002',  email: 'lee.code@company.com',     role: 'reviewer', position: '사원',   department: '개발1팀',     businessSite: '본사',     active: true  },
@@ -76,6 +98,12 @@ export const mockUsersBizArea: UserApiBizArea[] = [
         deptCd: 'D6', deptNm: '전략기획실',
         members: [
           { employeeId: 'STR001', name: '서부문장', email: 'seo.str@company.com', rollNm: '부문장', isAdmin: false, isReviewer: true, isActive: true },
+        ],
+      },
+      {
+        deptCd: 'D8', deptNm: '경영지원부문',
+        members: [
+          { employeeId: 'EXE001', name: '장임원', email: 'jang.exe@company.com', rollNm: '임원', isAdmin: true, isReviewer: false, isActive: true },
         ],
       },
     ],
@@ -160,36 +188,12 @@ export const mockMyDeptReviewers: SectionReviewer[] = [
 ]
 
 export const mockIdeas: Idea[] = [
-  {
-    id: '1', title: '회의실 예약 시스템 개선안',     submitter: '이코딩',   department: '개발1팀',  submittedAt: '2026-02-15', status: '1차 심사 대기',
-    reviewers: { level1: mockReviewerPools[1][0] },
-  },
-  {
-    id: '2', title: '사내 복지 포인트 활용 방안',    submitter: '박프론트', department: '개발1팀',  submittedAt: '2026-02-18', status: '1차 심사 대기',
-    reviewers: { level1: mockReviewerPools[1][1] },
-  },
-  {
-    id: '3', title: '고객 응대 프로세스 표준화',     submitter: '윤영업',   department: '영업1팀',  submittedAt: '2026-02-20', status: '1차 심사 대기',
-    reviewers: { level1: mockReviewerPools[1][2] },
-  },
-  {
-    id: '4', title: '재고 관리 시스템 자동화',       submitter: '송세일',   department: '영업1팀',  submittedAt: '2026-02-22', status: '임시저장',
-    reviewers: { level1: null },
-  },
-  {
-    id: '5', title: '신입 사원 온보딩 프로그램 개선', submitter: '오인사',   department: '인사팀',   submittedAt: '2026-02-25', status: '실행자 선택',
-    reviewers: { level1: mockReviewerPools[1][4] },
-  },
-  {
-    id: '6', title: '에너지 절약 캠페인 실행 방안',  submitter: '남총무',   department: '총무팀',   submittedAt: '2026-02-28', status: '결과등록',
-    reviewers: { level1: mockReviewerPools[1][0] },
-  },
-  {
-    id: '7', title: '마케팅 콘텐츠 제작 효율화',     submitter: '한마케팅', department: '마케팅팀', submittedAt: '2026-03-01', status: '결과심사',
-    reviewers: { level1: mockReviewerPools[1][3] },
-  },
-  {
-    id: '8', title: '원격 근무 환경 표준화 방안',    submitter: '이코딩',   department: '개발1팀',  submittedAt: '2026-03-03', status: '1차 심사 대기',
-    reviewers: { level1: mockReviewerPools[1][1] },
-  },
+  { id: 1, title: '회의실 예약 시스템 개선안',      submitter: '이코딩',   department: '개발1팀',  deptCd: 'D0', submittedAt: '2026-02-15', status: '심사대기' },
+  { id: 2, title: '사내 복지 포인트 활용 방안',     submitter: '박프론트', department: '개발1팀',  deptCd: 'D0', submittedAt: '2026-02-18', status: '심사대기' },
+  { id: 3, title: '고객 응대 프로세스 표준화',      submitter: '윤영업',   department: '영업1팀',  deptCd: 'D2', submittedAt: '2026-02-20', status: '승인'    },
+  { id: 4, title: '재고 관리 시스템 자동화',        submitter: '송세일',   department: '영업1팀',  deptCd: 'D2', submittedAt: '2026-02-22', status: '반려'    },
+  { id: 5, title: '신입 사원 온보딩 프로그램 개선', submitter: '오인사',   department: '인사팀',   deptCd: 'D4', submittedAt: '2026-02-25', status: '실행중'  },
+  { id: 6, title: '에너지 절약 캠페인 실행 방안',   submitter: '남총무',   department: '총무팀',   deptCd: 'D7', submittedAt: '2026-02-28', status: '완료'    },
+  { id: 7, title: '마케팅 콘텐츠 제작 효율화',      submitter: '한마케팅', department: '마케팅팀', deptCd: 'D3', submittedAt: '2026-03-01', status: '심사대기' },
+  { id: 8, title: '원격 근무 환경 표준화 방안',     submitter: '이코딩',   department: '개발1팀',  deptCd: 'D0', submittedAt: '2026-03-03', status: '심사대기' },
 ]
