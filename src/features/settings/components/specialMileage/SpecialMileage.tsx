@@ -136,8 +136,8 @@ export default function SpecialMileage() {
           startIcon={<SaveIcon sx={{ fontSize: '0.9rem' }} />}
           onClick={handleSave}
           disabled={selected.length === 0 || grantMutation.isPending}
-          sx={{ display: tab === 1 ? 'none' : undefined }}
           sx={{
+            display: tab === 1 ? 'none' : undefined,
             borderRadius: 9999, px: 2.5, py: 0.8,
             fontWeight: 700, fontSize: '0.82rem', textTransform: 'none',
             bgcolor: st.primaryColor, color: st.primaryBtnColor, boxShadow: 'none', flexShrink: 0,

@@ -46,7 +46,7 @@ export default function useSectionReviewer() {
     setEditing(r)
     setFormDeptCd(r.deptCd)
     setFormDeptNm(r.deptNm)
-    setFormEmployeeId(r.employeeId)
+    setFormEmployeeId(r.reviewerEmployeeId)
     setFormEmployeeName(r.name)
     setFormOpen(true)
   }

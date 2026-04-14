@@ -167,14 +167,16 @@ export const mockMyIdeasPage: MyIdeasPage = {
 /** GET /api/ideas/{ideaId} 추가 필드 데모 모드 응답 */
 export const mockIdeaDetailExtras: Record<number, IdeaDetailExtras> = {
   1:   { viewCount: 120, likeCount: 20, commentCount: 2, isLiked: false, approverId: 'EMP002', approverName: '이심사',
-         executors: [{ executorId: 1, scheduleDate: '2026-06-01T00:00:00', content: '시스템 UI 개선 및 예약 로직 재설계', expectedResult: '예약 충돌 50% 감소' }] },
-  2:   { viewCount: 450, likeCount: 20, commentCount: 1, isLiked: true,  approverId: 'EMP002', approverName: '이심사', executors: null },
-  3:   { viewCount: 310, likeCount: 20, commentCount: 0, isLiked: false, approverId: null, approverName: null, executors: null },
-  4:   { viewCount: 380, likeCount: 20, commentCount: 2, isLiked: true,  approverId: null, approverName: null, executors: null },
-  5:   { viewCount: 290, likeCount: 20, commentCount: 0, isLiked: false, approverId: 'EMP003', approverName: '박인사', executors: null },
+         executors: [{ executorId: 1, scheduleDate: '2026-06-01T00:00:00', content: '시스템 UI 개선 및 예약 로직 재설계', expectedResult: '예약 충돌 50% 감소' }],
+         coProposers: [{ employeeId: 'EMP005', name: '최기획', rollNm: '대리' }], attachments: [] },
+  2:   { viewCount: 450, likeCount: 20, commentCount: 1, isLiked: true,  approverId: 'EMP002', approverName: '이심사', executors: null, coProposers: [], attachments: [] },
+  3:   { viewCount: 310, likeCount: 20, commentCount: 0, isLiked: false, approverId: null, approverName: null, executors: null, coProposers: [], attachments: [] },
+  4:   { viewCount: 380, likeCount: 20, commentCount: 2, isLiked: true,  approverId: null, approverName: null, executors: null, coProposers: [], attachments: [] },
+  5:   { viewCount: 290, likeCount: 20, commentCount: 0, isLiked: false, approverId: 'EMP003', approverName: '박인사', executors: null, coProposers: [], attachments: [] },
   101: { viewCount: 120, likeCount: 34, commentCount: 1, isLiked: false, approverId: 'EMP002', approverName: '이심사',
-         executors: [{ executorId: 2, scheduleDate: '2026-07-01T00:00:00', content: '복지 포인트 사용처 확대 협의', expectedResult: '직원 만족도 향상' }] },
-  102: { viewCount: 210, likeCount: 52, commentCount: 2, isLiked: false, approverId: null, approverName: null, executors: null },
+         executors: [{ executorId: 2, scheduleDate: '2026-07-01T00:00:00', content: '복지 포인트 사용처 확대 협의', expectedResult: '직원 만족도 향상' }],
+         coProposers: [{ employeeId: 'EMP006', name: '정개발', rollNm: '과장' }], attachments: [] },
+  102: { viewCount: 210, likeCount: 52, commentCount: 2, isLiked: false, approverId: null, approverName: null, executors: null, coProposers: [], attachments: [] },
 }
 
 /** GET /api/ideas/{ideaId}/comments 데모 모드 응답 */

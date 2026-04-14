@@ -2,11 +2,13 @@
 // 이미지·문서 첨부파일 업로드 및 미리보기 섹션
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import CloseIcon from '@mui/icons-material/Close'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
 import ZoomInIcon from '@mui/icons-material/ZoomIn'
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogContent,
   IconButton,
@@ -14,6 +16,7 @@ import {
 } from '@mui/material'
 import type { ChangeEvent } from 'react'
 import { useState } from 'react'
+import type { IdeaAttachment } from '@/api/types/idea'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
 
@@ -22,6 +25,14 @@ interface FileUploadSectionProps {
   filePreviews: string[]
   onFilesChange: (newFiles: File[]) => void
   onRemoveFile: (index: number) => void
+  existingAttachments?: IdeaAttachment[]
+  onDeleteExisting?: (attachmentId: number) => void
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 export default function FileUploadSection({
@@ -29,6 +40,8 @@ export default function FileUploadSection({
   filePreviews,
   onFilesChange,
   onRemoveFile,
+  existingAttachments = [],
+  onDeleteExisting,
 }: FileUploadSectionProps) {
   const { isDarkMode } = useThemeMode()
   const [previewOpen, setPreviewOpen] = useState(false)
@@ -53,6 +66,7 @@ export default function FileUploadSection({
 
   const it = getIdeaTheme(isDarkMode)
   const { textPrimary, textSecondary, borderColor, fileItemBg } = it
+  const hasAny = existingAttachments.length > 0 || files.length > 0
 
   return (
     <>
@@ -82,7 +96,7 @@ export default function FileUploadSection({
             border: `1px dashed ${it.accent.border}`,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: files.length > 0 ? 3 : 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: hasAny ? 3 : 0 }}>
             <Button
               component="label"
               variant="outlined"
@@ -105,90 +119,147 @@ export default function FileUploadSection({
               <input type="file" hidden multiple onChange={handleFileChange} />
             </Button>
             <Typography variant="caption" sx={{ color: textSecondary }}>
-              여러 파일을 한 번에 선택할 수 있습니다
+              파일당 최대 20MB · 전체 100MB
             </Typography>
           </Box>
 
-          {files.length > 0 ? (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              {files.map((file, index) => {
-                const isImage = file.type.startsWith('image/')
-                const previewUrl = filePreviews[index]
-                return (
-                  <Box
-                    key={`${file.name}-${index}`}
-                    onClick={() => isImage && openPreview(index)}
-                    sx={{
-                      position: 'relative',
-                      width: 120,
-                      height: 120,
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                      border: `1px solid ${borderColor}`,
-                      bgcolor: fileItemBg,
-                      boxShadow: it.fileItemShadow,
-                      transition: 'all 0.2s ease',
-                      cursor: isImage ? 'zoom-in' : 'default',
-                      '&:hover': {
-                        transform: isImage ? 'scale(1.04)' : undefined,
-                        boxShadow: it.fileItemHoverShadow,
-                      },
-                    }}
-                  >
-                    {previewUrl ? (
-                      <img src={previewUrl} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <Box
-                        sx={{
-                          height: '100%', display: 'flex', flexDirection: 'column',
-                          alignItems: 'center', justifyContent: 'center', p: 1.5, gap: 0.75,
-                        }}
-                      >
-                        <InsertDriveFileIcon sx={{ color: textSecondary, fontSize: '2rem' }} />
-                        <Typography variant="caption" sx={{ color: textSecondary, textAlign: 'center', wordBreak: 'break-all', lineHeight: 1.2 }} noWrap>
-                          {file.name}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {isImage && (
-                      <Box
-                        sx={{
-                          position: 'absolute', inset: 0,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          bgcolor: it.overlay.imageBg,
-                          opacity: 0, transition: 'opacity 0.2s',
-                          pointerEvents: 'none',
-                          '&:hover': { opacity: 1 },
-                        }}
-                      >
-                        <ZoomInIcon sx={{ color: it.overlay.iconColor, fontSize: 36 }} />
-                      </Box>
-                    )}
-
-                    <IconButton
-                      size="small"
-                      onClick={(e) => { e.stopPropagation(); onRemoveFile(index) }}
-                      sx={{
-                        position: 'absolute', top: 4, right: 4,
-                        width: 22, height: 22,
-                        bgcolor: it.overlay.deleteButtonBg,
-                        color: it.overlay.iconColor,
-                        '&:hover': { bgcolor: it.overlay.deleteButtonHoverBg },
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <CloseIcon sx={{ fontSize: '0.75rem' }} />
-                    </IconButton>
-                  </Box>
-                )
-              })}
-            </Box>
-          ) : (
+          {!hasAny && (
             <Box sx={{ textAlign: 'center', py: 3 }}>
               <Typography variant="body2" sx={{ color: textSecondary }}>
                 아직 첨부된 파일이 없습니다
               </Typography>
+            </Box>
+          )}
+
+          {/* 기존 첨부파일 (수정 모드) */}
+          {existingAttachments.length > 0 && (
+            <Box sx={{ mb: files.length > 0 ? 2 : 0 }}>
+              <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 600, mb: 1, display: 'block' }}>
+                기존 첨부파일
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {existingAttachments.map((att) => (
+                  <Box
+                    key={att.attachmentId}
+                    sx={{
+                      display: 'flex', alignItems: 'center', gap: 1.5,
+                      px: 2, py: 1,
+                      borderRadius: 1.5,
+                      bgcolor: fileItemBg,
+                      border: `1px solid ${borderColor}`,
+                    }}
+                  >
+                    <InsertDriveFileIcon sx={{ color: textSecondary, fontSize: '1.25rem', flexShrink: 0 }} />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ color: textPrimary, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {att.originalName}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: textSecondary }}>
+                        {formatBytes(att.fileSize)}
+                      </Typography>
+                    </Box>
+                    <Chip label="저장됨" size="small" sx={{ height: 20, fontSize: '0.7rem', bgcolor: it.accent.bg, color: it.accent.text }} />
+                    {onDeleteExisting && (
+                      <IconButton
+                        size="small"
+                        onClick={() => onDeleteExisting(att.attachmentId)}
+                        sx={{
+                          width: 26, height: 26,
+                          color: textSecondary,
+                          '&:hover': { color: '#ef4444', bgcolor: 'rgba(239,68,68,0.08)' },
+                        }}
+                      >
+                        <DeleteOutlineIcon sx={{ fontSize: '1rem' }} />
+                      </IconButton>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          )}
+
+          {/* 새로 추가한 파일 */}
+          {files.length > 0 && (
+            <Box>
+              {existingAttachments.length > 0 && (
+                <Typography variant="caption" sx={{ color: textSecondary, fontWeight: 600, mb: 1, display: 'block' }}>
+                  새로 추가
+                </Typography>
+              )}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                {files.map((file, index) => {
+                  const isImage = file.type.startsWith('image/')
+                  const previewUrl = filePreviews[index]
+                  return (
+                    <Box
+                      key={`${file.name}-${index}`}
+                      onClick={() => isImage && openPreview(index)}
+                      sx={{
+                        position: 'relative',
+                        width: 120,
+                        height: 120,
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        border: `1px solid ${borderColor}`,
+                        bgcolor: fileItemBg,
+                        boxShadow: it.fileItemShadow,
+                        transition: 'all 0.2s ease',
+                        cursor: isImage ? 'zoom-in' : 'default',
+                        '&:hover': {
+                          transform: isImage ? 'scale(1.04)' : undefined,
+                          boxShadow: it.fileItemHoverShadow,
+                        },
+                      }}
+                    >
+                      {previewUrl ? (
+                        <img src={previewUrl} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <Box
+                          sx={{
+                            height: '100%', display: 'flex', flexDirection: 'column',
+                            alignItems: 'center', justifyContent: 'center', p: 1.5, gap: 0.75,
+                          }}
+                        >
+                          <InsertDriveFileIcon sx={{ color: textSecondary, fontSize: '2rem' }} />
+                          <Typography variant="caption" sx={{ color: textSecondary, textAlign: 'center', wordBreak: 'break-all', lineHeight: 1.2 }} noWrap>
+                            {file.name}
+                          </Typography>
+                        </Box>
+                      )}
+
+                      {isImage && (
+                        <Box
+                          sx={{
+                            position: 'absolute', inset: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            bgcolor: it.overlay.imageBg,
+                            opacity: 0, transition: 'opacity 0.2s',
+                            pointerEvents: 'none',
+                            '&:hover': { opacity: 1 },
+                          }}
+                        >
+                          <ZoomInIcon sx={{ color: it.overlay.iconColor, fontSize: 36 }} />
+                        </Box>
+                      )}
+
+                      <IconButton
+                        size="small"
+                        onClick={(e) => { e.stopPropagation(); onRemoveFile(index) }}
+                        sx={{
+                          position: 'absolute', top: 4, right: 4,
+                          width: 22, height: 22,
+                          bgcolor: it.overlay.deleteButtonBg,
+                          color: it.overlay.iconColor,
+                          '&:hover': { bgcolor: it.overlay.deleteButtonHoverBg },
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <CloseIcon sx={{ fontSize: '0.75rem' }} />
+                      </IconButton>
+                    </Box>
+                  )
+                })}
+              </Box>
             </Box>
           )}
         </Box>

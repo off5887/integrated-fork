@@ -448,7 +448,7 @@ export default function IdeaBrowse() {
         idea={selectedIdea}
         onClose={() => setSelectedIdea(null)}
         ideaId={selectedIdea?.id ?? null}
-        isOwner={selectedIdea?.author === (user?.employeeId ?? '')}
+        isOwner={selectedIdea?.submittedBy === (user?.employeeId ?? '')}
         onEdit={() => selectedIdea && handleEdit(selectedIdea)}
         onDelete={() => selectedIdea && setDeleteTarget(selectedIdea)}
       />

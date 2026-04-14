@@ -186,6 +186,16 @@ export interface IdeaApiItem {
   approverName?: string | null
   // 단건 조회 전용 — 본인 아이디어일 때만 존재
   executors?: IdeaExecutor[] | null
+  attachments?: IdeaAttachment[]
+}
+
+/** 첨부파일 항목 (생성/수정/단건조회 응답 공통) */
+export interface IdeaAttachment {
+  attachmentId: number
+  originalName: string
+  fileSize: number        // bytes
+  contentType: string
+  createdAt: string
 }
 
 /** GET /api/ideas/{id}/executors 항목 */
@@ -205,6 +215,8 @@ export interface IdeaDetailExtras {
   approverId: string | null
   approverName: string | null
   executors: IdeaExecutor[] | null   // 본인 아이디어일 때만 존재, 타인은 null
+  coProposers: { employeeId: string; name: string; rollNm: string }[]
+  attachments: IdeaAttachment[]
 }
 
 /** PATCH /api/ideas/{id}/review 요청 바디 (관리자/심사자) */

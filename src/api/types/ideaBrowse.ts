@@ -10,7 +10,8 @@ export interface IdeaItem {
   category: string     // 표시용 단축 라벨 (예: '절감', '혁신')
   problem: string
   solution: string
-  author: string
+  author: string       // 작성자 이름 (표시용)
+  submittedBy: string  // 작성자 사번 (본인 여부 판단용)
   bizArea: string
   department: string
   deptCd: string

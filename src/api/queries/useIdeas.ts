@@ -39,6 +39,7 @@ export function toIdeaItem(raw: IdeaApiItem): IdeaItem {
     problem:     raw.problem     ?? '',
     solution:    raw.description ?? '',
     author:      raw.author      ?? raw.submittedBy ?? '',
+    submittedBy: raw.submittedBy ?? '',
     bizArea:     raw.bizArea     ?? '',
     department:  raw.department  ?? '',
     deptCd:      raw.deptCd     ?? '',
@@ -106,19 +107,18 @@ export function useMyIdeas(page = 0, size = 20) {
 export function useCreateIdea() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (body: IdeaCreateRequest): Promise<IdeaApiItem> => {
+    mutationFn: async ({ data, files }: { data: IdeaCreateRequest; files: File[] }): Promise<IdeaApiItem> => {
       if (isDemoMode()) {
-        // 데모 모드: 실제 API 호출 없이 성공 응답 시뮬레이션
         return Promise.resolve({
           ideaId: Date.now(),
-          title: body.title,
-          problem: body.problem,
-          description: body.description,
-          categoryId: body.categoryId,
+          title: data.title,
+          problem: data.problem,
+          description: data.description,
+          categoryId: data.categoryId,
           categoryName: '',
-          type: body.type ?? 'idea',
+          type: data.type ?? 'idea',
           status: 'pending',
-          security: body.security ?? 'N',
+          security: data.security ?? 'N',
           submittedBy: 'demo',
           mileagePoints: 0,
           submitDate: new Date().toISOString(),
@@ -126,7 +126,10 @@ export function useCreateIdea() {
           coProposers: [],
         })
       }
-      const res = await api.post<ApiResponse<IdeaApiItem>>('/api/ideas', body)
+      const formData = new FormData()
+      formData.append('idea', new Blob([JSON.stringify(data)], { type: 'application/json' }))
+      files.forEach((file) => formData.append('files', file))
+      const res = await api.post<ApiResponse<IdeaApiItem>>('/api/ideas', formData)
       return res.data.data
     },
     onSuccess: () => {
@@ -162,7 +165,7 @@ export function useIdeaDetail(ideaId: number | null) {
     enabled: ideaId !== null,
     queryFn: () =>
       withDemoFallback<IdeaDetailExtras>(
-        mockIdeaDetailExtras[ideaId!] ?? { viewCount: 0, likeCount: 0, commentCount: 0, isLiked: false, approverId: null, approverName: null, executors: null },
+        mockIdeaDetailExtras[ideaId!] ?? { viewCount: 0, likeCount: 0, commentCount: 0, isLiked: false, approverId: null, approverName: null, executors: null, coProposers: [], attachments: [] },
         async () => {
           const res = await api.get<ApiResponse<IdeaApiItem>>(`/api/ideas/${ideaId}`)
           const d = res.data.data
@@ -174,6 +177,8 @@ export function useIdeaDetail(ideaId: number | null) {
             approverId:   d.approverId   ?? null,
             approverName: d.approverName ?? null,
             executors:    d.executors    ?? null,
+            coProposers:  d.coProposers  ?? [],
+            attachments:  d.attachments  ?? [],
           }
         },
       ),
@@ -286,18 +291,18 @@ export function useDeleteComment(ideaId: number) {
 export function useUpdateIdea(ideaId: number) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (body: IdeaCreateRequest): Promise<IdeaApiItem> => {
+    mutationFn: async ({ data, files }: { data: IdeaCreateRequest; files: File[] }): Promise<IdeaApiItem> => {
       if (isDemoMode()) {
         return Promise.resolve({
           ideaId,
-          title: body.title,
-          problem: body.problem,
-          description: body.description,
-          categoryId: body.categoryId,
+          title: data.title,
+          problem: data.problem,
+          description: data.description,
+          categoryId: data.categoryId,
           categoryName: '',
-          type: body.type ?? 'idea',
+          type: data.type ?? 'idea',
           status: 'pending',
-          security: body.security ?? 'N',
+          security: data.security ?? 'N',
           submittedBy: 'demo',
           mileagePoints: 0,
           submitDate: new Date().toISOString(),
@@ -305,11 +310,46 @@ export function useUpdateIdea(ideaId: number) {
           coProposers: [],
         })
       }
-      const res = await api.put<ApiResponse<IdeaApiItem>>(`/api/ideas/${ideaId}`, body)
+      const formData = new FormData()
+      formData.append('idea', new Blob([JSON.stringify(data)], { type: 'application/json' }))
+      files.forEach((file) => formData.append('files', file))
+      const res = await api.put<ApiResponse<IdeaApiItem>>(`/api/ideas/${ideaId}`, formData)
       return res.data.data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.ideas.list() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
+    },
+  })
+}
+
+// ─── POST /api/ideas/{id}/attachments ────────────────────────────────────────
+
+export function useAddAttachment(ideaId: number) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (file: File): Promise<void> => {
+      if (isDemoMode()) return
+      const formData = new FormData()
+      formData.append('files', file)
+      await api.post(`/api/ideas/${ideaId}/attachments`, formData)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
+    },
+  })
+}
+
+// ─── DELETE /api/ideas/{id}/attachments/{attachmentId} ───────────────────────
+
+export function useDeleteAttachment(ideaId: number) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (attachmentId: number): Promise<void> => {
+      if (isDemoMode()) return
+      await api.delete(`/api/ideas/${ideaId}/attachments/${attachmentId}`)
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
     },
   })

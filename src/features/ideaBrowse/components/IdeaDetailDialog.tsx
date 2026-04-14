@@ -1,10 +1,13 @@
 // src/routes/ideaBrowse/components/IdeaDetailDialog.tsx
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined'
+import AttachFileIcon from '@mui/icons-material/AttachFile'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
@@ -25,8 +28,9 @@ import {
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
-import { useIdeaDetail, useToggleLike, useSimilarIdeas } from '@/api/queries/useIdeas'
+import { useIdeaDetail, useToggleLike, useSimilarIdeas, useDeleteAttachment } from '@/api/queries/useIdeas'
 import { useCategories } from '@/api/queries/useCategories'
+import { downloadAttachment } from '@/utils/attachmentDownload'
 import IdeaCommentSection from './IdeaCommentSection'
 
 interface IdeaDetailDialogProps {
@@ -58,6 +62,7 @@ export default function IdeaDetailDialog({
   const { categories } = useCategories()
   const { data: detail } = useIdeaDetail(idea?.id ?? null)
   const toggleLike = useToggleLike(idea?.id ?? 0)
+  const deleteAttachment = useDeleteAttachment(idea?.id ?? 0)
 
   if (!idea) return null
   const cat = categories.find((c) => Number(c.id) === idea.categoryId)
@@ -270,9 +275,50 @@ export default function IdeaDetailDialog({
             </Box>
           </Box>
 
-          {/* 내 아이디어일 때만 표시 — 심사자 & 실행계획 */}
+          {/* 내 아이디어일 때만 표시 — 공동제안자, 심사자, 실행계획 */}
           {isOwner && (
             <>
+              <Divider sx={{ borderColor }} />
+
+              {/* 공동제안자 */}
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1 }}>
+                  <PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />
+                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    공동제안자
+                  </Typography>
+                </Box>
+                {detail?.coProposers && detail.coProposers.length > 0 ? (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                    {detail.coProposers.map((p) => (
+                      <Box
+                        key={p.employeeId}
+                        sx={{
+                          display: 'flex', alignItems: 'center', gap: 0.75,
+                          px: 1.25, py: 0.5, borderRadius: 9999,
+                          bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
+                          border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.18)'}`,
+                        }}
+                      >
+                        <Avatar sx={{ width: 20, height: 20, bgcolor: avatarBg, fontSize: '0.65rem', fontWeight: 700 }}>
+                          {p.name[0]}
+                        </Avatar>
+                        <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: textPrimary }}>
+                          {p.name}
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+                          {p.rollNm}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                ) : (
+                  <Typography sx={{ fontSize: '0.85rem', color: textSecondary, fontStyle: 'italic' }}>
+                    공동제안자 없음
+                  </Typography>
+                )}
+              </Box>
+
               <Divider sx={{ borderColor }} />
 
               {/* 심사자 */}
@@ -343,6 +389,65 @@ export default function IdeaDetailDialog({
                     등록된 실행계획 없음
                   </Typography>
                 )}
+              </Box>
+            </>
+          )}
+
+          {/* 첨부파일 */}
+          {detail && detail.attachments.length > 0 && (
+            <>
+              <Divider sx={{ borderColor }} />
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1.25 }}>
+                  <AttachFileIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />
+                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    첨부파일 ({detail.attachments.length})
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+                  {detail.attachments.map((att) => (
+                    <Box
+                      key={att.attachmentId}
+                      sx={{
+                        display: 'flex', alignItems: 'center', gap: 1.25,
+                        px: 1.75, py: 1,
+                        borderRadius: 1.5,
+                        border: `1px solid ${borderColor}`,
+                        bgcolor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                      }}
+                    >
+                      <InsertDriveFileIcon sx={{ fontSize: '1.1rem', color: textSecondary, flexShrink: 0 }} />
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography sx={{ fontSize: '0.82rem', fontWeight: 500, color: textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {att.originalName}
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+                          {att.fileSize < 1024 * 1024
+                            ? `${(att.fileSize / 1024).toFixed(1)} KB`
+                            : `${(att.fileSize / (1024 * 1024)).toFixed(1)} MB`}
+                        </Typography>
+                      </Box>
+                      <IconButton
+                        size="small"
+                        title="다운로드"
+                        onClick={() => downloadAttachment(idea.id, att.attachmentId, att.originalName)}
+                        sx={{ color: textSecondary, '&:hover': { color: ideaAccent.primary } }}
+                      >
+                        <FileDownloadOutlinedIcon sx={{ fontSize: '1rem' }} />
+                      </IconButton>
+                      {isOwner && (
+                        <IconButton
+                          size="small"
+                          title="삭제"
+                          onClick={() => deleteAttachment.mutate(att.attachmentId)}
+                          sx={{ color: textSecondary, '&:hover': { color: ideaAccent.danger } }}
+                        >
+                          <DeleteOutlineIcon sx={{ fontSize: '1rem' }} />
+                        </IconButton>
+                      )}
+                    </Box>
+                  ))}
+                </Box>
               </Box>
             </>
           )}

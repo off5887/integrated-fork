@@ -188,9 +188,9 @@ export const getIdeaTheme = (isDarkMode: boolean): IdeaBrowseTheme =>
 
 export const IDEA_STATUS_CONFIG: Record<IdeaStatus, { color: string; bg: string; border: string }> = {
   심사대기: {
-    color: '#f59e0b',
-    bg: 'rgba(245,158,11,0.08)',
-    border: 'rgba(245,158,11,0.3)',
+    color: '#3b82f6',
+    bg: 'rgba(59,130,246,0.08)',
+    border: 'rgba(59,130,246,0.3)',
   },
   승인: {
     color: '#10b981',

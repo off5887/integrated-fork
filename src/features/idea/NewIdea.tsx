@@ -12,7 +12,7 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
 
 import { useIdeaDraft, DRAFT_KEY } from './hooks/useIdeaDraft'
-import { useCreateIdea, useUpdateIdea } from '@/api/queries/useIdeas'
+import { useCreateIdea, useDeleteAttachment, useIdeaDetail, useUpdateIdea } from '@/api/queries/useIdeas'
 import DraftSnackbar from './components/DraftSnackbar'
 import DraftRestoreBanner from './components/DraftRestoreBanner'
 import NewIdeaHeader from './components/NewIdeaHeader'
@@ -92,6 +92,9 @@ export default function NewIdea() {
   // ─── API 훅 ───────────────────────────────────────────────────────────────
   const createIdea = useCreateIdea()
   const updateIdea = useUpdateIdea(editIdea?.id ?? 0)
+  const deleteAttachment = useDeleteAttachment(editIdea?.id ?? 0)
+  const { data: editDetail } = useIdeaDetail(isEditMode ? (editIdea?.id ?? null) : null)
+  const existingAttachments = editDetail?.attachments ?? []
 
   // ─── 제출 ─────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
@@ -116,9 +119,9 @@ export default function NewIdea() {
 
     try {
       if (isEditMode && editIdea) {
-        await updateIdea.mutateAsync(body)
+        await updateIdea.mutateAsync({ data: body, files })
       } else {
-        await createIdea.mutateAsync(body)
+        await createIdea.mutateAsync({ data: body, files })
       }
       clearDraft()
       showSnackbar(isEditMode ? '아이디어가 수정되었습니다!' : '제안이 등록되었습니다!', 'success')
@@ -236,6 +239,8 @@ export default function NewIdea() {
                 setFiles((prev) => prev.filter((_, i) => i !== index))
                 setFilePreviews((prev) => prev.filter((_, i) => i !== index))
               }}
+              existingAttachments={existingAttachments}
+              onDeleteExisting={(attachmentId) => deleteAttachment.mutate(attachmentId)}
             />
 
             {/* 하단 버튼 */}
