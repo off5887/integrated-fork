@@ -9,6 +9,7 @@ export const menuItems: MenuItem[] = [
   { iconName: 'AttachMoney',  text: '마일리지', path: '/rqMileage' },
   { iconName: 'RateReview',   text: '심사하기', path: '/judge',   roles: ['reviewer', 'admin'] },
   { iconName: 'BarChart',     text: '통계',     path: '/stats' },
+  { iconName: 'Mail',         text: '쪽지함',   path: '/messages' },
   // {
   //   iconName: 'Groups',
   //   text: 'TF',

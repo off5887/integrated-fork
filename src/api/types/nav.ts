@@ -12,6 +12,7 @@ export type IconName =
   | 'GroupAdd'
   | 'Settings'
   | 'InfoOutlined'
+  | 'Mail'
 
 export type SubMenuItem = {
   iconName: IconName

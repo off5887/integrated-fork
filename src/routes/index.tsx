@@ -30,6 +30,7 @@ const MercenaryManagementPage = lazy(
 const MercenarySupportPage = lazy(
   () => import('@/features/tf/MercenarySupportPage'),
 )
+const MessagePage = lazy(() => import('@/features/message/MessagePage'))
 const NotFoundPage = lazy(() => import('@/features/error/NotFoundPage'))
 
 // Suspense + ErrorBoundary 루트 레이아웃
@@ -71,6 +72,7 @@ export const router = createBrowserRouter(
           <Route path="/stats" element={<Stats />} />
           <Route path="/mercenary-support" element={<MercenarySupportPage />} />
           <Route path="/mercenary-management" element={<MercenaryManagementPage />} />
+          <Route path="/messages" element={<MessagePage />} />
         </Route>
       </Route>
 
