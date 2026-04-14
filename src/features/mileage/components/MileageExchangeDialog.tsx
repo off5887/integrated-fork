@@ -17,18 +17,19 @@ import { getMileageTheme } from '@/theme/mileageTheme'
 interface Props {
   open: boolean
   onClose: () => void
-  totalMileage: number
+  availableMileage: number
   onConfirm: (amount: number) => void
 }
 
-export default function MileageExchangeDialog({ open, onClose, totalMileage, onConfirm }: Props) {
+export default function MileageExchangeDialog({ open, onClose, availableMileage, onConfirm }: Props) {
   const { isDarkMode } = useThemeMode()
   const t = getMileageTheme(isDarkMode)
   const [inputValue, setInputValue] = useState('')
 
   const parsed  = parseInt(inputValue, 10)
   const amount  = isNaN(parsed) ? 0 : parsed
-  const isValid = amount > 0 && amount <= totalMileage
+  const MIN_AMOUNT = 500
+  const isValid = amount >= MIN_AMOUNT && amount <= availableMileage
   const isEmpty = inputValue === ''
 
   const handleClose = () => {
@@ -54,9 +55,11 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
   const errorMsg =
     !isEmpty && amount <= 0
       ? '1 이상의 숫자를 입력해주세요'
-      : !isEmpty && amount > totalMileage
-        ? `보유 마일리지(${totalMileage.toLocaleString()}마리)를 초과할 수 없습니다`
-        : ''
+      : !isEmpty && amount < MIN_AMOUNT
+        ? `최소 ${MIN_AMOUNT.toLocaleString()}마리 이상부터 신청 가능합니다`
+        : !isEmpty && amount > availableMileage
+          ? `보유 마일리지(${availableMileage.toLocaleString()}마리)를 초과할 수 없습니다`
+          : ''
 
   return (
     <Dialog
@@ -122,7 +125,7 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
           <Typography variant="body2" sx={{ color: t.textSecondary, fontWeight: 500 }}>보유 마일리지</Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
             <Typography fontWeight={800} sx={{ fontSize: '1.15rem', color: t.primaryColor }}>
-              {totalMileage.toLocaleString()}
+              {availableMileage.toLocaleString()}
             </Typography>
             <Typography variant="caption" sx={{ color: t.textSecondary }}>마리</Typography>
           </Box>
@@ -172,14 +175,14 @@ export default function MileageExchangeDialog({ open, onClose, totalMileage, onC
         <Button
           size="small"
           variant="text"
-          onClick={() => setInputValue(String(totalMileage))}
+          onClick={() => setInputValue(String(availableMileage))}
           sx={{
             fontSize: '0.75rem', fontWeight: 600, color: t.primaryColor,
             textTransform: 'none', p: 0, mb: 3,
             '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' },
           }}
         >
-          전체 마일리지 신청 ({totalMileage.toLocaleString()}마리)
+          전체 마일리지 신청 ({availableMileage.toLocaleString()}마리)
         </Button>
 
         {/* 경고 문구 */}

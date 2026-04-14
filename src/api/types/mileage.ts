@@ -2,6 +2,15 @@ import type { MileageTheme } from '@/theme/mileageTheme'
 
 // ── API 응답 타입 ────────────────────────────────────────────────────────────
 
+/** GET /api/mileages/me/summary 응답 */
+export interface MileageSummary {
+  totalMileage: number        // 보유 마일리지 (승인 환전분 차감 후)
+  pendingMileage: number      // 신청중인 마일리지 (아직 차감 안 된)
+  availableMileage: number    // 환전 신청 가능 (totalMileage - pendingMileage)
+  thisMonthMileage: number    // 이달 받은 마일리지
+  thisMonthWithdrawal: number // 이달 환전 신청 마일리지
+}
+
 export type MileageType = 'idea' | 'special'
 export type WithdrawalStatus = 'pending' | 'approved' | 'rejected'
 
@@ -10,12 +19,13 @@ export interface MileageRecord {
   mileageId: number
   employeeId: string
   ideaId: number | null
+  ideaTitle: string | null   // type=idea일 때 연결된 아이디어 제목
+  ideaScore: number | null   // type=idea일 때 심사 점수
   points: number
   type: MileageType
   reason: string
   awardedBy: string | null
   awardDate: string
-  createdAt: string
 }
 
 /** GET /api/mileage-withdrawals, /api/mileage-withdrawals/me 응답 항목 */
@@ -23,6 +33,7 @@ export interface WithdrawalRecord {
   withdrawalId: number
   employeeId: string
   requestPoints: number
+  cashAmount: number          // requestPoints × 100원 (서버 계산값)
   status: WithdrawalStatus
   adminComment: string | null
   processedBy: string | null
@@ -30,6 +41,9 @@ export interface WithdrawalRecord {
   processedDate: string | null
   createdAt: string
 }
+
+/** GET /api/mileage-withdrawals/statuses 응답 */
+export type WithdrawalStatusesData = Record<WithdrawalStatus, string>
 
 /** POST /api/mileages/grant 요청 바디 */
 export interface GrantMileageRequest {
@@ -60,9 +74,10 @@ export function toAwardItem(r: MileageRecord): AwardItem {
   return {
     id: r.mileageId,
     paymentDate: r.awardDate.split('T')[0],
-    detail: r.reason,
+    detail: r.ideaTitle ?? r.reason,
     fish: r.points,
     status: r.type === 'special' ? '특별' : '일반',
+    score: r.ideaScore ?? undefined,
   }
 }
 
@@ -72,7 +87,7 @@ export function toExchangeItem(r: WithdrawalRecord): ExchangeItem {
     id: r.withdrawalId,
     requestDate: r.requestDate.split('T')[0],
     amount: r.requestPoints,
-    cashAmount: r.requestPoints * 100,
+    cashAmount: r.cashAmount,
     status: WITHDRAWAL_STATUS_KR[r.status],
   }
 }
@@ -92,6 +107,7 @@ export interface StatCardConfig {
   label: string
   unit: string
   icon: string
+  key: keyof MileageSummary
   colorKey: keyof Pick<MileageTheme, 'primaryColor' | 'statusSuccessColor' | 'statusWarningColor'>
   getSub: (value: number) => string
 }

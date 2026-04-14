@@ -10,7 +10,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { getMileageTheme } from '@/theme/mileageTheme'
-import { useMyMileages, useMyWithdrawals, useRequestWithdrawal } from '@/api/queries/useMileage'
+import { useCancelWithdrawal, useMyMileages, useMyMileageSummary, useMyWithdrawals, useRequestWithdrawal } from '@/api/queries/useMileage'
 import { toAwardItem, toExchangeItem } from '@/api/types/mileage'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 
@@ -31,23 +31,16 @@ export default function MileagePage() {
   const t = getMileageTheme(isDarkMode)
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
+  const { data: summary } = useMyMileageSummary()
   const { data: mileageRecords = [], isLoading: isLoadingMileages } = useMyMileages()
   const { data: withdrawalRecords = [], isLoading: isLoadingWithdrawals } = useMyWithdrawals()
   const requestWithdrawalMutation = useRequestWithdrawal()
+  const cancelWithdrawalMutation  = useCancelWithdrawal()
 
   const isLoading = isLoadingMileages || isLoadingWithdrawals
 
   const awardItems = useMemo(() => mileageRecords.map(toAwardItem), [mileageRecords])
   const exchangeItems = useMemo(() => withdrawalRecords.map(toExchangeItem), [withdrawalRecords])
-
-  // 보유 마일리지 = 전체 지급 - 승인/신청 출금
-  const availableMileage = useMemo(() => {
-    const totalEarned = mileageRecords.reduce((sum, r) => sum + r.points, 0)
-    const totalWithdrawn = withdrawalRecords
-      .filter((r) => r.status === 'approved' || r.status === 'pending')
-      .reduce((sum, r) => sum + r.requestPoints, 0)
-    return totalEarned - totalWithdrawn
-  }, [mileageRecords, withdrawalRecords])
 
   const [tab, setTab] = useState<TabValue>('awards')
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null)
@@ -70,34 +63,6 @@ export default function MileagePage() {
 
   const paginatedAwards = filteredAwards.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
-  const thisMonthFish = useMemo(
-    () =>
-      filteredAwards
-        .filter((item) => {
-          const d = dayjs(item.paymentDate)
-          const now = dayjs()
-          return d.month() === now.month() && d.year() === now.year()
-        })
-        .reduce((sum, item) => sum + item.fish, 0),
-    [filteredAwards],
-  )
-
-  const thisMonthExchanged = useMemo(
-    () =>
-      exchangeItems
-        .filter((item) => {
-          const d = dayjs(item.requestDate)
-          const now = dayjs()
-          return (
-            d.month() === now.month() &&
-            d.year() === now.year() &&
-            (item.status === '완료' || item.status === '신청중')
-          )
-        })
-        .reduce((sum, item) => sum + item.amount, 0),
-    [exchangeItems],
-  )
-
   const handleConfirmExchange = async (amount: number) => {
     try {
       await requestWithdrawalMutation.mutateAsync({ requestPoints: amount })
@@ -110,9 +75,17 @@ export default function MileagePage() {
   }
 
   const handleWithdrawConfirm = () => {
-    // 환전 취소 API 엔드포인트가 없어 UI 알림만 표시
-    showSnackbar('환전 신청 취소는 관리자에게 문의해주세요.', 'info')
-    setWithdrawTarget(null)
+    if (withdrawTarget === null) return
+    cancelWithdrawalMutation.mutate(withdrawTarget, {
+      onSuccess: () => {
+        showSnackbar('환전 신청이 취소되었습니다.', 'success')
+        setWithdrawTarget(null)
+      },
+      onError: () => {
+        showSnackbar('취소 처리 중 오류가 발생했습니다.', 'error')
+        setWithdrawTarget(null)
+      },
+    })
   }
 
   const handleTabChange = (_: React.SyntheticEvent, newVal: TabValue) => {
@@ -159,11 +132,7 @@ export default function MileagePage() {
         </Box>
 
         {/* 통계 카드 */}
-        <MileageStatsCards
-          totalFish={availableMileage}
-          thisMonthFish={thisMonthFish}
-          thisMonthExchanged={thisMonthExchanged}
-        />
+        <MileageStatsCards summary={summary} />
 
         {/* 탭 */}
         <Box sx={{ mb: 3, borderBottom: `1px solid ${t.borderColorStrict}` }}>
@@ -224,17 +193,18 @@ export default function MileagePage() {
         <MileageExchangeDialog
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
-          totalMileage={availableMileage}
+          availableMileage={summary?.availableMileage ?? 0}
           onConfirm={handleConfirmExchange}
         />
 
         {/* 회수 확인 다이얼로그 */}
         <ConfirmDialog
           open={withdrawTarget !== null}
-          title="환전 신청 회수"
-          message="환전 신청 취소는 관리자에게 직접 문의해주세요."
-          confirmLabel="확인"
+          title="환전 신청 취소"
+          message="신청 중인 환전을 취소하시겠습니까?"
+          confirmLabel="취소하기"
           cancelLabel="닫기"
+          variant="error"
           onConfirm={handleWithdrawConfirm}
           onCancel={() => setWithdrawTarget(null)}
         />

@@ -2,6 +2,7 @@
  * useMileage / useWithdrawals
  *
  * 마일리지 & 환전 신청 관련 TanStack Query 훅
+ * - useMyMileageSummary     : GET  /api/mileages/me/summary
  * - useMyMileages           : GET  /api/mileages/me
  * - useUserMileages         : GET  /api/mileages/users/{employeeId}  (관리자)
  * - useAllMileages          : GET  /api/mileages                     (관리자)
@@ -19,18 +20,38 @@ import type { ApiResponse } from '@/api/types/auth'
 import type {
   GrantMileageRequest,
   MileageRecord,
+  MileageSummary,
   WithdrawalActionRequest,
   WithdrawalRecord,
   WithdrawalRequest,
+  WithdrawalStatusesData,
 } from '@/api/types/mileage'
 import {
   mockAllMileageRecords,
   mockAllWithdrawalRecords,
+  mockMileageSummary,
   mockMyMileageRecords,
   mockMyWithdrawalRecords,
   mockUserMileageRecordsMap,
 } from '@/api/mock/mileage'
 import { withDemoFallback } from '@/utils/demoMode'
+
+// ─── 마일리지 요약 ─────────────────────────────────────────────────────────────
+
+export function useMyMileageSummary() {
+  return useQuery({
+    queryKey: queryKeys.mileages.summary(),
+    queryFn: () =>
+      withDemoFallback<MileageSummary>(
+        mockMileageSummary,
+        async () => {
+          const res = await api.get<ApiResponse<MileageSummary>>('/api/mileages/me/summary')
+          return res.data.data
+        },
+      ),
+    staleTime: 0,
+  })
+}
 
 // ─── 내 마일리지 수상내역 ─────────────────────────────────────────────────────
 
@@ -81,6 +102,29 @@ export function useAllMileages() {
         },
       ),
     staleTime: 0,
+  })
+}
+
+// ─── 환전 상태값 목록 (프론트 필터 탭용) ──────────────────────────────────────
+
+const mockWithdrawalStatuses: WithdrawalStatusesData = {
+  pending:  '신청중',
+  approved: '신청완료',
+  rejected: '신청반려',
+}
+
+export function useWithdrawalStatuses() {
+  return useQuery({
+    queryKey: queryKeys.withdrawals.statuses(),
+    queryFn: () =>
+      withDemoFallback<WithdrawalStatusesData>(
+        mockWithdrawalStatuses,
+        async () => {
+          const res = await api.get<ApiResponse<WithdrawalStatusesData>>('/api/mileage-withdrawals/statuses')
+          return res.data.data
+        },
+      ),
+    staleTime: Infinity, // 상태값 목록은 불변 — 재요청 불필요
   })
 }
 
@@ -148,6 +192,21 @@ export function useRequestWithdrawal() {
       api.post<ApiResponse<WithdrawalRecord>>('/api/mileage-withdrawals', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.my() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.mileages.summary() })
+    },
+  })
+}
+
+// ─── 환전 신청 취소 (본인, pending 상태만) ────────────────────────────────────
+
+export function useCancelWithdrawal() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) =>
+      api.delete(`/api/mileage-withdrawals/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.withdrawals.my() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.mileages.summary() })
     },
   })
 }
