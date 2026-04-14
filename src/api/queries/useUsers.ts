@@ -1,15 +1,17 @@
 /**
  * 사용자 관련 쿼리/뮤테이션
- * - useUsers      : GET  /api/users
+ * - useUsers      : GET  /api/users             (관리자 전용 — 전체 사용자)
+ * - useUserRoles  : GET  /api/users/roles        (관리자 전용 — 권한별 분리 목록)
+ * - useAdminUsers : GET  /api/users/admins       (로그인 — 쪽지 수신자용)
  * - useUpdateUser : PUT  /api/users/{employeeId}
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/client'
 import { queryKeys } from '@/api/queryKeys'
-import { type UserApiBizArea, type User } from '@/api/types/settings'
+import { type AdminUserItem, type UserRolesData, type UserApiBizArea, type User } from '@/api/types/settings'
 import { flattenUsers } from '@/utils/userUtils'
 import type { ApiResponse } from '@/api/types/auth'
-import { mockUsers, mockUsersBizArea } from '@/api/mock/settings'
+import { mockAdminUsers, mockUserRoles, mockUsers, mockUsersBizArea } from '@/api/mock/settings'
 import { withDemoFallback } from '@/utils/demoMode'
 
 // ─── GET /api/users ───────────────────────────────────────────────────────────
@@ -23,6 +25,42 @@ export function useUsers() {
         async () => {
           const res = await api.get<ApiResponse<UserApiBizArea[]>>('/api/users')
           return flattenUsers(res.data.data ?? [])
+        },
+      ),
+    staleTime: 0,
+  })
+}
+
+// ─── GET /api/users/roles — 권한별 분리 목록 (관리자 전용) ──────────────────
+
+/** 관리자/심사자 목록 — GET /api/users/roles */
+export function useUserRoles() {
+  return useQuery({
+    queryKey: queryKeys.users.roles(),
+    queryFn: () =>
+      withDemoFallback<UserRolesData>(
+        mockUserRoles,
+        async () => {
+          const res = await api.get<ApiResponse<UserRolesData>>('/api/users/roles')
+          return res.data.data
+        },
+      ),
+    staleTime: 0,
+  })
+}
+
+// ─── GET /api/users/admins — 관리자 목록 (쪽지 수신자용, 로그인 접근 가능) ───
+
+/** 관리자 수신자 목록 조회 — GET /api/users/admins */
+export function useAdminUsers() {
+  return useQuery({
+    queryKey: ['users', 'admins'],
+    queryFn: () =>
+      withDemoFallback<AdminUserItem[]>(
+        mockAdminUsers,
+        async () => {
+          const res = await api.get<ApiResponse<AdminUserItem[]>>('/api/users/admins')
+          return res.data.data ?? []
         },
       ),
     staleTime: 0,

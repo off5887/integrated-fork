@@ -67,6 +67,17 @@ const ideaLight = {
   // ── 통계 박스 ──
   statsBg: 'rgba(99,102,241,0.05)',
   statsBorder: 'rgba(99,102,241,0.15)',
+
+  // ── 페이지네이션 ──
+  pageBtnBg:        '#ffffff',
+  pageBtnBorder:    'rgba(203,213,225,0.7)',
+  pageBtnColor:     '#475569',
+  pageBtnHoverBg:   'rgba(99,102,241,0.07)',
+  pageBtnHoverBorder:'rgba(99,102,241,0.3)',
+  pageActiveBg:     '#6366f1',
+  pageActiveColor:  '#ffffff',
+  pageActiveShadow: '0 4px 14px rgba(99,102,241,0.45)',
+  pageEllipsisColor:'#94a3b8',
 } as const
 
 const ideaDark = {
@@ -134,6 +145,17 @@ const ideaDark = {
   // ── 통계 박스 ──
   statsBg: 'rgba(99,102,241,0.08)',
   statsBorder: 'rgba(99,102,241,0.2)',
+
+  // ── 페이지네이션 ──
+  pageBtnBg:        'rgba(30,41,59,0.9)',
+  pageBtnBorder:    'rgba(148,163,184,0.2)',
+  pageBtnColor:     '#94a3b8',
+  pageBtnHoverBg:   'rgba(99,102,241,0.15)',
+  pageBtnHoverBorder:'rgba(99,102,241,0.4)',
+  pageActiveBg:     '#6366f1',
+  pageActiveColor:  '#ffffff',
+  pageActiveShadow: '0 4px 14px rgba(99,102,241,0.5)',
+  pageEllipsisColor:'#475569',
 } as const
 
 // ── 공통 액센트 컬러 (라이트/다크 동일하게 사용) ──

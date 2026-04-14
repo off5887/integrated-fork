@@ -3,13 +3,6 @@
 export type IdeaStatus = '심사대기' | '승인' | '반려' | '실행중' | '완료'
 export type SortKey = 'latest' | 'likes' | 'views' | 'comments'
 
-export interface IdeaComment {
-  id: number
-  author: string
-  content: string
-  createdAt: string
-}
-
 export interface IdeaItem {
   id: number
   title: string
@@ -20,6 +13,7 @@ export interface IdeaItem {
   author: string
   bizArea: string
   department: string
+  deptCd: string
   status: IdeaStatus
   submittedAt: string
   security: 'public' | 'private'
@@ -30,8 +24,6 @@ export interface IdeaItem {
   ideaScore?: number
   /** 승인·실행중·완료 상태일 때만 존재. 지급된 마일리지 포인트 */
   mileageScore?: number
-  commentsData?: IdeaComment[]
-  likesData?: string[]
 }
 
 export interface CategoryConfig {

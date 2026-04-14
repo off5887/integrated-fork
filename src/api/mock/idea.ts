@@ -1,6 +1,6 @@
 // src/api/mock/idea.ts
 
-import type { CategoryApiItem, CategoryOption, IdeaApiItem, MyIdeasPage, OrgDivision, Reviewer } from '@/api/types/idea'
+import type { CategoryApiItem, CategoryOption, IdeaApiItem, IdeaApiComment, IdeaCommentsPage, IdeaDetailExtras, MyIdeasPage, OrgDivision, Reviewer } from '@/api/types/idea'
 
 /** GET /api/ideas/statuses 데모 모드 응답 — API 키:라벨 매핑 */
 export const mockIdeaStatuses: Record<string, string> = {
@@ -162,4 +162,76 @@ export const mockMyIdeasPage: MyIdeasPage = {
   totalElements: mockMyIdeaItems.length,
   totalPages: 1,
   last: true,
+}
+
+/** GET /api/ideas/{ideaId} 추가 필드 데모 모드 응답 */
+export const mockIdeaDetailExtras: Record<number, IdeaDetailExtras> = {
+  1:   { viewCount: 120, likeCount: 20, commentCount: 2, isLiked: false, approverId: 'EMP002', approverName: '이심사',
+         executors: [{ executorId: 1, scheduleDate: '2026-06-01T00:00:00', content: '시스템 UI 개선 및 예약 로직 재설계', expectedResult: '예약 충돌 50% 감소' }] },
+  2:   { viewCount: 450, likeCount: 20, commentCount: 1, isLiked: true,  approverId: 'EMP002', approverName: '이심사', executors: null },
+  3:   { viewCount: 310, likeCount: 20, commentCount: 0, isLiked: false, approverId: null, approverName: null, executors: null },
+  4:   { viewCount: 380, likeCount: 20, commentCount: 2, isLiked: true,  approverId: null, approverName: null, executors: null },
+  5:   { viewCount: 290, likeCount: 20, commentCount: 0, isLiked: false, approverId: 'EMP003', approverName: '박인사', executors: null },
+  101: { viewCount: 120, likeCount: 34, commentCount: 1, isLiked: false, approverId: 'EMP002', approverName: '이심사',
+         executors: [{ executorId: 2, scheduleDate: '2026-07-01T00:00:00', content: '복지 포인트 사용처 확대 협의', expectedResult: '직원 만족도 향상' }] },
+  102: { viewCount: 210, likeCount: 52, commentCount: 2, isLiked: false, approverId: null, approverName: null, executors: null },
+}
+
+/** GET /api/ideas/{ideaId}/comments 데모 모드 응답 */
+const mockCommentList: Record<number, IdeaApiComment[]> = {
+  1: [
+    {
+      commentId: 101, ideaId: 1, employeeId: 'EMP002', name: '이심사', rollNm: '심사위원',
+      content: '좋은 아이디어입니다. 비용 절감 효과가 명확하게 분석되어 있네요.',
+      createdAt: '2026-02-21T10:00:00', updatedAt: null,
+    },
+    {
+      commentId: 102, ideaId: 1, employeeId: 'DEMO001', name: '홍길동', rollNm: '일반',
+      content: '추가로 작업 환경 개선 효과도 강조하면 좋을 것 같습니다.',
+      createdAt: '2026-02-22T09:30:00', updatedAt: null,
+    },
+  ],
+  2: [
+    {
+      commentId: 201, ideaId: 2, employeeId: 'EMP003', name: '박인사', rollNm: '팀장',
+      content: '직원 복지 향상에 좋은 아이디어입니다.',
+      createdAt: '2026-02-23T14:00:00', updatedAt: null,
+    },
+  ],
+  4: [
+    {
+      commentId: 401, ideaId: 4, employeeId: 'EMP004', name: '최개발', rollNm: '선임',
+      content: '화상회의 시스템 업그레이드는 정말 필요합니다!',
+      createdAt: '2026-02-11T11:00:00', updatedAt: null,
+    },
+    {
+      commentId: 402, ideaId: 4, employeeId: 'DEMO001', name: '홍길동', rollNm: '일반',
+      content: 'Teams Premium 외에 Google Meet도 검토해보면 좋겠습니다.',
+      createdAt: '2026-02-12T15:00:00', updatedAt: '2026-02-12T16:00:00',
+    },
+  ],
+  101: [
+    {
+      commentId: 1001, ideaId: 101, employeeId: 'EMP005', name: '김팀장', rollNm: '팀장',
+      content: '온보딩 프로세스 개선은 꼭 필요합니다. 지원하겠습니다.',
+      createdAt: '2026-03-06T09:00:00', updatedAt: null,
+    },
+  ],
+  102: [
+    {
+      commentId: 1021, ideaId: 102, employeeId: 'EMP006', name: '박선임', rollNm: '선임',
+      content: '코드 리뷰 가이드라인 정말 기대됩니다.',
+      createdAt: '2026-01-21T10:00:00', updatedAt: null,
+    },
+    {
+      commentId: 1022, ideaId: 102, employeeId: 'DEMO001', name: '홍길동', rollNm: '일반',
+      content: '초안 작성되면 공유해주세요!',
+      createdAt: '2026-01-22T11:00:00', updatedAt: null,
+    },
+  ],
+}
+
+export function getMockComments(ideaId: number): IdeaCommentsPage {
+  const content = mockCommentList[ideaId] ?? []
+  return { content, totalElements: content.length, totalPages: 1, last: true }
 }

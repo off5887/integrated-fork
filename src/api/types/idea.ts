@@ -154,7 +154,7 @@ export interface IdeaCreateRequest {
   coProposerIds?: string[]   // 공동제안자 사번 목록
 }
 
-/** GET /api/ideas, POST /api/ideas 응답의 단일 아이디어 */
+/** GET /api/ideas, GET /api/ideas/{id}, GET /api/ideas/my 응답의 단일 아이디어 */
 export interface IdeaApiItem {
   ideaId: number
   title: string
@@ -165,13 +165,76 @@ export interface IdeaApiItem {
   type: 'idea' | 'completed'
   status: 'pending' | 'approved' | 'rejected' | 'in_progress' | 'completed'
   security: 'N' | 'Y'
-  submittedBy: string
+  submittedBy: string       // 사번(employeeId)
+  author?: string           // 작성자 이름
+  bizArea?: string          // 사업소
+  department?: string       // 부서
+  deptCd?: string           // 부서 코드
   mileagePoints: number
   submitDate: string
   createdAt: string
   updatedAt?: string
   category?: { categoryId: number; categoryName: string }
   coProposers: { employeeId: string; name: string; rollNm: string }[]
+  // 목록 및 단건 조회 공통 반환 필드
+  viewCount?: number
+  likeCount?: number
+  commentCount?: number
+  isLiked?: boolean
+  // 배정된 심사자 (없으면 null)
+  approverId?: string | null
+  approverName?: string | null
+  // 단건 조회 전용 — 본인 아이디어일 때만 존재
+  executors?: IdeaExecutor[] | null
+}
+
+/** GET /api/ideas/{id}/executors 항목 */
+export interface IdeaExecutor {
+  executorId: number
+  scheduleDate: string
+  content: string
+  expectedResult: string
+}
+
+/** GET /api/ideas/{id} 응답에 추가되는 상세 필드 */
+export interface IdeaDetailExtras {
+  viewCount: number
+  likeCount: number
+  commentCount: number
+  isLiked: boolean
+  approverId: string | null
+  approverName: string | null
+  executors: IdeaExecutor[] | null   // 본인 아이디어일 때만 존재, 타인은 null
+}
+
+/** PATCH /api/ideas/{id}/review 요청 바디 (관리자/심사자) */
+export interface IdeaReviewRequest {
+  status: 'approved' | 'rejected'
+  reason?: string
+  scoreInnovation?: number
+  scoreFeasibility?: number
+  scoreProfitability?: number
+  mileage?: number
+}
+
+/** GET /api/ideas/{ideaId}/comments 단일 댓글 */
+export interface IdeaApiComment {
+  commentId: number
+  ideaId: number
+  employeeId: string
+  name: string
+  rollNm: string
+  content: string
+  createdAt: string
+  updatedAt: string | null
+}
+
+/** GET /api/ideas/{ideaId}/comments 페이지 응답 */
+export interface IdeaCommentsPage {
+  content: IdeaApiComment[]
+  totalElements: number
+  totalPages: number
+  last: boolean
 }
 
 /** GET /api/ideas/my 응답 페이지 */

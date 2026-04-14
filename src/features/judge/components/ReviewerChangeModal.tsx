@@ -19,8 +19,10 @@ import { useMemo, useState, useEffect } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useSnackbar } from '@/context/SnackbarContext'
 import type { Proposal } from '@/api/types/judge'
-import { mockCandidates } from '@/api/mock/judge'
+import { useIdeaApprover, useAssignApprover } from '@/api/queries/useIdeas'
+import { useUserRoles } from '@/api/queries/useUsers'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -28,20 +30,15 @@ interface Props {
   open: boolean
   proposal: Proposal | null
   onClose: () => void
-  onConfirm: (proposalId: number, newReviewer: string) => void
 }
 
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
-export default function ReviewerChangeModal({
-  open,
-  proposal,
-  onClose,
-  onConfirm,
-}: Props) {
+export default function ReviewerChangeModal({ open, proposal, onClose }: Props) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
   const theme = getJudgeTheme(isDarkMode)
+  const { showSnackbar } = useSnackbar()
 
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedTerm, setDebouncedTerm] = useState('')
@@ -52,24 +49,52 @@ export default function ReviewerChangeModal({
     return () => clearTimeout(timer)
   }, [searchTerm])
 
+  // 현재 배정된 심사자 조회
+  const { data: currentApprover } = useIdeaApprover(open ? (proposal?.id ?? null) : null)
+
+  // 배정 가능한 후보 목록 (isAdmin || isReviewer)
+  const { data: rolesData } = useUserRoles()
+  const candidates = useMemo(() => {
+    const admins    = rolesData?.admins    ?? []
+    const reviewers = rolesData?.reviewers ?? []
+    const seen = new Set<string>()
+    return [...admins, ...reviewers].filter((u) => {
+      if (seen.has(u.employeeId)) return false
+      seen.add(u.employeeId)
+      return true
+    })
+  }, [rolesData])
+
   const filtered = useMemo(() => {
     const q = debouncedTerm.trim().toLowerCase()
-    if (!q) return mockCandidates
-    return mockCandidates.filter(
-      (r) =>
-        r.name.includes(q) ||
-        r.position.includes(q) ||
-        r.department.includes(q),
+    if (!q) return candidates
+    return candidates.filter(
+      (u) =>
+        u.name.includes(q) ||
+        u.rollNm.includes(q) ||
+        u.section.includes(q),
     )
-  }, [debouncedTerm])
+  }, [candidates, debouncedTerm])
 
-  const selectedCandidate = mockCandidates.find((r) => r.id === selectedId) ?? null
-  const canConfirm = selectedCandidate !== null && selectedCandidate.name !== proposal?.reviewer
+  const selectedCandidate = candidates.find((u) => u.employeeId === selectedId) ?? null
+  const canConfirm =
+    selectedCandidate !== null &&
+    selectedCandidate.employeeId !== currentApprover?.approverId
+
+  // 심사자 배정 뮤테이션
+  const assignApprover = useAssignApprover(proposal?.id ?? 0)
 
   const handleConfirm = () => {
     if (!proposal || !selectedCandidate) return
-    onConfirm(proposal.id, selectedCandidate.name)
-    handleClose()
+    assignApprover.mutate(selectedCandidate.employeeId, {
+      onSuccess: () => {
+        showSnackbar(`'${proposal.title}' 심사자가 ${selectedCandidate.name}(으)로 변경되었습니다.`, 'success')
+        handleClose()
+      },
+      onError: () => {
+        showSnackbar('심사자 변경 중 오류가 발생했습니다.', 'error')
+      },
+    })
   }
 
   const handleClose = () => {
@@ -79,6 +104,8 @@ export default function ReviewerChangeModal({
   }
 
   if (!proposal) return null
+
+  const currentName = currentApprover?.approverName ?? '(미배정)'
 
   return (
     <Dialog
@@ -177,7 +204,7 @@ export default function ReviewerChangeModal({
             현재
           </Typography>
           <Chip
-            label={proposal.reviewer}
+            label={currentName}
             size="small"
             sx={{
               fontWeight: 700,
@@ -232,9 +259,7 @@ export default function ReviewerChangeModal({
               bgcolor: theme.searchBg,
               fontSize: '0.875rem',
               '& fieldset': { borderColor: colors.borderColor },
-              '&:hover fieldset': {
-                borderColor: theme.searchHoverBorder,
-              },
+              '&:hover fieldset': { borderColor: theme.searchHoverBorder },
               '&.Mui-focused fieldset': { borderColor: theme.inputFocusColor },
             },
             '& .MuiInputBase-input': {
@@ -272,23 +297,19 @@ export default function ReviewerChangeModal({
             </Box>
           ) : (
             filtered.map((candidate) => {
-              const isSelected = selectedId === candidate.id
-              const isCurrent = candidate.name === proposal.reviewer
+              const isSelected = selectedId === candidate.employeeId
+              const isCurrent  = candidate.employeeId === currentApprover?.approverId
               return (
                 <Box
-                  key={candidate.id}
-                  onClick={() => !isCurrent && setSelectedId(candidate.id)}
+                  key={candidate.employeeId}
+                  onClick={() => !isCurrent && setSelectedId(candidate.employeeId)}
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 1.25,
                     p: 1.25,
                     borderRadius: 1.5,
-                    border: `1px solid ${
-                      isSelected
-                        ? theme.candidateSelectedBorder
-                        : colors.borderColor
-                    }`,
+                    border: `1px solid ${isSelected ? theme.candidateSelectedBorder : colors.borderColor}`,
                     bgcolor: isSelected
                       ? theme.candidateSelectedBg
                       : isCurrent
@@ -309,19 +330,11 @@ export default function ReviewerChangeModal({
                     sx={{
                       width: 30,
                       height: 30,
-                      bgcolor: isSelected
-                        ? theme.candidateAvatarSelectedBg
-                        : theme.candidateAvatarBg,
-                      color: isSelected
-                        ? theme.candidateSelectedAvatarColor
-                        : colors.textSecondary,
+                      bgcolor: isSelected ? theme.candidateAvatarSelectedBg : theme.candidateAvatarBg,
+                      color: isSelected ? theme.candidateSelectedAvatarColor : colors.textSecondary,
                       fontSize: '0.75rem',
                       fontWeight: 700,
-                      border: `1px solid ${
-                        isSelected
-                          ? theme.candidateSelectedAvatarBorder
-                          : colors.borderColor
-                      }`,
+                      border: `1px solid ${isSelected ? theme.candidateSelectedAvatarBorder : colors.borderColor}`,
                       flexShrink: 0,
                     }}
                   >
@@ -334,9 +347,7 @@ export default function ReviewerChangeModal({
                         sx={{
                           fontSize: '0.82rem',
                           fontWeight: isSelected ? 700 : 600,
-                          color: isSelected
-                            ? theme.candidateSelectedTextColor
-                            : colors.textPrimary,
+                          color: isSelected ? theme.candidateSelectedTextColor : colors.textPrimary,
                           lineHeight: 1.3,
                         }}
                       >
@@ -357,17 +368,13 @@ export default function ReviewerChangeModal({
                         />
                       )}
                     </Box>
-                    <Typography
-                      sx={{ fontSize: '0.68rem', color: colors.textSecondary, fontFamily: 'monospace' }}
-                    >
-                      {candidate.position} · {candidate.department}
+                    <Typography sx={{ fontSize: '0.68rem', color: colors.textSecondary, fontFamily: 'monospace' }}>
+                      {candidate.rollNm} · {candidate.section}
                     </Typography>
                   </Box>
 
                   {isSelected && (
-                    <CheckIcon
-                      sx={{ fontSize: '1rem', color: theme.candidateSelectedTextColor, flexShrink: 0 }}
-                    />
+                    <CheckIcon sx={{ fontSize: '1rem', color: theme.candidateSelectedTextColor, flexShrink: 0 }} />
                   )}
                 </Box>
               )
@@ -409,7 +416,7 @@ export default function ReviewerChangeModal({
         <Button
           variant="contained"
           size="small"
-          disabled={!canConfirm}
+          disabled={!canConfirm || assignApprover.isPending}
           onClick={handleConfirm}
           startIcon={<SwapHorizIcon sx={{ fontSize: '0.9rem' }} />}
           sx={{
@@ -430,7 +437,7 @@ export default function ReviewerChangeModal({
             transition: 'all 0.2s ease',
           }}
         >
-          변경하기
+          {assignApprover.isPending ? '변경 중...' : '변경하기'}
         </Button>
       </Box>
     </Dialog>

@@ -1,24 +1,19 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
-
-import { screen, act, fireEvent } from '@testing-library/react'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { screen, waitFor, fireEvent } from '@testing-library/react'
 import { render } from '@/tests/utils'
 import IdeaBrowse from './IdeaBrowse'
 import { IDEAS, MY_AUTHOR } from '@/api/mock/ideaBrowse'
+import { DEMO_USER_PROFILE } from '@/api/mock/auth'
+import { DEMO_STORAGE_KEY } from '@/utils/demoMode'
 
+// 데모 모드 활성화 → withDemoFallback이 mock 데이터 반환 (MSW 불필요)
 beforeEach(() => {
-  vi.useFakeTimers()
+  localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(DEMO_USER_PROFILE))
 })
 
 afterEach(() => {
-  vi.useRealTimers()
+  localStorage.removeItem(DEMO_STORAGE_KEY)
 })
-
-/** 800ms 로딩 타이머를 완료시키는 헬퍼 */
-function advanceLoading() {
-  act(() => {
-    vi.advanceTimersByTime(800)
-  })
-}
 
 describe('IdeaBrowse', () => {
   describe('헤더 및 통계', () => {
@@ -27,10 +22,10 @@ describe('IdeaBrowse', () => {
       expect(screen.getByText('상상 보기')).toBeInTheDocument()
     })
 
-    it('전체 아이디어 건수가 통계 패널에 표시된다', () => {
+    it('전체 아이디어 건수가 통계 패널에 표시된다', async () => {
       render(<IdeaBrowse />)
-      // IDEAS.length가 여러 요소에 나타날 수 있으므로 getAllByText 사용
-      expect(screen.getAllByText(String(IDEAS.length)).length).toBeGreaterThanOrEqual(1)
+      // React Query 비동기 로딩 완료 후 IDEAS.length가 화면에 표시됨
+      await screen.findAllByText(String(IDEAS.length))
     })
 
     it('"내 상상", "내 유사" 통계 레이블이 표시된다', () => {
@@ -46,16 +41,16 @@ describe('IdeaBrowse', () => {
       expect(screen.getByText('아이디어를 불러오는 중...')).toBeInTheDocument()
     })
 
-    it('800ms 후 로딩 스피너가 사라진다', () => {
+    it('로딩 완료 후 스피너가 사라진다', async () => {
       render(<IdeaBrowse />)
-      advanceLoading()
-      expect(screen.queryByText('아이디어를 불러오는 중...')).not.toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.queryByText('아이디어를 불러오는 중...')).not.toBeInTheDocument()
+      })
     })
 
-    it('로딩 완료 후 아이디어 카드가 표시된다', () => {
+    it('로딩 완료 후 아이디어 카드가 표시된다', async () => {
       render(<IdeaBrowse />)
-      advanceLoading()
-      expect(screen.getByText('생산라인 LED 조명 교체로 전기요금 절감')).toBeInTheDocument()
+      await screen.findByText('생산라인 LED 조명 교체로 전기요금 절감')
     })
   })
 
@@ -74,30 +69,32 @@ describe('IdeaBrowse', () => {
       expect(screen.getByRole('button', { name: '좋아요순' })).toBeInTheDocument()
     })
 
-    it('"좋아요순" 클릭 시 아이디어 카드가 유지된다', () => {
+    it('"좋아요순" 클릭 시 카드 그리드가 유지된다', async () => {
       render(<IdeaBrowse />)
-      advanceLoading()
+      // 로딩 완료 대기
+      await waitFor(() => expect(screen.queryByText('아이디어를 불러오는 중...')).not.toBeInTheDocument())
 
       fireEvent.click(screen.getByRole('button', { name: '좋아요순' }))
 
-      // 정렬 변경 후에도 첫 번째 아이디어가 사라지지 않음 (단순 재정렬)
-      expect(screen.getByText('생산라인 LED 조명 교체로 전기요금 절감')).toBeInTheDocument()
+      // 정렬 후에도 카드가 1개 이상 렌더됨을 확인
+      await waitFor(() => {
+        expect(screen.getAllByRole('button', { name: /아이디어:/ }).length).toBeGreaterThan(0)
+      })
     })
   })
 
   describe('검색 결과 표시', () => {
-    it('로딩 완료 후 "건" 텍스트를 포함한 건수 표시가 렌더된다', () => {
+    it('로딩 완료 후 "건" 텍스트를 포함한 건수 표시가 렌더된다', async () => {
       render(<IdeaBrowse />)
-      advanceLoading()
-      // "총 N건" 텍스트는 nested span으로 split됨 — "건" 텍스트 포함 여부로 확인
-      expect(screen.getAllByText(/건/).length).toBeGreaterThanOrEqual(1)
+      await waitFor(() => {
+        expect(screen.getAllByText(/건/).length).toBeGreaterThanOrEqual(1)
+      })
     })
 
-    it('로딩 완료 후 필터링된 결과 건수가 표시된다', () => {
+    it('로딩 완료 후 필터링된 결과 건수가 표시된다', async () => {
       render(<IdeaBrowse />)
-      advanceLoading()
-      // filteredIdeas.length 숫자 확인 (초기에는 IDEAS.length와 동일)
-      expect(screen.getAllByText(String(IDEAS.length)).length).toBeGreaterThanOrEqual(1)
+      // 전체 필터 없는 상태에서 IDEAS.length와 동일한 건수가 표시됨
+      await screen.findAllByText(String(IDEAS.length))
     })
   })
 

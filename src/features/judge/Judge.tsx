@@ -5,14 +5,14 @@ import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
 import { Box, Chip, Typography } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getJudgeTheme, JUDGE_STAT_CONFIG } from '@/theme/judgeTheme'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import { judgeData } from '@/api/mock/judge'
-import { Proposal } from '@/api/types/judge'
+import type { Proposal } from '@/api/types/judge'
+import { useJudgeIdeas, useReviewIdea } from '@/api/queries/useIdeas'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import PageHeader from '@/components/ui/PageHeader'
 import JudgeDetail from './JudgeDetail'
@@ -28,29 +28,28 @@ export default function Judge() {
   const theme = getJudgeTheme(isDarkMode)
   const user = useCurrentUser()
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [proposals, setProposals] = useState<Proposal[]>(judgeData)
+  const { data: proposals = [], isLoading } = useJudgeIdeas()
+
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null)
+  const reviewIdea = useReviewIdea(selectedProposal?.id ?? 0)
   const [reviewerChangeTarget, setReviewerChangeTarget] = useState<Proposal | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('전체')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800)
-    return () => clearTimeout(timer)
-  }, [])
-
   const myName = user?.name ?? ''
 
+  // 데모 모드에서는 reviewer로 필터, 실제 API는 서버에서 필터링 (reviewer가 빈 문자열이면 서버 필터링)
   const myProposals = useMemo(() => {
-    return proposals.filter((p) => p.reviewer === myName)
+    const hasDemoReviewers = proposals.some((p) => p.reviewer !== '')
+    if (hasDemoReviewers) return proposals.filter((p) => p.reviewer === myName)
+    return proposals
   }, [proposals, myName])
 
   const stats = useMemo(() => ({
     심사대기: myProposals.filter((p) => p.status === '심사대기').length,
-    승인: myProposals.filter((p) => p.status === '승인').length,
-    반려: myProposals.filter((p) => p.status === '반려').length,
+    승인:     myProposals.filter((p) => p.status === '승인').length,
+    반려:     myProposals.filter((p) => p.status === '반려').length,
   }), [myProposals])
 
   const filteredProposals = useMemo(() => {
@@ -68,65 +67,45 @@ export default function Judge() {
     setPage(0)
   }
 
-  const handleReviewerChange = (proposalId: number, newReviewer: string) => {
-    setProposals((prev) =>
-      prev.map((p) =>
-        p.id === proposalId
-          ? { ...p, reviewer: newReviewer, transferredFrom: p.reviewer }
-          : p,
-      ),
-    )
-  }
-
-  const handleApprove = (_reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoroProfitability?: number, mileage?: number) => {
+  const handleApprove = (reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoroProfitability?: number, mileage?: number) => {
     if (!selectedProposal) return
     const title = selectedProposal.title
-    setProposals((prev) =>
-      prev.map((p) =>
-        p.id === selectedProposal.id
-          ? {
-              ...p,
-              status: '승인' as const,
-              ...(scoreInnovation !== undefined && { scoreInnovation }),
-              ...(scoreFeasibility !== undefined && { scoreFeasibility }),
-              ...(scoroProfitability !== undefined && { scoreProfitability: scoroProfitability }),
-              ...(mileage !== undefined && { mileage }),
-            }
-          : p,
-      ),
+    reviewIdea.mutate(
+      { status: 'approved', reason, scoreInnovation, scoreFeasibility, scoreProfitability: scoroProfitability, mileage },
+      {
+        onSuccess: () => {
+          setSelectedProposal(null)
+          showSnackbar(`'${title}' 제안이 승인되었습니다.`, 'success')
+        },
+        onError: () => showSnackbar('승인 처리 중 오류가 발생했습니다.', 'error'),
+      },
     )
-    setSelectedProposal(null)
-    showSnackbar(`'${title}' 제안이 승인되었습니다.`, 'success')
   }
 
-  const handleReject = (_reason: string) => {
+  const handleReject = (reason: string) => {
     if (!selectedProposal) return
     const title = selectedProposal.title
-    setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '반려' as const } : p)),
+    reviewIdea.mutate(
+      { status: 'rejected', reason },
+      {
+        onSuccess: () => {
+          setSelectedProposal(null)
+          showSnackbar(`'${title}' 제안이 반려되었습니다.`, 'error')
+        },
+        onError: () => showSnackbar('반려 처리 중 오류가 발생했습니다.', 'error'),
+      },
     )
-    setSelectedProposal(null)
-    showSnackbar(`'${title}' 제안이 반려되었습니다.`, 'error')
   }
 
+  // 승인/반려 회수는 API 미지원 → 안내 스낵바
   const handleWithdrawApprove = (_reason: string) => {
-    if (!selectedProposal) return
-    const title = selectedProposal.title
-    setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사대기' as const } : p)),
-    )
     setSelectedProposal(null)
-    showSnackbar(`'${title}' 승인이 회수되었습니다.`, 'warning')
+    showSnackbar('승인 회수는 관리자에게 문의해주세요.', 'info')
   }
 
   const handleWithdrawReject = (_reason: string) => {
-    if (!selectedProposal) return
-    const title = selectedProposal.title
-    setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사대기' as const } : p)),
-    )
     setSelectedProposal(null)
-    showSnackbar(`'${title}' 반려가 회수되었습니다.`, 'warning')
+    showSnackbar('반려 회수는 관리자에게 문의해주세요.', 'info')
   }
 
   const selectedIndex = selectedProposal
@@ -312,7 +291,6 @@ export default function Judge() {
         open={reviewerChangeTarget !== null}
         proposal={reviewerChangeTarget}
         onClose={() => setReviewerChangeTarget(null)}
-        onConfirm={handleReviewerChange}
       />
     </Box>
   )

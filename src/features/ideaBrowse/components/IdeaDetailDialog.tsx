@@ -1,11 +1,11 @@
 // src/routes/ideaBrowse/components/IdeaDetailDialog.tsx
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
@@ -14,7 +14,6 @@ import {
   Avatar,
   Box,
   Button,
-  Collapse,
   Dialog,
   DialogContent,
   Divider,
@@ -23,16 +22,17 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
-import { getCatConfig } from '../utils'
+import { useIdeaDetail, useToggleLike, useSimilarIdeas } from '@/api/queries/useIdeas'
+import { useCategories } from '@/api/queries/useCategories'
+import IdeaCommentSection from './IdeaCommentSection'
 
 interface IdeaDetailDialogProps {
   idea: IdeaItem | null
+  ideaId: number | null
   onClose: () => void
-  similarTitles: string[]
   isOwner?: boolean
   onEdit?: () => void
   onDelete?: () => void
@@ -40,33 +40,39 @@ interface IdeaDetailDialogProps {
 
 export default function IdeaDetailDialog({
   idea,
+  ideaId,
   onClose,
-  similarTitles,
   isOwner,
   onEdit,
   onDelete,
 }: IdeaDetailDialogProps) {
+  const { data: similarTitles = [] } = useSimilarIdeas(ideaId)
   const { isDarkMode } = useThemeMode()
   const {
     textPrimary, textSecondary, borderColor, cardBg,
     similar, avatarBg, dialogShadow, backdropBg, similarListColor,
-    inputBg,
   } = getIdeaTheme(isDarkMode)
   const muiTheme = useTheme()
   const fullScreen = useMediaQuery(muiTheme.breakpoints.down('sm'))
 
-  const [likesOpen, setLikesOpen] = useState(false)
-  const [showAllLikes, setShowAllLikes] = useState(false)
-  const [showAllComments, setShowAllComments] = useState(false)
-
-  const LIKES_INITIAL = 10
-  const COMMENTS_INITIAL = 3
+  const { categories } = useCategories()
+  const { data: detail } = useIdeaDetail(idea?.id ?? null)
+  const toggleLike = useToggleLike(idea?.id ?? 0)
 
   if (!idea) return null
-  const cat = getCatConfig(idea.category)
+  const cat = categories.find((c) => Number(c.id) === idea.categoryId)
+    ?? { emoji: '📁', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.35)', label: idea.category }
   const stat = IDEA_STATUS_CONFIG[idea.status]
-  const hasComments = (idea.commentsData?.length ?? 0) > 0
-  const hasLikes = (idea.likesData?.length ?? 0) > 0
+
+  // live counts from API, fallback to IdeaItem values while loading
+  const likeCount = detail?.likeCount ?? idea.likes
+  const commentCount = detail?.commentCount ?? idea.comments
+  const viewCount = detail?.viewCount ?? idea.views
+  const isLiked = detail?.isLiked ?? false
+
+  function handleLikeToggle() {
+    toggleLike.mutate()
+  }
 
   return (
     <Dialog
@@ -223,173 +229,128 @@ export default function IdeaDetailDialog({
 
           {/* 통계 */}
           <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-            {/* 좋아요 — 클릭 시 목록 토글 */}
+            {/* 좋아요 버튼 */}
             <Box
-              onClick={() => hasLikes && setLikesOpen((v) => !v)}
-              onKeyDown={(e) => { if (hasLikes && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setLikesOpen((v) => !v) } }}
-              role={hasLikes ? 'button' : undefined}
-              tabIndex={hasLikes ? 0 : undefined}
-              aria-expanded={hasLikes ? likesOpen : undefined}
-              aria-label={hasLikes ? (likesOpen ? '좋아요 목록 접기' : '좋아요 누른 사람 보기') : undefined}
+              onClick={handleLikeToggle}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleLikeToggle() } }}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isLiked}
+              aria-label={isLiked ? '좋아요 취소' : '좋아요'}
               sx={{
                 display: 'flex', alignItems: 'center', gap: 0.75,
-                cursor: hasLikes ? 'pointer' : 'default',
+                cursor: 'pointer',
                 borderRadius: 1.5,
-                px: hasLikes ? 1 : 0,
-                py: hasLikes ? 0.4 : 0,
-                mx: hasLikes ? -1 : 0,
+                px: 1, py: 0.4, mx: -1,
                 transition: 'background 0.15s',
                 outline: 'none',
-                '&:hover': hasLikes ? { bgcolor: `${ideaAccent.primary}12` } : {},
-                '&:focus-visible': hasLikes ? { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 } : {},
+                '&:hover': { bgcolor: `${ideaAccent.primary}12` },
+                '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 },
               }}
             >
-              <Box sx={{ color: likesOpen ? ideaAccent.primary : textSecondary }}>
-                {likesOpen
+              <Box sx={{ color: isLiked ? ideaAccent.primary : textSecondary }}>
+                {isLiked
                   ? <ThumbUpIcon sx={{ fontSize: '0.9rem' }} />
                   : <ThumbUpOutlinedIcon sx={{ fontSize: '0.9rem' }} />}
               </Box>
-              <Typography sx={{ fontSize: '0.82rem', color: likesOpen ? ideaAccent.primary : textSecondary }}>좋아요</Typography>
-              <Typography sx={{ fontSize: '0.88rem', fontWeight: 700, color: likesOpen ? ideaAccent.primary : textPrimary }}>{idea.likes}</Typography>
-              {hasLikes && (
-                <Box sx={{ color: textSecondary, display: 'flex', alignItems: 'center' }}>
-                  {likesOpen
-                    ? <KeyboardArrowUpIcon sx={{ fontSize: '0.9rem' }} />
-                    : <KeyboardArrowDownIcon sx={{ fontSize: '0.9rem' }} />}
-                </Box>
-              )}
+              <Typography sx={{ fontSize: '0.82rem', color: isLiked ? ideaAccent.primary : textSecondary }}>좋아요</Typography>
+              <Typography sx={{ fontSize: '0.88rem', fontWeight: 700, color: isLiked ? ideaAccent.primary : textPrimary }}>{likeCount}</Typography>
             </Box>
 
-            {[
-              { icon: <ChatBubbleOutlineIcon sx={{ fontSize: '0.9rem' }} />, label: '댓글', value: idea.comments },
-              { icon: <VisibilityOutlinedIcon sx={{ fontSize: '0.9rem' }} />, label: '조회수', value: idea.views },
-            ].map(({ icon, label, value }) => (
-              <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                <Box sx={{ color: textSecondary }}>{icon}</Box>
-                <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>{label}</Typography>
-                <Typography sx={{ fontSize: '0.88rem', fontWeight: 700, color: textPrimary }}>{value}</Typography>
-              </Box>
-            ))}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Box sx={{ color: textSecondary }}><ChatBubbleOutlineIcon sx={{ fontSize: '0.9rem' }} /></Box>
+              <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>댓글</Typography>
+              <Typography sx={{ fontSize: '0.88rem', fontWeight: 700, color: textPrimary }}>{commentCount}</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Box sx={{ color: textSecondary }}><VisibilityOutlinedIcon sx={{ fontSize: '0.9rem' }} /></Box>
+              <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>조회수</Typography>
+              <Typography sx={{ fontSize: '0.88rem', fontWeight: 700, color: textPrimary }}>{viewCount}</Typography>
+            </Box>
           </Box>
 
-          {/* 좋아요 누른 사람 목록 */}
-          {hasLikes && (
-            <Collapse in={likesOpen} unmountOnExit>
-              <Box
-                sx={{
-                  mt: -1,
-                  p: 1.75,
-                  borderRadius: 2,
-                  bgcolor: inputBg,
-                  border: `1px solid ${borderColor}`,
-                }}
-              >
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                  {(showAllLikes ? idea.likesData! : idea.likesData!.slice(0, LIKES_INITIAL)).map((name) => (
-                    <Box
-                      key={name}
-                      sx={{
-                        display: 'flex', alignItems: 'center', gap: 0.6,
-                        px: 1, py: 0.35, borderRadius: 10,
-                        bgcolor: `${ideaAccent.primary}14`,
-                        border: `1px solid ${ideaAccent.primary}30`,
-                      }}
-                    >
-                      <Avatar sx={{ width: 18, height: 18, fontSize: '0.6rem', fontWeight: 700, bgcolor: avatarBg }}>
-                        {name[0]}
-                      </Avatar>
-                      <Typography sx={{ fontSize: '0.76rem', color: textPrimary, fontWeight: 500 }}>{name}</Typography>
-                    </Box>
-                  ))}
-                </Box>
-                {idea.likesData!.length > LIKES_INITIAL && (
-                  <Box
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={showAllLikes}
-                    onClick={() => setShowAllLikes((v) => !v)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowAllLikes((v) => !v) } }}
-                    sx={{
-                      mt: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 0.5,
-                      fontSize: '0.75rem', fontWeight: 600, color: ideaAccent.primary,
-                      outline: 'none',
-                      '&:hover': { textDecoration: 'underline' },
-                      '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2, borderRadius: 1 },
-                    }}
-                  >
-                    {showAllLikes
-                      ? '접기'
-                      : `+${idea.likesData!.length - LIKES_INITIAL}명 더보기`}
-                  </Box>
-                )}
-              </Box>
-            </Collapse>
-          )}
-
-          {/* 댓글 섹션 */}
-          {hasComments && (
+          {/* 내 아이디어일 때만 표시 — 심사자 & 실행계획 */}
+          {isOwner && (
             <>
               <Divider sx={{ borderColor }} />
+
+              {/* 심사자 */}
               <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                  <ChatBubbleOutlineIcon sx={{ fontSize: '0.95rem', color: ideaAccent.primary }} />
-                  <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: textPrimary }}>
-                    댓글 {idea.comments}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1 }}>
+                  <PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />
+                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    담당 심사자
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
-                  {(showAllComments ? idea.commentsData! : idea.commentsData!.slice(0, COMMENTS_INITIAL)).map((comment) => (
-                    <Box
-                      key={comment.id}
-                      sx={{
-                        display: 'flex', gap: 1.25,
-                        p: 1.5, borderRadius: 2,
-                        bgcolor: inputBg,
-                        border: `1px solid ${borderColor}`,
-                      }}
-                    >
-                      <Avatar sx={{ width: 28, height: 28, bgcolor: avatarBg, fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
-                        {comment.author[0]}
-                      </Avatar>
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.4 }}>
-                          <Typography sx={{ fontSize: '0.8rem', fontWeight: 700, color: textPrimary }}>
-                            {comment.author}
-                          </Typography>
-                          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-                            {comment.createdAt}
+                {detail?.approverName ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Avatar sx={{ width: 28, height: 28, bgcolor: avatarBg, fontSize: '0.75rem', fontWeight: 700 }}>
+                      {detail.approverName[0]}
+                    </Avatar>
+                    <Typography sx={{ fontSize: '0.88rem', color: textPrimary, fontWeight: 600 }}>
+                      {detail.approverName}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.75rem', color: textSecondary, fontFamily: 'monospace' }}>
+                      ({detail.approverId})
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Typography sx={{ fontSize: '0.85rem', color: textSecondary, fontStyle: 'italic' }}>
+                    배정된 심사자 없음
+                  </Typography>
+                )}
+              </Box>
+
+              <Divider sx={{ borderColor }} />
+
+              {/* 실행계획 */}
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1 }}>
+                  <AssignmentOutlinedIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />
+                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    실행계획
+                  </Typography>
+                </Box>
+                {detail?.executors && detail.executors.length > 0 ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                    {detail.executors.map((ex) => (
+                      <Box
+                        key={ex.executorId}
+                        sx={{
+                          p: 1.5, borderRadius: 2,
+                          border: `1px solid ${borderColor}`,
+                          bgcolor: isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(99,102,241,0.03)',
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.75 }}>
+                          <CalendarTodayIcon sx={{ fontSize: '0.75rem', color: textSecondary }} />
+                          <Typography sx={{ fontSize: '0.73rem', color: textSecondary, fontFamily: 'monospace' }}>
+                            {ex.scheduleDate.slice(0, 10)}
                           </Typography>
                         </Box>
-                        <Typography sx={{ fontSize: '0.84rem', color: textPrimary, lineHeight: 1.6 }}>
-                          {comment.content}
+                        <Typography sx={{ fontSize: '0.85rem', color: textPrimary, lineHeight: 1.6, mb: 0.5 }}>
+                          {ex.content}
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.78rem', color: textSecondary, lineHeight: 1.5 }}>
+                          기대 성과: {ex.expectedResult}
                         </Typography>
                       </Box>
-                    </Box>
-                  ))}
-                </Box>
-                {idea.commentsData!.length > COMMENTS_INITIAL && (
-                  <Box
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={showAllComments}
-                    onClick={() => setShowAllComments((v) => !v)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowAllComments((v) => !v) } }}
-                    sx={{
-                      mt: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 0.5,
-                      fontSize: '0.75rem', fontWeight: 600, color: ideaAccent.primary,
-                      outline: 'none',
-                      '&:hover': { textDecoration: 'underline' },
-                      '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2, borderRadius: 1 },
-                    }}
-                  >
-                    {showAllComments
-                      ? '접기'
-                      : `댓글 ${idea.commentsData!.length - COMMENTS_INITIAL}개 더보기`}
+                    ))}
                   </Box>
+                ) : (
+                  <Typography sx={{ fontSize: '0.85rem', color: textSecondary, fontStyle: 'italic' }}>
+                    등록된 실행계획 없음
+                  </Typography>
                 )}
               </Box>
             </>
           )}
+
+          <Divider sx={{ borderColor }} />
+
+          {/* 댓글 섹션 */}
+          <IdeaCommentSection ideaId={idea.id} commentCount={commentCount} />
         </Box>
       </DialogContent>
     </Dialog>

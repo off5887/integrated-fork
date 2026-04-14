@@ -2,27 +2,36 @@
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Avatar, Box, Tooltip, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
-import { fmtDate, getCatConfig } from '../utils'
+import { useCategories } from '@/api/queries/useCategories'
+import { useSimilarIdeas } from '@/api/queries/useIdeas'
+import { fmtDate } from '../utils'
 
 interface IdeaCardProps {
   idea: IdeaItem
-  similarTitles: string[]
-  showSimilar: boolean
+  showSimilarOnly: boolean
   onClick: () => void
 }
 
-export default function IdeaCard({ idea, similarTitles, showSimilar, onClick }: IdeaCardProps) {
+const CAT_FALLBACK = { emoji: '📁', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.35)', label: '' }
+
+export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardProps) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg, similar, dividerColor, cardShadow, cardHoverShadow, avatarBg, similarCardShadow } = getIdeaTheme(isDarkMode)
+  const { categories } = useCategories()
+  const { data: similarTitles = [] } = useSimilarIdeas(idea.id)
 
-  const cat = getCatConfig(idea.category)
+  const cat = categories.find((c) => Number(c.id) === idea.categoryId) ?? CAT_FALLBACK
   const stat = IDEA_STATUS_CONFIG[idea.status]
-  const isSimilar = showSimilar && similarTitles.length > 0
+  const isSimilar = similarTitles.length > 0
+
+  // showSimilarOnly 필터: 유사 아이디어가 없으면 카드를 렌더하지 않음
+  if (showSimilarOnly && !isSimilar) return null
 
   return (
     <Box
@@ -172,6 +181,10 @@ export default function IdeaCard({ idea, similarTitles, showSimilar, onClick }: 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
               <ChatBubbleOutlineIcon sx={{ fontSize: '0.75rem', color: textSecondary }} />
               <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.comments}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
+              <VisibilityOutlinedIcon sx={{ fontSize: '0.75rem', color: textSecondary }} />
+              <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.views}</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
               <CalendarTodayIcon sx={{ fontSize: '0.72rem', color: textSecondary }} />

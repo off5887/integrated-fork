@@ -1,12 +1,13 @@
 // src/routes/ideaBrowse/IdeaBrowse.tsx
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { IDEAS } from '@/api/mock/ideaBrowse'
 import { useOrgUsersTree } from '@/api/queries/useUsers'
-import { useIdeaStatuses, useMyIdeas } from '@/api/queries/useIdeas'
+import { useIdeaList, useIdeaStatuses, useMyIdeas } from '@/api/queries/useIdeas'
 import { useCategories } from '@/api/queries/useCategories'
+import { useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/api/queryKeys'
 import type { IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
@@ -17,7 +18,8 @@ import { getIdeaTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
 import IdeaCard from './components/IdeaCard'
 import IdeaDetailDialog from './components/IdeaDetailDialog'
 import IdeaFilters from './components/IdeaFilters'
-import { getSimilarity } from './utils'
+
+const PAGE_SIZE = 20
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'latest',   label: '최신순'   },
@@ -29,6 +31,8 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 export default function IdeaBrowse() {
   const { isDarkMode } = useThemeMode()
   const user = useCurrentUser()
+  const queryClient = useQueryClient()
+  const { data: ideas = [], isLoading, isError } = useIdeaList()
   const { data: orgTree } = useOrgUsersTree()
   const { data: statusOptions = [] } = useIdeaStatuses()
   const { categories: categoryOptions } = useCategories()
@@ -37,7 +41,12 @@ export default function IdeaBrowse() {
     () => new Set((myIdeasPage?.content ?? []).map((i) => i.ideaId)),
     [myIdeasPage],
   )
-  const { textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg, similar, statsBg, statsBorder, myOnlyActiveBg } = getIdeaTheme(isDarkMode)
+  const {
+    textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg,
+    similar, statsBg, statsBorder, myOnlyActiveBg,
+    pageBtnBg, pageBtnBorder, pageBtnColor, pageBtnHoverBg, pageBtnHoverBorder,
+    pageActiveBg, pageActiveColor, pageActiveShadow, pageEllipsisColor,
+  } = getIdeaTheme(isDarkMode)
 
   // ─── 필터 상태 ──────────────────────────────────────────────
   const [search,           setSearch]           = useState('')
@@ -48,16 +57,10 @@ export default function IdeaBrowse() {
   const [sortBy,           setSortBy]           = useState<SortKey>('latest')
   const [showSimilarOnly,  setShowSimilarOnly]  = useState(false)
   const [showMyOnly,       setShowMyOnly]       = useState(false)
+  const [page,             setPage]             = useState(1)
   const [selectedIdea,     setSelectedIdea]     = useState<IdeaItem | null>(null)
   const [deleteTarget,     setDeleteTarget]     = useState<IdeaItem | null>(null)
-  const [ideas,            setIdeas]            = useState<IdeaItem[]>(IDEAS)
-  const [isLoading,        setIsLoading]        = useState(true)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800)
-    return () => clearTimeout(timer)
-  }, [])
 
   const bizAreaOptions = useMemo(() => (orgTree ?? []).map((b) => b.bizAreaNm), [orgTree])
   const deptByBizArea = useMemo(() => {
@@ -76,7 +79,10 @@ export default function IdeaBrowse() {
 
   const handleDeleteConfirm = () => {
     if (!deleteTarget) return
-    setIdeas((prev) => prev.filter((i) => i.id !== deleteTarget.id))
+    // 낙관적 업데이트: 캐시에서 즉시 제거
+    queryClient.setQueryData<IdeaItem[]>(queryKeys.ideas.list(), (old) =>
+      old?.filter((i) => i.id !== deleteTarget.id) ?? [],
+    )
     setDeleteTarget(null)
     setSelectedIdea(null)
   }
@@ -86,12 +92,8 @@ export default function IdeaBrowse() {
     setSelectedDept('')
   }
 
-  // ─── 유사도 맵 (사전 계산) ──────────────────────────────────
-  const similarityMap = useMemo(() => {
-    const map = new Map<number, string[]>()
-    ideas.forEach((idea) => map.set(idea.id, getSimilarity(idea)))
-    return map
-  }, [ideas])
+  // 필터·정렬이 바뀌면 1페이지로 리셋
+  useEffect(() => { setPage(1) }, [search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly])
 
   // ─── 필터링 + 정렬 ──────────────────────────────────────────
   const filteredIdeas = useMemo(() => {
@@ -103,7 +105,7 @@ export default function IdeaBrowse() {
       if (selectedBizArea && idea.bizArea !== selectedBizArea) return false
       if (selectedDept && idea.department !== selectedDept) return false
       if (selectedStatus && idea.status !== selectedStatus) return false
-      if (showSimilarOnly && (similarityMap.get(idea.id)?.length ?? 0) === 0) return false
+      // showSimilarOnly 필터는 IdeaCard의 API 결과 기반으로 카드에서 처리
       if (q) {
         const text = `${idea.title} ${idea.problem} ${idea.solution} ${idea.author} ${idea.department}`.toLowerCase()
         if (!text.includes(q)) return false
@@ -120,11 +122,12 @@ export default function IdeaBrowse() {
         default:         return 0
       }
     })
-  }, [ideas, search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap, myIdeaIds])
+  }, [ideas, search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, sortBy, showMyOnly, myIdeaIds])
 
-  const similarCount = useMemo(
-    () => ideas.filter((i) => (similarityMap.get(i.id)?.length ?? 0) > 0).length,
-    [ideas, similarityMap],
+  const totalPages = Math.ceil(filteredIdeas.length / PAGE_SIZE)
+  const pagedIdeas = useMemo(
+    () => filteredIdeas.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filteredIdeas, page],
   )
 
   const myCount = useMemo(
@@ -182,7 +185,7 @@ export default function IdeaBrowse() {
               </Box>
               <Divider orientation="vertical" flexItem sx={{ borderColor }} />
               <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.similar, lineHeight: 1 }}>{similarCount}</Typography>
+                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.similar, lineHeight: 1 }}>—</Typography>
                 <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>내 유사</Typography>
               </Box>
             </Box>
@@ -196,7 +199,7 @@ export default function IdeaBrowse() {
             selectedStatus={selectedStatus}
             showSimilarOnly={showSimilarOnly}
             showMyOnly={showMyOnly}
-            similarCount={similarCount}
+            similarCount={0}
             myCount={myCount}
             hasFilter={hasFilter}
             categoryOptions={categoryOptions}
@@ -286,6 +289,14 @@ export default function IdeaBrowse() {
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
             <LoadingSpinner size={44} text="아이디어를 불러오는 중..." />
           </Box>
+        ) : isError ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 10, gap: 2 }}>
+            <Box sx={{ fontSize: '3rem', lineHeight: 1 }}>⚠️</Box>
+            <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: textPrimary }}>아이디어를 불러오지 못했습니다</Typography>
+            <Typography sx={{ fontSize: '0.85rem', color: textSecondary, textAlign: 'center', maxWidth: 300 }}>
+              네트워크 상태를 확인하거나 잠시 후 다시 시도해 주세요
+            </Typography>
+          </Box>
         ) : filteredIdeas.length === 0 ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 10, gap: 2 }}>
             <Box sx={{ fontSize: '3rem', lineHeight: 1 }}>🔍</Box>
@@ -313,23 +324,122 @@ export default function IdeaBrowse() {
             )}
           </Box>
         ) : (
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
-              gap: 2,
-            }}
-          >
-            {filteredIdeas.map((idea) => (
-              <IdeaCard
-                key={idea.id}
-                idea={idea}
-                similarTitles={similarityMap.get(idea.id) ?? []}
-                showSimilar={showSimilarOnly || true}
-                onClick={() => setSelectedIdea(idea)}
-              />
-            ))}
-          </Box>
+          <>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+                gap: 2,
+              }}
+            >
+              {pagedIdeas.map((idea) => (
+                <IdeaCard
+                  key={idea.id}
+                  idea={idea}
+                  showSimilarOnly={showSimilarOnly}
+                  onClick={() => setSelectedIdea(idea)}
+                />
+              ))}
+            </Box>
+            {totalPages > 1 && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.75, mt: 5, mb: 1 }}>
+                {/* 이전 버튼 */}
+                <Box
+                  onClick={() => { if (page > 1) { setPage(page - 1); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="이전 페이지"
+                  onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && page > 1) { setPage(page - 1); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                  sx={{
+                    width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    borderRadius: 2, border: `1px solid ${pageBtnBorder}`, bgcolor: pageBtnBg,
+                    color: page === 1 ? pageEllipsisColor : pageBtnColor,
+                    cursor: page === 1 ? 'default' : 'pointer',
+                    opacity: page === 1 ? 0.4 : 1,
+                    fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.15s', outline: 'none',
+                    '&:hover': page > 1 ? { bgcolor: pageBtnHoverBg, borderColor: pageBtnHoverBorder, color: ideaAccent.primary } : {},
+                    '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 },
+                  }}
+                >
+                  ‹
+                </Box>
+
+                {/* 페이지 번호 */}
+                {(() => {
+                  const items: (number | '…')[] = []
+                  if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) items.push(i)
+                  } else {
+                    items.push(1)
+                    if (page > 3) items.push('…')
+                    for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) items.push(i)
+                    if (page < totalPages - 2) items.push('…')
+                    items.push(totalPages)
+                  }
+                  return items.map((item, idx) =>
+                    item === '…' ? (
+                      <Box key={`ellipsis-${idx}`} sx={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pageEllipsisColor, fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+                        ···
+                      </Box>
+                    ) : (
+                      <Box
+                        key={item}
+                        onClick={() => { setPage(item); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${item}페이지`}
+                        aria-current={page === item ? 'page' : undefined}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setPage(item); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                        sx={{
+                          width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          borderRadius: 2, cursor: 'pointer', outline: 'none', transition: 'all 0.18s',
+                          fontSize: '0.83rem', fontWeight: page === item ? 700 : 500,
+                          ...(page === item
+                            ? {
+                                bgcolor: pageActiveBg,
+                                color: pageActiveColor,
+                                border: `1px solid ${pageActiveBg}`,
+                                boxShadow: pageActiveShadow,
+                                transform: 'translateY(-1px)',
+                              }
+                            : {
+                                bgcolor: pageBtnBg,
+                                color: pageBtnColor,
+                                border: `1px solid ${pageBtnBorder}`,
+                                '&:hover': { bgcolor: pageBtnHoverBg, borderColor: pageBtnHoverBorder, color: ideaAccent.primary },
+                              }),
+                          '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 },
+                        }}
+                      >
+                        {item}
+                      </Box>
+                    ),
+                  )
+                })()}
+
+                {/* 다음 버튼 */}
+                <Box
+                  onClick={() => { if (page < totalPages) { setPage(page + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="다음 페이지"
+                  onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && page < totalPages) { setPage(page + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                  sx={{
+                    width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    borderRadius: 2, border: `1px solid ${pageBtnBorder}`, bgcolor: pageBtnBg,
+                    color: page === totalPages ? pageEllipsisColor : pageBtnColor,
+                    cursor: page === totalPages ? 'default' : 'pointer',
+                    opacity: page === totalPages ? 0.4 : 1,
+                    fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.15s', outline: 'none',
+                    '&:hover': page < totalPages ? { bgcolor: pageBtnHoverBg, borderColor: pageBtnHoverBorder, color: ideaAccent.primary } : {},
+                    '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 },
+                  }}
+                >
+                  ›
+                </Box>
+              </Box>
+            )}
+          </>
         )}
       </Box>
 
@@ -337,8 +447,8 @@ export default function IdeaBrowse() {
       <IdeaDetailDialog
         idea={selectedIdea}
         onClose={() => setSelectedIdea(null)}
-        similarTitles={selectedIdea ? (similarityMap.get(selectedIdea.id) ?? []) : []}
-        isOwner={selectedIdea?.author === (user?.name ?? '')}
+        ideaId={selectedIdea?.id ?? null}
+        isOwner={selectedIdea?.author === (user?.employeeId ?? '')}
         onEdit={() => selectedIdea && handleEdit(selectedIdea)}
         onDelete={() => selectedIdea && setDeleteTarget(selectedIdea)}
       />
