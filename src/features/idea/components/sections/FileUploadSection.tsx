@@ -19,6 +19,7 @@ import { useState } from 'react'
 import type { IdeaAttachment } from '@/api/types/idea'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme } from '@/theme/ideaTheme'
+import { formatBytes } from '@/utils/fileUtils'
 
 interface FileUploadSectionProps {
   files: File[]
@@ -29,11 +30,6 @@ interface FileUploadSectionProps {
   onDeleteExisting?: (attachmentId: number) => void
 }
 
-function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
 
 export default function FileUploadSection({
   files,

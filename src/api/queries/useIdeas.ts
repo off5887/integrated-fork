@@ -104,6 +104,13 @@ export function useMyIdeas(page = 0, size = 20) {
   })
 }
 
+function buildIdeaFormData(data: IdeaCreateRequest, files: File[]): FormData {
+  const formData = new FormData()
+  formData.append('idea', new Blob([JSON.stringify(data)], { type: 'application/json' }))
+  files.forEach((file) => formData.append('files', file))
+  return formData
+}
+
 export function useCreateIdea() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -126,10 +133,7 @@ export function useCreateIdea() {
           coProposers: [],
         })
       }
-      const formData = new FormData()
-      formData.append('idea', new Blob([JSON.stringify(data)], { type: 'application/json' }))
-      files.forEach((file) => formData.append('files', file))
-      const res = await api.post<ApiResponse<IdeaApiItem>>('/api/ideas', formData)
+      const res = await api.post<ApiResponse<IdeaApiItem>>('/api/ideas', buildIdeaFormData(data, files))
       return res.data.data
     },
     onSuccess: () => {
@@ -310,10 +314,7 @@ export function useUpdateIdea(ideaId: number) {
           coProposers: [],
         })
       }
-      const formData = new FormData()
-      formData.append('idea', new Blob([JSON.stringify(data)], { type: 'application/json' }))
-      files.forEach((file) => formData.append('files', file))
-      const res = await api.put<ApiResponse<IdeaApiItem>>(`/api/ideas/${ideaId}`, formData)
+      const res = await api.put<ApiResponse<IdeaApiItem>>(`/api/ideas/${ideaId}`, buildIdeaFormData(data, files))
       return res.data.data
     },
     onSuccess: () => {

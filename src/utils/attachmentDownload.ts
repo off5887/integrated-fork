@@ -1,9 +1,5 @@
 import { api } from '@/api/client'
 
-/**
- * GET /api/ideas/{ideaId}/attachments/{attachmentId} → blob 다운로드
- * 브라우저에서 파일 저장 다이얼로그를 트리거합니다.
- */
 export async function downloadAttachment(
   ideaId: number,
   attachmentId: number,
@@ -19,5 +15,6 @@ export async function downloadAttachment(
   document.body.appendChild(a)
   a.click()
   a.remove()
-  URL.revokeObjectURL(url)
+  // Delay revocation so the browser has time to initiate the download before the URL is invalidated.
+  setTimeout(() => URL.revokeObjectURL(url), 100)
 }

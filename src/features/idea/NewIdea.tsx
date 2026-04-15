@@ -2,7 +2,7 @@
 import SaveIcon from '@mui/icons-material/Save'
 import SendIcon from '@mui/icons-material/Send'
 import { Box, Button } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { useThemeMode } from '@/context/ThemeContext'
@@ -55,6 +55,7 @@ export default function NewIdea() {
   const [expectedOutcome, setExpectedOutcome] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<string[]>([])
+  const filePreviewsRef = useRef<string[]>([])
   const [loading, setLoading] = useState(false)
   const [fieldErrors, setFieldErrors] = useState({ title: false, problem: false, solution: false })
 
@@ -84,6 +85,10 @@ export default function NewIdea() {
       setExpectedOutcome(draft.expectedOutcome ?? '')
     },
   )
+
+  // keep ref in sync so the unmount effect always sees the latest previews
+  filePreviewsRef.current = filePreviews
+  useEffect(() => () => { filePreviewsRef.current.forEach(URL.revokeObjectURL) }, [])
 
   // ─── 미저장 경고 ──────────────────────────────────────────────────────────
   const isDirty = !loading && !!(title.trim() || problem.trim() || solution.trim())

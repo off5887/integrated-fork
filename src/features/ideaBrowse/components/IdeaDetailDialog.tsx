@@ -25,13 +25,26 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import type { ReactNode } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { useIdeaDetail, useToggleLike, useSimilarIdeas, useDeleteAttachment } from '@/api/queries/useIdeas'
 import { useCategories } from '@/api/queries/useCategories'
 import { downloadAttachment } from '@/utils/attachmentDownload'
+import { formatBytes } from '@/utils/fileUtils'
 import IdeaCommentSection from './IdeaCommentSection'
+
+function SectionLabel({ icon, label, textSecondary }: { icon: ReactNode; label: string; textSecondary: string }) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1 }}>
+      {icon}
+      <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        {label}
+      </Typography>
+    </Box>
+  )
+}
 
 interface IdeaDetailDialogProps {
   idea: IdeaItem | null
@@ -263,13 +276,13 @@ export default function IdeaDetailDialog({
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Box sx={{ color: textSecondary }}><ChatBubbleOutlineIcon sx={{ fontSize: '0.9rem' }} /></Box>
+              <ChatBubbleOutlineIcon sx={{ fontSize: '0.9rem', color: textSecondary }} />
               <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>댓글</Typography>
               <Typography sx={{ fontSize: '0.88rem', fontWeight: 700, color: textPrimary }}>{commentCount}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Box sx={{ color: textSecondary }}><VisibilityOutlinedIcon sx={{ fontSize: '0.9rem' }} /></Box>
+              <VisibilityOutlinedIcon sx={{ fontSize: '0.9rem', color: textSecondary }} />
               <Typography sx={{ fontSize: '0.82rem', color: textSecondary }}>조회수</Typography>
               <Typography sx={{ fontSize: '0.88rem', fontWeight: 700, color: textPrimary }}>{viewCount}</Typography>
             </Box>
@@ -282,12 +295,7 @@ export default function IdeaDetailDialog({
 
               {/* 공동제안자 */}
               <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1 }}>
-                  <PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />
-                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    공동제안자
-                  </Typography>
-                </Box>
+                <SectionLabel icon={<PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />} label="공동제안자" textSecondary={textSecondary} />
                 {detail?.coProposers && detail.coProposers.length > 0 ? (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
                     {detail.coProposers.map((p) => (
@@ -323,12 +331,7 @@ export default function IdeaDetailDialog({
 
               {/* 심사자 */}
               <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1 }}>
-                  <PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />
-                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    담당 심사자
-                  </Typography>
-                </Box>
+                <SectionLabel icon={<PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />} label="담당 심사자" textSecondary={textSecondary} />
                 {detail?.approverName ? (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Avatar sx={{ width: 28, height: 28, bgcolor: avatarBg, fontSize: '0.75rem', fontWeight: 700 }}>
@@ -352,12 +355,7 @@ export default function IdeaDetailDialog({
 
               {/* 실행계획 */}
               <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1 }}>
-                  <AssignmentOutlinedIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />
-                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    실행계획
-                  </Typography>
-                </Box>
+                <SectionLabel icon={<AssignmentOutlinedIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />} label="실행계획" textSecondary={textSecondary} />
                 {detail?.executors && detail.executors.length > 0 ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
                     {detail.executors.map((ex) => (
@@ -398,12 +396,7 @@ export default function IdeaDetailDialog({
             <>
               <Divider sx={{ borderColor }} />
               <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1.25 }}>
-                  <AttachFileIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />
-                  <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    첨부파일 ({detail.attachments.length})
-                  </Typography>
-                </Box>
+                <SectionLabel icon={<AttachFileIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />} label={`첨부파일 (${detail.attachments.length})`} textSecondary={textSecondary} />
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
                   {detail.attachments.map((att) => (
                     <Box
@@ -422,9 +415,7 @@ export default function IdeaDetailDialog({
                           {att.originalName}
                         </Typography>
                         <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-                          {att.fileSize < 1024 * 1024
-                            ? `${(att.fileSize / 1024).toFixed(1)} KB`
-                            : `${(att.fileSize / (1024 * 1024)).toFixed(1)} MB`}
+                          {formatBytes(att.fileSize)}
                         </Typography>
                       </Box>
                       <IconButton
