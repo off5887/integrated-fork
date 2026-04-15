@@ -206,6 +206,13 @@ export interface IdeaExecutor {
   expectedResult: string
 }
 
+/** POST /api/ideas/{id}/executors, PUT /api/ideas/{id}/executors/{executorId} 요청 바디 */
+export interface IdeaExecutorRequest {
+  scheduleDate: string
+  content: string
+  expectedResult: string
+}
+
 /** GET /api/ideas/{id} 응답에 추가되는 상세 필드 */
 export interface IdeaDetailExtras {
   viewCount: number

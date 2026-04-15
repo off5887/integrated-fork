@@ -11,7 +11,7 @@ import { api } from '@/api/client'
 import { queryKeys } from '@/api/queryKeys'
 import { isDemoMode, withDemoFallback } from '@/utils/demoMode'
 import type { ApiResponse } from '@/api/types/auth'
-import type { IdeaApiItem, IdeaCommentsPage, IdeaCreateRequest, IdeaDetailExtras, IdeaReviewRequest, MyIdeasPage } from '@/api/types/idea'
+import type { IdeaApiItem, IdeaCommentsPage, IdeaCreateRequest, IdeaDetailExtras, IdeaExecutor, IdeaExecutorRequest, IdeaReviewRequest, MyIdeasPage } from '@/api/types/idea'
 import type { IdeaItem, IdeaStatus } from '@/api/types/ideaBrowse'
 import type { IdeaApprover, Proposal } from '@/api/types/judge'
 import { getMockComments, mockIdeaDetailExtras, mockIdeaStatuses, mockMyIdeasPage } from '@/api/mock/idea'
@@ -450,6 +450,87 @@ export function useReviewIdea(ideaId: number) {
       api.patch<ApiResponse<IdeaApiItem>>(`/api/ideas/${ideaId}/review`, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.ideas.judge() })
+    },
+  })
+}
+
+// ─── DELETE /api/ideas/{id} ──────────────────────────────────────────────────
+
+export function useDeleteIdea() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (ideaId: number) =>
+      api.delete<ApiResponse<null>>(`/api/ideas/${ideaId}`),
+    onSuccess: (_data, ideaId) => {
+      // 목록에서 즉시 제거
+      queryClient.setQueryData<IdeaItem[]>(
+        queryKeys.ideas.list(),
+        (old) => old?.filter((i) => i.id !== ideaId) ?? [],
+      )
+      // 상세 캐시도 제거
+      queryClient.removeQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.my() })
+    },
+  })
+}
+
+// ─── GET /api/ideas/{id}/executors ───────────────────────────────────────────
+
+export function useExecutors(ideaId: number) {
+  return useQuery({
+    queryKey: queryKeys.ideas.executors(ideaId),
+    queryFn: () =>
+      withDemoFallback<IdeaExecutor[]>(
+        [],
+        async () => {
+          const res = await api.get<ApiResponse<IdeaExecutor[]>>(`/api/ideas/${ideaId}/executors`)
+          return res.data.data
+        },
+      ),
+    staleTime: 0,
+  })
+}
+
+// ─── POST /api/ideas/{id}/executors ─────────────────────────────────────────
+
+export function useAddExecutor(ideaId: number) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (body: IdeaExecutorRequest) =>
+      api.post<ApiResponse<IdeaExecutor>>(`/api/ideas/${ideaId}/executors`, body)
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.executors(ideaId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
+    },
+  })
+}
+
+// ─── PUT /api/ideas/{id}/executors/{executorId} ──────────────────────────────
+
+export function useUpdateExecutor(ideaId: number) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ executorId, body }: { executorId: number; body: IdeaExecutorRequest }) =>
+      api.put<ApiResponse<IdeaExecutor>>(`/api/ideas/${ideaId}/executors/${executorId}`, body)
+        .then((r) => r.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.executors(ideaId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
+    },
+  })
+}
+
+// ─── DELETE /api/ideas/{id}/executors/{executorId} ───────────────────────────
+
+export function useDeleteExecutor(ideaId: number) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (executorId: number) =>
+      api.delete<ApiResponse<null>>(`/api/ideas/${ideaId}/executors/${executorId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.executors(ideaId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
     },
   })
 }

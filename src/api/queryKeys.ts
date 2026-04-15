@@ -43,8 +43,9 @@ export const queryKeys = {
     judge:    () => ['ideas', 'judge'] as const,
     approver: (id: number) => ['ideas', 'approver', id] as const,
     detail:   (id: number) => ['ideas', 'detail', id]  as const,
-    comments: (id: number) => ['ideas', 'comments', id] as const,
-    similar:  (id: number) => ['ideas', 'similar', id]  as const,
+    comments:  (id: number) => ['ideas', 'comments', id]  as const,
+    similar:   (id: number) => ['ideas', 'similar', id]   as const,
+    executors: (id: number) => ['ideas', 'executors', id] as const,
   },
   messages: {
     received: (page?: number) => page !== undefined ? ['messages', 'received', page] as const : ['messages', 'received'] as const,

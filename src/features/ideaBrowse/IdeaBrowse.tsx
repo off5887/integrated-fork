@@ -4,10 +4,9 @@ import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material
 import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useOrgUsersTree } from '@/api/queries/useUsers'
-import { useIdeaList, useIdeaStatuses, useMyIdeas } from '@/api/queries/useIdeas'
+import { useDeleteIdea, useIdeaList, useIdeaStatuses, useMyIdeas } from '@/api/queries/useIdeas'
 import { useCategories } from '@/api/queries/useCategories'
-import { useQueryClient } from '@tanstack/react-query'
-import { queryKeys } from '@/api/queryKeys'
+import { useSnackbar } from '@/context/SnackbarContext'
 import type { IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
@@ -31,8 +30,9 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 export default function IdeaBrowse() {
   const { isDarkMode } = useThemeMode()
   const user = useCurrentUser()
-  const queryClient = useQueryClient()
+  const { showSnackbar } = useSnackbar()
   const { data: ideas = [], isLoading, isError } = useIdeaList()
+  const deleteIdea = useDeleteIdea()
   const { data: orgTree } = useOrgUsersTree()
   const { data: statusOptions = [] } = useIdeaStatuses()
   const { categories: categoryOptions } = useCategories()
@@ -79,12 +79,12 @@ export default function IdeaBrowse() {
 
   const handleDeleteConfirm = () => {
     if (!deleteTarget) return
-    // 낙관적 업데이트: 캐시에서 즉시 제거
-    queryClient.setQueryData<IdeaItem[]>(queryKeys.ideas.list(), (old) =>
-      old?.filter((i) => i.id !== deleteTarget.id) ?? [],
-    )
+    const target = deleteTarget
     setDeleteTarget(null)
     setSelectedIdea(null)
+    deleteIdea.mutate(target.id, {
+      onError: () => showSnackbar('아이디어 삭제에 실패했습니다.', 'error'),
+    })
   }
 
   const handleBizAreaChange = (e: SelectChangeEvent) => {
