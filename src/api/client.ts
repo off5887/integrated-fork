@@ -3,7 +3,9 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
 import { handleSessionExpired } from '@/utils/sessionExpired'
 import { globalShowSnackbar } from '@/context/SnackbarContext'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+// VITE_API_BASE_URL이 빈 문자열('')이면 상대경로 → Vite 프록시 사용
+// 값이 없으면(undefined) 직접 연결 fallback
+const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
 const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
   const axiosInstance = axios.create({
