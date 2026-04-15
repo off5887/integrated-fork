@@ -6,10 +6,11 @@ export const queryKeys = {
     login: () => ['auth', 'login'] as const,
   },
   users: {
-    me:    () => ['users', 'me']    as const,
-    list:  () => ['users', 'list'] as const,
-    tree:  () => ['users', 'tree'] as const,
-    roles: () => ['users', 'roles'] as const,
+    me:     () => ['users', 'me']     as const,
+    list:   () => ['users', 'list']   as const,
+    tree:   () => ['users', 'tree']   as const,
+    roles:  () => ['users', 'roles']  as const,
+    admins: () => ['users', 'admins'] as const,
     update: () => ['users', 'update'] as const,
   },
   categories: {

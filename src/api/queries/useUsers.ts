@@ -54,7 +54,7 @@ export function useUserRoles() {
 /** 관리자 수신자 목록 조회 — GET /api/users/admins */
 export function useAdminUsers() {
   return useQuery({
-    queryKey: ['users', 'admins'],
+    queryKey: queryKeys.users.admins(),
     queryFn: () =>
       withDemoFallback<AdminUserItem[]>(
         mockAdminUsers,

@@ -65,10 +65,11 @@ export default function IdeaDetailDialog({
 }: IdeaDetailDialogProps) {
   const { data: similarTitles = [] } = useSimilarIdeas(ideaId)
   const { isDarkMode } = useThemeMode()
+  const theme = getIdeaTheme(isDarkMode)
   const {
     textPrimary, textSecondary, borderColor, cardBg,
     similar, avatarBg, dialogShadow, backdropBg, similarListColor,
-  } = getIdeaTheme(isDarkMode)
+  } = theme
   const muiTheme = useTheme()
   const fullScreen = useMediaQuery(muiTheme.breakpoints.down('sm'))
 
@@ -304,8 +305,8 @@ export default function IdeaDetailDialog({
                         sx={{
                           display: 'flex', alignItems: 'center', gap: 0.75,
                           px: 1.25, py: 0.5, borderRadius: 9999,
-                          bgcolor: isDarkMode ? 'rgba(99,102,241,0.1)' : 'rgba(99,102,241,0.06)',
-                          border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.18)'}`,
+                          bgcolor: theme.coProposerBg,
+                          border: `1px solid ${theme.coProposerBorder}`,
                         }}
                       >
                         <Avatar sx={{ width: 20, height: 20, bgcolor: avatarBg, fontSize: '0.65rem', fontWeight: 700 }}>
@@ -364,7 +365,7 @@ export default function IdeaDetailDialog({
                         sx={{
                           p: 1.5, borderRadius: 2,
                           border: `1px solid ${borderColor}`,
-                          bgcolor: isDarkMode ? 'rgba(99,102,241,0.04)' : 'rgba(99,102,241,0.03)',
+                          bgcolor: theme.executorBg,
                         }}
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.75 }}>
@@ -406,7 +407,7 @@ export default function IdeaDetailDialog({
                         px: 1.75, py: 1,
                         borderRadius: 1.5,
                         border: `1px solid ${borderColor}`,
-                        bgcolor: isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+                        bgcolor: theme.attachmentBg,
                       }}
                     >
                       <InsertDriveFileIcon sx={{ fontSize: '1.1rem', color: textSecondary, flexShrink: 0 }} />

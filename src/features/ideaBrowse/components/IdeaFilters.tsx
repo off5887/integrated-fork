@@ -15,7 +15,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import type { IdeaStatus } from '@/api/types/ideaBrowse'
 import type { CategoryOption } from '@/api/types/idea'
@@ -85,7 +85,7 @@ export default function IdeaFilters({
     onClearAll()
   }
 
-  const selectSx = {
+  const selectSx = useMemo(() => ({
     borderRadius: 2,
     fontSize: '0.83rem',
     color: textPrimary,
@@ -95,7 +95,7 @@ export default function IdeaFilters({
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: ideaAccent.primary },
     '& .MuiSelect-icon': { color: textSecondary },
     '& .MuiSelect-select': { color: textPrimary, WebkitTextFillColor: textPrimary },
-  }
+  }), [textPrimary, inputBg, borderColor, textSecondary])
 
   return (
     <>

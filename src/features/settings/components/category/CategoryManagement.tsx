@@ -172,7 +172,7 @@ export default function CategoryManagement() {
                         fontSize: '0.68rem',
                         fontWeight: 600,
                         bgcolor: cat.active === false
-                          ? (isDarkMode ? 'rgba(148,163,184,0.12)' : 'rgba(148,163,184,0.1)')
+                          ? st.inactiveCategoryBg
                           : cat.bg,
                         color: cat.active === false ? '#94a3b8' : cat.color,
                         border: `1px solid ${cat.active === false ? 'rgba(148,163,184,0.25)' : cat.border}`,

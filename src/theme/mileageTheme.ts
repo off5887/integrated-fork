@@ -89,6 +89,9 @@ const mileageLight = {
   statusErrorColor:    '#ef4444',
   statusErrorBg:       '#ef444412',
   statusErrorBorder:   '#ef444428',
+
+  // ── 통계 배너 ──
+  statsBannerBg: 'rgba(248,250,252,0.9)',
 } as const
 
 const mileageDark = {
@@ -179,6 +182,9 @@ const mileageDark = {
   statusErrorColor:    '#ef4444',
   statusErrorBg:       '#ef444412',
   statusErrorBorder:   '#ef444428',
+
+  // ── 통계 배너 ──
+  statsBannerBg: 'rgba(15,23,42,0.5)',
 } as const
 
 export type MileageTheme = typeof mileageLight

@@ -44,6 +44,11 @@ export function getLoginColors(isDarkMode: boolean) {
     link: isDarkMode ? '#a5b4fc' : '#6366f1',
     linkHover: isDarkMode ? '#c7d2fe' : '#4338ca',
     toggleIconColor: isDarkMode ? '#fbbf24' : '#64748b',
+    // ── 세션 만료 경고 박스 ──
+    sessionBg:     isDarkMode ? 'rgba(245,158,11,0.1)'  : 'rgba(245,158,11,0.08)',
+    sessionBorder: isDarkMode ? 'rgba(245,158,11,0.35)' : 'rgba(245,158,11,0.3)',
+    sessionTitle:  isDarkMode ? '#fbbf24'               : '#b45309',
+    sessionDesc:   isDarkMode ? '#fde68a'               : '#92400e',
   }
 }
 

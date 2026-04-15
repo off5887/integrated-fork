@@ -45,7 +45,7 @@ export default function MessagePage() {
   const apiPage   = page - 1  // API는 0-indexed
 
   const { data: receivedPage, isLoading: loadingReceived } = useReceivedMessages(isSentTab ? 0 : apiPage)
-  const { data: sentPage,     isLoading: loadingSent     } = useSentMessages(isSentTab ? apiPage : 0)
+  const { data: sentPage,     isLoading: loadingSent     } = useSentMessages(apiPage, isSentTab)
 
   const currentPage = isSentTab ? sentPage     : receivedPage
   const isLoading   = isSentTab ? loadingSent  : loadingReceived
@@ -102,12 +102,12 @@ export default function MessagePage() {
               onClick={handleToAdmins}
               sx={{
                 borderRadius: 2, fontWeight: 600, fontSize: '0.82rem',
-                borderColor: isDarkMode ? 'rgba(129,140,248,0.45)' : 'rgba(99,102,241,0.35)',
-                color: isDarkMode ? '#818cf8' : msgAccent.primary,
-                bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.04)',
+                borderColor: t.adminBtnBorder,
+                color: t.adminBtnColor,
+                bgcolor: t.adminBtnBg,
                 '&:hover': {
                   borderColor: msgAccent.primary,
-                  bgcolor: isDarkMode ? 'rgba(99,102,241,0.16)' : 'rgba(99,102,241,0.1)',
+                  bgcolor: t.adminBtnHoverBg,
                 },
               }}
             >
@@ -119,16 +119,12 @@ export default function MessagePage() {
               onClick={() => { setReplyReceiver(null); setComposeOpen(true) }}
               sx={{
                 borderRadius: 2, fontWeight: 600, fontSize: '0.82rem',
-                bgcolor: isDarkMode ? msgAccent.primary : msgAccent.primary,
+                bgcolor: msgAccent.primary,
                 color: '#fff',
-                boxShadow: isDarkMode
-                  ? '0 2px 12px rgba(99,102,241,0.4)'
-                  : '0 2px 8px rgba(99,102,241,0.25)',
+                boxShadow: t.sendBtnShadow,
                 '&:hover': {
                   bgcolor: '#4f46e5',
-                  boxShadow: isDarkMode
-                    ? '0 4px 16px rgba(99,102,241,0.55)'
-                    : '0 4px 12px rgba(99,102,241,0.35)',
+                  boxShadow: t.sendBtnHoverShadow,
                 },
               }}
             >

@@ -57,6 +57,12 @@ const ideaLight = {
   backdropBg: 'rgba(0,0,0,0.35)',
   similarListColor: '#92400e',
 
+  // ── 상세 다이얼로그 — 공동제안자/실행계획/첨부파일 ──
+  coProposerBg:     'rgba(99,102,241,0.06)',
+  coProposerBorder: 'rgba(99,102,241,0.18)',
+  executorBg:       'rgba(99,102,241,0.03)',
+  attachmentBg:     'rgba(0,0,0,0.02)',
+
   // ── 입력/셀렉트 배경 ──
   inputBg: '#f8fafc',
 
@@ -134,6 +140,12 @@ const ideaDark = {
   dialogShadow: '0 24px 64px rgba(0,0,0,0.6)',
   backdropBg: 'rgba(0,0,0,0.6)',
   similarListColor: '#fbbf24',
+
+  // ── 상세 다이얼로그 — 공동제안자/실행계획/첨부파일 ──
+  coProposerBg:     'rgba(99,102,241,0.1)',
+  coProposerBorder: 'rgba(99,102,241,0.25)',
+  executorBg:       'rgba(99,102,241,0.04)',
+  attachmentBg:     'rgba(255,255,255,0.03)',
 
   // ── 입력/셀렉트 배경 ──
   inputBg: 'rgba(15,23,42,0.5)',

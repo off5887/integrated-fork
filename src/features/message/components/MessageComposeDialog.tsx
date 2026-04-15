@@ -142,9 +142,7 @@ export default function MessageComposeDialog({
           backgroundImage: 'none',
           borderRadius: 3,
           border: `1px solid ${t.borderColor}`,
-          boxShadow: isDarkMode
-            ? '0 24px 64px rgba(0,0,0,0.6)'
-            : '0 12px 40px rgba(0,0,0,0.12)',
+          boxShadow: t.dialogShadow,
         },
       }}
     >
@@ -176,7 +174,7 @@ export default function MessageComposeDialog({
               sx={{
                 display: 'flex', flexWrap: 'wrap', gap: 0.75, p: 1.25,
                 borderRadius: 1.5, border: `1px solid ${t.borderColor}`,
-                bgcolor: isDarkMode ? 'rgba(15,23,42,0.4)' : 'rgba(248,250,252,0.8)',
+                bgcolor: t.recipientListBg,
                 minHeight: 44,
               }}
             >
@@ -189,12 +187,12 @@ export default function MessageComposeDialog({
                       onDelete={() => setSelectedAdmins((prev) => prev.filter((x) => x.id !== a.id))}
                       sx={{
                         fontSize: '0.73rem', fontWeight: 600,
-                        bgcolor: isDarkMode ? 'rgba(99,102,241,0.15)' : 'rgba(99,102,241,0.08)',
-                        color: isDarkMode ? '#818cf8' : msgAccent.primary,
-                        border: `1px solid ${isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)'}`,
+                        bgcolor: t.adminChipBg,
+                        color: t.adminChipColor,
+                        border: `1px solid ${t.adminChipBorder}`,
                         '& .MuiChip-deleteIcon': {
-                          color: isDarkMode ? 'rgba(129,140,248,0.6)' : 'rgba(99,102,241,0.5)',
-                          '&:hover': { color: isDarkMode ? '#818cf8' : msgAccent.primary },
+                          color: t.adminChipDelColor,
+                          '&:hover': { color: t.adminChipColor },
                         },
                       }}
                     />
@@ -234,7 +232,7 @@ export default function MessageComposeDialog({
                 size="small"
                 error={!!errors.receiver}
                 helperText={errors.receiver ?? (receiver ? `사번: ${receiver.id}` : '이름 또는 부서로 검색')}
-                sx={{ '& .MuiOutlinedInput-root': { bgcolor: isDarkMode ? t.inputBg : '#fff' } }}
+                sx={{ '& .MuiOutlinedInput-root': { bgcolor: t.textFieldBg } }}
               />
             )}
             noOptionsText="검색 결과가 없습니다"
@@ -251,7 +249,7 @@ export default function MessageComposeDialog({
           size="small"
           fullWidth
           inputProps={{ maxLength: 200 }}
-          sx={{ '& .MuiOutlinedInput-root': { bgcolor: isDarkMode ? t.inputBg : '#fff' } }}
+          sx={{ '& .MuiOutlinedInput-root': { bgcolor: t.textFieldBg } }}
         />
         <TextField
           label="내용"
@@ -262,7 +260,7 @@ export default function MessageComposeDialog({
           multiline
           rows={5}
           fullWidth
-          sx={{ '& .MuiOutlinedInput-root': { bgcolor: isDarkMode ? t.inputBg : '#fff' } }}
+          sx={{ '& .MuiOutlinedInput-root': { bgcolor: t.textFieldBg } }}
         />
       </DialogContent>
 
@@ -272,7 +270,7 @@ export default function MessageComposeDialog({
           size="small"
           sx={{
             color: t.textSecondary,
-            '&:hover': { bgcolor: isDarkMode ? 'rgba(148,163,184,0.08)' : 'rgba(0,0,0,0.04)' },
+            '&:hover': { bgcolor: t.cancelBtnHoverBg },
           }}
         >
           취소
@@ -287,17 +285,13 @@ export default function MessageComposeDialog({
             bgcolor: msgAccent.primary,
             color: '#fff',
             fontWeight: 600,
-            boxShadow: isDarkMode
-              ? '0 2px 12px rgba(99,102,241,0.4)'
-              : '0 2px 8px rgba(99,102,241,0.25)',
+            boxShadow: t.sendBtnShadow,
             '&:hover': {
               bgcolor: '#4f46e5',
-              boxShadow: isDarkMode
-                ? '0 4px 16px rgba(99,102,241,0.55)'
-                : '0 4px 12px rgba(99,102,241,0.35)',
+              boxShadow: t.sendBtnHoverShadow,
             },
             '&.Mui-disabled': {
-              bgcolor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.4)',
+              bgcolor: t.sendDisabledBg,
               color: 'rgba(255,255,255,0.6)',
             },
           }}

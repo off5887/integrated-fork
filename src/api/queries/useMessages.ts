@@ -28,9 +28,10 @@ export function useReceivedMessages(page = 0) {
 
 // ─── GET /api/messages/sent ───────────────────────────────────────────────────
 
-export function useSentMessages(page = 0) {
+export function useSentMessages(page = 0, enabled = true) {
   return useQuery({
     queryKey: queryKeys.messages.sent(page),
+    enabled,
     queryFn: () =>
       withDemoFallback<MessagesPage>(
         mockSentPage,

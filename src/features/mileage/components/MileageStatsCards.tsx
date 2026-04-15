@@ -115,7 +115,7 @@ export default function MileageStatsCards({ summary }: Props) {
           px: 3,
           py: 2,
           borderRadius: 2.5,
-          bgcolor: isDarkMode ? 'rgba(15,23,42,0.5)' : 'rgba(248,250,252,0.9)',
+          bgcolor: t.statsBannerBg,
           border: `1px solid ${t.statCardBorder}`,
           display: 'flex',
           alignItems: 'center',

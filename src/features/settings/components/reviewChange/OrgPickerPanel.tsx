@@ -113,7 +113,7 @@ export default function OrgPickerPanel({ onSelect, selectedEmployeeId }: Props) 
           mb: 1.5,
           '& .MuiOutlinedInput-root': {
             borderRadius: 2,
-            bgcolor: isDarkMode ? 'rgba(255,255,255,0.04)' : '#f8fafc',
+            bgcolor: st.searchInputBg,
             '& fieldset': { borderColor },
             '&:hover fieldset': { borderColor: st.inputHoverBorder },
             '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },

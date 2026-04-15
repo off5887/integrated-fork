@@ -5,7 +5,6 @@ import {
   STAT_PERIOD_MIN,
   teamStatsData,
 } from '@/api/mock/stats'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
 import { getSettingsTheme } from '@/theme/settingsTheme'
@@ -26,7 +25,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import PersonStatsTable from './components/PersonStatsTable'
 import TeamStatsTable from './components/TeamStatsTable'
 import StatsSummaryCards from './components/StatsSummaryCards'
@@ -54,12 +53,6 @@ export default function Stats() {
   } = usePageColors()
   const st = getSettingsTheme(isDarkMode)
   const stt = getStatsTheme(isDarkMode)
-
-  const [isLoading, setIsLoading] = useState(true)
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 800)
-    return () => clearTimeout(t)
-  }, [])
 
   const [tab, setTab] = useState<TabValue>('person')
   const [searchTerm, setSearchTerm] = useState('')
@@ -195,8 +188,6 @@ export default function Stats() {
     '& .MuiInputLabel-root': { fontSize: '0.82rem', color: textSecondary },
     '& .MuiInputLabel-root.Mui-focused': { color: accentColor },
   }
-
-  if (isLoading) return <LoadingSpinner fullPage text="통계를 불러오는 중..." />
 
   return (
     <Box

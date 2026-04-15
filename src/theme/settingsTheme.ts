@@ -69,6 +69,16 @@ const settingsLight = {
   bulkBarBorder:        'rgba(99,102,241,0.25)',
   iconInactiveBg:       'rgba(99,102,241,0.07)',
 
+  // ── 카테고리 비활성 뱃지 ──────────────────────────────────────────────────────
+  inactiveCategoryBg: 'rgba(148,163,184,0.1)',
+
+  // ── 검색 입력 배경 (OrgPickerPanel) ───────────────────────────────────────────
+  searchInputBg: '#f8fafc',
+
+  // ── 날짜 피커 팝업 (MileageHistoryPanel) ─────────────────────────────────────
+  datePickerBg:     '#fff',
+  datePickerShadow: '0 8px 24px rgba(0,0,0,0.12)',
+
   // ── 상수 (dark / light 동일) ─────────────────────────────────────────────────
   primaryColor:           '#6366f1',
   primaryHoverBg:         '#4f46e5',
@@ -148,6 +158,16 @@ const settingsDark = {
   selectedCardBorder:   'rgba(99,102,241,0.4)',
   bulkBarBorder:        'rgba(99,102,241,0.3)',
   iconInactiveBg:       'rgba(99,102,241,0.1)',
+
+  // ── 카테고리 비활성 뱃지 ──────────────────────────────────────────────────────
+  inactiveCategoryBg: 'rgba(148,163,184,0.12)',
+
+  // ── 검색 입력 배경 (OrgPickerPanel) ───────────────────────────────────────────
+  searchInputBg: 'rgba(255,255,255,0.04)',
+
+  // ── 날짜 피커 팝업 (MileageHistoryPanel) ─────────────────────────────────────
+  datePickerBg:     '#1e1e2e',
+  datePickerShadow: '0 8px 32px rgba(0,0,0,0.5)',
 
   // ── 상수 (dark / light 동일) ─────────────────────────────────────────────────
   primaryColor:           '#6366f1',

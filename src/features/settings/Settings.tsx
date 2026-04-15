@@ -7,8 +7,7 @@ import PaidIcon from '@mui/icons-material/Paid'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { Box, Chip, Container, FormControl, MenuItem, Select, Typography } from '@mui/material'
-import { type ComponentType, useEffect, useState , useMemo } from 'react'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { type ComponentType, useMemo, useState } from 'react'
 import { type SvgIconProps } from '@mui/material/SvgIcon'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
@@ -89,15 +88,7 @@ export default function Settings() {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, bgBase, cardBg, cardShadow, accentColor } = usePageColors()
   const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
-  const [isLoading, setIsLoading] = useState(true)
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800)
-    return () => clearTimeout(timer)
-  }, [])
-
   const [activeTab, setActiveTab] = useState(0)
-
-  if (isLoading) return <LoadingSpinner fullPage text="설정을 불러오는 중..." />
 
   const ActiveComponent = TABS[activeTab].Component
 

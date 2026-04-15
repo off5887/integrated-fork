@@ -87,10 +87,10 @@ export default function MileageHistoryPanel({ history }: Props) {
 
   const popperSx = {
     '& .MuiPaper-root': {
-      bgcolor: isDarkMode ? '#1e1e2e' : '#fff',
+      bgcolor: st.datePickerBg,
       border: `1px solid ${borderColor}`,
       borderRadius: 2,
-      boxShadow: isDarkMode ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 24px rgba(0,0,0,0.12)',
+      boxShadow: st.datePickerShadow,
     },
     '& .MuiPickersDay-root': {
       color: textPrimary,

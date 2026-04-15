@@ -326,8 +326,8 @@ export default function Login() {
                 mb: 4,
                 p: 2.5,
                 borderRadius: 3,
-                bgcolor: isDarkMode ? 'rgba(245,158,11,0.1)' : 'rgba(245,158,11,0.08)',
-                border: `1px solid ${isDarkMode ? 'rgba(245,158,11,0.35)' : 'rgba(245,158,11,0.3)'}`,
+                bgcolor: colors.sessionBg,
+                border: `1px solid ${colors.sessionBorder}`,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1.5,
@@ -335,10 +335,10 @@ export default function Login() {
             >
               <Typography sx={{ fontSize: '1.1rem', flexShrink: 0 }}>⏱️</Typography>
               <Box>
-                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: isDarkMode ? '#fbbf24' : '#b45309', lineHeight: 1.3 }}>
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: colors.sessionTitle, lineHeight: 1.3 }}>
                   세션이 만료되었습니다
                 </Typography>
-                <Typography sx={{ fontSize: '0.75rem', color: isDarkMode ? '#fde68a' : '#92400e', mt: 0.25 }}>
+                <Typography sx={{ fontSize: '0.75rem', color: colors.sessionDesc, mt: 0.25 }}>
                   보안을 위해 자동으로 로그아웃되었습니다. 다시 로그인해주세요.
                 </Typography>
               </Box>

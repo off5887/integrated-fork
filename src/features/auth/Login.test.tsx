@@ -7,6 +7,15 @@ vi.mock('@mui/icons-material', () => ({
   LightModeOutlined: () => null,
   ExpandMore: () => null,
 }))
+// useSearchParams는 react-router v7 data router 컨텍스트가 필요하지만
+// 테스트 환경에서는 MemoryRouter와 호환되지 않아 mock 처리
+vi.mock('react-router', async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>
+  return {
+    ...actual,
+    useSearchParams: () => [new URLSearchParams(), vi.fn()],
+  }
+})
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
@@ -15,7 +24,6 @@ import { render } from '@/tests/utils'
 import { server } from '@/tests/mocks/server'
 import Login from './Login'
 
-// Login 컴포넌트 + navigate 대상 라우트를 함께 렌더링
 function renderLogin() {
   return render(
     <Routes>

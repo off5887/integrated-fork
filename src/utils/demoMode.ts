@@ -33,10 +33,6 @@ export function clearDemoProfile(): void {
  * )
  */
 export async function withDemoFallback<T>(mockData: T, apiFn: () => Promise<T>): Promise<T> {
-  const demo = isDemoMode()
-  if (import.meta.env.DEV) {
-    console.log('[withDemoFallback] isDemoMode:', demo)
-  }
-  if (demo) return mockData
+  if (isDemoMode()) return mockData
   return apiFn()
 }
