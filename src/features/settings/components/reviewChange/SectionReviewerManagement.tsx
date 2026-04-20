@@ -16,12 +16,11 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useOrgTeams } from '@/api/queries/useOrg'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import useSectionReviewer from '../../hooks/useSectionReviewer'
 import DeptPickerPanel from './DeptPickerPanel'
 import OrgPickerPanel from './OrgPickerPanel'
@@ -32,9 +31,8 @@ const PANEL_HEIGHT = 320
 const MOBILE_PANEL_HEIGHT = 280
 
 export default function SectionReviewerManagement() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const muiTheme = useTheme()
   const rawIsMobile = useMediaQuery(muiTheme.breakpoints.down('sm'))

@@ -1,7 +1,7 @@
 // src/features/settings/components/reviewerStats/ReviewerMobileCard.tsx
 import { Box, Chip, LinearProgress, Paper, Typography } from '@mui/material'
 import type { ReviewerTeamStats } from '@/api/types/judge'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 
 export interface DerivedStats {
   pending: number
@@ -50,7 +50,7 @@ interface MobileCardProps {
   textPrimary: string
   textSecondary: string
   cardBg: string
-  st: ReturnType<typeof getSettingsTheme>
+  st: ReturnType<typeof useSettingsTheme>
 }
 
 export default function ReviewerMobileCard({ row, borderColor, textPrimary, textSecondary, cardBg, st }: MobileCardProps) {

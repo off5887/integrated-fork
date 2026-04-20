@@ -151,3 +151,9 @@ export type DashboardTheme = typeof dashboardLight
 /** isDarkMode 값을 넘기면 해당 팔레트를 반환합니다. */
 export const getDashboardTheme = (isDarkMode: boolean): DashboardTheme =>
   isDarkMode ? (dashboardDark as unknown as DashboardTheme) : dashboardLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useDashboardTheme(): DashboardTheme {
+  const { isDarkMode } = useThemeMode()
+  return getDashboardTheme(isDarkMode)
+}

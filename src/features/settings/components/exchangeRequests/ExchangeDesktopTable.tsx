@@ -17,7 +17,7 @@ import {
 } from '@mui/material'
 import type { AdminExchangeItem } from '@/api/types/mileage'
 import type { usePageColors } from '@/theme/pageColors'
-import type { getSettingsTheme } from '@/theme/settingsTheme'
+import type { useSettingsTheme } from '@/theme/settingsTheme'
 
 const STATUS_MAP = {
   신청중: { label: '신청중', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)' },
@@ -33,7 +33,7 @@ interface Props {
   selectedIds: Set<number>
   hasFilter: boolean
   colors: ReturnType<typeof usePageColors>
-  st: ReturnType<typeof getSettingsTheme>
+  st: ReturnType<typeof useSettingsTheme>
   onToggleAll: () => void
   onToggleRow: (id: number) => void
   onApprove: (item: AdminExchangeItem) => void

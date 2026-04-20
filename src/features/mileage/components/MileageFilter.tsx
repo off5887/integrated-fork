@@ -3,8 +3,7 @@ import { Box, InputAdornment, TextField, Typography } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { Dayjs } from 'dayjs'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 
 interface Props {
   startDate: Dayjs | null
@@ -23,8 +22,7 @@ export default function MileageFilter({
   searchTerm,
   setSearchTerm,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMileageTheme(isDarkMode)
+  const t = useMileageTheme()
 
   const inputSx = {
     '& .MuiInputBase-root': {

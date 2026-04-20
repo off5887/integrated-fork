@@ -7,11 +7,10 @@ import PaidIcon from '@mui/icons-material/Paid'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import { Box, Chip, Container, FormControl, MenuItem, Select, Typography } from '@mui/material'
-import { type ComponentType, useMemo, useState } from 'react'
+import { type ComponentType, useState } from 'react'
 import { type SvgIconProps } from '@mui/material/SvgIcon'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import CategoryManagement from './components/category/CategoryManagement'
 import ExchangeRequestsManagement from './components/exchangeRequests/ExchangeRequestsManagement'
 import ReviewChange from './components/reviewChange/ReviewChange'
@@ -85,9 +84,8 @@ const TABS: TabConfig[] = [
 // ─── Settings ─────────────────────────────────────────────────────────────────
 
 export default function Settings() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, bgBase, cardBg, cardShadow, accentColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
   const [activeTab, setActiveTab] = useState(0)
 
   const ActiveComponent = TABS[activeTab].Component
@@ -162,6 +160,7 @@ export default function Settings() {
             <Select
               value={activeTab}
               onChange={(e) => setActiveTab(Number(e.target.value))}
+              inputProps={{ 'aria-label': '설정 메뉴 선택' }}
               sx={{
                 bgcolor: cardBg,
                 borderRadius: 2,

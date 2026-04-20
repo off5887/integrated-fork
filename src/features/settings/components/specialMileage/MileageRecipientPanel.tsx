@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import {} from 'react'
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import CloseIcon from '@mui/icons-material/Close'
 import {
@@ -16,8 +16,7 @@ import {
   Typography,
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import type { MileageEntry } from '@/api/types/settings'
 
 interface Props {
@@ -27,9 +26,8 @@ interface Props {
 }
 
 export default function MileageRecipientPanel({ selected, onRemove, onFieldChange }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, rowBg, rowHoverBg, headerBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const inputSx = {
     '& .MuiOutlinedInput-root': {

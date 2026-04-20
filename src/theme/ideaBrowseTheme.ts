@@ -190,9 +190,16 @@ export const ideaAccent = {
 
 export type IdeaBrowseTheme = typeof ideaLight
 
+
 /** isDarkMode 값을 넘기면 해당 테마 객체 전체를 반환합니다. */
 export const getIdeaTheme = (isDarkMode: boolean): IdeaBrowseTheme =>
   isDarkMode ? (ideaDark as unknown as IdeaBrowseTheme) : ideaLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useIdeaBrowseTheme(): IdeaBrowseTheme {
+  const { isDarkMode } = useThemeMode()
+  return getIdeaTheme(isDarkMode)
+}
 
 // ──────────────────────────────────────────────────────────────
 // 상태별 색상 설정 (기존 IDEA_STATUS_CONFIG 유지)

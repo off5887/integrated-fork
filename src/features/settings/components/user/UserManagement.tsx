@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import {} from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
@@ -27,8 +27,7 @@ import {
   Typography,
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import { ROLE_OPTIONS } from '../../config/userConfig'
 import { useUserManagement } from '../../hooks/useUserManagement'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -38,9 +37,8 @@ import UserRoleSelect from './UserRoleSelect'
 import UserActiveChip from './UserActiveChip'
 
 export default function UserManagement() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg, rowBg, rowHoverBg, headerBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const {
     users, filteredUsers, pagedUsers, isLoading, isRefreshing,
@@ -142,6 +140,7 @@ export default function UserManagement() {
           value={roleFilter}
           onChange={(e) => handleFilterRole(e.target.value)}
           size="small"
+          inputProps={{ 'aria-label': '역할 필터' }}
           sx={{
             minWidth: 110, fontSize: '0.82rem', bgcolor: st.inputBg, borderRadius: 2, color: textPrimary,
             '& .MuiOutlinedInput-notchedOutline': { borderColor },
@@ -159,6 +158,7 @@ export default function UserManagement() {
           value={statusFilter}
           onChange={(e) => handleFilterStatus(e.target.value)}
           size="small"
+          inputProps={{ 'aria-label': '활성 상태 필터' }}
           sx={{
             minWidth: 90, fontSize: '0.82rem', bgcolor: st.inputBg, borderRadius: 2, color: textPrimary,
             '& .MuiOutlinedInput-notchedOutline': { borderColor },

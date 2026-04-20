@@ -9,10 +9,10 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import ReplyIcon from '@mui/icons-material/Reply'
 import SaveIcon from '@mui/icons-material/Save'
 import CloseIcon from '@mui/icons-material/Close'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMsgTheme, msgAccent } from '@/theme/messageTheme'
+import { useMsgTheme, msgAccent } from '@/theme/messageTheme'
 import { useUpdateMessage, useDeleteMessage } from '@/api/queries/useMessages'
 import type { MessageApiItem } from '@/api/types/message'
+import { toDatetime } from '@/utils/dateUtils'
 
 interface MessageDetailPanelProps {
   message: MessageApiItem
@@ -22,7 +22,7 @@ interface MessageDetailPanelProps {
 }
 
 function fmtDatetime(s: string) {
-  return s.replace('T', ' ').slice(0, 16)
+  return toDatetime(s)
 }
 
 export default function MessageDetailPanel({
@@ -31,8 +31,7 @@ export default function MessageDetailPanel({
   onReply,
   onDeleted,
 }: MessageDetailPanelProps) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMsgTheme(isDarkMode)
+  const t = useMsgTheme()
 
   const isSender   = message.senderId === currentEmployeeId
   const canEdit    = isSender && !message.isRead

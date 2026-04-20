@@ -225,8 +225,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
 // ─── NavDesktop ────────────────────────────────────────────────────────────────
 
 export default function NavDesktop() {
-  const user = useCurrentUser()
-  const role = user?.role
+  const { role } = useCurrentUser()
 
   const visibleItems = menuItems.filter(
     (item) => !item.roles || (role && item.roles.includes(role)),

@@ -26,8 +26,7 @@ import {
   useTheme,
 } from '@mui/material'
 import type { ReactNode } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
+import { useIdeaBrowseTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { useIdeaDetail, useToggleLike, useSimilarIdeas, useDeleteAttachment } from '@/api/queries/useIdeas'
 import { useCategories } from '@/api/queries/useCategories'
@@ -64,8 +63,7 @@ export default function IdeaDetailDialog({
   onDelete,
 }: IdeaDetailDialogProps) {
   const { data: similarTitles = [] } = useSimilarIdeas(ideaId)
-  const { isDarkMode } = useThemeMode()
-  const theme = getIdeaTheme(isDarkMode)
+  const theme = useIdeaBrowseTheme()
   const {
     textPrimary, textSecondary, borderColor, cardBg,
     similar, avatarBg, dialogShadow, backdropBg, similarListColor,
@@ -100,6 +98,7 @@ export default function IdeaDetailDialog({
       maxWidth="sm"
       fullWidth
       fullScreen={fullScreen}
+      aria-labelledby="idea-detail-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -131,7 +130,7 @@ export default function IdeaDetailDialog({
               <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: stat.color }}>{idea.status}</Typography>
             </Box>
           </Box>
-          <Typography sx={{ fontSize: '1.05rem', fontWeight: 700, color: textPrimary, lineHeight: 1.4 }}>
+          <Typography id="idea-detail-dialog-title" sx={{ fontSize: '1.05rem', fontWeight: 700, color: textPrimary, lineHeight: 1.4 }}>
             {idea.title}
           </Typography>
         </Box>

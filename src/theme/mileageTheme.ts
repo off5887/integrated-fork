@@ -191,3 +191,9 @@ export type MileageTheme = typeof mileageLight
 
 export const getMileageTheme = (isDarkMode: boolean): MileageTheme =>
   isDarkMode ? (mileageDark as unknown as MileageTheme) : mileageLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useMileageTheme(): MileageTheme {
+  const { isDarkMode } = useThemeMode()
+  return getMileageTheme(isDarkMode)
+}

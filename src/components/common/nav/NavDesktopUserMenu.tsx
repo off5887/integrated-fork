@@ -29,7 +29,7 @@ export default function NavDesktopUserMenu() {
   const location = useLocation()
   const { nt, isDarkMode, toggleTheme } = useNavColors()
   const logout = useLogout()
-  const user = useCurrentUser()
+  const { user, isAdmin } = useCurrentUser()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
@@ -201,7 +201,7 @@ export default function NavDesktopUserMenu() {
         </MuiMenuItem>
 
         {/* 설정 — 관리자 전용 */}
-        {user?.role === 'admin' && (
+        {isAdmin && (
           <MuiMenuItem
             onClick={() => { navigate(settingsItem.path); setAnchorEl(null) }}
             sx={{

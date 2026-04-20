@@ -1,7 +1,6 @@
 // src/routes/Mileage/MileageMobileCards.tsx
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 import type { AwardItem } from '@/api/types/mileage'
 
 interface Props {
@@ -9,8 +8,7 @@ interface Props {
 }
 
 export default function MileageMobileCards({ data }: Props) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMileageTheme(isDarkMode)
+  const t = useMileageTheme()
 
   if (data.length === 0) {
     return (

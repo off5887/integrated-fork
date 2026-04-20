@@ -16,10 +16,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState, useEffect } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import type { IdeaStatus } from '@/api/types/ideaBrowse'
 import type { CategoryOption } from '@/api/types/idea'
-import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
+import { useIdeaBrowseTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 
 interface IdeaFiltersProps {
   search: string
@@ -70,8 +69,7 @@ export default function IdeaFilters({
   onMyOnlyToggle,
   onClearAll,
 }: IdeaFiltersProps) {
-  const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor, filterActiveBg, filterActiveBorder, filterChipBg, similar, inputBg, myOnlyActiveBg, myOnlyCountBg } = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor, filterActiveBg, filterActiveBorder, filterChipBg, similar, inputBg, myOnlyActiveBg, myOnlyCountBg } = useIdeaBrowseTheme()
 
   // 검색 debounce: 로컬 inputValue를 300ms 지연 후 부모에 전달
   const [inputValue, setInputValue] = useState(search)
@@ -205,6 +203,7 @@ export default function IdeaFilters({
             value={selectedBizArea}
             onChange={onBizAreaChange}
             displayEmpty
+            inputProps={{ 'aria-label': '사업소 선택' }}
             IconComponent={ExpandMoreIcon}
             sx={selectSx}
             renderValue={(v) => (
@@ -226,6 +225,7 @@ export default function IdeaFilters({
             value={selectedDept}
             onChange={(e) => onDeptChange(e.target.value)}
             displayEmpty
+            inputProps={{ 'aria-label': '부서 선택' }}
             IconComponent={ExpandMoreIcon}
             sx={selectSx}
             renderValue={(v) => (
@@ -247,6 +247,7 @@ export default function IdeaFilters({
             value={selectedStatus}
             onChange={(e) => onStatusChange(e.target.value as IdeaStatus | '')}
             displayEmpty
+            inputProps={{ 'aria-label': '상태 선택' }}
             IconComponent={ExpandMoreIcon}
             sx={selectSx}
             renderValue={(v) => (

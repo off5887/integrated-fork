@@ -12,10 +12,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
+import { useIdeaBrowseTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
 import { useAddComment, useDeleteComment, useEditComment, useIdeaComments } from '@/api/queries/useIdeas'
-import { useCurrentUserQuery } from '@/api/queries/useAuth'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import type { IdeaApiComment } from '@/api/types/idea'
 
 interface IdeaCommentSectionProps {
@@ -24,11 +23,10 @@ interface IdeaCommentSectionProps {
 }
 
 export default function IdeaCommentSection({ ideaId, commentCount }: IdeaCommentSectionProps) {
-  const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor, inputBg, avatarBg } = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor, inputBg, avatarBg } = useIdeaBrowseTheme()
 
   const { data: commentsPage, isLoading } = useIdeaComments(ideaId)
-  const { data: currentUser } = useCurrentUserQuery()
+  const { employeeId: myEmployeeId } = useCurrentUser()
   const addComment = useAddComment(ideaId)
   const editComment = useEditComment(ideaId)
   const deleteComment = useDeleteComment(ideaId)
@@ -93,7 +91,7 @@ export default function IdeaCommentSection({ ideaId, commentCount }: IdeaComment
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25, mb: 2 }}>
           {comments.map((comment) => {
-            const isOwn = currentUser?.employeeId === comment.employeeId
+            const isOwn = myEmployeeId === comment.employeeId
             const isEditing = editingId === comment.commentId
             return (
               <Box

@@ -9,8 +9,7 @@ import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettin
 import { useSendMessage } from '@/api/queries/useMessages'
 import { useOrgUsersTree } from '@/api/queries/useUsers'
 import { flattenUsers } from '@/utils/userUtils'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMsgTheme, msgAccent } from '@/theme/messageTheme'
+import { useMsgTheme, msgAccent } from '@/theme/messageTheme'
 
 interface AdminReceiver {
   id: string
@@ -40,8 +39,7 @@ export default function MessageComposeDialog({
   adminReceivers,
   onClose,
 }: MessageComposeDialogProps) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMsgTheme(isDarkMode)
+  const t = useMsgTheme()
   const sendMessage = useSendMessage()
   const { data: orgTree = [] } = useOrgUsersTree()
 
@@ -136,6 +134,7 @@ export default function MessageComposeDialog({
       onClose={handleClose}
       fullWidth
       maxWidth="sm"
+      aria-labelledby="message-compose-dialog-title"
       PaperProps={{
         sx: {
           bgcolor: t.contentBg,
@@ -152,7 +151,7 @@ export default function MessageComposeDialog({
             ? <AdminPanelSettingsOutlinedIcon sx={{ fontSize: '1.2rem', color: msgAccent.primary }} />
             : <SendIcon sx={{ fontSize: '1.2rem', color: msgAccent.primary }} />
           }
-          <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: t.textPrimary }}>
+          <Typography id="message-compose-dialog-title" sx={{ fontWeight: 700, fontSize: '1rem', color: t.textPrimary }}>
             {isAdminMode ? '관리자에게 쪽지 보내기' : '쪽지 보내기'}
           </Typography>
         </Box>

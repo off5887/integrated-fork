@@ -7,9 +7,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 import { useCancelWithdrawal, useMyMileages, useMyMileageSummary, useMyWithdrawals, useRequestWithdrawal } from '@/api/queries/useMileage'
 import { toAwardItem, toExchangeItem } from '@/api/types/mileage'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -26,9 +25,8 @@ type TabValue = 'awards' | 'exchanges'
 
 export default function MileagePage() {
   const theme = useTheme()
-  const { isDarkMode } = useThemeMode()
   const { showSnackbar } = useSnackbar()
-  const t = getMileageTheme(isDarkMode)
+  const t = useMileageTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   const { data: summary } = useMyMileageSummary()

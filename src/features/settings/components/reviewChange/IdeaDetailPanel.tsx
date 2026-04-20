@@ -14,7 +14,7 @@ import {
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import { levelConfig } from '@/features/settings/config/levelConfig'
 import { statusConfig } from '@/features/settings/config/statusConfig'
 import type { Idea } from '@/api/types/settings'
@@ -39,7 +39,7 @@ interface Props {
 export default function IdeaDetailPanel({ idea, changingLevel, onChangingLevel }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
   const { showSnackbar } = useSnackbar()
 
   // 현재 배정된 심사자
@@ -408,7 +408,7 @@ interface CandidateRowProps {
   textPrimary: string
   textSecondary: string
   borderColor: string
-  st: ReturnType<typeof import('@/theme/settingsTheme').getSettingsTheme>
+  st: ReturnType<typeof import('@/theme/settingsTheme').useSettingsTheme>
   onClick: (c: CandidateItem) => void
 }
 

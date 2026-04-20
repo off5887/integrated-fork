@@ -7,10 +7,9 @@ import {
   Chip,
   Typography,
 } from '@mui/material'
-import { memo, useMemo } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
+import { memo } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import type { SettingsTheme } from '@/theme/settingsTheme'
 import type { OrgBizArea, OrgTeam } from '@/api/queries/useOrg'
 
@@ -52,9 +51,8 @@ const TeamRow = memo(function TeamRow({ team, isSelected, onSelect, st, textPrim
 })
 
 export default function DeptPickerPanel({ bizTeams, selectedDeptCd, onSelect }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   return (
     <Box

@@ -23,9 +23,8 @@ import {
 import { useMemo, useState } from 'react'
 import { reviewerTeamStatsData } from '@/api/mock/judge'
 import type { ReviewerTeamStats } from '@/api/types/judge'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import ReviewerMobileCard, { RateBar, rateColor, type DerivedStats } from './ReviewerMobileCard'
 
 type IdeaTypeFilter = 'all' | 'idea' | 'complete'
@@ -65,9 +64,8 @@ function deriveStats(row: ReviewerTeamStats, filter: IdeaTypeFilter): DerivedSta
 // ── 메인 컴포넌트 ─────────────────────────────────────────────────────────────
 
 export default function ReviewerStatsPanel() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
   const muiTheme = useTheme()
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'))
 

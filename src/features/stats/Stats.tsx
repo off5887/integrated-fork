@@ -7,7 +7,7 @@ import {
 } from '@/api/mock/stats'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import { getStatsTheme, STATS_SUMMARY_COLORS } from '@/theme/statsTheme'
 import BarChartIcon from '@mui/icons-material/BarChart'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
@@ -51,7 +51,7 @@ export default function Stats() {
     accentBg,
     accentBorder,
   } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useSettingsTheme()
   const stt = getStatsTheme(isDarkMode)
 
   const [tab, setTab] = useState<TabValue>('person')

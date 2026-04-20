@@ -5,8 +5,7 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Avatar, Box, Tooltip, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
+import { useIdeaBrowseTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { useCategories } from '@/api/queries/useCategories'
 import { useSimilarIdeas } from '@/api/queries/useIdeas'
@@ -21,8 +20,7 @@ interface IdeaCardProps {
 const CAT_FALLBACK = { emoji: '📁', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.35)', label: '' }
 
 export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardProps) {
-  const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor, cardBg, similar, dividerColor, cardShadow, cardHoverShadow, avatarBg, similarCardShadow } = getIdeaTheme(isDarkMode)
+  const { textPrimary, textSecondary, borderColor, cardBg, similar, dividerColor, cardShadow, cardHoverShadow, avatarBg, similarCardShadow } = useIdeaBrowseTheme()
   const { categories } = useCategories()
   const { data: similarTitles = [] } = useSimilarIdeas(idea.id)
 

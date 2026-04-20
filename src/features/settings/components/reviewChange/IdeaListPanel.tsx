@@ -10,10 +10,10 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material'
-import { useState , useMemo } from 'react'
+import { useState  } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import { statusConfig } from '@/features/settings/config/statusConfig'
 import type { Idea } from '@/api/types/settings'
 
@@ -34,7 +34,7 @@ export default function IdeaListPanel({
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const isMobile = useMediaQuery('(max-width: 1199px)')
   const [listPanelOpen, setListPanelOpen] = useState(false)

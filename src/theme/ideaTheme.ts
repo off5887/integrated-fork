@@ -266,3 +266,9 @@ export type IdeaTheme = typeof ideaLight
 /** isDarkMode 값을 넘기면 해당 팔레트를 반환합니다. */
 export const getIdeaTheme = (isDarkMode: boolean): IdeaTheme =>
   isDarkMode ? (ideaDark as unknown as IdeaTheme) : ideaLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useIdeaTheme(): IdeaTheme {
+  const { isDarkMode } = useThemeMode()
+  return getIdeaTheme(isDarkMode)
+}

@@ -16,7 +16,7 @@ import {
 import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import { useUserMileages } from '@/api/queries/useMileage'
 import { toUserAwardItem } from '@/api/types/mileage'
 import type { AdminExchangeItem, UserAwardItem } from '@/api/types/mileage'
@@ -36,7 +36,7 @@ const REASON_COLOR: Record<string, { color: string; bg: string; border: string }
   '아이디어 등록': { color: '#06b6d4', bg: 'rgba(6,182,212,0.1)', border: 'rgba(6,182,212,0.3)' },
 }
 
-function AwardRow({ item, colors, st }: { item: UserAwardItem; colors: ReturnType<typeof usePageColors>; st: ReturnType<typeof getSettingsTheme> }) {
+function AwardRow({ item, colors, st }: { item: UserAwardItem; colors: ReturnType<typeof usePageColors>; st: ReturnType<typeof useSettingsTheme> }) {
   const reasonStyle = REASON_COLOR[item.reason] ?? { color: colors.textSecondary, bg: 'transparent', border: colors.borderColor }
   return (
     <Box
@@ -101,7 +101,7 @@ function AwardRow({ item, colors, st }: { item: UserAwardItem; colors: ReturnTyp
 function DrawerContent({ user, onClose }: { user: AdminExchangeItem; onClose: () => void }) {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const [search, setSearch] = useState('')
   const [startDate, setStartDate] = useState('')

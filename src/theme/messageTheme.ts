@@ -84,6 +84,12 @@ export type MsgTheme = typeof msgLight
 export const getMsgTheme = (isDarkMode: boolean): MsgTheme =>
   isDarkMode ? (msgDark as unknown as MsgTheme) : msgLight
 
+import { useThemeMode } from '@/context/ThemeContext'
+export function useMsgTheme(): MsgTheme {
+  const { isDarkMode } = useThemeMode()
+  return getMsgTheme(isDarkMode)
+}
+
 export const msgAccent = {
   primary: '#6366f1',
   danger:  '#ef4444',

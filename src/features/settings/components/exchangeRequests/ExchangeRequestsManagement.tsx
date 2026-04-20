@@ -15,20 +15,29 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useSnackbar } from '@/context/SnackbarContext'
 import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
+import { toDateOnly } from '@/utils/dateUtils'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useAllWithdrawals, useApproveWithdrawal, useRejectWithdrawal } from '@/api/queries/useMileage'
 import { useUsers } from '@/api/queries/useUsers'
 import { WITHDRAWAL_STATUS_KR } from '@/api/types/mileage'
-import type { AdminExchangeItem } from '@/api/types/mileage'
+import type { AdminExchangeItem, WithdrawalRecord } from '@/api/types/mileage'
 import UserMileageDrawer from './UserMileageDrawer'
 import ExchangeDesktopTable from './ExchangeDesktopTable'
 
 type StatusFilter = '전체' | '신청중' | '완료' | '반려'
+
+/** 프론트 상태 라벨 → API status 파라미터 매핑 */
+const API_STATUS: Record<StatusFilter, string | undefined> = {
+  '전체': undefined,
+  '신청중': 'pending',
+  '완료':   'approved',
+  '반려':   'rejected',
+}
 
 const STATUS_MAP = {
   신청중: { label: '신청중', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.3)' },
@@ -41,39 +50,53 @@ const STATUS_FILTERS: StatusFilter[] = ['전체', '신청중', '완료', '반려
 export default function ExchangeRequestsManagement() {
   const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
   const { showSnackbar } = useSnackbar()
   const muiTheme = useTheme()
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'))
 
-  const { data: withdrawalRecordsData } = useAllWithdrawals()
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('전체')
+
+  // 탭 카운트용: 항상 전체 조회
+  const { data: allWithdrawalsData = [] } = useAllWithdrawals()
+  // 목록 표시용: 서버 사이드 상태 필터링 (전체면 allWithdrawalsData와 같은 캐시키 → 중복 요청 없음)
+  const { data: statusFilteredData = [] } = useAllWithdrawals(API_STATUS[statusFilter])
   const { data: usersData } = useUsers()
-  const withdrawalRecords = withdrawalRecordsData ?? []
   const users = usersData ?? []
   const approveMutation = useApproveWithdrawal()
   const rejectMutation  = useRejectWithdrawal()
 
-  // WithdrawalRecord + User → AdminExchangeItem
-  const items = useMemo<AdminExchangeItem[]>(() => {
-    const userMap = new Map(users.map((u) => [u.id, u]))
-    return withdrawalRecords.map((r) => {
-      const user = userMap.get(r.employeeId)
-      return {
-        id: r.withdrawalId,
-        employeeId: r.employeeId,
-        requestDate: r.requestDate.split('T')[0],
-        name: user?.name ?? r.employeeId,
-        department: user?.department ?? '',
-        position: user?.position ?? '',
-        employeeNumber: user?.employeeNumber ?? r.employeeId,
-        amount: r.requestPoints,
-        cashAmount: r.requestPoints * 100,
-        status: WITHDRAWAL_STATUS_KR[r.status],
-      }
-    })
-  }, [withdrawalRecords, users])
+  const userMap = useMemo(() => new Map(users.map((u) => [u.id, u])), [users])
 
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('전체')
+  const mapToItem = useCallback((r: WithdrawalRecord): AdminExchangeItem => {
+    const user = userMap.get(r.employeeId)
+    return {
+      id: r.withdrawalId,
+      employeeId: r.employeeId,
+      requestDate: toDateOnly(r.requestDate),
+      name: user?.name ?? r.employeeId,
+      department: user?.department ?? '',
+      position: user?.position ?? '',
+      employeeNumber: user?.employeeNumber ?? r.employeeId,
+      amount: r.requestPoints,
+      cashAmount: r.requestPoints * 100,
+      status: WITHDRAWAL_STATUS_KR[r.status],
+    }
+  }, [userMap])
+
+  // 탭 카운트: 전체 데이터 기반
+  const counts = useMemo(() => {
+    const all = allWithdrawalsData.map(mapToItem)
+    const c = { 전체: all.length, 신청중: 0, 완료: 0, 반려: 0 } as Record<StatusFilter, number>
+    all.forEach((i) => { c[i.status] = (c[i.status] ?? 0) + 1 })
+    return c
+  }, [allWithdrawalsData, mapToItem])
+
+  // 목록: 서버 필터링 결과 → AdminExchangeItem 변환
+  const items = useMemo<AdminExchangeItem[]>(
+    () => statusFilteredData.map(mapToItem),
+    [statusFilteredData, mapToItem],
+  )
   const [searchTerm, setSearchTerm] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -82,9 +105,9 @@ export default function ExchangeRequestsManagement() {
   const [confirmTarget, setConfirmTarget] = useState<AdminExchangeItem | null>(null)
   const [drawerUser, setDrawerUser] = useState<AdminExchangeItem | null>(null)
 
+  // 상태 필터는 서버에서 처리 — 여기서는 검색어·날짜 범위만 적용
   const filtered = useMemo(() => {
     return items.filter((item) => {
-      if (statusFilter !== '전체' && item.status !== statusFilter) return false
       if (searchTerm) {
         const q = searchTerm.toLowerCase()
         if (!item.name.includes(searchTerm) && !item.department.toLowerCase().includes(q) && !item.employeeNumber.toLowerCase().includes(q)) return false
@@ -93,13 +116,7 @@ export default function ExchangeRequestsManagement() {
       if (endDate && item.requestDate > endDate) return false
       return true
     })
-  }, [items, statusFilter, searchTerm, startDate, endDate])
-
-  const counts = useMemo(() => {
-    const c = { 전체: items.length, 신청중: 0, 완료: 0, 반려: 0 }
-    items.forEach((i) => { c[i.status] = (c[i.status] ?? 0) + 1 })
-    return c
-  }, [items])
+  }, [items, searchTerm, startDate, endDate])
 
   const selectedPendingIds = useMemo(
     () => filtered.filter((i) => selectedIds.has(i.id) && i.status === '신청중').map((i) => i.id),

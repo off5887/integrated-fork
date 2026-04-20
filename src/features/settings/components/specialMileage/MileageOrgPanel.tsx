@@ -18,8 +18,7 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import { useUsers } from '@/api/queries/useUsers'
 import type { MileageMember } from '@/api/types/settings'
 
@@ -36,9 +35,8 @@ export default function MileageOrgPanel({
   onAdd,
   selectedIds,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const { data: users = [] } = useUsers()
   const members: MileageMember[] = useMemo(

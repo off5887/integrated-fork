@@ -184,3 +184,9 @@ export type SettingsTheme = typeof settingsLight
 
 export const getSettingsTheme = (isDarkMode: boolean): SettingsTheme =>
   isDarkMode ? (settingsDark as unknown as SettingsTheme) : settingsLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useSettingsTheme(): SettingsTheme {
+  const { isDarkMode } = useThemeMode()
+  return getSettingsTheme(isDarkMode)
+}

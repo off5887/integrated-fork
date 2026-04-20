@@ -1,8 +1,7 @@
-import { useMemo } from 'react'
+import {} from 'react'
 import { Avatar, Box, Button, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 
 interface Props {
   formDeptCd: string
@@ -25,9 +24,8 @@ export default function SelectionSummary({
   onSave,
   onCancel,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>

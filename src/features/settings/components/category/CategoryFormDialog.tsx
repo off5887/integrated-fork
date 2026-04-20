@@ -10,10 +10,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useEffect, useState , useMemo } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
+import { useEffect, useState  } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import type { CategoryOption } from '@/api/types/idea'
 import EmojiPickerPopover from './EmojiPickerPopover'
 
@@ -36,9 +35,8 @@ function hexToRgba(hex: string, alpha: number): string {
 const DEFAULT_COLOR = '#6366f1'
 
 export default function CategoryFormDialog({ open, onClose, onSave, initial }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
   const isEditing = Boolean(initial)
 
   const [label, setLabel] = useState('')

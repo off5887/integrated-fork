@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import {} from 'react'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import GroupIcon from '@mui/icons-material/Group'
@@ -15,9 +15,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import type { SectionReviewer } from '@/api/types/settings'
 
 interface Props {
@@ -28,9 +27,8 @@ interface Props {
 }
 
 export default function SectionReviewerTable({ reviewers, isLoading, onEdit, onDelete }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg, rowBg, rowHoverBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const columns = [
     { label: '부서',      hide: false },

@@ -11,8 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 
 interface Props {
   open: boolean
@@ -22,8 +21,7 @@ interface Props {
 }
 
 export default function MileageExchangeDialog({ open, onClose, availableMileage, onConfirm }: Props) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMileageTheme(isDarkMode)
+  const t = useMileageTheme()
   const [inputValue, setInputValue] = useState('')
 
   const parsed  = parseInt(inputValue, 10)
@@ -67,6 +65,7 @@ export default function MileageExchangeDialog({ open, onClose, availableMileage,
       onClose={handleClose}
       maxWidth="xs"
       fullWidth
+      aria-labelledby="mileage-exchange-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -100,7 +99,7 @@ export default function MileageExchangeDialog({ open, onClose, availableMileage,
           <SwapHorizIcon sx={{ fontSize: '1.1rem' }} />
         </Box>
         <Box flex={1}>
-          <Typography fontWeight={700} sx={{ color: t.textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
+          <Typography id="mileage-exchange-dialog-title" fontWeight={700} sx={{ color: t.textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
             현금 전환 신청
           </Typography>
           <Typography variant="caption" sx={{ color: t.textSecondary }}>

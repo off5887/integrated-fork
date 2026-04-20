@@ -11,9 +11,8 @@ import type { IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import PageHeader from '@/components/ui/PageHeader'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
-import { useThemeMode } from '@/context/ThemeContext'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
-import { getIdeaTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
+import { useIdeaBrowseTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
 import IdeaCard from './components/IdeaCard'
 import IdeaDetailDialog from './components/IdeaDetailDialog'
 import IdeaFilters from './components/IdeaFilters'
@@ -28,8 +27,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 ]
 
 export default function IdeaBrowse() {
-  const { isDarkMode } = useThemeMode()
-  const user = useCurrentUser()
+  const { employeeId } = useCurrentUser()
   const { showSnackbar } = useSnackbar()
   const { data: ideas = [], isLoading, isError } = useIdeaList()
   const deleteIdea = useDeleteIdea()
@@ -46,7 +44,7 @@ export default function IdeaBrowse() {
     similar, statsBg, statsBorder, myOnlyActiveBg,
     pageBtnBg, pageBtnBorder, pageBtnColor, pageBtnHoverBg, pageBtnHoverBorder,
     pageActiveBg, pageActiveColor, pageActiveShadow, pageEllipsisColor,
-  } = getIdeaTheme(isDarkMode)
+  } = useIdeaBrowseTheme()
 
   // ─── 필터 상태 ──────────────────────────────────────────────
   const [search,           setSearch]           = useState('')
@@ -448,7 +446,7 @@ export default function IdeaBrowse() {
         idea={selectedIdea}
         onClose={() => setSelectedIdea(null)}
         ideaId={selectedIdea?.id ?? null}
-        isOwner={selectedIdea?.submittedBy === (user?.employeeId ?? '')}
+        isOwner={selectedIdea?.submittedBy === employeeId}
         onEdit={() => selectedIdea && handleEdit(selectedIdea)}
         onDelete={() => selectedIdea && setDeleteTarget(selectedIdea)}
       />

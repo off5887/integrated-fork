@@ -1,8 +1,7 @@
 // src/features/message/components/MessageListItem.tsx
 import { Box, Avatar, Typography } from '@mui/material'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMsgTheme, msgAccent } from '@/theme/messageTheme'
+import { useMsgTheme, msgAccent } from '@/theme/messageTheme'
 import type { MessageApiItem } from '@/api/types/message'
 
 interface MessageListItemProps {
@@ -20,8 +19,7 @@ function fmtDate(s: string) {
 }
 
 export default function MessageListItem({ message, isActive, isSent, onClick }: MessageListItemProps) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMsgTheme(isDarkMode)
+  const t = useMsgTheme()
 
   const otherName = isSent ? message.receiverName : message.senderName
   const isUnread  = !isSent && !message.isRead

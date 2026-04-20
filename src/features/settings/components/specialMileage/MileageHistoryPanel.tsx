@@ -21,9 +21,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useMemo, useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import type { SpecialMileageHistory } from '@/api/types/settings'
 
 interface Props {
@@ -33,9 +32,8 @@ interface Props {
 const TABLE_BODY_HEIGHT = 360
 
 export default function MileageHistoryPanel({ history }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, rowBg, rowHoverBg, headerBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const [fromDate, setFromDate] = useState<Dayjs | null>(null)
   const [toDate, setToDate] = useState<Dayjs | null>(null)

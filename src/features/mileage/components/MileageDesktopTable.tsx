@@ -10,8 +10,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 import type { AwardItem } from '@/api/types/mileage'
 
 interface Props {
@@ -29,8 +28,7 @@ const HEAD_COLS = ['번호', '지급일', '지급내역', '생선', '점수']
 export default function MileageDesktopTable({
   data, page, rowsPerPage, total, onPageChange, onRowsPerPageChange,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMileageTheme(isDarkMode)
+  const t = useMileageTheme()
 
   return (
     <Card

@@ -349,3 +349,9 @@ const judgeDark = {
 export type JudgeTheme = typeof judgeLight
 export const getJudgeTheme = (isDarkMode: boolean): JudgeTheme =>
   isDarkMode ? (judgeDark as unknown as JudgeTheme) : judgeLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useJudgeTheme(): JudgeTheme {
+  const { isDarkMode } = useThemeMode()
+  return getJudgeTheme(isDarkMode)
+}

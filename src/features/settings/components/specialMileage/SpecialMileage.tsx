@@ -13,9 +13,9 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
+import { toDateOnly } from '@/utils/dateUtils'
 import { useSnackbar } from '@/context/SnackbarContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import type { MileageMember, MileageEntry } from '@/api/types/settings'
 import { useAllMileages, useGrantMileage } from '@/api/queries/useMileage'
 import { useUsers } from '@/api/queries/useUsers'
@@ -24,9 +24,8 @@ import MileageRecipientPanel from './MileageRecipientPanel'
 import MileageHistoryPanel from './MileageHistoryPanel'
 
 export default function SpecialMileage() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
   const { showSnackbar } = useSnackbar()
 
   const { data: allMileageRecords = [] } = useAllMileages()
@@ -46,7 +45,7 @@ export default function SpecialMileage() {
         const user = userMap.get(r.employeeId)
         return {
           id: r.mileageId,
-          grantedAt: r.awardDate.split('T')[0],
+          grantedAt: toDateOnly(r.awardDate),
           name: user?.name ?? r.employeeId,
           department: user?.department ?? '',
           position: user?.position ?? '',

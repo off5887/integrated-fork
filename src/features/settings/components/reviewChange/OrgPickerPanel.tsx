@@ -13,9 +13,8 @@ import {
 } from '@mui/material'
 import { memo, useMemo, useState } from 'react'
 import { useUsers } from '@/api/queries/useUsers'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import type { SettingsTheme } from '@/theme/settingsTheme'
 import type { User } from '@/api/types/settings'
 
@@ -62,9 +61,8 @@ const MemberRow = memo(function MemberRow({ user, isSelected, onSelect, st, text
 })
 
 export default function OrgPickerPanel({ onSelect, selectedEmployeeId }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const { data: users = [] } = useUsers()
   const [search, setSearch] = useState('')

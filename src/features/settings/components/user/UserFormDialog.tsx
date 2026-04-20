@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import {} from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import Visibility from '@mui/icons-material/Visibility'
@@ -18,8 +18,7 @@ import {
   Typography,
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import { useRollNm, useOrgTeams } from '@/api/queries/useOrg'
 import type { User } from '@/api/types/settings'
 
@@ -44,9 +43,8 @@ export default function UserFormDialog({
   onFormChange,
   onTogglePassword,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const { data: rollNmList = [] } = useRollNm()
   const { data: orgTeams = [] } = useOrgTeams()
@@ -75,6 +73,7 @@ export default function UserFormDialog({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      aria-labelledby="user-form-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -98,7 +97,7 @@ export default function UserFormDialog({
         >
           <ManageAccountsIcon sx={{ color: st.primaryBtnColor, fontSize: '1rem' }} />
         </Box>
-        <Typography variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, flex: 1 }}>
+        <Typography id="user-form-dialog-title" variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, flex: 1 }}>
           {isEditing ? '사용자 수정' : '새 사용자 추가'}
         </Typography>
         <IconButton

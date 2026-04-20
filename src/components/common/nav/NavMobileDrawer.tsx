@@ -41,7 +41,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
   const location = useLocation()
   const { nt, isDarkMode, toggleTheme } = useNavColors()
   const logout = useLogout()
-  const user = useCurrentUser()
+  const { user, role, isAdmin } = useCurrentUser()
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
 
   const subItemBg = nt.subItemBg
@@ -164,7 +164,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
         {/* 메인 메뉴 */}
         <List disablePadding sx={{ mb: 1 }}>
           {menuItems.flatMap((item) => {
-            if (item.roles && (!user?.role || !item.roles.includes(user.role))) return []
+            if (item.roles && !item.roles.includes(role)) return []
             if (item.children) {
               return [(
                 <GroupMenuItem
@@ -250,7 +250,7 @@ export default function NavMobileDrawer({ open, onClose }: NavMobileDrawerProps)
             </ListItemButton>
           </ListItem>
 
-          {user?.role === 'admin' && (
+          {isAdmin && (
             <ListItem disablePadding sx={{ mb: 0.25 }}>
               <ListItemButton
                 onClick={() => handleNavigate(settingsItem.path)}

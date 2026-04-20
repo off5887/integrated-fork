@@ -1,7 +1,6 @@
 // src/features/mileage/components/MileageStatsCards.tsx
 import { Box, Divider, Grid, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 import type { MileageSummary } from '@/api/types/mileage'
 import { MONTHLY_STAT_CONFIGS, STAT_CARD_CONFIGS } from '../config/statsConfig'
 
@@ -10,8 +9,7 @@ interface Props {
 }
 
 export default function MileageStatsCards({ summary }: Props) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMileageTheme(isDarkMode)
+  const t = useMileageTheme()
 
   const mainCards = STAT_CARD_CONFIGS.map((cfg) => ({
     ...cfg,

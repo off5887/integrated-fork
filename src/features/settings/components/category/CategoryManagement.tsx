@@ -3,11 +3,10 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import CategoryIcon from '@mui/icons-material/Category'
 import { Box, Button, Chip, Grid, IconButton, Tooltip, Typography } from '@mui/material'
-import { useState , useMemo } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
+import { useState  } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useSnackbar } from '@/context/SnackbarContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import { useAllCategories } from '@/api/queries/useCategories'
 import type { CategoryOption } from '@/api/types/idea'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
@@ -15,9 +14,8 @@ import EmptyState from '@/components/ui/EmptyState'
 import CategoryFormDialog from './CategoryFormDialog'
 
 export default function CategoryManagement() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
   const { showSnackbar } = useSnackbar()
 
   const { categories, addCategory, updateCategory, deleteCategory } = useAllCategories()

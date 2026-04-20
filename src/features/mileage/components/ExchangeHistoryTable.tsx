@@ -6,7 +6,7 @@ import SwapHorizIcon          from '@mui/icons-material/SwapHoriz'
 import { Box, Button, Card, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 import type { ExchangeItem } from '@/api/types/mileage'
 
 interface Props {
@@ -60,7 +60,7 @@ const HEAD_COLS = ['번호', '신청일', '신청 마일리지', '현금 환산'
 
 export default function ExchangeHistoryTable({ data, onWithdraw }: Props) {
   const { isDarkMode } = useThemeMode()
-  const t = getMileageTheme(isDarkMode)
+  const t = useMileageTheme()
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('전체')
   const [startDate, setStartDate] = useState('')

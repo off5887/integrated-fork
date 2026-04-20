@@ -8,9 +8,8 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined'
 import EditNoteIcon from '@mui/icons-material/EditNote'
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
-import { useThemeMode } from '@/context/ThemeContext'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
-import { getMsgTheme, msgAccent } from '@/theme/messageTheme'
+import { useMsgTheme, msgAccent } from '@/theme/messageTheme'
 import { useReceivedMessages, useSentMessages } from '@/api/queries/useMessages'
 import { useAdminUsers } from '@/api/queries/useUsers'
 import type { MessageApiItem } from '@/api/types/message'
@@ -20,9 +19,8 @@ import MessageDetailPanel from './components/MessageDetailPanel'
 import MessageComposeDialog from './components/MessageComposeDialog'
 
 export default function MessagePage() {
-  const { isDarkMode } = useThemeMode()
-  const t = getMsgTheme(isDarkMode)
-  const user = useCurrentUser()
+  const t = useMsgTheme()
+  const { employeeId } = useCurrentUser()
   const { data: adminUserList = [] } = useAdminUsers()
 
   const [tab,            setTab]            = useState<0 | 1>(0)  // 0: 받은, 1: 보낸
@@ -33,7 +31,7 @@ export default function MessagePage() {
 
   // 관리자 목록 (본인 제외) — GET /api/org 로 가져와 admin만 필터
   const adminReceivers = adminUserList
-    .filter((u) => u.employeeId !== user?.employeeId)
+    .filter((u) => u.employeeId !== employeeId)
     .map((u) => ({ id: u.employeeId, name: u.name }))
 
   const handleToAdmins = () => {
@@ -241,7 +239,7 @@ export default function MessagePage() {
             >
               <MessageDetailPanel
                 message={displayedMessage}
-                currentEmployeeId={user?.employeeId ?? ''}
+                currentEmployeeId={employeeId}
                 onReply={handleReply}
                 onDeleted={handleDeleted}
               />

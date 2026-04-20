@@ -7,8 +7,7 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
+import { useSettingsTheme } from '@/theme/settingsTheme'
 import type { Idea, IdeaStatus } from '@/api/types/settings'
 import { useIdeaList } from '@/api/queries/useIdeas'
 import IdeaListPanel from './IdeaListPanel'
@@ -45,9 +44,8 @@ function toIdea(item: {
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
 export default function ReviewChange() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = useMemo(() => getSettingsTheme(isDarkMode), [isDarkMode])
+  const st = useSettingsTheme()
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIdeaId, setSelectedIdeaId] = useState<number | null>(null)
