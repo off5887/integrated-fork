@@ -4,8 +4,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import SaveIcon from '@mui/icons-material/Save'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 
 function formatTime(date: Date) {
   return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
@@ -19,8 +18,7 @@ interface NewIdeaHeaderProps {
 }
 
 export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave, isEditMode }: NewIdeaHeaderProps) {
-  const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   return (

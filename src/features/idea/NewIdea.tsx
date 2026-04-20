@@ -5,9 +5,8 @@ import { Box, Button } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
-import { useThemeMode } from '@/context/ThemeContext'
 import { useSnackbar } from '@/context/SnackbarContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
 
@@ -26,13 +25,11 @@ import CoProposerSelectModal from './components/modals/CoProposerSelectModal'
 import SimilarIdeaSearchModal from './components/modals/SimilarIdeaSearchModal'
 
 function SectionDivider() {
-  const { isDarkMode } = useThemeMode()
-  const { dividerBg } = getIdeaTheme(isDarkMode)
+  const { dividerBg } = useIdeaTheme()
   return <Box sx={{ height: '1px', bgcolor: dividerBg, my: 5 }} />
 }
 
 export default function NewIdea() {
-  const { isDarkMode } = useThemeMode()
   const { showSnackbar } = useSnackbar()
   const navigate = useNavigate()
   const location = useLocation()
@@ -46,6 +43,7 @@ export default function NewIdea() {
   const [problem, setProblem] = useState(editIdea?.problem ?? '')
   const [solution, setSolution] = useState(editIdea?.solution ?? '')
   const [reviewer, setReviewer] = useState<string[]>([])
+  const [reviewerIds, setReviewerIds] = useState<string[]>([])       // API 전송용 사번
   const [coProposers, setCoProposers] = useState<string[]>([])       // UI 표시용 레이블
   const [coProposerIds, setCoProposerIds] = useState<string[]>([])   // API 전송용 사번
   const [security, setSecurity] = useState<'public' | 'private'>(editIdea?.security ?? 'public')
@@ -57,7 +55,12 @@ export default function NewIdea() {
   const [filePreviews, setFilePreviews] = useState<string[]>([])
   const filePreviewsRef = useRef<string[]>([])
   const [loading, setLoading] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState({ title: false, problem: false, solution: false })
+  const [fieldErrors, setFieldErrors] = useState({
+    title: false, problem: false, solution: false,
+    reviewer: false,
+    startDate: false, endDate: false,
+    plan: false, expectedOutcome: false,
+  })
 
   // ─── 모달 상태 ─────────────────────────────────────────────────────────────
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
@@ -103,13 +106,23 @@ export default function NewIdea() {
 
   // ─── 제출 ─────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
-    const errors = { title: !title.trim(), problem: !problem.trim(), solution: !solution.trim() }
-    if (errors.title || errors.problem || errors.solution || categories.length === 0) {
+    const errors = {
+      title:           !title.trim(),
+      problem:         !problem.trim(),
+      solution:        !solution.trim(),
+      reviewer:        reviewer.length === 0,
+      startDate:       !startDate,
+      endDate:         !endDate || (!!startDate && endDate < startDate),
+      plan:            !plan.trim(),
+      expectedOutcome: !expectedOutcome.trim(),
+    }
+    const hasError = Object.values(errors).some(Boolean) || categories.length === 0
+    if (hasError) {
       setFieldErrors(errors)
       showSnackbar('필수 항목을 모두 입력해주세요.', 'warning')
       return
     }
-    setFieldErrors({ title: false, problem: false, solution: false })
+    setFieldErrors({ title: false, problem: false, solution: false, reviewer: false, startDate: false, endDate: false, plan: false, expectedOutcome: false })
     setLoading(true)
 
     const body = {
@@ -120,6 +133,7 @@ export default function NewIdea() {
       type: (ideaType === 'complete' ? 'completed' : 'idea') as 'idea' | 'completed',
       security: (security === 'private' ? 'Y' : 'N') as 'N' | 'Y',
       coProposerIds: coProposerIds.length > 0 ? coProposerIds : undefined,
+      approverId: reviewerIds[0] ?? undefined,
     }
 
     try {
@@ -139,7 +153,7 @@ export default function NewIdea() {
   }
 
   // ─── 스타일 ───────────────────────────────────────────────────────────────
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   const inputSx = {
@@ -212,19 +226,26 @@ export default function NewIdea() {
             <SectionDivider />
 
             <ParticipantsSection
-              reviewer={reviewer} setReviewer={setReviewer}
+              reviewer={reviewer}
+              setReviewer={(v) => { setReviewer(v); if (v.length > 0) setFieldErrors((p) => ({ ...p, reviewer: false })) }}
               coProposers={coProposers} setCoProposers={setCoProposers}
               security={security} setSecurity={setSecurity}
               onOpenReviewerModal={() => setReviewerModalOpen(true)}
               onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
+              reviewerError={fieldErrors.reviewer}
             />
             <SectionDivider />
 
             <PlanSection
-              plan={plan} setPlan={setPlan}
-              startDate={startDate} setStartDate={setStartDate}
-              endDate={endDate} setEndDate={setEndDate}
-              expectedOutcome={expectedOutcome} setExpectedOutcome={setExpectedOutcome}
+              plan={plan}
+              setPlan={(v) => { setPlan(v); if (v.trim()) setFieldErrors((p) => ({ ...p, plan: false })) }}
+              startDate={startDate}
+              setStartDate={(v) => { setStartDate(v); if (v) setFieldErrors((p) => ({ ...p, startDate: false })) }}
+              endDate={endDate}
+              setEndDate={(v) => { setEndDate(v); if (v) setFieldErrors((p) => ({ ...p, endDate: false })) }}
+              expectedOutcome={expectedOutcome}
+              setExpectedOutcome={(v) => { setExpectedOutcome(v); if (v.trim()) setFieldErrors((p) => ({ ...p, expectedOutcome: false })) }}
+              fieldErrors={{ startDate: fieldErrors.startDate, endDate: fieldErrors.endDate, plan: fieldErrors.plan, expectedOutcome: fieldErrors.expectedOutcome }}
             />
             <SectionDivider />
 
@@ -316,7 +337,16 @@ export default function NewIdea() {
         open={reviewerModalOpen}
         onClose={() => setReviewerModalOpen(false)}
         selected={reviewer}
-        onToggle={(name) => setReviewer((prev) => prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name])}
+        onToggle={(name, employeeId) => {
+          setReviewer((prev) => {
+            const next = prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
+            if (next.length > 0) setFieldErrors((p) => ({ ...p, reviewer: false }))
+            return next
+          })
+          setReviewerIds((prev) =>
+            prev.includes(employeeId) ? prev.filter((id) => id !== employeeId) : [...prev, employeeId],
+          )
+        }}
       />
 
       {/* 미저장 경고 */}

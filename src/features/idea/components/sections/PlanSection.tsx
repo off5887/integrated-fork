@@ -4,7 +4,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
 import { Box, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 
 interface PlanSectionProps {
   plan: string
@@ -15,6 +15,7 @@ interface PlanSectionProps {
   setEndDate: (value: string) => void
   expectedOutcome: string
   setExpectedOutcome: (value: string) => void
+  fieldErrors?: { startDate?: boolean; endDate?: boolean; plan?: boolean; expectedOutcome?: boolean }
 }
 
 function calcDuration(start: string, end: string): string | null {
@@ -39,9 +40,10 @@ export default function PlanSection({
   setEndDate,
   expectedOutcome,
   setExpectedOutcome,
+  fieldErrors,
 }: PlanSectionProps) {
   const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary } = it
 
   const duration = calcDuration(startDate, endDate)
@@ -136,7 +138,7 @@ export default function PlanSection({
               display: 'flex',
               flexDirection: { xs: 'column', sm: 'row' },
               alignItems: { xs: 'stretch', sm: 'center' },
-              border: `1px solid ${it.inputBorder}`,
+              border: `1px solid ${(fieldErrors?.startDate || fieldErrors?.endDate) ? '#ef4444' : it.inputBorder}`,
               borderRadius: 2.5,
               bgcolor: it.inputBg,
               overflow: 'hidden',
@@ -233,6 +235,17 @@ export default function PlanSection({
             </Box>
           </Box>
         </Box>
+          {fieldErrors?.startDate && !fieldErrors?.endDate && (
+            <Typography sx={{ fontSize: '0.75rem', color: '#ef4444', mt: 0.75, fontWeight: 600 }}>시작일을 입력해주세요.</Typography>
+          )}
+          {fieldErrors?.endDate && !fieldErrors?.startDate && (
+            <Typography sx={{ fontSize: '0.75rem', color: '#ef4444', mt: 0.75, fontWeight: 600 }}>
+              {!endDate ? '종료일을 입력해주세요.' : '종료일은 시작일 이후여야 합니다.'}
+            </Typography>
+          )}
+          {fieldErrors?.startDate && fieldErrors?.endDate && (
+            <Typography sx={{ fontSize: '0.75rem', color: '#ef4444', mt: 0.75, fontWeight: 600 }}>시작일과 종료일을 모두 입력해주세요.</Typography>
+          )}
 
         {/* 실행 내용 */}
         <Box>
@@ -245,8 +258,11 @@ export default function PlanSection({
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPlan(e.target.value)}
             placeholder="구체적인 실행 계획을 작성해주세요"
             rows={5}
-            sx={textareaSx}
+            sx={{ ...textareaSx, ...(fieldErrors?.plan ? { borderColor: '#ef4444' } : {}) }}
           />
+          {fieldErrors?.plan && (
+            <Typography sx={{ fontSize: '0.75rem', color: '#ef4444', mt: 0.75, fontWeight: 600 }}>실행 내용을 입력해주세요.</Typography>
+          )}
         </Box>
 
         {/* 기대 성과 */}
@@ -260,8 +276,11 @@ export default function PlanSection({
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setExpectedOutcome(e.target.value)}
             placeholder="이 아이디어를 실행했을 때 기대되는 성과나 효과를 작성해주세요"
             rows={4}
-            sx={textareaSx}
+            sx={{ ...textareaSx, ...(fieldErrors?.expectedOutcome ? { borderColor: '#ef4444' } : {}) }}
           />
+          {fieldErrors?.expectedOutcome && (
+            <Typography sx={{ fontSize: '0.75rem', color: '#ef4444', mt: 0.75, fontWeight: 600 }}>기대 성과를 입력해주세요.</Typography>
+          )}
         </Box>
 
       </Box>

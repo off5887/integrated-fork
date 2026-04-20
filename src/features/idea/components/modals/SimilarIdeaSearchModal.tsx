@@ -12,10 +12,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import { IDEAS } from '@/api/mock/ideaBrowse'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 import SimilarIdeaDetailPanel from './SimilarIdeaDetailPanel'
 import SimilarIdeaResultCard from './SimilarIdeaResultCard'
 
@@ -49,11 +48,10 @@ export default function SimilarIdeaSearchModal({
   onClose,
   initialQuery = '',
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const [query, setQuery] = useState(initialQuery)
   const [detail, setDetail] = useState<IdeaItem | null>(null)
 
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   // 검색 결과 (점수 기반 정렬, 점수 0 제외, 비공개 제외)
@@ -78,6 +76,7 @@ export default function SimilarIdeaSearchModal({
       onClose={handleClose}
       maxWidth="sm"
       fullWidth
+      aria-labelledby="similar-idea-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -130,6 +129,7 @@ export default function SimilarIdeaSearchModal({
         </Box>
         <Box flex={1}>
           <Typography
+            id="similar-idea-dialog-title"
             sx={{
               fontSize: '0.95rem',
               fontWeight: 700,

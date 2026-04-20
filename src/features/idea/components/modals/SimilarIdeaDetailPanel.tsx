@@ -5,10 +5,9 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Avatar, Box, Divider, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { CATEGORY_CONFIG } from '@/api/mock/ideaBrowse'
 import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
-import { getIdeaTheme, IDEA_STATUS_CONFIG } from '@/theme/ideaTheme'
+import { useIdeaTheme, IDEA_STATUS_CONFIG } from '@/theme/ideaTheme'
 
 function getCatConfig(id: string): CategoryConfig {
   return (
@@ -23,8 +22,7 @@ interface DetailPanelProps {
 }
 
 export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProps) {
-  const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
   const cat = getCatConfig(idea.category)
   const stat = IDEA_STATUS_CONFIG[idea.status]

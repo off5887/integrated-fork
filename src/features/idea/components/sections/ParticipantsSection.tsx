@@ -7,7 +7,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PublicIcon from '@mui/icons-material/Public'
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 import { VISIBILITY_OPTIONS } from '@/features/idea/config/visibilityOptions'
 
 interface Props {
@@ -19,6 +19,7 @@ interface Props {
   setSecurity: (v: 'public' | 'private') => void
   onOpenReviewerModal: () => void
   onOpenCoProposerModal: () => void
+  reviewerError?: boolean
 }
 
 export default function ParticipantsSection({
@@ -30,9 +31,10 @@ export default function ParticipantsSection({
   setSecurity,
   onOpenReviewerModal,
   onOpenCoProposerModal,
+  reviewerError,
 }: Props) {
   const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   return (
@@ -59,8 +61,8 @@ export default function ParticipantsSection({
         <Box
           sx={{
             flex: 1, minWidth: 0, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
-            bgcolor: it.accent.bg,
-            border: `1px solid ${it.accent.border}`,
+            bgcolor: reviewerError ? 'rgba(239,68,68,0.04)' : it.accent.bg,
+            border: `1px solid ${reviewerError ? '#ef4444' : it.accent.border}`,
           }}
         >
           {/* 헤더 + 추가 버튼 한 줄 */}
@@ -186,6 +188,12 @@ export default function ParticipantsSection({
                 )
               })}
             </Box>
+          )}
+
+          {reviewerError && (
+            <Typography sx={{ fontSize: '0.75rem', color: '#ef4444', mt: 1, fontWeight: 600 }}>
+              심사자를 한 명 이상 선택해주세요.
+            </Typography>
           )}
 
           {/* 안내 메시지 */}

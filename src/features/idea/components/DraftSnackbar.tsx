@@ -2,8 +2,7 @@
 // 임시저장 완료 시 하단에 표시되는 스낵바 (저장 시각 함께 표시)
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Alert, Box, Snackbar } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 
 interface DraftSnackbarProps {
   open: boolean
@@ -17,8 +16,7 @@ function formatTime(date: Date) {
 }
 
 export default function DraftSnackbar({ open, message, lastSavedAt, onClose }: DraftSnackbarProps) {
-  const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
 
   return (
     <Snackbar

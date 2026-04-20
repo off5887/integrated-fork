@@ -3,8 +3,7 @@
 import HistoryIcon from '@mui/icons-material/History'
 import RestoreIcon from '@mui/icons-material/Restore'
 import { Box, Button, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 import type { DraftData } from '@/api/types/idea'
 
 interface DraftRestoreBannerProps {
@@ -14,8 +13,7 @@ interface DraftRestoreBannerProps {
 }
 
 export default function DraftRestoreBanner({ savedDraft, onRestore, onDiscard }: DraftRestoreBannerProps) {
-  const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
 
   return (
     <Box

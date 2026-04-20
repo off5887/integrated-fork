@@ -20,10 +20,9 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import { useOrgUsersTree } from '@/api/queries/useUsers'
 import type { UserApiMember } from '@/api/types/settings'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 import { onKeyboardClick } from '@/utils/keyboardClick'
 
 interface FlatMember extends UserApiMember {
@@ -44,14 +43,13 @@ export default function CoProposerSelectModal({
   selected,
   onToggle,
 }: CoProposerSelectModalProps) {
-  const { isDarkMode } = useThemeMode()
   const [search, setSearch] = useState('')
   const [expandedDivs, setExpandedDivs] = useState<string[]>([])
   const [expandedTeams, setExpandedTeams] = useState<string[]>([])
 
   const { data: orgTree, isLoading } = useOrgUsersTree()
 
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   const handleClose = () => {
@@ -184,6 +182,7 @@ export default function CoProposerSelectModal({
       onClose={handleClose}
       maxWidth="xs"
       fullWidth
+      aria-labelledby="co-proposer-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -235,6 +234,7 @@ export default function CoProposerSelectModal({
         </Box>
         <Box flex={1}>
           <Typography
+            id="co-proposer-dialog-title"
             fontWeight={700}
             sx={{ color: textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}
           >

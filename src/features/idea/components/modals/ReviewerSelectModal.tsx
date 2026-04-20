@@ -17,23 +17,21 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import { useMyDeptReviewers } from '@/api/queries/useSectionReviewers'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 import { onKeyboardClick } from '@/utils/keyboardClick'
 
 interface Props {
   open: boolean
   onClose: () => void
   selected: string[]
-  onToggle: (name: string) => void
+  onToggle: (name: string, employeeId: string) => void
 }
 
 export default function ReviewerSelectModal({ open, onClose, selected, onToggle }: Props) {
-  const { isDarkMode } = useThemeMode()
   const [search, setSearch] = useState('')
 
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   const { data: reviewers = [], isLoading } = useMyDeptReviewers()
@@ -61,6 +59,7 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
       onClose={handleClose}
       maxWidth="xs"
       fullWidth
+      aria-labelledby="reviewer-select-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -101,7 +100,7 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
           <PersonAddIcon sx={{ fontSize: '1rem' }} />
         </Box>
         <Box flex={1}>
-          <Typography fontWeight={700} sx={{ color: textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
+          <Typography id="reviewer-select-dialog-title" fontWeight={700} sx={{ color: textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
             심사자 선택
           </Typography>
           {selected.length > 0 && (
@@ -187,8 +186,8 @@ export default function ReviewerSelectModal({ open, onClose, selected, onToggle 
                   aria-checked={isSelected}
                   aria-label={`${r.name} ${r.deptNm} ${r.rollNm} ${isSelected ? '선택됨' : '선택 안됨'}`}
                   tabIndex={0}
-                  onClick={() => onToggle(r.name)}
-                  onKeyDown={onKeyboardClick(() => onToggle(r.name))}
+                  onClick={() => onToggle(r.name, r.reviewerEmployeeId)}
+                  onKeyDown={onKeyboardClick(() => onToggle(r.name, r.reviewerEmployeeId))}
                   sx={{
                     display: 'flex', alignItems: 'center', gap: 1.25,
                     p: 1.25, borderRadius: 1.5, cursor: 'pointer',

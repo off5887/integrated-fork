@@ -17,8 +17,7 @@ import {
 import type { ChangeEvent } from 'react'
 import { useState } from 'react'
 import type { IdeaAttachment } from '@/api/types/idea'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 import { formatBytes } from '@/utils/fileUtils'
 
 interface FileUploadSectionProps {
@@ -39,7 +38,6 @@ export default function FileUploadSection({
   existingAttachments = [],
   onDeleteExisting,
 }: FileUploadSectionProps) {
-  const { isDarkMode } = useThemeMode()
   const [previewOpen, setPreviewOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
@@ -60,7 +58,7 @@ export default function FileUploadSection({
     setSelectedIndex(null)
   }
 
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor, fileItemBg } = it
   const hasAny = existingAttachments.length > 0 || files.length > 0
 

@@ -4,10 +4,9 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
 import { Avatar, Box, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { CATEGORY_CONFIG } from '@/api/mock/ideaBrowse'
 import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
-import { getIdeaTheme, IDEA_STATUS_CONFIG } from '@/theme/ideaTheme'
+import { useIdeaTheme, IDEA_STATUS_CONFIG } from '@/theme/ideaTheme'
 
 function getCatConfig(id: string): CategoryConfig {
   return (
@@ -27,8 +26,7 @@ interface ResultCardProps {
 }
 
 export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCardProps) {
-  const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
   const cat = getCatConfig(idea.category)
   const stat = IDEA_STATUS_CONFIG[idea.status]

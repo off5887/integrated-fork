@@ -12,7 +12,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
 import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 import { VISIBILITY_OPTIONS } from '@/features/idea/config/visibilityOptions'
 
 interface Props {
@@ -35,7 +35,7 @@ export default function ScheduleAndVisibilitySection({
   setSecurity,
 }: Props) {
   const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   // 기간 계산

@@ -4,7 +4,7 @@ import { Box, Skeleton, TextField, Typography } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { useCategories } from '@/api/queries/useCategories'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 
 interface Props {
   ideaType: 'idea' | 'complete'
@@ -38,7 +38,7 @@ export default function BasicInfoSection({
   fieldErrors,
 }: Props) {
   const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+  const it = useIdeaTheme()
   const { categories: CATEGORIES, isLoading: categoriesLoading } = useCategories()
   const { textPrimary, textSecondary, borderColor, categoryCardBg } = it
 
