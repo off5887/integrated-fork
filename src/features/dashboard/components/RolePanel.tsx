@@ -1,20 +1,17 @@
 // src/features/dashboard/components/RolePanel.tsx
 // 역할별 맞춤 패널: 일반사용자(내 아이디어) / 심사자(심사 대기) / 관리자(마일리지 신청)
+import { useMemo } from 'react'
 import { Box, CircularProgress, Typography, alpha } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
+import { useDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
-import { useMyIdeas } from '@/api/queries/useIdeas'
-import {
-  PENDING_REVIEW_IDEAS,
-  MILEAGE_REQUESTS,
-} from '@/api/mock/dashboard'
+import { useMyIdeas, useJudgeIdeas } from '@/api/queries/useIdeas'
+import { useAllWithdrawals } from '@/api/queries/useMileage'
+import { useUsers } from '@/api/queries/useUsers'
+import { toDateOnly } from '@/utils/dateUtils'
 
 export default function RolePanel() {
-  const { isDarkMode } = useThemeMode()
-  const dt = getDashboardTheme(isDarkMode)
-  const user = useCurrentUser()
-  const role = user?.role ?? 'user'
+  const dt = useDashboardTheme()
+  const { role } = useCurrentUser()
 
   return (
     <Box>
@@ -27,7 +24,7 @@ export default function RolePanel() {
 
 // ─── 타입 ───────────────────────────────────────────────────────────────────
 
-type DT = ReturnType<typeof getDashboardTheme>
+type DT = ReturnType<typeof useDashboardTheme>
 interface PanelProps { dt: DT }
 
 // ─── 상태 API key → 표시 라벨 + 색상 ───────────────────────────────────────
@@ -71,13 +68,10 @@ function UserPanel({ dt }: PanelProps) {
                   borderBottom: i < items.length - 1 ? `1px solid ${dt.dividerColor}` : 'none',
                 }}
               >
-                {/* 상태 점 */}
                 <Box sx={{
                   width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
                   bgcolor: s.color, boxShadow: `0 0 6px ${s.color}80`,
                 }} />
-
-                {/* 제목 */}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography variant="body2" fontWeight={500} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
                     {item.title}
@@ -95,8 +89,6 @@ function UserPanel({ dt }: PanelProps) {
                     </Typography>
                   </Box>
                 </Box>
-
-                {/* 날짜 */}
                 <Typography variant="caption" sx={{
                   color: dt.textSecondary, flexShrink: 0, fontSize: '0.63rem', whiteSpace: 'nowrap',
                 }}>
@@ -114,55 +106,57 @@ function UserPanel({ dt }: PanelProps) {
 // ─── 심사자: 심사해야 하는 아이디어 ─────────────────────────────────────────
 
 function ReviewerPanel({ dt }: PanelProps) {
+  const { data: proposals = [], isLoading } = useJudgeIdeas()
+  const pending = proposals.filter((p) => p.status === '심사대기').slice(0, 5)
+
   return (
     <>
       <PanelHeader title="심사 대기 목록" subtitle="내가 심사해야 하는 아이디어" dt={dt} />
-      <Box>
-        {PENDING_REVIEW_IDEAS.map((item, i) => (
-          <Box
-            key={item.id}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.25,
-              py: 1.1,
-              px: 0.5,
-              borderBottom: i < PENDING_REVIEW_IDEAS.length - 1 ? `1px solid ${dt.dividerColor}` : 'none',
-            }}
-          >
-            {/* 긴급 여부 */}
-            <Box sx={{
-              width: 28, height: 28, borderRadius: 1.25, flexShrink: 0,
-              bgcolor: item.urgent ? alpha(dashboardAccent.red, 0.12) : alpha(dashboardAccent.indigo, 0.1),
-              border: `1px solid ${item.urgent ? alpha(dashboardAccent.red, 0.3) : alpha(dashboardAccent.indigo, 0.2)}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '0.75rem',
-            }}>
-              {item.urgent ? '🔥' : '📋'}
-            </Box>
-
-            {/* 제목 + 제안자 */}
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="body2" fontWeight={500} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
-                {item.title}
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+          <CircularProgress size={22} sx={{ color: dashboardAccent.indigo }} />
+        </Box>
+      ) : pending.length === 0 ? (
+        <Typography variant="caption" sx={{ color: dt.textSecondary, px: 0.5 }}>
+          심사 대기 중인 아이디어가 없습니다.
+        </Typography>
+      ) : (
+        <Box>
+          {pending.map((item, i) => (
+            <Box
+              key={item.id}
+              sx={{
+                display: 'flex', alignItems: 'center', gap: 1.25,
+                py: 1.1, px: 0.5,
+                borderBottom: i < pending.length - 1 ? `1px solid ${dt.dividerColor}` : 'none',
+              }}
+            >
+              <Box sx={{
+                width: 28, height: 28, borderRadius: 1.25, flexShrink: 0,
+                bgcolor: alpha(dashboardAccent.indigo, 0.1),
+                border: `1px solid ${alpha(dashboardAccent.indigo, 0.2)}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '0.75rem',
+              }}>
+                📋
+              </Box>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography variant="body2" fontWeight={500} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
+                  {item.title}
+                </Typography>
+                <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.65rem' }}>
+                  {item.proposers[0] ?? ''}
+                </Typography>
+              </Box>
+              <Typography variant="caption" sx={{
+                color: dt.textSecondary, flexShrink: 0, fontSize: '0.63rem', whiteSpace: 'nowrap',
+              }}>
+                {toDateOnly(item.submittedAt)}
               </Typography>
-              <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.65rem' }}>
-                {item.proposer}
-              </Typography>
             </Box>
-
-            {/* 마감 */}
-            <Typography sx={{
-              fontSize: '0.63rem', fontWeight: 700, flexShrink: 0, whiteSpace: 'nowrap',
-              color: item.urgent ? dashboardAccent.red : dt.textSecondary,
-              px: 0.75, py: 0.2, borderRadius: 0.75,
-              bgcolor: item.urgent ? alpha(dashboardAccent.red, 0.1) : 'transparent',
-            }}>
-              {item.dueDate}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
+          ))}
+        </Box>
+      )}
     </>
   )
 }
@@ -170,56 +164,70 @@ function ReviewerPanel({ dt }: PanelProps) {
 // ─── 관리자: 마일리지 현금전환 신청 ─────────────────────────────────────────
 
 function AdminPanel({ dt }: PanelProps) {
+  const { data: withdrawals = [], isLoading } = useAllWithdrawals('pending')
+  const { data: userList = [] } = useUsers()
+  const userMap = useMemo(
+    () => new Map(userList.map((u) => [u.employeeId, u])),
+    [userList],
+  )
+  const items = withdrawals.slice(0, 5)
+
   return (
     <>
-      <PanelHeader title="마일리지 전환 신청" subtitle="최근 도착한 현금 전환 요청" dt={dt} />
-      <Box>
-        {MILEAGE_REQUESTS.map((item, i) => (
-          <Box
-            key={item.id}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.25,
-              py: 1.1,
-              px: 0.5,
-              borderBottom: i < MILEAGE_REQUESTS.length - 1 ? `1px solid ${dt.dividerColor}` : 'none',
-            }}
-          >
-            {/* 이니셜 아바타 */}
-            <Box sx={{
-              width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-              bgcolor: alpha(dashboardAccent.purple, 0.15),
-              border: `1px solid ${alpha(dashboardAccent.purple, 0.25)}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: dashboardAccent.purple }}>
-                {item.name.charAt(0)}
-              </Typography>
-            </Box>
-
-            {/* 이름 + 생선 */}
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="body2" fontWeight={600} sx={{ color: dt.textPrimary, lineHeight: 1.3 }}>
-                {item.name}
-              </Typography>
-              <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.65rem' }}>
-                🐟 {item.fish.toLocaleString()}마리
-              </Typography>
-            </Box>
-
-            {/* 금액 + 시간 */}
-            <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
-              <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: dashboardAccent.purple, lineHeight: 1.2 }}>
-                {item.cashAmount.toLocaleString()}원
-              </Typography>
-              <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.63rem' }}>
-                {item.requestDate}
-              </Typography>
-            </Box>
-          </Box>
-        ))}
-      </Box>
+      <PanelHeader title="마일리지 전환 신청" subtitle="신청 중인 현금 전환 요청" dt={dt} />
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+          <CircularProgress size={22} sx={{ color: dashboardAccent.indigo }} />
+        </Box>
+      ) : items.length === 0 ? (
+        <Typography variant="caption" sx={{ color: dt.textSecondary, px: 0.5 }}>
+          신청 중인 전환 요청이 없습니다.
+        </Typography>
+      ) : (
+        <Box>
+          {items.map((item, i) => {
+            const user = userMap.get(item.employeeId)
+            const displayName = user?.name ?? item.employeeId
+            return (
+              <Box
+                key={item.withdrawalId}
+                sx={{
+                  display: 'flex', alignItems: 'center', gap: 1.25,
+                  py: 1.1, px: 0.5,
+                  borderBottom: i < items.length - 1 ? `1px solid ${dt.dividerColor}` : 'none',
+                }}
+              >
+                <Box sx={{
+                  width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+                  bgcolor: alpha(dashboardAccent.purple, 0.15),
+                  border: `1px solid ${alpha(dashboardAccent.purple, 0.25)}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: dashboardAccent.purple }}>
+                    {displayName.charAt(0)}
+                  </Typography>
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" fontWeight={600} sx={{ color: dt.textPrimary, lineHeight: 1.3 }}>
+                    {displayName}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.65rem' }}>
+                    🐟 {item.requestPoints.toLocaleString()}마리
+                  </Typography>
+                </Box>
+                <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: dashboardAccent.purple, lineHeight: 1.2 }}>
+                    {item.cashAmount.toLocaleString()}원
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.63rem' }}>
+                    {toDateOnly(item.requestDate)}
+                  </Typography>
+                </Box>
+              </Box>
+            )
+          })}
+        </Box>
+      )}
     </>
   )
 }

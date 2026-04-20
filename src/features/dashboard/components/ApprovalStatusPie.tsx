@@ -1,13 +1,11 @@
 // src/routes/dashboard/components/ApprovalStatusPie.tsx
 import { Box, Typography } from '@mui/material'
 import Chart from 'react-apexcharts'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getDashboardTheme } from '@/theme/dashboardTheme'
+import { useDashboardTheme } from '@/theme/dashboardTheme'
 import { APPROVAL_STAGES as STAGES } from '@/api/mock/dashboard'
 
 export default function ApprovalStatusPie() {
-  const { isDarkMode } = useThemeMode()
-  const dt = getDashboardTheme(isDarkMode)
+  const dt = useDashboardTheme()
 
   const options: ApexCharts.ApexOptions = {
     chart: {

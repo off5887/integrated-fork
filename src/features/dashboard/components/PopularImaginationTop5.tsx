@@ -1,7 +1,6 @@
 // src/pages/Dashboard/components/PopularImaginationTop5.tsx
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
+import { useDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
 import { POPULAR_ITEMS as ITEMS } from '@/api/mock/dashboard'
 
 const RANK_COLORS = dashboardAccent.rank
@@ -11,8 +10,7 @@ interface Props {
 }
 
 export default function PopularImaginationTop5({ onIdeaClick }: Props) {
-  const { isDarkMode } = useThemeMode()
-  const dt = getDashboardTheme(isDarkMode)
+  const dt = useDashboardTheme()
 
   return (
     <Box

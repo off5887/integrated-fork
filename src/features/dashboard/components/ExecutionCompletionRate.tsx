@@ -2,16 +2,14 @@
 import { Box, Typography } from '@mui/material'
 import Chart from 'react-apexcharts'
 import type { ApexOptions } from 'apexcharts'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getDashboardTheme, COMPLETION_RATE_STATUS, dashboardAccent } from '@/theme/dashboardTheme'
+import { useDashboardTheme, COMPLETION_RATE_STATUS, dashboardAccent } from '@/theme/dashboardTheme'
 import type { ExecutionCompletionRateProps } from '@/api/types/dashboard'
 
 const getStatus = (rate: number) =>
   COMPLETION_RATE_STATUS.find((s) => rate >= s.threshold) ?? COMPLETION_RATE_STATUS[COMPLETION_RATE_STATUS.length - 1]
 
 export default function ExecutionCompletionRate({ completionRate = 73.4 }: ExecutionCompletionRateProps) {
-  const { isDarkMode } = useThemeMode()
-  const dt = getDashboardTheme(isDarkMode)
+  const dt = useDashboardTheme()
   const status = getStatus(completionRate)
   const completed = Math.round((completionRate / 100) * 150)
 

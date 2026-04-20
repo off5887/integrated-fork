@@ -3,9 +3,13 @@
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import { Box, CircularProgress, Typography, alpha } from '@mui/material'
 import { lazy, Suspense, useState, useEffect } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
-import { dashboardAccent, getDashboardTheme } from '@/theme/dashboardTheme'
-import { MY_GOMGOMI, TEAM_ACTIVITIES, MY_ACTIVITIES, EXECUTION_RATE } from '@/api/mock/dashboard'
+import { dashboardAccent, useDashboardTheme } from '@/theme/dashboardTheme'
+import { TEAM_ACTIVITIES, MY_ACTIVITIES, EXECUTION_RATE } from '@/api/mock/dashboard'
+import type { RecentActivity } from '@/api/types/dashboard'
+import type { IdeaApiItem } from '@/api/types/idea'
+import { useMyIdeas, useTeamIdeas } from '@/api/queries/useIdeas'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import { toRelativeTime } from '@/utils/dateUtils'
 import DashboardCard from './components/DashboardCard'
 import MyGomgomiCard from './components/MyGomgomiCard'
 import RolePanel from './components/RolePanel'
@@ -19,11 +23,43 @@ const ChartFallback = ({ height = 200 }: { height?: number }) => (
   </Box>
 )
 
+const STATUS_ICON: Record<string, { icon: string; color: string }> = {
+  pending:           { icon: '⏳', color: '#f59e0b' },
+  approved:          { icon: '✓',  color: '#10b981' },
+  rejected:          { icon: '✕',  color: '#ef4444' },
+  in_progress:       { icon: '🎯', color: '#6366f1' },
+  completed:         { icon: '✅', color: '#10b981' },
+  withdraw_approved: { icon: '↩',  color: '#f97316' },
+  withdraw_rejected: { icon: '↩',  color: '#0d9488' },
+}
+
+function toRecentActivity(raw: IdeaApiItem): RecentActivity {
+  const { icon, color } = STATUS_ICON[raw.status ?? ''] ?? { icon: '💡', color: '#6366f1' }
+  return {
+    user:   raw.author ?? raw.submittedBy ?? '알 수 없음',
+    action: raw.title ?? '',
+    time:   toRelativeTime(raw.submitDate ?? raw.createdAt ?? new Date().toISOString()),
+    icon,
+    color,
+  }
+}
+
 export default function RealDashboard() {
-  const { isDarkMode } = useThemeMode()
-  const dt = getDashboardTheme(isDarkMode)
+  const dt = useDashboardTheme()
+  const { department } = useCurrentUser()
   const [activityTab, setActivityTab] = useState<'team' | 'my'>('team')
-  const activities = activityTab === 'team' ? TEAM_ACTIVITIES : MY_ACTIVITIES
+
+  const { data: myIdeasPage }  = useMyIdeas(0, 5)
+  const { data: teamIdeasRaw } = useTeamIdeas(department || undefined, 5)
+
+  const myActivities:   RecentActivity[] = myIdeasPage?.content?.length
+    ? myIdeasPage.content.map(toRecentActivity)
+    : MY_ACTIVITIES
+  const teamActivities: RecentActivity[] = teamIdeasRaw?.length
+    ? teamIdeasRaw.map(toRecentActivity)
+    : TEAM_ACTIVITIES
+
+  const activities = activityTab === 'team' ? teamActivities : myActivities
   const [ready, setReady] = useState(false)
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 3000)
@@ -113,7 +149,7 @@ export default function RealDashboard() {
 
           {/* ── 나의 곰곰이 (col1 row1) ─────────────────────── */}
           <DashboardCard delay={0.08} sx={{ gridColumn: '1', gridRow: '1', padding: '14px' }}>
-            <MyGomgomiCard fishTotal={MY_GOMGOMI.fishTotal} />
+            <MyGomgomiCard />
           </DashboardCard>
 
           {/* ── 전체 실행 완료율 (col2 row1) ────────────────── */}

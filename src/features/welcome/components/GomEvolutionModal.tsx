@@ -41,6 +41,7 @@ export default function GomEvolutionModal({
       fullScreen={isMobile}
       maxWidth="lg"
       fullWidth
+      aria-labelledby="gom-evolution-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -75,6 +76,7 @@ export default function GomEvolutionModal({
         >
           <Box>
             <Typography
+              id="gom-evolution-dialog-title"
               variant="h5"
               fontWeight={800}
               sx={{

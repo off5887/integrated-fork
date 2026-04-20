@@ -6,7 +6,7 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useThemeMode } from '@/context/ThemeContext'
-import { fishCount } from '@/api/mock/welcome'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { getWelcomeTheme } from '@/theme/welcomeTheme'
 import GomEvolutionSection from './components/GomEvolutionSection'
 import IntroSection from './components/IntroSection'
@@ -14,6 +14,7 @@ import IntroSection from './components/IntroSection'
 export default function Welcome() {
   const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useThemeMode()
+  const { user } = useCurrentUser()
   const t = getWelcomeTheme(isDarkMode)
 
   return (
@@ -323,7 +324,7 @@ export default function Welcome() {
       <IntroSection />
 
       {/* 곰곰이 진화 섹션 */}
-      <GomEvolutionSection fishCount={fishCount} />
+      <GomEvolutionSection fishCount={user?.totalMileage ?? 0} />
     </Box>
   )
 }

@@ -8,10 +8,8 @@ import mechaBear   from '@/assets/tarot/mecha_bear.png'
 import warriorBear from '@/assets/tarot/warrior_bear.png'
 import { Box, Typography, Modal, alpha } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getDashboardTheme } from '@/theme/dashboardTheme'
+import { useDashboardTheme } from '@/theme/dashboardTheme'
 import { MY_GOMGOMI_BY_ROLE, KPI_STATS_BY_ROLE } from '@/api/mock/dashboard'
-import type { MyGomgomiCardProps } from '@/api/types/dashboard'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 
 // ── 레벨 → 타로 이미지 (일반사용자 전용) ──────────────────────────────────────
@@ -37,13 +35,12 @@ const ROLE_LABEL: Record<string, string> = {
   admin:    '관리자',
 }
 
-export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
-  const { isDarkMode } = useThemeMode()
-  const dt = getDashboardTheme(isDarkMode)
-  const user = useCurrentUser()
+export default function MyGomgomiCard() {
+  const dt = useDashboardTheme()
+  const { user, role, name } = useCurrentUser()
+  const fishTotal = user?.totalMileage ?? 0
   const [open, setOpen] = useState(false)
 
-  const role = user?.role ?? 'user'
   const gomgomi = MY_GOMGOMI_BY_ROLE[role] ?? MY_GOMGOMI_BY_ROLE['user']
   const kpiStats = KPI_STATS_BY_ROLE[role] ?? KPI_STATS_BY_ROLE['user']
   const tarotImage = getTarotImage(role, gomgomi.level)
@@ -89,7 +86,7 @@ export default function MyGomgomiCard({ fishTotal }: MyGomgomiCardProps) {
         </Box>
         <Box sx={{ minWidth: 0 }}>
           <Typography variant="body2" fontWeight={700} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
-            {user?.name ?? '—'}
+            {name || '—'}
           </Typography>
           <Typography variant="caption" sx={{ color: dt.textSecondary, lineHeight: 1.3, display: 'block' }} noWrap>
             {[user?.position, user?.department].filter(Boolean).join(' · ')}
