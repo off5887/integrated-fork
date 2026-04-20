@@ -11,9 +11,6 @@ export type DashboardCardProps = {
   sx?: SxProps<Theme>
 }
 
-export type MyGomgomiCardProps = {
-  fishTotal: number
-}
 
 export type ExecutionCompletionRateProps = {
   completionRate: number

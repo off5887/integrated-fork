@@ -1,4 +1,5 @@
 import type { MileageTheme } from '@/theme/mileageTheme'
+import { toDateOnly } from '@/utils/dateUtils'
 
 // ── API 응답 타입 ────────────────────────────────────────────────────────────
 
@@ -73,7 +74,7 @@ export const WITHDRAWAL_STATUS_KR: Record<WithdrawalStatus, '신청중' | '완�
 export function toAwardItem(r: MileageRecord): AwardItem {
   return {
     id: r.mileageId,
-    paymentDate: r.awardDate.split('T')[0],
+    paymentDate: toDateOnly(r.awardDate),
     detail: r.ideaTitle ?? r.reason,
     fish: r.points,
     status: r.type === 'special' ? '특별' : '일반',
@@ -85,7 +86,7 @@ export function toAwardItem(r: MileageRecord): AwardItem {
 export function toExchangeItem(r: WithdrawalRecord): ExchangeItem {
   return {
     id: r.withdrawalId,
-    requestDate: r.requestDate.split('T')[0],
+    requestDate: toDateOnly(r.requestDate),
     amount: r.requestPoints,
     cashAmount: r.cashAmount,
     status: WITHDRAWAL_STATUS_KR[r.status],
@@ -96,7 +97,7 @@ export function toExchangeItem(r: WithdrawalRecord): ExchangeItem {
 export function toUserAwardItem(r: MileageRecord): UserAwardItem {
   return {
     id: r.mileageId,
-    awardedAt: r.awardDate.split('T')[0],
+    awardedAt: toDateOnly(r.awardDate),
     ideaTitle: r.ideaId != null ? `아이디어 #${r.ideaId}` : r.reason,
     reason: r.reason,
     fish: r.points,

@@ -23,11 +23,13 @@ import { judgeData, mockApproverMap } from '@/api/mock/judge'
 // 역전시키지 않기 위해 쿼리 파일에 둔다.
 
 const API_STATUS_MAP: Record<string, IdeaStatus> = {
-  pending:     '심사대기',
-  approved:    '승인',
-  rejected:    '반려',
-  in_progress: '실행중',
-  completed:   '완료',
+  pending:           '심사대기',
+  approved:          '승인',
+  rejected:          '반려',
+  in_progress:       '실행중',
+  completed:         '완료',
+  withdraw_approved: '승인',    // 회수된 상태지만 ideaBrowse 필터에서 별도 분류 불필요
+  withdraw_rejected: '반려',
 }
 
 export function toIdeaItem(raw: IdeaApiItem): IdeaItem {
@@ -57,11 +59,13 @@ export function toIdeaItem(raw: IdeaApiItem): IdeaItem {
 
 /** API key → IdeaStatus 라벨 정규화 테이블 (공백 제거 포함) */
 const API_STATUS_KEY_MAP: Record<string, string> = {
-  pending:     '심사대기',
-  approved:    '승인',
-  rejected:    '반려',
-  in_progress: '실행중',
-  completed:   '완료',
+  pending:           '심사대기',
+  approved:          '승인',
+  rejected:          '반려',
+  in_progress:       '실행중',
+  completed:         '완료',
+  withdraw_approved: '승인회수',
+  withdraw_rejected: '반려회수',
 }
 
 function normalizeStatuses(raw: Record<string, string>): string[] {
@@ -95,9 +99,29 @@ export function useMyIdeas(page = 0, size = 20) {
         mockMyIdeasPage,
         async () => {
           const res = await api.get<ApiResponse<MyIdeasPage>>('/api/ideas/my', {
-            params: { page, size },
+            params: { page, size, sort: 'createdAt,desc' },
           })
           return res.data.data
+        },
+      ),
+    staleTime: 0,
+  })
+}
+
+// ─── GET /api/ideas?department=xxx (팀 최근 활동) ────────────────────────────
+
+export function useTeamIdeas(department: string | undefined, size = 5) {
+  return useQuery({
+    queryKey: queryKeys.ideas.list({ department, size }),
+    enabled: !!department,
+    queryFn: () =>
+      withDemoFallback<IdeaApiItem[]>(
+        [],
+        async () => {
+          const res = await api.get<ApiResponse<{ content: IdeaApiItem[] }>>('/api/ideas', {
+            params: { department, size, sort: 'submitDate,desc' },
+          })
+          return res.data.data.content ?? []
         },
       ),
     staleTime: 0,
@@ -360,11 +384,13 @@ export function useDeleteAttachment(ideaId: number) {
 
 function toProposal(raw: IdeaApiItem): Proposal {
   const statusMap: Record<string, Proposal['status']> = {
-    pending:     '심사대기',
-    approved:    '승인',
-    rejected:    '반려',
-    in_progress: '승인',  // 실행중은 승인 이후 상태
-    completed:   '승인',
+    pending:           '심사대기',
+    approved:          '승인',
+    rejected:          '반려',
+    in_progress:       '승인',      // 실행중은 승인 이후 상태
+    completed:         '승인',
+    withdraw_approved: '승인회수',
+    withdraw_rejected: '반려회수',
   }
   const proposers = [
     ...(raw.author ? [raw.author] : raw.submittedBy ? [raw.submittedBy] : []),
@@ -378,7 +404,7 @@ function toProposal(raw: IdeaApiItem): Proposal {
     problem:      raw.problem,
     solution:     raw.description,
     proposers,
-    reviewer:     '',           // 배정 심사자는 별도 API에서 제공
+    reviewer:     raw.approverName ?? '',
     security:     raw.security === 'Y' ? 'private' : 'public',
     startDate:    '',           // 신청서 상세에는 없음
     endDate:      '',

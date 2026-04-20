@@ -61,7 +61,7 @@ export interface Proposal {
   /** 기대 성과 */
   expectedOutcome?: string
   attachments: Attachment[]
-  status: '심사대기' | '승인' | '반려'
+  status: '심사대기' | '승인' | '반려' | '승인회수' | '반려회수'
   submittedAt: string
   /** 혁신성 점수 (0~100, 10점 단위) */
   scoreInnovation?: number

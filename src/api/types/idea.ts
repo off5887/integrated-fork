@@ -152,6 +152,7 @@ export interface IdeaCreateRequest {
   type?: 'idea' | 'completed'
   security?: 'N' | 'Y'
   coProposerIds?: string[]   // 공동제안자 사번 목록
+  approverId?: string        // 심사자 사번
 }
 
 /** GET /api/ideas, GET /api/ideas/{id}, GET /api/ideas/my 응답의 단일 아이디어 */
@@ -163,7 +164,7 @@ export interface IdeaApiItem {
   categoryId: number
   categoryName: string
   type: 'idea' | 'completed'
-  status: 'pending' | 'approved' | 'rejected' | 'in_progress' | 'completed'
+  status: 'pending' | 'approved' | 'rejected' | 'in_progress' | 'completed' | 'withdraw_approved' | 'withdraw_rejected'
   security: 'N' | 'Y'
   submittedBy: string       // 사번(employeeId)
   author?: string           // 작성자 이름
@@ -221,18 +222,20 @@ export interface IdeaDetailExtras {
   isLiked: boolean
   approverId: string | null
   approverName: string | null
-  executors: IdeaExecutor[] | null   // 본인 아이디어일 때만 존재, 타인은 null
+  executors: IdeaExecutor[] | null   // 본인 아이디어 또는 배정된 심사자/관리자일 때 존재, 그 외는 null
   coProposers: { employeeId: string; name: string; rollNm: string }[]
   attachments: IdeaAttachment[]
 }
 
 /** PATCH /api/ideas/{id}/review 요청 바디 (관리자/심사자) */
 export interface IdeaReviewRequest {
-  status: 'approved' | 'rejected'
+  status: 'approved' | 'rejected' | 'withdraw_approved' | 'withdraw_rejected'
+  /** 심사 의견 — 백엔드 @JsonAlias: reviewComment */
   reason?: string
   scoreInnovation?: number
   scoreFeasibility?: number
   scoreProfitability?: number
+  /** 지급 마일리지 — 백엔드 @JsonAlias: awardedPoints */
   mileage?: number
 }
 
