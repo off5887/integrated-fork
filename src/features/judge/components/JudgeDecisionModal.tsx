@@ -17,9 +17,8 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 import type { DecisionType } from '@/api/types/judge'
 import { decisionConfig } from '../config/judgeDecisionConfig'
 
@@ -44,9 +43,8 @@ const SCORE_ITEMS = [
 export default function JudgeDecisionModal({
   open, type, proposalTitle, onClose, onConfirm,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   const [reason, setReason] = useState('')
   const [touched, setTouched] = useState(false)

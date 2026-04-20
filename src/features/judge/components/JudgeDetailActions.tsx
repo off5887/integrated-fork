@@ -6,9 +6,8 @@ import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import UndoIcon from '@mui/icons-material/Undo'
 import { Box, Button } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 import type { DecisionType, Proposal } from '@/api/types/judge'
 import JudgeDecisionModal from './JudgeDecisionModal'
 
@@ -32,9 +31,8 @@ export default function JudgeDetailActions({
   onClose, onPrev, onNext,
   onApprove, onReject, onWithdrawApprove, onWithdrawReject,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   const [decisionType, setDecisionType] = useState<DecisionType | null>(null)
 

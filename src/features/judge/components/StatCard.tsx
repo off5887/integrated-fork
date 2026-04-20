@@ -1,7 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import { type ReactNode } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 
 export interface StatCardProps {
   label: string
@@ -15,8 +14,7 @@ export interface StatCardProps {
 }
 
 export default function StatCard({ label, count, color, bg, border, icon, active, onClick }: StatCardProps) {
-  const { isDarkMode } = useThemeMode()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   return (
     <Box

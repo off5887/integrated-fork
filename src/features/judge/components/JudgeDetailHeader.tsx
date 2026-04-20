@@ -2,9 +2,8 @@
 import CloseIcon from '@mui/icons-material/Close'
 import GavelIcon from '@mui/icons-material/Gavel'
 import { Box, IconButton, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   title: string
@@ -12,9 +11,8 @@ interface Props {
 }
 
 export default function JudgeDetailHeader({ title, onClose }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   return (
     <>
@@ -41,6 +39,7 @@ export default function JudgeDetailHeader({ title, onClose }: Props) {
           <GavelIcon sx={{ color: theme.modalIconColor, fontSize: '1.1rem' }} />
         </Box>
         <Typography
+          id="judge-detail-dialog-title"
           variant="h6"
           fontWeight={700}
           sx={{ color: colors.textPrimary, letterSpacing: '-0.01em', lineHeight: 1.3, flex: 1, minWidth: 0 }}

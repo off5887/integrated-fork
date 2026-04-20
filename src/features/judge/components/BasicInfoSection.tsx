@@ -2,9 +2,8 @@
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Box, Chip, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 import { useCategories } from '@/api/queries/useCategories'
 
 interface Props {
@@ -15,9 +14,8 @@ interface Props {
 }
 
 export default function BasicInfoSection({ ideaType, categories, problem, solution }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
   const { categories: allCategories } = useCategories()
   const CATEGORY_MAP = new Map(allCategories.map((c) => [c.id, c]))
 

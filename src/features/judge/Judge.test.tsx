@@ -14,29 +14,36 @@ vi.mock('./JudgeDetail', () => ({ default: () => null }))
 vi.mock('./components/ReviewerChangeModal', () => ({ default: () => null }))
 
 // useCurrentUser를 mock하여 김심사(DEMO_REVIEWER_PROFILE)로 고정
+const MOCK_REVIEWER_PROFILE = {
+  employeeId: 'demo2',
+  name: '김심사',
+  position: '과장',
+  department: '기획팀',
+  role: 'reviewer' as const,
+  bizAreaName: '',
+  bizAreaCode: '',
+  orgCode: '',
+}
 vi.mock('@/features/auth/hooks/useCurrentUser', () => ({
   useCurrentUser: () => ({
-    employeeId: 'demo2',
-    name: '김심사',
-    position: '과장',
-    department: '기획팀',
-    role: 'reviewer' as const,
-    bizAreaName: '',
-    bizAreaCode: '',
-    orgCode: '',
+    user:       MOCK_REVIEWER_PROFILE,
+    isLoading:  false,
+    isAdmin:    false,
+    isReviewer: true,
+    name:       MOCK_REVIEWER_PROFILE.name,
+    role:       MOCK_REVIEWER_PROFILE.role,
+    department: MOCK_REVIEWER_PROFILE.department,
+    employeeId: MOCK_REVIEWER_PROFILE.employeeId,
   }),
   useCurrentUserWithLoading: () => ({
-    user: {
-      employeeId: 'demo2',
-      name: '김심사',
-      position: '과장',
-      department: '기획팀',
-      role: 'reviewer' as const,
-      bizAreaName: '',
-      bizAreaCode: '',
-      orgCode: '',
-    },
-    isLoading: false,
+    user:       MOCK_REVIEWER_PROFILE,
+    isLoading:  false,
+    isAdmin:    false,
+    isReviewer: true,
+    name:       MOCK_REVIEWER_PROFILE.name,
+    role:       MOCK_REVIEWER_PROFILE.role,
+    department: MOCK_REVIEWER_PROFILE.department,
+    employeeId: MOCK_REVIEWER_PROFILE.employeeId,
   }),
 }))
 

@@ -13,9 +13,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 import { Proposal } from '@/api/types/judge'
 import { statusConfig } from '../config/judgeStatusConfig'
 
@@ -24,6 +23,7 @@ interface JudgeTableProps {
   filteredTotal: number
   page: number
   rowsPerPage: number
+  isAdmin: boolean
   onRowClick: (item: Proposal) => void
   onReviewerChangeClick: (item: Proposal) => void
   onPageChange: (_: unknown, newPage: number) => void
@@ -35,14 +35,14 @@ export default function JudgeTable({
   filteredTotal,
   page,
   rowsPerPage,
+  isAdmin,
   onRowClick,
   onReviewerChangeClick,
   onPageChange,
   onRowsPerPageChange,
 }: JudgeTableProps) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   return (
     <Box
@@ -123,26 +123,28 @@ export default function JudgeTable({
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 0.5 }} onClick={(e) => e.stopPropagation()}>
-                  <Tooltip title={isPending ? `결재자 변경 (${item.reviewer})` : '완료된 항목은 변경 불가'}>
-                    <Box component="span">
-                      <IconButton
-                        size="small"
-                        disabled={!isPending}
-                        aria-label={isPending ? `결재자 변경 (현재: ${item.reviewer})` : '완료된 항목은 변경 불가'}
-                        onClick={(e) => { e.stopPropagation(); onReviewerChangeClick(item) }}
-                        sx={{
-                          width: 30, height: 30,
-                          color: isPending ? theme.reviewerBtnColor : colors.textSecondary,
-                          bgcolor: isPending ? theme.reviewerBtnBg : 'transparent',
-                          border: isPending ? `1px solid ${theme.reviewerBtnBorder}` : '1px solid transparent',
-                          '&:hover': { bgcolor: theme.reviewerBtnHoverBg, borderColor: theme.reviewerBtnHoverBorder, color: theme.primaryIconColor },
-                          '&.Mui-disabled': { opacity: 0.28 },
-                        }}
-                      >
-                        <SwapHorizIcon sx={{ fontSize: '0.9rem' }} />
-                      </IconButton>
-                    </Box>
-                  </Tooltip>
+                  {isAdmin && (
+                    <Tooltip title={isPending ? `결재자 변경 (${item.reviewer})` : '완료된 항목은 변경 불가'}>
+                      <Box component="span">
+                        <IconButton
+                          size="small"
+                          disabled={!isPending}
+                          aria-label={isPending ? `결재자 변경 (현재: ${item.reviewer})` : '완료된 항목은 변경 불가'}
+                          onClick={(e) => { e.stopPropagation(); onReviewerChangeClick(item) }}
+                          sx={{
+                            width: 30, height: 30,
+                            color: isPending ? theme.reviewerBtnColor : colors.textSecondary,
+                            bgcolor: isPending ? theme.reviewerBtnBg : 'transparent',
+                            border: isPending ? `1px solid ${theme.reviewerBtnBorder}` : '1px solid transparent',
+                            '&:hover': { bgcolor: theme.reviewerBtnHoverBg, borderColor: theme.reviewerBtnHoverBorder, color: theme.primaryIconColor },
+                            '&.Mui-disabled': { opacity: 0.28 },
+                          }}
+                        >
+                          <SwapHorizIcon sx={{ fontSize: '0.9rem' }} />
+                        </IconButton>
+                      </Box>
+                    </Tooltip>
+                  )}
                   <Tooltip title="상세 보기">
                     <IconButton
                       size="small"
@@ -175,7 +177,7 @@ export default function JudgeTable({
                 { label: '제안자', sx: { display: { xs: 'none', md: 'table-cell' } } },
                 { label: '제출일', sx: { display: { xs: 'none', lg: 'table-cell' } } },
                 { label: '상태', sx: {} },
-                { label: '결재자 변경', sx: {}, align: 'center' as const },
+                ...(isAdmin ? [{ label: '결재자 변경', sx: {}, align: 'center' as const }] : []),
                 { label: '상세', sx: {}, align: 'center' as const },
               ].map((col) => (
                 <TableCell
@@ -323,50 +325,52 @@ export default function JudgeTable({
                     />
                   </TableCell>
 
-                  {/* 결재자 변경 */}
-                  <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                    <Tooltip
-                      title={
-                        isPending
-                          ? `결재자 변경 (현재: ${item.reviewer})`
-                          : '완료된 항목은 변경 불가'
-                      }
-                      placement="top"
-                    >
-                      <Box component="span">
-                        <IconButton
-                          size="small"
-                          disabled={!isPending}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            onReviewerChangeClick(item)
-                          }}
-                          sx={{
-                            width: 30,
-                            height: 30,
-                            color: isPending
-                              ? theme.reviewerBtnColor
-                              : colors.textSecondary,
-                            bgcolor: isPending
-                              ? theme.reviewerBtnBg
-                              : 'transparent',
-                            border: isPending
-                              ? `1px solid ${theme.reviewerBtnBorder}`
-                              : `1px solid transparent`,
-                            '&:hover': {
-                              bgcolor: theme.reviewerBtnHoverBg,
-                              borderColor: theme.reviewerBtnHoverBorder,
-                              color: theme.primaryIconColor,
-                            },
-                            '&.Mui-disabled': { opacity: 0.28 },
-                            transition: 'all 0.15s ease',
-                          }}
-                        >
-                          <SwapHorizIcon sx={{ fontSize: '1rem' }} />
-                        </IconButton>
-                      </Box>
-                    </Tooltip>
-                  </TableCell>
+                  {/* 결재자 변경 — admin 전용 */}
+                  {isAdmin && (
+                    <TableCell align="center" onClick={(e) => e.stopPropagation()}>
+                      <Tooltip
+                        title={
+                          isPending
+                            ? `결재자 변경 (현재: ${item.reviewer})`
+                            : '완료된 항목은 변경 불가'
+                        }
+                        placement="top"
+                      >
+                        <Box component="span">
+                          <IconButton
+                            size="small"
+                            disabled={!isPending}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onReviewerChangeClick(item)
+                            }}
+                            sx={{
+                              width: 30,
+                              height: 30,
+                              color: isPending
+                                ? theme.reviewerBtnColor
+                                : colors.textSecondary,
+                              bgcolor: isPending
+                                ? theme.reviewerBtnBg
+                                : 'transparent',
+                              border: isPending
+                                ? `1px solid ${theme.reviewerBtnBorder}`
+                                : `1px solid transparent`,
+                              '&:hover': {
+                                bgcolor: theme.reviewerBtnHoverBg,
+                                borderColor: theme.reviewerBtnHoverBorder,
+                                color: theme.primaryIconColor,
+                              },
+                              '&.Mui-disabled': { opacity: 0.28 },
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            <SwapHorizIcon sx={{ fontSize: '1rem' }} />
+                          </IconButton>
+                        </Box>
+                      </Tooltip>
+                    </TableCell>
+                  )}
 
                   {/* 상세 */}
                   <TableCell align="center" onClick={(e) => e.stopPropagation()}>

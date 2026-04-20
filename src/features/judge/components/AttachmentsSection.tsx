@@ -2,9 +2,8 @@
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
 import { Box, Button, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 import type { Attachment } from '@/api/types/judge'
 
 interface Props {
@@ -12,9 +11,8 @@ interface Props {
 }
 
 export default function AttachmentsSection({ attachments }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   return (
     <Box>

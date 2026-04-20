@@ -1,8 +1,10 @@
 // src/routes/Judge/JudgeDetail.tsx
 import { Box, Dialog, DialogContent } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
+import { useIdeaDetail } from '@/api/queries/useIdeas'
+import type { Attachment, Proposal } from '@/api/types/judge'
+import { toDateOnly } from '@/utils/dateUtils'
 import AttachmentsSection from './components/AttachmentsSection'
 import BasicInfoSection from './components/BasicInfoSection'
 import ExecutionPlanSection from './components/ExecutionPlanSection'
@@ -10,7 +12,6 @@ import JudgeDetailActions from './components/JudgeDetailActions'
 import JudgeDetailHeader from './components/JudgeDetailHeader'
 import ParticipantsSection from './components/ParticipantsSection'
 import ScheduleSection from './components/ScheduleSection'
-import { Proposal } from '@/api/types/judge'
 
 interface Props {
   proposal: Proposal
@@ -26,8 +27,7 @@ interface Props {
 }
 
 function SectionDivider() {
-  const { isDarkMode } = useThemeMode()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
   return (
     <Box
       sx={{
@@ -40,9 +40,32 @@ function SectionDivider() {
 }
 
 export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onApprove, onReject, onWithdrawApprove, onWithdrawReject, isFirst, isLast }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
+
+  // 심사자/관리자도 실행계획·첨부파일 조회 가능 (백엔드 권한 확장)
+  const { data: detail } = useIdeaDetail(proposal.id)
+
+  const executors = detail?.executors ?? null
+  const apiAttachments = detail?.attachments ?? []
+
+  // 실행계획: API executors → 번호+날짜+내용 조합, 없으면 mock 데이터 사용
+  const executionPlan: string = executors && executors.length > 0
+    ? executors.map((e, i) => `${i + 1}. [${toDateOnly(e.scheduleDate)}] ${e.content}`).join('\n\n')
+    : proposal.executionPlan
+
+  // 기대성과: 첫 executor의 expectedResult 사용, 없으면 mock 데이터 사용
+  const expectedOutcome: string | undefined = executors && executors.length > 0
+    ? executors.map((e) => e.expectedResult).filter(Boolean).join('\n') || undefined
+    : proposal.expectedOutcome
+
+  // 첨부파일: API 응답 우선, 없으면 mock 데이터 사용
+  const attachments: Attachment[] = apiAttachments.length > 0
+    ? apiAttachments.map((att) => ({
+        name: att.originalName,
+        url: `/api/ideas/${proposal.id}/attachments/${att.attachmentId}`,
+      }))
+    : proposal.attachments
 
   return (
     <Dialog
@@ -51,6 +74,7 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
       maxWidth="lg"
       fullWidth
       scroll="paper"
+      aria-labelledby="judge-detail-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -130,14 +154,14 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
           <SectionDivider />
 
           <ExecutionPlanSection
-            executionPlan={proposal.executionPlan}
-            expectedOutcome={proposal.expectedOutcome}
+            executionPlan={executionPlan}
+            expectedOutcome={expectedOutcome}
           />
 
           <SectionDivider />
 
           <AttachmentsSection
-            attachments={proposal.attachments}
+            attachments={attachments}
           />
         </Box>
       </DialogContent>

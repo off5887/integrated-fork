@@ -16,9 +16,8 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState, useEffect } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 import { useSnackbar } from '@/context/SnackbarContext'
 import type { Proposal } from '@/api/types/judge'
 import { useIdeaApprover, useAssignApprover } from '@/api/queries/useIdeas'
@@ -35,9 +34,8 @@ interface Props {
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
 export default function ReviewerChangeModal({ open, proposal, onClose }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
   const { showSnackbar } = useSnackbar()
 
   const [searchTerm, setSearchTerm] = useState('')
@@ -113,6 +111,7 @@ export default function ReviewerChangeModal({ open, proposal, onClose }: Props) 
       onClose={handleClose}
       maxWidth="xs"
       fullWidth
+      aria-labelledby="reviewer-change-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -163,7 +162,7 @@ export default function ReviewerChangeModal({ open, proposal, onClose }: Props) 
           <SwapHorizIcon sx={{ fontSize: '1rem' }} />
         </Box>
         <Box flex={1} minWidth={0}>
-          <Typography fontWeight={700} sx={{ color: colors.textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
+          <Typography id="reviewer-change-dialog-title" fontWeight={700} sx={{ color: colors.textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
             결재자 변경
           </Typography>
           <Typography

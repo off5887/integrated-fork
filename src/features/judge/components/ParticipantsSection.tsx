@@ -2,9 +2,8 @@
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { Box, Chip, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   reviewer: string
@@ -12,9 +11,8 @@ interface Props {
 }
 
 export default function ParticipantsSection({ reviewer, proposers }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   return (
     <Box>
@@ -49,39 +47,45 @@ export default function ParticipantsSection({ reviewer, proposers }: Props) {
               심사자
             </Typography>
           </Box>
-          <Box
-            sx={{
-              display: 'flex', alignItems: 'center', gap: 1,
-              p: 1.25, borderRadius: 1.5,
-              bgcolor: 'rgba(14,165,233,0.1)',
-              border: '1px solid rgba(14,165,233,0.3)',
-            }}
-          >
+          {reviewer ? (
             <Box
               sx={{
-                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                bgcolor: theme.primaryIconColor, color: '#fff',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.78rem', fontWeight: 700,
+                display: 'flex', alignItems: 'center', gap: 1,
+                p: 1.25, borderRadius: 1.5,
+                bgcolor: 'rgba(14,165,233,0.1)',
+                border: '1px solid rgba(14,165,233,0.3)',
               }}
             >
-              {reviewer.charAt(0)}
+              <Box
+                sx={{
+                  width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                  bgcolor: theme.primaryIconColor, color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.78rem', fontWeight: 700,
+                }}
+              >
+                {reviewer.charAt(0)}
+              </Box>
+              <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#0ea5e9' }}>
+                {reviewer}
+              </Typography>
+              <Chip
+                label="진행 중"
+                size="small"
+                sx={{
+                  ml: 'auto',
+                  bgcolor: 'rgba(14,165,233,0.1)',
+                  color: '#0ea5e9',
+                  border: '1px solid rgba(14,165,233,0.3)',
+                  fontWeight: 700, fontSize: '0.65rem', height: 18,
+                }}
+              />
             </Box>
-            <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#0ea5e9' }}>
-              {reviewer}
+          ) : (
+            <Typography variant="body2" sx={{ color: colors.textSecondary, fontStyle: 'italic' }}>
+              심사자가 배정되지 않았습니다
             </Typography>
-            <Chip
-              label="진행 중"
-              size="small"
-              sx={{
-                ml: 'auto',
-                bgcolor: 'rgba(14,165,233,0.1)',
-                color: '#0ea5e9',
-                border: '1px solid rgba(14,165,233,0.3)',
-                fontWeight: 700, fontSize: '0.65rem', height: 18,
-              }}
-            />
-          </Box>
+          )}
         </Box>
 
         {/* 공동제안자 */}

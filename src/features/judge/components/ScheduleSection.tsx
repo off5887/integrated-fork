@@ -3,9 +3,8 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import LockIcon from '@mui/icons-material/Lock'
 import PublicIcon from '@mui/icons-material/Public'
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   startDate: string
@@ -14,9 +13,8 @@ interface Props {
 }
 
 export default function ScheduleSection({ startDate, endDate, security }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   const isPublic = security !== 'private'
 
@@ -54,7 +52,9 @@ export default function ScheduleSection({ startDate, endDate, security }: Props)
             </Typography>
           </Box>
           <Typography sx={{ fontWeight: 600, color: theme.textBody, fontSize: '0.95rem' }}>
-            {startDate} ~ {endDate}
+            {startDate && endDate
+              ? `${startDate} ~ ${endDate}`
+              : startDate || endDate || '일정 미등록'}
           </Typography>
           {startDate && endDate && (() => {
             const days = Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24))

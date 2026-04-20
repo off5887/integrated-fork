@@ -2,9 +2,8 @@
 import DescriptionIcon from '@mui/icons-material/Description'
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects'
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   executionPlan: string
@@ -12,9 +11,8 @@ interface Props {
 }
 
 export default function ExecutionPlanSection({ executionPlan, expectedOutcome }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   return (
     <Box>
@@ -49,11 +47,17 @@ export default function ExecutionPlanSection({ executionPlan, expectedOutcome }:
               실행 내용
             </Typography>
           </Box>
-          <Typography
-            sx={{ lineHeight: 1.9, fontSize: '0.9rem', color: theme.textBody, whiteSpace: 'pre-line' }}
-          >
-            {executionPlan}
-          </Typography>
+          {executionPlan ? (
+            <Typography
+              sx={{ lineHeight: 1.9, fontSize: '0.9rem', color: theme.textBody, whiteSpace: 'pre-line' }}
+            >
+              {executionPlan}
+            </Typography>
+          ) : (
+            <Typography variant="body2" sx={{ color: theme.textBody, opacity: 0.45, fontStyle: 'italic' }}>
+              실행 계획이 등록되지 않았습니다
+            </Typography>
+          )}
         </Box>
 
         {/* 기대 성과 */}
