@@ -3,6 +3,7 @@
 import {
   KeyboardArrowDownIcon,
   InfoOutlinedIcon,
+  LockResetIcon,
   SettingsIcon,
   WbSunnyIcon,
   NightsStayIcon,
@@ -23,6 +24,7 @@ import { settingsItem, introItem } from './navConfig'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useNavColors } from './useNavColors'
+import PasswordChangeDialog from '@/features/auth/components/PasswordChangeDialog'
 
 export default function NavDesktopUserMenu() {
   const navigate = useNavigate()
@@ -32,6 +34,7 @@ export default function NavDesktopUserMenu() {
   const { user, isAdmin } = useCurrentUser()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+  const [pwOpen, setPwOpen] = useState(false)
 
   if (!user) return null
 
@@ -180,6 +183,21 @@ export default function NavDesktopUserMenu() {
 
         <Divider sx={{ borderColor: nt.dividerColor }} />
 
+        {/* 비밀번호 변경 */}
+        <MuiMenuItem
+          onClick={() => { setPwOpen(true); setAnchorEl(null) }}
+          sx={{
+            px: 2, py: 1, gap: 1.5,
+            color: nt.menuItemColor,
+            '&:hover': { bgcolor: nt.hoverBg, color: nt.activeColor },
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 0, color: 'inherit' }}>
+            <LockResetIcon fontSize="small" />
+          </ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>비밀번호 변경</Typography>
+        </MuiMenuItem>
+
         {/* 시스템소개 */}
         <MuiMenuItem
           onClick={() => { navigate(introItem.path); setAnchorEl(null) }}
@@ -269,6 +287,7 @@ export default function NavDesktopUserMenu() {
           <Typography sx={{ fontSize: '0.85rem', fontWeight: 500 }}>로그아웃</Typography>
         </MuiMenuItem>
       </Menu>
+      <PasswordChangeDialog open={pwOpen} onClose={() => setPwOpen(false)} />
     </>
   )
 }

@@ -2,8 +2,9 @@
  * 인증 관련 쿼리/뮤테이션
  * - useLoginMutation : POST /api/auth/login
  * - useCurrentUserQuery : GET /api/users/me (또는 localStorage 데모 프로필)
+ * - useChangePassword : PATCH /api/users/me/password
  */
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { api } from '@/api/client'
 import { queryKeys } from '@/api/queryKeys'
@@ -30,6 +31,23 @@ export function useLoginMutation() {
 
 export function getLoginErrorMessage(err: unknown): string {
   return getApiErrorMessage(err, '알 수 없는 오류가 발생했습니다')
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+}
+
+/** PATCH /api/users/me/password — 비밀번호 변경 */
+export function useChangePassword() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (body: ChangePasswordRequest) =>
+      api.patch('/api/users/me/password', body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.me() })
+    },
+  })
 }
 
 /**
@@ -61,6 +79,6 @@ export function useCurrentUserQuery() {
       }
     },
     retry: false,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
   })
 }

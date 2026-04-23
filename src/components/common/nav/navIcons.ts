@@ -9,6 +9,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import GroupsIcon from '@mui/icons-material/Groups'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import LockResetIcon from '@mui/icons-material/LockReset'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -40,6 +41,7 @@ export const NAV_ICON_MAP: Record<IconName, SvgIconComponent> = {
 export {
   KeyboardArrowDownIcon,
   InfoOutlinedIcon,
+  LockResetIcon,
   SettingsIcon,
   WbSunnyIcon,
   NightsStayIcon,
