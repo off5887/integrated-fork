@@ -1,6 +1,6 @@
 // src/routes/ideaBrowse/IdeaBrowse.tsx
 import AutoStoriesIcon from '@mui/icons-material/AutoStories'
-import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
+import { Box, Chip, SelectChangeEvent, Typography } from '@mui/material'
 import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useOrgUsersTree } from '@/api/queries/useUsers'
@@ -29,7 +29,11 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 export default function IdeaBrowse() {
   const { employeeId } = useCurrentUser()
   const { showSnackbar } = useSnackbar()
-  const { data: ideas = [], isLoading, isError } = useIdeaList()
+  const [startDate, setStartDate] = useState('')
+  const [endDate,   setEndDate]   = useState('')
+  const { data: ideas = [], isLoading, isError } = useIdeaList(
+    startDate || endDate ? { startDate: startDate || undefined, endDate: endDate || undefined } : undefined,
+  )
   const deleteIdea = useDeleteIdea()
   const { data: orgTree } = useOrgUsersTree()
   const { data: statusOptions = [] } = useIdeaStatuses()
@@ -41,7 +45,7 @@ export default function IdeaBrowse() {
   )
   const {
     textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg,
-    similar, statsBg, statsBorder, myOnlyActiveBg,
+    similar, myOnlyActiveBg,
     pageBtnBg, pageBtnBorder, pageBtnColor, pageBtnHoverBg, pageBtnHoverBorder,
     pageActiveBg, pageActiveColor, pageActiveShadow, pageEllipsisColor,
   } = useIdeaBrowseTheme()
@@ -53,6 +57,7 @@ export default function IdeaBrowse() {
   const [selectedDept,     setSelectedDept]     = useState('')
   const [selectedStatus,   setSelectedStatus]   = useState<IdeaStatus | ''>('')
   const [sortBy,           setSortBy]           = useState<SortKey>('latest')
+  const [selectedType,     setSelectedType]     = useState<'idea' | 'completed' | ''>('')
   const [showSimilarOnly,  setShowSimilarOnly]  = useState(false)
   const [showMyOnly,       setShowMyOnly]       = useState(false)
   const [page,             setPage]             = useState(1)
@@ -91,7 +96,7 @@ export default function IdeaBrowse() {
   }
 
   // 필터·정렬이 바뀌면 1페이지로 리셋
-  useEffect(() => { setPage(1) }, [search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly])
+  useEffect(() => { setPage(1) }, [search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, selectedType, sortBy, showSimilarOnly, showMyOnly, startDate, endDate])
 
   // ─── 필터링 + 정렬 ──────────────────────────────────────────
   const filteredIdeas = useMemo(() => {
@@ -103,6 +108,7 @@ export default function IdeaBrowse() {
       if (selectedBizArea && idea.bizArea !== selectedBizArea) return false
       if (selectedDept && idea.department !== selectedDept) return false
       if (selectedStatus && idea.status !== selectedStatus) return false
+      if (selectedType && idea.type !== selectedType) return false
       // showSimilarOnly 필터는 IdeaCard의 API 결과 기반으로 카드에서 처리
       if (q) {
         const text = `${idea.title} ${idea.problem} ${idea.solution} ${idea.author} ${idea.department}`.toLowerCase()
@@ -120,7 +126,7 @@ export default function IdeaBrowse() {
         default:         return 0
       }
     })
-  }, [ideas, search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, sortBy, showMyOnly, myIdeaIds])
+  }, [ideas, search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, selectedType, sortBy, showMyOnly, myIdeaIds])
 
   const totalPages = Math.ceil(filteredIdeas.length / PAGE_SIZE)
   const pagedIdeas = useMemo(
@@ -133,7 +139,15 @@ export default function IdeaBrowse() {
     [myIdeasPage, ideas, myIdeaIds],
   )
 
-  const hasFilter = !!(search || selectedCategory || selectedBizArea || selectedDept || selectedStatus || showSimilarOnly || showMyOnly)
+  const quickCounts = useMemo(() => ({
+    all:       ideas.length,
+    idea:      ideas.filter((i) => i.type === 'idea').length,
+    completed: ideas.filter((i) => i.type === 'completed').length,
+    approved:  ideas.filter((i) => i.status === '승인').length,
+    rejected:  ideas.filter((i) => i.status === '반려').length,
+  }), [ideas])
+
+  const hasFilter = !!(search || selectedCategory || selectedBizArea || selectedDept || selectedStatus || selectedType || showSimilarOnly || showMyOnly || startDate || endDate)
 
   const clearAll = () => {
     setSearch('')
@@ -141,6 +155,9 @@ export default function IdeaBrowse() {
     setSelectedBizArea('')
     setSelectedDept('')
     setSelectedStatus('')
+    setSelectedType('')
+    setStartDate('')
+    setEndDate('')
     setShowSimilarOnly(false)
     setShowMyOnly(false)
   }
@@ -158,35 +175,12 @@ export default function IdeaBrowse() {
       >
         <Box sx={{ maxWidth: 1280, mx: 'auto' }}>
           {/* 타이틀 + 통계 */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2, mb: 2.5, flexWrap: 'wrap' }}>
+          <Box sx={{ mb: 2.5 }}>
             <PageHeader
               icon={AutoStoriesIcon}
               title="상상 보기"
               subtitle="모든 아이디어를 탐색하고 내 아이디어와 유사한 건을 확인해 보세요"
             />
-            <Box
-              sx={{
-                display: 'flex', alignItems: 'center', gap: 1.5,
-                px: 2, py: 1, borderRadius: 2,
-                bgcolor: statsBg,
-                border: `1px solid ${statsBorder}`,
-              }}
-            >
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.primary, lineHeight: 1 }}>{ideas.length}</Typography>
-                <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>전체</Typography>
-              </Box>
-              <Divider orientation="vertical" flexItem sx={{ borderColor }} />
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.success, lineHeight: 1 }}>{myCount}</Typography>
-                <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>내 상상</Typography>
-              </Box>
-              <Divider orientation="vertical" flexItem sx={{ borderColor }} />
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.similar, lineHeight: 1 }}>—</Typography>
-                <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>내 유사</Typography>
-              </Box>
-            </Box>
           </Box>
 
           <IdeaFilters
@@ -195,10 +189,14 @@ export default function IdeaBrowse() {
             selectedBizArea={selectedBizArea}
             selectedDept={selectedDept}
             selectedStatus={selectedStatus}
+            selectedType={selectedType}
+            startDate={startDate}
+            endDate={endDate}
             showSimilarOnly={showSimilarOnly}
             showMyOnly={showMyOnly}
             similarCount={0}
             myCount={myCount}
+            quickCounts={quickCounts}
             hasFilter={hasFilter}
             categoryOptions={categoryOptions}
             bizAreaOptions={bizAreaOptions}
@@ -209,6 +207,9 @@ export default function IdeaBrowse() {
             onBizAreaChange={handleBizAreaChange}
             onDeptChange={setSelectedDept}
             onStatusChange={setSelectedStatus}
+            onTypeChange={setSelectedType}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
             onSimilarToggle={() => setShowSimilarOnly((v) => !v)}
             onMyOnlyToggle={() => setShowMyOnly((v) => !v)}
             onClearAll={clearAll}
