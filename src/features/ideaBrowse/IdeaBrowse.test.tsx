@@ -28,10 +28,10 @@ describe('IdeaBrowse', () => {
       await screen.findAllByText(String(IDEAS.length))
     })
 
-    it('"내 상상", "내 유사" 통계 레이블이 표시된다', () => {
+    it('"내 상상만", "내 유사 아이디어" 통계 레이블이 표시된다', () => {
       render(<IdeaBrowse />)
-      expect(screen.getByText('내 상상')).toBeInTheDocument()
-      expect(screen.getByText('내 유사')).toBeInTheDocument()
+      expect(screen.getByText('내 상상만')).toBeInTheDocument()
+      expect(screen.getByText('내 유사 아이디어만')).toBeInTheDocument()
     })
   })
 

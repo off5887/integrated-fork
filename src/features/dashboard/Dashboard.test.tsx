@@ -1,13 +1,20 @@
 // Dashboard에서 사용하는 ApexCharts는 jsdom에서 동작하지 않으므로 mock 처리
-import { vi, describe, it, expect, afterEach } from 'vitest'
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 
 vi.mock('react-apexcharts', () => ({ default: () => null }))
 
 import { act, screen } from '@testing-library/react'
 import { render } from '@/tests/utils'
 import Dashboard from './Dashboard'
+import { DEMO_USER_PROFILE } from '@/api/mock/auth'
+import { DEMO_STORAGE_KEY } from '@/utils/demoMode'
+
+beforeEach(() => {
+  localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(DEMO_USER_PROFILE))
+})
 
 afterEach(() => {
+  localStorage.removeItem(DEMO_STORAGE_KEY)
   vi.useRealTimers()
 })
 
@@ -28,10 +35,10 @@ describe('Dashboard', () => {
     expect(screen.getByText('승인 완료')).toBeInTheDocument()
   })
 
-  it('기본 KPI 카드 값(5건, 2건)이 렌더된다', () => {
+  it('기본 KPI 카드 값(5건, 2건)이 렌더된다', async () => {
     render(<Dashboard />)
-    expect(screen.getAllByText('5건').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText('2건').length).toBeGreaterThanOrEqual(1)
+    expect((await screen.findAllByText('5건')).length).toBeGreaterThanOrEqual(1)
+    expect((await screen.findAllByText('2건')).length).toBeGreaterThanOrEqual(1)
   })
 
   it('"최근 활동" 섹션 제목이 렌더된다', () => {
