@@ -1,5 +1,18 @@
 import type { OrgMember } from '@/api/types/reviewer'
 
+// ─── 레벨 설정 ────────────────────────────────────────────────────────────────
+
+export interface LevelConfig {
+  level: number
+  levelName: string
+  minMileage: number
+}
+
+export interface LevelConfigUpdateRequest {
+  levelName: string
+  minMileage: number
+}
+
 // ─── 이모지 ───────────────────────────────────────────────────────────────────
 
 export interface EmojiGroup {

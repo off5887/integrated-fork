@@ -1,8 +1,7 @@
 // src/components/common/nav/NavDesktop.tsx
-// 데스크톱 네비게이션 바 — NavItem(단일 링크), NavGroup(드롭다운 그룹) 렌더링 및 UserMenu 조합
 import { Box, Paper, Typography } from '@mui/material'
 import { NAV_ICON_MAP, KeyboardArrowDownIcon } from './navIcons'
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { menuItems } from './navConfig'
 import type { MenuItem, SubMenuItem } from '@/api/types/nav'
@@ -21,6 +20,7 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
 
   return (
     <Box
+      data-active={active ? 'true' : undefined}
       onClick={() => navigate(item.path)}
       sx={{
         display: 'flex',
@@ -30,15 +30,14 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
         py: 0.75,
         borderRadius: 2,
         cursor: 'pointer',
-        transition: 'all 0.15s ease',
         position: 'relative',
-        bgcolor: active ? nt.activeBg : 'transparent',
-        '&:hover': {
-          bgcolor: active ? nt.activeHoverBg : nt.hoverBg,
-        },
+        zIndex: 1,
+        bgcolor: 'transparent',
+        transition: 'background-color 0.15s ease',
+        '&:hover': { bgcolor: active ? nt.activeHoverBg : nt.hoverBg },
       }}
     >
-      <Icon fontSize="small" sx={{ color: active ? nt.activeColor : nt.textColor }} />
+      <Icon fontSize="small" sx={{ color: active ? nt.activeColor : nt.textColor, transition: 'color 0.2s ease' }} />
       <Typography
         sx={{
           fontSize: '0.82rem',
@@ -46,23 +45,11 @@ function NavItem({ item }: { item: MenuItem & { path: string } }) {
           color: active ? nt.activeColor : nt.textColor,
           letterSpacing: '-0.01em',
           whiteSpace: 'nowrap',
+          transition: 'color 0.2s ease, font-weight 0.15s ease',
         }}
       >
         {item.text}
       </Typography>
-      {active && (
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 2,
-            borderRadius: '2px 2px 0 0',
-            bgcolor: nt.activeColor,
-          }}
-        />
-      )}
     </Box>
   )
 }
@@ -83,15 +70,14 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
     if (hoverTimer.current) clearTimeout(hoverTimer.current)
     setIsOpen(true)
   }
-
   const handleLeave = () => {
     hoverTimer.current = setTimeout(() => setIsOpen(false), 120)
   }
 
   return (
     <Box onMouseEnter={handleEnter} onMouseLeave={handleLeave} sx={{ position: 'relative' }}>
-      {/* 그룹 트리거 */}
       <Box
+        data-active={groupActive ? 'true' : undefined}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -100,18 +86,14 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
           py: 0.75,
           borderRadius: 2,
           cursor: 'default',
-          transition: 'all 0.15s ease',
           position: 'relative',
-          bgcolor: groupActive || isOpen ? nt.activeBg : 'transparent',
-          '&:hover': {
-            bgcolor: nt.activeBg,
-          },
+          zIndex: 1,
+          bgcolor: 'transparent',
+          transition: 'background-color 0.15s ease',
+          '&:hover': { bgcolor: nt.activeBg },
         }}
       >
-        <Icon
-          fontSize="small"
-          sx={{ color: groupActive || isOpen ? nt.activeColor : nt.textColor }}
-        />
+        <Icon fontSize="small" sx={{ color: groupActive || isOpen ? nt.activeColor : nt.textColor, transition: 'color 0.2s ease' }} />
         <Typography
           sx={{
             fontSize: '0.82rem',
@@ -119,6 +101,7 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
             color: groupActive || isOpen ? nt.activeColor : nt.textColor,
             letterSpacing: '-0.01em',
             whiteSpace: 'nowrap',
+            transition: 'color 0.2s ease',
           }}
         >
           {item.text}
@@ -127,31 +110,16 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
           sx={{
             fontSize: '1rem',
             color: groupActive || isOpen ? nt.activeColor : nt.textColor,
-            transition: 'transform 0.2s ease',
+            transition: 'transform 0.2s ease, color 0.2s ease',
             transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
           }}
         />
-        {groupActive && (
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 2,
-              borderRadius: '2px 2px 0 0',
-              bgcolor: nt.activeColor,
-            }}
-          />
-        )}
       </Box>
 
       {/* 드롭다운 패널 */}
       {isOpen && (
         <Paper
-          onMouseEnter={() => {
-            if (hoverTimer.current) clearTimeout(hoverTimer.current)
-          }}
+          onMouseEnter={() => { if (hoverTimer.current) clearTimeout(hoverTimer.current) }}
           onMouseLeave={handleLeave}
           elevation={8}
           sx={{
@@ -170,47 +138,27 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
             animation: 'fadeSlideDown 0.15s ease',
             '@keyframes fadeSlideDown': {
               from: { opacity: 0, transform: 'translateX(-50%) translateY(-6px)' },
-              to: { opacity: 1, transform: 'translateX(-50%) translateY(0)' },
+              to:   { opacity: 1, transform: 'translateX(-50%) translateY(0)' },
             },
           }}
         >
           {item.children.map((child) => {
             const childActive = location.pathname === child.path
             const ChildIcon = NAV_ICON_MAP[child.iconName]
-
             return (
               <Box
                 key={child.text}
-                onClick={() => {
-                  navigate(child.path)
-                  setIsOpen(false)
-                }}
+                onClick={() => { navigate(child.path); setIsOpen(false) }}
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  px: 1.5,
-                  py: 0.9,
-                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 1,
+                  px: 1.5, py: 0.9, cursor: 'pointer',
                   bgcolor: childActive ? nt.dropdownChildActiveBg : 'transparent',
                   transition: 'background 0.12s ease',
-                  '&:hover': {
-                    bgcolor: nt.dropdownChildHoverBg,
-                  },
+                  '&:hover': { bgcolor: nt.dropdownChildHoverBg },
                 }}
               >
-                <ChildIcon
-                  fontSize="small"
-                  sx={{ fontSize: '1rem', color: childActive ? nt.activeColor : nt.textColor }}
-                />
-                <Typography
-                  sx={{
-                    fontSize: '0.82rem',
-                    fontWeight: childActive ? 700 : 500,
-                    color: childActive ? nt.activeColor : nt.textColor,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
+                <ChildIcon fontSize="small" sx={{ fontSize: '1rem', color: childActive ? nt.activeColor : nt.textColor }} />
+                <Typography sx={{ fontSize: '0.82rem', fontWeight: childActive ? 700 : 500, color: childActive ? nt.activeColor : nt.textColor, whiteSpace: 'nowrap' }}>
                   {child.text}
                 </Typography>
               </Box>
@@ -226,25 +174,73 @@ function NavGroup({ item }: { item: MenuItem & { children: SubMenuItem[] } }) {
 
 export default function NavDesktop() {
   const { role } = useCurrentUser()
+  const { nt } = useNavColors()
+  const location = useLocation()
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // 슬라이딩 pill(배경) + underline 위치
+  const [pill, setPill] = useState<{ left: number; width: number } | null>(null)
+
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    const activeEl = container.querySelector('[data-active="true"]') as HTMLElement | null
+    if (!activeEl) { setPill(null); return }
+    const cr = container.getBoundingClientRect()
+    const ar = activeEl.getBoundingClientRect()
+    setPill({ left: ar.left - cr.left, width: ar.width })
+  }, [location.pathname])
 
   const visibleItems = menuItems.filter(
     (item) => !item.roles || (role && item.roles.includes(role)),
   )
 
+  const TRANSITION = 'left 0.28s cubic-bezier(0.4,0,0.2,1), width 0.28s cubic-bezier(0.4,0,0.2,1)'
+
   return (
     <>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mr: 2 }}>
+      <Box ref={containerRef} sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mr: 2, position: 'relative' }}>
+        {/* 슬라이딩 배경 pill */}
+        {pill && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              left: pill.left,
+              width: pill.width,
+              height: 'calc(100% - 4px)',
+              bgcolor: nt.activeBg,
+              borderRadius: 2,
+              transition: TRANSITION,
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+        )}
+        {/* 슬라이딩 하단 underline */}
+        {pill && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 0,
+              left: pill.left,
+              width: pill.width,
+              height: 2,
+              bgcolor: nt.activeColor,
+              borderRadius: '2px 2px 0 0',
+              transition: TRANSITION,
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+        )}
+
         {visibleItems.map((item) =>
           item.children ? (
-            <NavGroup
-              key={item.text}
-              item={item as MenuItem & { children: SubMenuItem[] }}
-            />
+            <NavGroup key={item.text} item={item as MenuItem & { children: SubMenuItem[] }} />
           ) : (
-            <NavItem
-              key={item.text}
-              item={item as MenuItem & { path: string }}
-            />
+            <NavItem key={item.text} item={item as MenuItem & { path: string }} />
           ),
         )}
       </Box>

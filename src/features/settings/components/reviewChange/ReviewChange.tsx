@@ -43,6 +43,17 @@ function toIdea(item: {
 
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
+function toDateStr(date: Date) {
+  return date.toISOString().split('T')[0]
+}
+
+function defaultRange() {
+  const end = new Date()
+  const start = new Date()
+  start.setMonth(start.getMonth() - 1)
+  return { start: toDateStr(start), end: toDateStr(end) }
+}
+
 export default function ReviewChange() {
   const { textPrimary, textSecondary, borderColor } = usePageColors()
   const st = useSettingsTheme()
@@ -51,9 +62,12 @@ export default function ReviewChange() {
   const [selectedIdeaId, setSelectedIdeaId] = useState<number | null>(null)
   const [changingLevel, setChangingLevel] = useState<1 | null>(null)
 
-  const { data: ideaItems = [] } = useIdeaList()
+  const init = defaultRange()
+  const [startDate, setStartDate] = useState(init.start)
+  const [endDate, setEndDate] = useState(init.end)
 
-  // useIdeaList가 내부적으로 데모/실제 분기 처리 → 여기서는 변환만
+  const { data: ideaItems = [] } = useIdeaList({ status: 'pending', startDate, endDate })
+
   const ideas: Idea[] = useMemo(() => ideaItems.map(toIdea), [ideaItems])
 
   const filteredIdeas = useMemo(() => {
@@ -96,6 +110,10 @@ export default function ReviewChange() {
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             onSelect={(id) => { setSelectedIdeaId(id); setChangingLevel(null) }}
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
           />
         </Grid>
 

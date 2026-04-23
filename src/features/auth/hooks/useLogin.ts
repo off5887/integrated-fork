@@ -1,4 +1,5 @@
 // src/features/auth/hooks/useLogin.ts
+import { startTransition } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { findDemoAccount } from '@/api/mock/auth'
@@ -25,18 +26,15 @@ export function useLogin() {
     if (demo) {
       setDemoProfile(demo.profile)
       queryClient.removeQueries({ queryKey: queryKeys.users.me() })
-      navigate('/dashboard')
+      startTransition(() => navigate('/dashboard'))
       return null
     }
 
     try {
       await mutation.mutateAsync({ employeeId, password })
-      // 데모 세션 잔여 데이터 제거 — isDemoMode()가 false가 되어야 실제 API 데이터를 조회함
       clearDemoProfile()
-      // 인증 상태 전환 시 모든 쿼리 캐시 제거
-      // (데모 mock 데이터가 실제 계정에서 표시되는 문제 방지)
       queryClient.removeQueries()
-      navigate('/dashboard')
+      startTransition(() => navigate('/dashboard'))
       return null
     } catch (err) {
       return getLoginErrorMessage(err)

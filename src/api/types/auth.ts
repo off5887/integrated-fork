@@ -20,7 +20,9 @@ export interface UserProfile {
   role: UserRole        // isAdmin/isReviewer로 파생
   totalMileage: number
   gomLevel: number
+  levelName: string
   avatarUrl?: string
+  mustChangePassword?: boolean
 }
 
 /** 모든 API 응답의 공통 래퍼 */
@@ -45,14 +47,16 @@ export interface LoginResponse {
 export interface UserMeResponse {
   employeeId: string
   name: string
-  email?: string            // 일부 계정은 이메일 없을 수 있음
+  email?: string
   department?: string       // 사업소
   section?: string          // 팀
-  rollNm?: string           // 직급 (null 허용)
+  rollNm?: string
   isAdmin: boolean
   isReviewer: boolean | null
   totalMileage?: number
   gomLevel?: number
+  levelName?: string
+  mustChangePassword?: boolean
   createdAt?: string
   lastSyncAt?: string
 }
@@ -69,5 +73,7 @@ export function mapUserProfile(data: UserMeResponse): UserProfile {
     role: data.isAdmin ? 'admin' : data.isReviewer ? 'reviewer' : 'user',
     totalMileage: data.totalMileage ?? 0,
     gomLevel: data.gomLevel ?? 0,
+    levelName: data.levelName ?? '아기 곰곰이',
+    mustChangePassword: data.mustChangePassword ?? false,
   }
 }

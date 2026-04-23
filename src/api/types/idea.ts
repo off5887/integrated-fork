@@ -153,6 +153,7 @@ export interface IdeaCreateRequest {
   security?: 'N' | 'Y'
   coProposerIds?: string[]   // 공동제안자 사번 목록
   approverId?: string        // 심사자 사번
+  executors?: IdeaExecutorRequest[]  // 실행계획 (아이디어와 함께 전송)
 }
 
 /** GET /api/ideas, GET /api/ideas/{id}, GET /api/ideas/my 응답의 단일 아이디어 */
@@ -185,6 +186,15 @@ export interface IdeaApiItem {
   // 배정된 심사자 (없으면 null)
   approverId?: string | null
   approverName?: string | null
+  // 심사 결과 (단건 조회 전용)
+  awardedPoints?: number | null
+  ideaScore?: number | null
+  scoreInnovation?: number | null
+  scoreFeasibility?: number | null
+  scoreProfitability?: number | null
+  reviewComment?: string | null
+  reviewedBy?: string | null
+  reviewedAt?: string | null
   // 단건 조회 전용 — 본인 아이디어일 때만 존재
   executors?: IdeaExecutor[] | null
   attachments?: IdeaAttachment[]
@@ -202,14 +212,16 @@ export interface IdeaAttachment {
 /** GET /api/ideas/{id}/executors 항목 */
 export interface IdeaExecutor {
   executorId: number
-  scheduleDate: string
+  startDate: string
+  endDate?: string
   content: string
   expectedResult: string
 }
 
 /** POST /api/ideas/{id}/executors, PUT /api/ideas/{id}/executors/{executorId} 요청 바디 */
 export interface IdeaExecutorRequest {
-  scheduleDate: string
+  startDate: string
+  endDate?: string
   content: string
   expectedResult: string
 }
@@ -222,7 +234,15 @@ export interface IdeaDetailExtras {
   isLiked: boolean
   approverId: string | null
   approverName: string | null
-  executors: IdeaExecutor[] | null   // 본인 아이디어 또는 배정된 심사자/관리자일 때 존재, 그 외는 null
+  // 심사 결과 (승인/반려 시 존재)
+  awardedPoints?: number | null
+  ideaScore?: number | null
+  scoreInnovation?: number | null
+  scoreFeasibility?: number | null
+  scoroProfitability?: number | null
+  reviewComment?: string | null
+  reviewedAt?: string | null
+  executors: IdeaExecutor[] | null
   coProposers: { employeeId: string; name: string; rollNm: string }[]
   attachments: IdeaAttachment[]
 }
@@ -235,8 +255,7 @@ export interface IdeaReviewRequest {
   scoreInnovation?: number
   scoreFeasibility?: number
   scoreProfitability?: number
-  /** 지급 마일리지 — 백엔드 @JsonAlias: awardedPoints */
-  mileage?: number
+  awardedPoints?: number
 }
 
 /** GET /api/ideas/{ideaId}/comments 단일 댓글 */

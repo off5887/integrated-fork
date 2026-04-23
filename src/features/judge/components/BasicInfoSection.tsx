@@ -56,17 +56,17 @@ export default function BasicInfoSection({ ideaType, categories, problem, soluti
                   px: 1.25, py: 0.5, borderRadius: 1.5,
                   bgcolor: ideaType === 'idea'
                     ? 'rgba(99,102,241,0.1)'
-                    : 'rgba(16,185,129,0.1)',
-                  border: `1px solid ${ideaType === 'idea' ? 'rgba(99,102,241,0.3)' : 'rgba(16,185,129,0.3)'}`,
+                    : 'rgba(14,165,233,0.1)',
+                  border: `1px solid ${ideaType === 'idea' ? 'rgba(99,102,241,0.3)' : 'rgba(14,165,233,0.35)'}`,
                 }}
               >
                 <Typography sx={{ fontSize: '0.85rem', lineHeight: 1 }}>
-                  {ideaType === 'idea' ? '💡' : '✅'}
+                  {ideaType === 'idea' ? '💡' : '🏁'}
                 </Typography>
                 <Typography
                   sx={{
                     fontSize: '0.78rem', fontWeight: 700,
-                    color: ideaType === 'idea' ? '#6366f1' : '#10b981',
+                    color: ideaType === 'idea' ? '#6366f1' : '#0ea5e9',
                   }}
                 >
                   {ideaType === 'idea' ? '아이디어' : '실행완료'}

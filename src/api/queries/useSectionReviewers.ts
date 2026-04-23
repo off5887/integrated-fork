@@ -71,6 +71,18 @@ export function useMyDeptReviewers() {
   })
 }
 
+/** POST /api/section-reviewers/bulk-assign-leaders — 팀장 일괄 배정 (ADMIN) */
+export function useBulkAssignLeaders() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      api.post<ApiResponse<{ assigned: number; skipped: number }>>(
+        '/api/section-reviewers/bulk-assign-leaders',
+      ).then(r => r.data.data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.sectionReviewers.list() }),
+  })
+}
+
 export function getSectionReviewerErrorMessage(err: unknown): string {
   return getApiErrorMessage(err, '처리 중 오류가 발생했습니다')
 }

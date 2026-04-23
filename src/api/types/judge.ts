@@ -49,6 +49,9 @@ export interface Proposal {
   categories?: string[]
   problem: string
   solution: string
+  /** 작성자(주 제안자) */
+  author: string
+  /** 공동제안자 목록 */
   proposers: string[]
   reviewer: string
   /** 공개 범위 */

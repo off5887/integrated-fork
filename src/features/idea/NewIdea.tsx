@@ -39,7 +39,7 @@ export default function NewIdea() {
   // ─── 폼 상태 ───────────────────────────────────────────────────────────────
   const [ideaType, setIdeaType] = useState<'idea' | 'complete'>('idea')
   const [title, setTitle] = useState(editIdea?.title ?? '')
-  const [categories, setCategories] = useState<string[]>(editIdea?.category ? [editIdea.category] : [])
+  const [categories, setCategories] = useState<string[]>(editIdea?.categoryId ? [editIdea.categoryId.toString()] : [])
   const [problem, setProblem] = useState(editIdea?.problem ?? '')
   const [solution, setSolution] = useState(editIdea?.solution ?? '')
   const [reviewer, setReviewer] = useState<string[]>([])
@@ -104,6 +104,19 @@ export default function NewIdea() {
   const { data: editDetail } = useIdeaDetail(isEditMode ? (editIdea?.id ?? null) : null)
   const existingAttachments = editDetail?.attachments ?? []
 
+  // 편집 모드: 기존 실행계획 pre-fill (최초 1회)
+  const executorPrefilled = useRef(false)
+  useEffect(() => {
+    if (!isEditMode || executorPrefilled.current) return
+    const ex = editDetail?.executors?.[0]
+    if (!ex) return
+    executorPrefilled.current = true
+    setPlan(ex.content)
+    setStartDate(ex.startDate.slice(0, 10))
+    setEndDate((ex.endDate ?? ex.startDate).slice(0, 10))
+    setExpectedOutcome(ex.expectedResult)
+  }, [editDetail, isEditMode])
+
   // ─── 제출 ─────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     const errors = {
@@ -134,6 +147,12 @@ export default function NewIdea() {
       security: (security === 'private' ? 'Y' : 'N') as 'N' | 'Y',
       coProposerIds: coProposerIds.length > 0 ? coProposerIds : undefined,
       approverId: reviewerIds[0] ?? undefined,
+      executors: [{
+        startDate: `${startDate}T00:00:00`,
+        endDate: `${endDate}T00:00:00`,
+        content: plan.trim(),
+        expectedResult: expectedOutcome.trim(),
+      }],
     }
 
     try {

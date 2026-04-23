@@ -7,10 +7,11 @@ import { useJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   reviewer: string
-  proposers: string[]
+  author: string
+  coProposers: string[]
 }
 
-export default function ParticipantsSection({ reviewer, proposers }: Props) {
+export default function ParticipantsSection({ reviewer, author, coProposers }: Props) {
   const colors = usePageColors()
   const theme = useJudgeTheme()
 
@@ -33,6 +34,88 @@ export default function ParticipantsSection({ reviewer, proposers }: Props) {
       </Box>
 
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
+        {/* 작성자 */}
+        <Box
+          sx={{
+            flex: 1, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
+            bgcolor: theme.proposerPanelBg,
+            border: `1px solid ${theme.proposerPanelBorder}`,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <PersonAddIcon sx={{ color: theme.proposerIconColor, fontSize: '1.1rem' }} />
+            <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
+              작성자
+            </Typography>
+          </Box>
+          {author ? (
+            <Box
+              sx={{
+                display: 'flex', alignItems: 'center', gap: 1,
+                p: 1.25, borderRadius: 1.5,
+                bgcolor: theme.proposerChipBg,
+                border: `1px solid ${theme.proposerChipBorder}`,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                  bgcolor: theme.proposerIconColor, color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.78rem', fontWeight: 700,
+                }}
+              >
+                {author.charAt(0)}
+              </Box>
+              <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: theme.proposerChipColor }}>
+                {author}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography variant="body2" sx={{ color: colors.textSecondary, fontStyle: 'italic' }}>
+              작성자 정보 없음
+            </Typography>
+          )}
+        </Box>
+
+        {/* 공동제안자 */}
+        <Box
+          sx={{
+            flex: 1, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
+            bgcolor: theme.proposerPanelBg,
+            border: `1px solid ${theme.proposerPanelBorder}`,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <GroupAddIcon sx={{ color: theme.proposerIconColor, fontSize: '1.1rem' }} />
+            <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
+              공동제안자
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {coProposers.length > 0 ? (
+              coProposers.map((name, idx) => (
+                <Chip
+                  key={`${name}-${idx}`}
+                  label={name}
+                  size="medium"
+                  sx={{
+                    bgcolor: theme.proposerChipBg,
+                    color: theme.proposerChipColor,
+                    border: `1px solid ${theme.proposerChipBorder}`,
+                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                  }}
+                />
+              ))
+            ) : (
+              <Typography variant="body2" sx={{ color: colors.textSecondary, fontStyle: 'italic' }}>
+                공동제안자가 없습니다
+              </Typography>
+            )}
+          </Box>
+        </Box>
+
         {/* 심사자 */}
         <Box
           sx={{
@@ -69,61 +152,12 @@ export default function ParticipantsSection({ reviewer, proposers }: Props) {
               <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#0ea5e9' }}>
                 {reviewer}
               </Typography>
-              <Chip
-                label="진행 중"
-                size="small"
-                sx={{
-                  ml: 'auto',
-                  bgcolor: 'rgba(14,165,233,0.1)',
-                  color: '#0ea5e9',
-                  border: '1px solid rgba(14,165,233,0.3)',
-                  fontWeight: 700, fontSize: '0.65rem', height: 18,
-                }}
-              />
             </Box>
           ) : (
             <Typography variant="body2" sx={{ color: colors.textSecondary, fontStyle: 'italic' }}>
               심사자가 배정되지 않았습니다
             </Typography>
           )}
-        </Box>
-
-        {/* 공동제안자 */}
-        <Box
-          sx={{
-            flex: 1, p: { xs: 2.5, md: 3 }, borderRadius: 2.5,
-            bgcolor: theme.proposerPanelBg,
-            border: `1px solid ${theme.proposerPanelBorder}`,
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <GroupAddIcon sx={{ color: theme.proposerIconColor, fontSize: '1.1rem' }} />
-            <Typography variant="body1" fontWeight={700} sx={{ color: theme.panelLabelColor, fontSize: '0.875rem' }}>
-              공동제안자
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {proposers.length > 0 ? (
-              proposers.map((name, idx) => (
-                <Chip
-                  key={`${name}-${idx}`}
-                  label={name}
-                  size="medium"
-                  sx={{
-                    bgcolor: theme.proposerChipBg,
-                    color: theme.proposerChipColor,
-                    border: `1px solid ${theme.proposerChipBorder}`,
-                    fontWeight: 600,
-                    fontSize: '0.875rem',
-                  }}
-                />
-              ))
-            ) : (
-              <Typography variant="body2" sx={{ color: colors.textSecondary, fontStyle: 'italic' }}>
-                공동제안자가 없습니다
-              </Typography>
-            )}
-          </Box>
         </Box>
       </Box>
     </Box>

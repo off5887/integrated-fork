@@ -14,13 +14,22 @@ import {
 } from '@mui/material'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getWelcomeTheme } from '@/theme/welcomeTheme'
-import { GOM_LEVELS, SPECIAL_CARDS } from '@/api/mock/welcome'
+import { SPECIAL_CARDS } from '@/api/mock/welcome'
+
+interface Level {
+  level: number
+  name: string
+  min: number
+  image: string
+  desc: string
+}
 
 interface GomEvolutionModalProps {
   open: boolean
   onClose: () => void
   currentLevelMin: number
   fishCount: number
+  levels: Level[]
 }
 
 export default function GomEvolutionModal({
@@ -28,6 +37,7 @@ export default function GomEvolutionModal({
   onClose,
   currentLevelMin,
   fishCount,
+  levels,
 }: GomEvolutionModalProps) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -126,7 +136,7 @@ export default function GomEvolutionModal({
         </Typography>
 
         <Grid container spacing={{ xs: 1.5, md: 2 }}>
-          {GOM_LEVELS.map((level) => {
+          {levels.map((level) => {
             const isCurrent = level.min === currentLevelMin
             const isAchieved = fishCount >= level.min
 

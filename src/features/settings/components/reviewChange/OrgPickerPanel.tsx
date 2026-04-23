@@ -1,5 +1,6 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import SearchIcon from '@mui/icons-material/Search'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import {
   Accordion,
   AccordionDetails,
@@ -67,16 +68,21 @@ export default function OrgPickerPanel({ onSelect, selectedEmployeeId }: Props) 
   const { data: users = [] } = useUsers()
   const [search, setSearch] = useState('')
 
+  const reviewerUsers = useMemo(
+    () => users.filter((u) => u.role === 'reviewer' || u.role === 'admin'),
+    [users],
+  )
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return users
-    return users.filter(u =>
+    if (!q) return reviewerUsers
+    return reviewerUsers.filter(u =>
       u.name.toLowerCase().includes(q) ||
       u.position.toLowerCase().includes(q) ||
       u.department.toLowerCase().includes(q) ||
       u.businessSite.toLowerCase().includes(q),
     )
-  }, [users, search])
+  }, [reviewerUsers, search])
 
   const grouped = useMemo(() => {
     const bizMap = new Map<string, Map<string, User[]>>()
@@ -94,18 +100,27 @@ export default function OrgPickerPanel({ onSelect, selectedEmployeeId }: Props) 
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.6, mb: 1, px: 0.25 }}>
+        <InfoOutlinedIcon sx={{ fontSize: '0.78rem', color: textSecondary, mt: '2px', flexShrink: 0 }} />
+        <Typography sx={{ fontSize: '0.72rem', color: textSecondary, lineHeight: 1.5 }}>
+          사용자 관리에서 <strong>심사자</strong> 또는 <strong>관리자</strong> 권한으로 설정된 사용자만 표시됩니다.
+        </Typography>
+      </Box>
+
       <TextField
         fullWidth
         size="small"
         placeholder="이름 · 직급 · 부서 검색"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
-            </InputAdornment>
-          ),
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
+              </InputAdornment>
+            ),
+          },
         }}
         sx={{
           mb: 1.5,
@@ -144,7 +159,6 @@ export default function OrgPickerPanel({ onSelect, selectedEmployeeId }: Props) 
         {grouped.map(({ biz, teams }) => (
           <Accordion
             key={biz}
-            defaultExpanded
             disableGutters
             elevation={0}
             slotProps={{ transition: { unmountOnExit: false, timeout: 150 } }}

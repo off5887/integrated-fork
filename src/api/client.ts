@@ -17,6 +17,14 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
     ...config,
   })
 
+  // FormData 요청은 브라우저가 Content-Type + boundary를 자동 설정하도록 헤더 제거
+  axiosInstance.interceptors.request.use((config) => {
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    }
+    return config
+  })
+
   // 응답 인터셉터
   axiosInstance.interceptors.response.use(
     (response) => response,

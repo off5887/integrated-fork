@@ -6,12 +6,13 @@ import SaveIcon from '@mui/icons-material/Save'
 import {
   Box,
   Button,
+  CircularProgress,
   Grid,
   Tab,
   Tabs,
   Typography,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useTransition } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { toDateOnly } from '@/utils/dateUtils'
 import { useSnackbar } from '@/context/SnackbarContext'
@@ -33,6 +34,8 @@ export default function SpecialMileage() {
   const grantMutation = useGrantMileage()
 
   const [tab, setTab] = useState<0 | 1>(0)
+  const [contentTab, setContentTab] = useState<0 | 1>(0)
+  const [isPending, startTransition] = useTransition()
   const [searchTerm, setSearchTerm] = useState('')
   const [selected, setSelected] = useState<MileageEntry[]>([])
 
@@ -136,7 +139,7 @@ export default function SpecialMileage() {
           onClick={handleSave}
           disabled={selected.length === 0 || grantMutation.isPending}
           sx={{
-            display: tab === 1 ? 'none' : undefined,
+            display: contentTab === 1 ? 'none' : undefined,
             borderRadius: 9999, px: 2.5, py: 0.8,
             fontWeight: 700, fontSize: '0.82rem', textTransform: 'none',
             bgcolor: st.primaryColor, color: st.primaryBtnColor, boxShadow: 'none', flexShrink: 0,
@@ -153,7 +156,10 @@ export default function SpecialMileage() {
       <Box sx={{ borderBottom: `1px solid ${borderColor}`, mb: 3 }}>
         <Tabs
           value={tab}
-          onChange={(_, v) => setTab(v)}
+          onChange={(_, v) => {
+            setTab(v)
+            startTransition(() => setContentTab(v))
+          }}
           sx={{
             minHeight: 40,
             '& .MuiTab-root': {
@@ -169,30 +175,40 @@ export default function SpecialMileage() {
         </Tabs>
       </Box>
 
-      {/* 탭 컨텐츠 */}
-      {tab === 0 && (
-        <Grid container spacing={{ xs: 2, sm: 3 }}>
-          <Grid size={{ xs: 12, lg: 4 }}>
-            <MileageOrgPanel
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              onAdd={handleAdd}
-              selectedIds={selected.map((s) => s.id)}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 8 }}>
-            <MileageRecipientPanel
-              selected={selected}
-              onRemove={handleRemove}
-              onFieldChange={handleFieldChange}
-            />
-          </Grid>
-        </Grid>
-      )}
+      {/* 탭 컨텐츠 — minHeight로 탭 전환 시 높이 흔들림 방지 */}
+      <Box sx={{ minHeight: 520 }}>
+        {isPending ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 520 }}>
+            <CircularProgress size={32} sx={{ color: st.primaryColor }} />
+          </Box>
+        ) : (
+          <>
+            <Box sx={{ display: contentTab === 0 ? 'block' : 'none' }}>
+              <Grid container spacing={{ xs: 2, sm: 3 }}>
+                <Grid size={{ xs: 12, lg: 4 }}>
+                  <MileageOrgPanel
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    onAdd={handleAdd}
+                    selectedIds={selected.map((s) => s.id)}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, lg: 8 }}>
+                  <MileageRecipientPanel
+                    selected={selected}
+                    onRemove={handleRemove}
+                    onFieldChange={handleFieldChange}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
 
-      {tab === 1 && (
-        <MileageHistoryPanel history={history} />
-      )}
+            <Box sx={{ display: contentTab === 1 ? 'block' : 'none' }}>
+              <MileageHistoryPanel history={history} />
+            </Box>
+          </>
+        )}
+      </Box>
     </Box>
   )
 }

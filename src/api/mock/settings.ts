@@ -1,5 +1,14 @@
 import type { OrgMember } from '@/api/types/reviewer'
-import type { AdminUserItem, UserRoleItem, UserRolesData, User, UserApiBizArea, MileageMember, Idea, SectionReviewer } from '@/api/types/settings'
+import type { AdminUserItem, UserRoleItem, UserRolesData, User, UserApiBizArea, MileageMember, Idea, SectionReviewer, LevelConfig } from '@/api/types/settings'
+
+// ── 레벨 설정 ─────────────────────────────────────────────────────────────────
+export const mockLevelConfigs: LevelConfig[] = [
+  { level: 0, levelName: '아기 곰곰이', minMileage: 0 },
+  { level: 1, levelName: '꼬마 곰곰이', minMileage: 500 },
+  { level: 2, levelName: '곰곰 워리어', minMileage: 2000 },
+  { level: 3, levelName: '곰곰 마스터', minMileage: 5000 },
+  { level: 4, levelName: '곰신',        minMileage: 10000 },
+]
 
 // ── 조직도 ───────────────────────────────────────────────────────────────────
 export const mockOrganization: OrgMember[] = [

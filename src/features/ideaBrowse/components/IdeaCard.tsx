@@ -96,8 +96,37 @@ export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardPro
       )}
 
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: { xs: 2, md: 2.5 }, gap: 1.75 }}>
-        {/* 카테고리 + 상태 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+        {/* 구분 + 카테고리 + 상태 */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+          {/* 구분 chip — 항상 표시 */}
+          {idea.type === 'completed' ? (
+            <Box
+              sx={{
+                display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                px: 0.9, py: 0.3, borderRadius: 1.5,
+                bgcolor: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.35)',
+              }}
+            >
+              <Box component="span" sx={{ fontSize: '0.65rem', lineHeight: 1 }}>🏁</Box>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: '#0ea5e9', lineHeight: 1 }}>
+                실행완료
+              </Typography>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                px: 0.9, py: 0.3, borderRadius: 1.5,
+                bgcolor: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)',
+              }}
+            >
+              <Box component="span" sx={{ fontSize: '0.65rem', lineHeight: 1 }}>💡</Box>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: ideaAccent.primary, lineHeight: 1 }}>
+                아이디어
+              </Typography>
+            </Box>
+          )}
+          {/* 카테고리 */}
           <Box
             sx={{
               display: 'inline-flex', alignItems: 'center', gap: 0.5,
@@ -110,6 +139,7 @@ export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardPro
               {idea.category}
             </Typography>
           </Box>
+          {/* 심사 상태 */}
           <Box
             sx={{
               display: 'inline-flex', alignItems: 'center',

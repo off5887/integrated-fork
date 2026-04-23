@@ -12,6 +12,8 @@ export interface CurrentUserInfo {
   role:       UserRole
   department: string
   employeeId: string
+  gomLevel:   number
+  levelName:  string
 }
 
 /**
@@ -31,6 +33,8 @@ export function useCurrentUser(): CurrentUserInfo {
     role:       data?.role ?? 'user',
     department: data?.department ?? '',
     employeeId: data?.employeeId ?? '',
+    gomLevel:   data?.gomLevel ?? 0,
+    levelName:  data?.levelName ?? '아기 곰곰이',
   }
 }
 

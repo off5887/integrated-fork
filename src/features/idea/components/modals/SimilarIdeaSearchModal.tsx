@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import {
   Box,
+  CircularProgress,
   Dialog,
   DialogContent,
   IconButton,
@@ -12,7 +13,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { IDEAS } from '@/api/mock/ideaBrowse'
+import { useIdeaList } from '@/api/queries/useIdeas'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { useIdeaTheme } from '@/theme/ideaTheme'
 import SimilarIdeaDetailPanel from './SimilarIdeaDetailPanel'
@@ -54,16 +55,18 @@ export default function SimilarIdeaSearchModal({
   const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
-  // 검색 결과 (점수 기반 정렬, 점수 0 제외, 비공개 제외)
+  const { data: ideas = [], isLoading } = useIdeaList()
+
   const results = useMemo(() => {
     const q = query.trim()
     if (!q || q.length < 2) return []
-    return IDEAS.filter((idea) => idea.security !== 'private')
+    return ideas
+      .filter((idea) => idea.security !== 'private')
       .map((idea) => ({ idea, score: scoreIdea(idea, q) }))
       .filter(({ score }) => score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 12)
-  }, [query])
+  }, [query, ideas])
 
   const handleClose = () => {
     setDetail(null)
@@ -211,8 +214,15 @@ export default function SimilarIdeaSearchModal({
             />
           ) : (
             <>
+              {/* 로딩 */}
+              {isLoading && (
+                <Box sx={{ py: 5, textAlign: 'center' }}>
+                  <CircularProgress size={24} sx={{ color: it.accent.color }} />
+                </Box>
+              )}
+
               {/* 결과 없음 */}
-              {query.trim().length >= 2 && results.length === 0 && (
+              {!isLoading && query.trim().length >= 2 && results.length === 0 && (
                 <Box sx={{ py: 5, textAlign: 'center' }}>
                   <Box sx={{ fontSize: '2.5rem', mb: 1.5 }}>🔍</Box>
                   <Typography
@@ -232,7 +242,7 @@ export default function SimilarIdeaSearchModal({
               )}
 
               {/* 입력 안내 */}
-              {query.trim().length < 2 && (
+              {!isLoading && query.trim().length < 2 && (
                 <Box sx={{ py: 4, textAlign: 'center' }}>
                   <Box sx={{ fontSize: '2.5rem', mb: 1.5 }}>💡</Box>
                   <Typography
@@ -250,7 +260,7 @@ export default function SimilarIdeaSearchModal({
               )}
 
               {/* 결과 목록 */}
-              {results.length > 0 && (
+              {!isLoading && results.length > 0 && (
                 <>
                   <Box
                     sx={{

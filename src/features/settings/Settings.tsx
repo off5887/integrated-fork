@@ -2,6 +2,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import AssessmentIcon from '@mui/icons-material/Assessment'
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard'
 import CategoryIcon from '@mui/icons-material/Category'
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import PaidIcon from '@mui/icons-material/Paid'
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount'
@@ -12,6 +13,7 @@ import { type SvgIconProps } from '@mui/material/SvgIcon'
 import { usePageColors } from '@/theme/pageColors'
 import { useSettingsTheme } from '@/theme/settingsTheme'
 import CategoryManagement from './components/category/CategoryManagement'
+import LevelManagement from './components/levelManagement/LevelManagement'
 import ExchangeRequestsManagement from './components/exchangeRequests/ExchangeRequestsManagement'
 import ReviewChange from './components/reviewChange/ReviewChange'
 import SectionReviewerManagement from './components/reviewChange/SectionReviewerManagement'
@@ -79,6 +81,13 @@ const TABS: TabConfig[] = [
     Icon: AssessmentIcon,
     Component: ReviewerStatsPanel,
   },
+  {
+    id: 'level-management',
+    label: '레벨 관리',
+    description: '곰곰이 레벨 이름과 마일리지 기준을 설정합니다',
+    Icon: EmojiEventsIcon,
+    Component: LevelManagement,
+  },
 ]
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
@@ -87,8 +96,17 @@ export default function Settings() {
   const { textPrimary, textSecondary, borderColor, bgBase, cardBg, cardShadow, accentColor } = usePageColors()
   const st = useSettingsTheme()
   const [activeTab, setActiveTab] = useState(0)
+  const [mounted, setMounted] = useState(() => new Set([0]))
 
-  const ActiveComponent = TABS[activeTab].Component
+  const handleTabChange = (index: number) => {
+    setActiveTab(index)
+    setMounted((prev) => {
+      if (prev.has(index)) return prev
+      const next = new Set(prev)
+      next.add(index)
+      return next
+    })
+  }
 
   return (
     <Box
@@ -159,7 +177,7 @@ export default function Settings() {
           <FormControl fullWidth size="small">
             <Select
               value={activeTab}
-              onChange={(e) => setActiveTab(Number(e.target.value))}
+              onChange={(e) => handleTabChange(Number(e.target.value))}
               inputProps={{ 'aria-label': '설정 메뉴 선택' }}
               sx={{
                 bgcolor: cardBg,
@@ -223,8 +241,8 @@ export default function Settings() {
                     role="button"
                     tabIndex={0}
                     aria-pressed={isActive}
-                    onClick={() => setActiveTab(index)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveTab(index) }}
+                    onClick={() => handleTabChange(index)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleTabChange(index) }}
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
@@ -333,7 +351,25 @@ export default function Settings() {
                 </Box>
               </Box>
 
-              <ActiveComponent />
+              {TABS.map((tab, index) => {
+                if (!mounted.has(index)) return null
+                const isActive = activeTab === index
+                return (
+                  <Box
+                    key={tab.id}
+                    sx={{
+                      display: isActive ? 'block' : 'none',
+                      '@keyframes tabFadeIn': {
+                        from: { opacity: 0, transform: 'translateY(8px)' },
+                        to:   { opacity: 1, transform: 'translateY(0)' },
+                      },
+                      ...(isActive && { animation: 'tabFadeIn 0.22s ease' }),
+                    }}
+                  >
+                    <tab.Component />
+                  </Box>
+                )
+              })}
             </Box>
           </Box>
         </Box>

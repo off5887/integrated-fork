@@ -16,6 +16,7 @@ export interface IdeaItem {
   department: string
   deptCd: string
   status: IdeaStatus
+  type: 'idea' | 'completed'
   submittedAt: string
   security: 'public' | 'private'
   likes: number

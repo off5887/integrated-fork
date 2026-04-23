@@ -19,7 +19,7 @@ interface Props {
   onClose: () => void
   onPrev: () => void
   onNext: () => void
-  onApprove: (reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoreProfitability?: number, mileage?: number) => void
+  onApprove: (reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoreProfitability?: number, awardedPoints?: number) => void
   onReject: (reason: string) => void
   onWithdrawApprove: (reason: string) => void
   onWithdrawReject: (reason: string) => void
@@ -36,8 +36,8 @@ export default function JudgeDetailActions({
 
   const [decisionType, setDecisionType] = useState<DecisionType | null>(null)
 
-  const handleConfirm = (type: DecisionType, reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoreProfitability?: number, mileage?: number) => {
-    if (type === '승인') onApprove(reason, scoreInnovation, scoreFeasibility, scoreProfitability, mileage)
+  const handleConfirm = (type: DecisionType, reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoreProfitability?: number, awardedPoints?: number) => {
+    if (type === '승인') onApprove(reason, scoreInnovation, scoreFeasibility, scoreProfitability, awardedPoints)
     else if (type === '반려') onReject(reason)
     else if (type === '승인회수') onWithdrawApprove(reason)
     else onWithdrawReject(reason)

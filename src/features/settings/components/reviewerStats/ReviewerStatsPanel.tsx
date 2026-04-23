@@ -21,7 +21,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { useMemo, useState } from 'react'
-import { reviewerTeamStatsData } from '@/api/mock/judge'
+import { useReviewerStats } from '@/api/queries/useReviewerStats'
 import type { ReviewerTeamStats } from '@/api/types/judge'
 import { usePageColors } from '@/theme/pageColors'
 import { useSettingsTheme } from '@/theme/settingsTheme'
@@ -71,9 +71,11 @@ export default function ReviewerStatsPanel() {
 
   const [filter, setFilter] = useState<IdeaTypeFilter>('all')
 
+  const { data: statsData = [] } = useReviewerStats()
+
   const rows = useMemo(
-    () => reviewerTeamStatsData.map((r) => ({ ...r, derived: deriveStats(r, filter) })),
-    [filter],
+    () => statsData.map((r) => ({ ...r, derived: deriveStats(r, filter) })),
+    [statsData, filter],
   )
 
   const totals = useMemo(() => {

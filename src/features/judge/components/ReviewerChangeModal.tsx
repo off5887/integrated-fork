@@ -19,7 +19,6 @@ import { useMemo, useState, useEffect } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useJudgeTheme } from '@/theme/judgeTheme'
 import { useSnackbar } from '@/context/SnackbarContext'
-import type { Proposal } from '@/api/types/judge'
 import { useIdeaApprover, useAssignApprover } from '@/api/queries/useIdeas'
 import { useUserRoles } from '@/api/queries/useUsers'
 
@@ -27,13 +26,14 @@ import { useUserRoles } from '@/api/queries/useUsers'
 
 interface Props {
   open: boolean
-  proposal: Proposal | null
+  ideaId: number | null
+  ideaTitle: string
   onClose: () => void
 }
 
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
-export default function ReviewerChangeModal({ open, proposal, onClose }: Props) {
+export default function ReviewerChangeModal({ open, ideaId, ideaTitle, onClose }: Props) {
   const colors = usePageColors()
   const theme = useJudgeTheme()
   const { showSnackbar } = useSnackbar()
@@ -48,7 +48,7 @@ export default function ReviewerChangeModal({ open, proposal, onClose }: Props) 
   }, [searchTerm])
 
   // 현재 배정된 심사자 조회
-  const { data: currentApprover } = useIdeaApprover(open ? (proposal?.id ?? null) : null)
+  const { data: currentApprover } = useIdeaApprover(open ? ideaId : null)
 
   // 배정 가능한 후보 목록 (isAdmin || isReviewer)
   const { data: rolesData } = useUserRoles()
@@ -80,13 +80,13 @@ export default function ReviewerChangeModal({ open, proposal, onClose }: Props) 
     selectedCandidate.employeeId !== currentApprover?.approverId
 
   // 심사자 배정 뮤테이션
-  const assignApprover = useAssignApprover(proposal?.id ?? 0)
+  const assignApprover = useAssignApprover(ideaId ?? 0)
 
   const handleConfirm = () => {
-    if (!proposal || !selectedCandidate) return
+    if (!ideaId || !selectedCandidate) return
     assignApprover.mutate(selectedCandidate.employeeId, {
       onSuccess: () => {
-        showSnackbar(`'${proposal.title}' 심사자가 ${selectedCandidate.name}(으)로 변경되었습니다.`, 'success')
+        showSnackbar(`'${ideaTitle}' 심사자가 ${selectedCandidate.name}(으)로 변경되었습니다.`, 'success')
         handleClose()
       },
       onError: () => {
@@ -101,7 +101,7 @@ export default function ReviewerChangeModal({ open, proposal, onClose }: Props) 
     onClose()
   }
 
-  if (!proposal) return null
+  if (!ideaId) return null
 
   const currentName = currentApprover?.approverName ?? '(미배정)'
 
@@ -176,7 +176,7 @@ export default function ReviewerChangeModal({ open, proposal, onClose }: Props) 
               whiteSpace: 'nowrap',
             }}
           >
-            {proposal.title}
+            {ideaTitle}
           </Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} sx={{ color: colors.textSecondary, flexShrink: 0 }}>

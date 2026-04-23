@@ -15,7 +15,8 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
       businessSite: '서울사업소',
       role: 'user',
       totalMileage: 1200,
-      gomLevel: 5,
+      gomLevel: 4,
+      levelName: '곰신',
     },
   },
   {
@@ -32,7 +33,8 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
       businessSite: '서울사업소',
       role: 'reviewer',
       totalMileage: 800,
-      gomLevel: 2,
+      gomLevel: 1,
+      levelName: '꼬마 곰곰이',
     },
   },
   {
@@ -50,6 +52,7 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
       role: 'admin',
       totalMileage: 500,
       gomLevel: 1,
+      levelName: '꼬마 곰곰이',
     },
   },
 ]

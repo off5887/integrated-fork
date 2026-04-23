@@ -23,6 +23,10 @@ interface Props {
   searchTerm: string
   onSearchChange: (v: string) => void
   onSelect: (id: number) => void
+  startDate: string
+  endDate: string
+  onStartDateChange: (v: string) => void
+  onEndDateChange: (v: string) => void
 }
 
 export default function IdeaListPanel({
@@ -31,6 +35,10 @@ export default function IdeaListPanel({
   searchTerm,
   onSearchChange,
   onSelect,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
 }: Props) {
   const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
@@ -145,6 +153,45 @@ export default function IdeaListPanel({
             },
           }}
         />
+
+        {/* 날짜 범위 */}
+        <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'center' }}>
+          <TextField
+            type="date"
+            size="small"
+            value={startDate}
+            onChange={(e) => onStartDateChange(e.target.value)}
+            slotProps={{ inputLabel: { shrink: true } }}
+            sx={{
+              flex: 1,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2, bgcolor: st.inputBg, fontSize: '0.78rem',
+                '& fieldset': { borderColor },
+                '&:hover fieldset': { borderColor: st.inputHoverBorder },
+                '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
+              },
+              '& .MuiInputBase-input': { color: textPrimary, px: 1, py: 0.75 },
+            }}
+          />
+          <Typography sx={{ fontSize: '0.75rem', color: textSecondary, flexShrink: 0 }}>~</Typography>
+          <TextField
+            type="date"
+            size="small"
+            value={endDate}
+            onChange={(e) => onEndDateChange(e.target.value)}
+            slotProps={{ inputLabel: { shrink: true } }}
+            sx={{
+              flex: 1,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2, bgcolor: st.inputBg, fontSize: '0.78rem',
+                '& fieldset': { borderColor },
+                '&:hover fieldset': { borderColor: st.inputHoverBorder },
+                '&.Mui-focused fieldset': { borderColor: st.inputFocusBorder },
+              },
+              '& .MuiInputBase-input': { color: textPrimary, px: 1, py: 0.75 },
+            }}
+          />
+        </Box>
 
         {/* 아이디어 목록 */}
         <Box

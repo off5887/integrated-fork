@@ -8,10 +8,10 @@ import type { ExecutionCompletionRateProps } from '@/api/types/dashboard'
 const getStatus = (rate: number) =>
   COMPLETION_RATE_STATUS.find((s) => rate >= s.threshold) ?? COMPLETION_RATE_STATUS[COMPLETION_RATE_STATUS.length - 1]
 
-export default function ExecutionCompletionRate({ completionRate = 73.4 }: ExecutionCompletionRateProps) {
+export default function ExecutionCompletionRate({ stats }: ExecutionCompletionRateProps) {
   const dt = useDashboardTheme()
+  const { totalIdeas, approvedIdeas, inProgressIdeas, completedIdeas, completionRate } = stats
   const status = getStatus(completionRate)
-  const completed = Math.round((completionRate / 100) * 150)
 
   const options: ApexOptions = {
     chart: {
@@ -21,8 +21,8 @@ export default function ExecutionCompletionRate({ completionRate = 73.4 }: Execu
       background: 'transparent',
       animations: {
         enabled: true,
-        speed: 1000,
-        animateGradually: { enabled: true, delay: 200 },
+        speed: 250,
+        animateGradually: { enabled: false },
       },
     },
     plotOptions: {
@@ -81,14 +81,14 @@ export default function ExecutionCompletionRate({ completionRate = 73.4 }: Execu
   }
 
   const STATS = [
-    { label: '완료', value: `${completed}건`, color: status.color },
-    { label: '전체', value: '150건', color: dt.textSecondary },
-    { label: '진행 중', value: `${150 - completed}건`, color: dashboardAccent.blue },
-    { label: '완료율', value: `${completionRate}%`, color: status.color },
+    { label: '아이디어 제출', value: `${totalIdeas}건`,   color: dt.textSecondary    },
+    { label: '승인완료', value: `${approvedIdeas}건`,   color: status.color        },
+    { label: '실행완료 제출', value: `${inProgressIdeas}건`, color: dashboardAccent.blue },
+    { label: '실행완료율', value: `${completionRate}%`, color: status.color        },
   ]
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* 헤더 스트립 */}
       <Box
         sx={{
@@ -126,7 +126,7 @@ export default function ExecutionCompletionRate({ completionRate = 73.4 }: Execu
       </Typography>
 
       {/* 차트 - 고정 높이 */}
-      <Box sx={{ flexShrink: 0, mb: 2 }}>
+      <Box sx={{ flexShrink: 0, mt: 'auto', mb: 3.5 }}>
         <Chart
           options={options}
           series={[completionRate]}
@@ -136,13 +136,13 @@ export default function ExecutionCompletionRate({ completionRate = 73.4 }: Execu
         />
       </Box>
 
-      {/* 스탯 그리드 - 차트 바로 아래 자연스럽게 */}
+      {/* 스탯 그리드 */}
       <Box
         sx={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: 1,
-          mt: 0,
+          mt: 'auto',
         }}
       >
         {STATS.map((item) => (

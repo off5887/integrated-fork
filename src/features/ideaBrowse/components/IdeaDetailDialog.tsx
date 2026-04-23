@@ -9,6 +9,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined'
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
@@ -25,11 +26,13 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useIdeaBrowseTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { useIdeaDetail, useToggleLike, useSimilarIdeas, useDeleteAttachment } from '@/api/queries/useIdeas'
 import { useCategories } from '@/api/queries/useCategories'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import ReviewerChangeModal from '@/features/judge/components/ReviewerChangeModal'
 import { downloadAttachment } from '@/utils/attachmentDownload'
 import { formatBytes } from '@/utils/fileUtils'
 import IdeaCommentSection from './IdeaCommentSection'
@@ -64,6 +67,8 @@ export default function IdeaDetailDialog({
 }: IdeaDetailDialogProps) {
   const { data: similarTitles = [] } = useSimilarIdeas(ideaId)
   const theme = useIdeaBrowseTheme()
+  const { isAdmin, isReviewer, employeeId } = useCurrentUser()
+  const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
   const {
     textPrimary, textSecondary, borderColor, cardBg,
     similar, avatarBg, dialogShadow, backdropBg, similarListColor,
@@ -80,6 +85,9 @@ export default function IdeaDetailDialog({
   const cat = categories.find((c) => Number(c.id) === idea.categoryId)
     ?? { emoji: '📁', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.35)', label: idea.category }
   const stat = IDEA_STATUS_CONFIG[idea.status]
+
+  // 심사자 변경 권한: 관리자 전체, 배정된 심사자 본인만
+  const canChangeReviewer = isAdmin || (isReviewer && !!detail?.approverId && detail.approverId === employeeId)
 
   // live counts from API, fallback to IdeaItem values while loading
   const likeCount = detail?.likeCount ?? idea.likes
@@ -288,50 +296,69 @@ export default function IdeaDetailDialog({
             </Box>
           </Box>
 
-          {/* 내 아이디어일 때만 표시 — 공동제안자, 심사자, 실행계획 */}
-          {isOwner && (
+          {/* 내 아이디어이거나 심사자 변경 권한이 있을 때 */}
+          {(isOwner || canChangeReviewer) && (
             <>
               <Divider sx={{ borderColor }} />
 
-              {/* 공동제안자 */}
-              <Box>
-                <SectionLabel icon={<PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />} label="공동제안자" textSecondary={textSecondary} />
-                {detail?.coProposers && detail.coProposers.length > 0 ? (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                    {detail.coProposers.map((p) => (
-                      <Box
-                        key={p.employeeId}
-                        sx={{
-                          display: 'flex', alignItems: 'center', gap: 0.75,
-                          px: 1.25, py: 0.5, borderRadius: 9999,
-                          bgcolor: theme.coProposerBg,
-                          border: `1px solid ${theme.coProposerBorder}`,
-                        }}
-                      >
-                        <Avatar sx={{ width: 20, height: 20, bgcolor: avatarBg, fontSize: '0.65rem', fontWeight: 700 }}>
-                          {p.name[0]}
-                        </Avatar>
-                        <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: textPrimary }}>
-                          {p.name}
-                        </Typography>
-                        <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
-                          {p.rollNm}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
-                ) : (
-                  <Typography sx={{ fontSize: '0.85rem', color: textSecondary, fontStyle: 'italic' }}>
-                    공동제안자 없음
-                  </Typography>
-                )}
-              </Box>
+              {/* 공동제안자 — 제안자 본인에게만 표시 */}
+              {isOwner && (
+                <Box>
+                  <SectionLabel icon={<PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />} label="공동제안자" textSecondary={textSecondary} />
+                  {detail?.coProposers && detail.coProposers.length > 0 ? (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                      {detail.coProposers.map((p) => (
+                        <Box
+                          key={p.employeeId}
+                          sx={{
+                            display: 'flex', alignItems: 'center', gap: 0.75,
+                            px: 1.25, py: 0.5, borderRadius: 9999,
+                            bgcolor: theme.coProposerBg,
+                            border: `1px solid ${theme.coProposerBorder}`,
+                          }}
+                        >
+                          <Avatar sx={{ width: 20, height: 20, bgcolor: avatarBg, fontSize: '0.65rem', fontWeight: 700 }}>
+                            {p.name[0]}
+                          </Avatar>
+                          <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: textPrimary }}>
+                            {p.name}
+                          </Typography>
+                          <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>
+                            {p.rollNm}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography sx={{ fontSize: '0.85rem', color: textSecondary, fontStyle: 'italic' }}>
+                      공동제안자 없음
+                    </Typography>
+                  )}
+                </Box>
+              )}
 
-              <Divider sx={{ borderColor }} />
+              {isOwner && <Divider sx={{ borderColor }} />}
 
               {/* 심사자 */}
               <Box>
-                <SectionLabel icon={<PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />} label="담당 심사자" textSecondary={textSecondary} />
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <SectionLabel icon={<PersonOutlineIcon sx={{ fontSize: '0.95rem', color: textSecondary }} />} label="담당 심사자" textSecondary={textSecondary} />
+                  {canChangeReviewer && (
+                    <Button
+                      size="small"
+                      startIcon={<SwapHorizIcon sx={{ fontSize: '0.85rem' }} />}
+                      onClick={() => setReviewerModalOpen(true)}
+                      sx={{
+                        fontSize: '0.75rem', fontWeight: 600, textTransform: 'none',
+                        color: ideaAccent.primary, px: 1.25, py: 0.4, borderRadius: 1.5,
+                        minWidth: 0, mb: 1,
+                        '&:hover': { bgcolor: `${ideaAccent.primary}12` },
+                      }}
+                    >
+                      변경
+                    </Button>
+                  )}
+                </Box>
                 {detail?.approverName ? (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Avatar sx={{ width: 28, height: 28, bgcolor: avatarBg, fontSize: '0.75rem', fontWeight: 700 }}>
@@ -370,7 +397,10 @@ export default function IdeaDetailDialog({
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.75 }}>
                           <CalendarTodayIcon sx={{ fontSize: '0.75rem', color: textSecondary }} />
                           <Typography sx={{ fontSize: '0.73rem', color: textSecondary, fontFamily: 'monospace' }}>
-                            {ex.scheduleDate.slice(0, 10)}
+                            {ex.startDate.slice(0, 10)}
+                            {ex.endDate && ex.endDate.slice(0, 10) !== ex.startDate.slice(0, 10) && (
+                              <> ~ {ex.endDate.slice(0, 10)}</>
+                            )}
                           </Typography>
                         </Box>
                         <Typography sx={{ fontSize: '0.85rem', color: textPrimary, lineHeight: 1.6, mb: 0.5 }}>
@@ -449,6 +479,15 @@ export default function IdeaDetailDialog({
           <IdeaCommentSection ideaId={idea.id} commentCount={commentCount} />
         </Box>
       </DialogContent>
+
+      {canChangeReviewer && (
+        <ReviewerChangeModal
+          open={reviewerModalOpen}
+          ideaId={idea.id}
+          ideaTitle={idea.title}
+          onClose={() => setReviewerModalOpen(false)}
+        />
+      )}
     </Dialog>
   )
 }

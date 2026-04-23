@@ -167,7 +167,7 @@ function AdminPanel({ dt }: PanelProps) {
   const { data: withdrawals = [], isLoading } = useAllWithdrawals('pending')
   const { data: userList = [] } = useUsers()
   const userMap = useMemo(
-    () => new Map(userList.map((u) => [u.employeeId, u])),
+    () => new Map(userList.map((u) => [u.employeeNumber, u])),
     [userList],
   )
   const items = withdrawals.slice(0, 5)
@@ -188,6 +188,7 @@ function AdminPanel({ dt }: PanelProps) {
           {items.map((item, i) => {
             const user = userMap.get(item.employeeId)
             const displayName = user?.name ?? item.employeeId
+            const displayDept = user?.department ?? ''
             return (
               <Box
                 key={item.withdrawalId}
@@ -208,11 +209,11 @@ function AdminPanel({ dt }: PanelProps) {
                   </Typography>
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography variant="body2" fontWeight={600} sx={{ color: dt.textPrimary, lineHeight: 1.3 }}>
+                  <Typography variant="body2" fontWeight={600} sx={{ color: dt.textPrimary, lineHeight: 1.3 }} noWrap>
                     {displayName}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.65rem' }}>
-                    🐟 {item.requestPoints.toLocaleString()}마리
+                  <Typography variant="caption" sx={{ color: dt.textSecondary, fontSize: '0.65rem' }} noWrap>
+                    {displayDept && `${displayDept} · `}🐟 {item.requestPoints.toLocaleString()}마리
                   </Typography>
                 </Box>
                 <Box sx={{ textAlign: 'right', flexShrink: 0 }}>

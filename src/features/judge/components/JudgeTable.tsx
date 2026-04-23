@@ -15,6 +15,7 @@ import {
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
 import { useJudgeTheme } from '@/theme/judgeTheme'
+import { useCategories } from '@/api/queries/useCategories'
 import { Proposal } from '@/api/types/judge'
 import { statusConfig } from '../config/judgeStatusConfig'
 
@@ -43,6 +44,8 @@ export default function JudgeTable({
 }: JudgeTableProps) {
   const colors = usePageColors()
   const theme = useJudgeTheme()
+  const { categories: allCategories } = useCategories()
+  const catMap = new Map(allCategories.map((c) => [c.label, c]))
 
   return (
     <Box
@@ -95,6 +98,50 @@ export default function JudgeTable({
                 />
               </Box>
 
+              {/* 구분 + 카테고리 chip */}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 0.75 }}>
+                {item.ideaType === 'complete' ? (
+                  <Box
+                    sx={{
+                      display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                      px: 0.8, py: 0.2, borderRadius: 1.5,
+                      bgcolor: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.3)',
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '0.62rem', lineHeight: 1 }}>🏁</Typography>
+                    <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: '#0ea5e9', lineHeight: 1 }}>실행완료</Typography>
+                  </Box>
+                ) : (
+                  <Box
+                    sx={{
+                      display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                      px: 0.8, py: 0.2, borderRadius: 1.5,
+                      bgcolor: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)',
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '0.62rem', lineHeight: 1 }}>💡</Typography>
+                    <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: '#6366f1', lineHeight: 1 }}>아이디어</Typography>
+                  </Box>
+                )}
+                {item.categories?.map((catName) => {
+                  const cat = catMap.get(catName)
+                  return (
+                    <Box
+                      key={catName}
+                      sx={{
+                        display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                        px: 0.8, py: 0.2, borderRadius: 1.5,
+                        bgcolor: cat?.bg ?? 'rgba(148,163,184,0.1)',
+                        border: `1px solid ${cat?.border ?? 'rgba(148,163,184,0.3)'}`,
+                      }}
+                    >
+                      <Typography sx={{ fontSize: '0.62rem', lineHeight: 1 }}>{cat?.emoji ?? '🏷️'}</Typography>
+                      <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: cat?.color ?? colors.textSecondary, lineHeight: 1 }}>{catName}</Typography>
+                    </Box>
+                  )
+                })}
+              </Box>
+
               {/* 이관 배지 */}
               {item.transferredFrom && (
                 <Box
@@ -115,7 +162,7 @@ export default function JudgeTable({
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
                   <Typography sx={{ fontSize: '0.74rem', color: colors.textSecondary }}>
-                    {item.proposers.join(', ')}
+                    {item.author}
                   </Typography>
                   <Typography sx={{ fontSize: '0.7rem', color: colors.textSecondary, opacity: 0.5 }}>·</Typography>
                   <Typography sx={{ fontSize: '0.74rem', color: colors.textSecondary }}>
@@ -262,10 +309,53 @@ export default function JudgeTable({
                         />
                       </Box>
 
-                      {/* 이관 배지 */}
-                      {item.transferredFrom && (
-                        <Tooltip
-                          title={`결재자 변경된 항목 · 이전 담당자: ${item.transferredFrom}`}
+                      {/* 구분 + 카테고리 chip */}
+                      <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                        {item.ideaType === 'complete' ? (
+                          <Box
+                            sx={{
+                              display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                              px: 0.8, py: 0.2, borderRadius: 1.5,
+                              bgcolor: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.3)',
+                            }}
+                          >
+                            <Typography sx={{ fontSize: '0.62rem', lineHeight: 1 }}>🏁</Typography>
+                            <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: '#0ea5e9', lineHeight: 1 }}>실행완료</Typography>
+                          </Box>
+                        ) : (
+                          <Box
+                            sx={{
+                              display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                              px: 0.8, py: 0.2, borderRadius: 1.5,
+                              bgcolor: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)',
+                            }}
+                          >
+                            <Typography sx={{ fontSize: '0.62rem', lineHeight: 1 }}>💡</Typography>
+                            <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: '#6366f1', lineHeight: 1 }}>아이디어</Typography>
+                          </Box>
+                        )}
+                        {item.categories?.map((catName) => {
+                          const cat = catMap.get(catName)
+                          return (
+                            <Box
+                              key={catName}
+                              sx={{
+                                display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                                px: 0.8, py: 0.2, borderRadius: 1.5,
+                                bgcolor: cat?.bg ?? 'rgba(148,163,184,0.1)',
+                                border: `1px solid ${cat?.border ?? 'rgba(148,163,184,0.3)'}`,
+                              }}
+                            >
+                              <Typography sx={{ fontSize: '0.62rem', lineHeight: 1 }}>{cat?.emoji ?? '🏷️'}</Typography>
+                              <Typography sx={{ fontSize: '0.68rem', fontWeight: 700, color: cat?.color ?? colors.textSecondary, lineHeight: 1 }}>{catName}</Typography>
+                            </Box>
+                          )
+                        })}
+
+                        {/* 이관 배지 */}
+                        {item.transferredFrom && (
+                          <Tooltip
+                            title={`결재자 변경된 항목 · 이전 담당자: ${item.transferredFrom}`}
                           placement="right"
                           arrow
                         >
@@ -293,12 +383,13 @@ export default function JudgeTable({
                         </Tooltip>
                       )}
                     </Box>
+                    </Box>
                   </TableCell>
 
                   {/* 제안자 */}
                   <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                     <Typography sx={{ fontSize: '0.875rem', color: colors.textSecondary }}>
-                      {item.proposers.join(', ')}
+                      {item.author}
                     </Typography>
                   </TableCell>
 

@@ -2,12 +2,12 @@
 // 콘텐츠 높이 기준 자연 레이아웃 — 잘림·내부스크롤 없음
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import { Box, CircularProgress, Typography, alpha } from '@mui/material'
-import { lazy, Suspense, useState, useEffect } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { dashboardAccent, useDashboardTheme } from '@/theme/dashboardTheme'
-import { TEAM_ACTIVITIES, MY_ACTIVITIES, EXECUTION_RATE } from '@/api/mock/dashboard'
+import { TEAM_ACTIVITIES, MY_ACTIVITIES } from '@/api/mock/dashboard'
 import type { RecentActivity } from '@/api/types/dashboard'
 import type { IdeaApiItem } from '@/api/types/idea'
-import { useMyIdeas, useTeamIdeas } from '@/api/queries/useIdeas'
+import { useMyIdeas, useTeamIdeas, useIdeaStats } from '@/api/queries/useIdeas'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { toRelativeTime } from '@/utils/dateUtils'
 import DashboardCard from './components/DashboardCard'
@@ -51,6 +51,7 @@ export default function RealDashboard() {
 
   const { data: myIdeasPage }  = useMyIdeas(0, 5)
   const { data: teamIdeasRaw } = useTeamIdeas(department || undefined, 5)
+  const { data: ideaStats }    = useIdeaStats()
 
   const myActivities:   RecentActivity[] = myIdeasPage?.content?.length
     ? myIdeasPage.content.map(toRecentActivity)
@@ -60,11 +61,6 @@ export default function RealDashboard() {
     : TEAM_ACTIVITIES
 
   const activities = activityTab === 'team' ? teamActivities : myActivities
-  const [ready, setReady] = useState(false)
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), 3000)
-    return () => clearTimeout(t)
-  }, [])
 
   return (
     <Box sx={{
@@ -111,24 +107,8 @@ export default function RealDashboard() {
         </Box>
       </Box>
 
-      {/* ── 헤더 하단 프로그레스바 (3초 로딩) ─────────────────── */}
-      {!ready && (
-        <Box sx={{ position: 'relative', height: 3, bgcolor: 'rgba(99,102,241,0.12)', overflow: 'hidden', flexShrink: 0 }}>
-          <Box sx={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
-            transformOrigin: 'left center',
-            animation: 'dashboard-bar 3s cubic-bezier(0.4,0,0.2,1) forwards',
-            '@keyframes dashboard-bar': {
-              '0%':   { transform: 'scaleX(0)',    transformOrigin: 'left center' },
-              '100%': { transform: 'scaleX(1)',    transformOrigin: 'left center' },
-            },
-          }} />
-        </Box>
-      )}
-
       {/* ── Content ─────────────────────────────────────────── */}
-      <Box sx={{ p: { xs: 1.5, md: 2 }, display: ready ? 'block' : 'none' }}>
+      <Box sx={{ p: { xs: 1.5, md: 2 } }}>
 
         {/*
           ── Main Layout (CSS Grid) ─────────────────────────────
@@ -155,7 +135,7 @@ export default function RealDashboard() {
           {/* ── 전체 실행 완료율 (col2 row1) ────────────────── */}
           <DashboardCard delay={0.15} sx={{ gridColumn: '2', gridRow: '1' }}>
             <Suspense fallback={<ChartFallback height={240} />}>
-              <ExecutionCompletionRate completionRate={EXECUTION_RATE} />
+              <ExecutionCompletionRate stats={ideaStats ?? { totalIdeas: 0, approvedIdeas: 0, inProgressIdeas: 0, completedIdeas: 0, completionRate: 0 }} />
             </Suspense>
           </DashboardCard>
 

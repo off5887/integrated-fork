@@ -1,17 +1,12 @@
 // src/routes/Welcome/GomEvolutionSection.tsx
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { Box, Button, LinearProgress, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getWelcomeTheme } from '@/theme/welcomeTheme'
 import { GOM_LEVELS } from '@/api/mock/welcome'
+import { useLevelConfigs } from '@/api/queries/useLevelConfigs'
 import GomEvolutionModal from './GomEvolutionModal'
-
-function getGomLevel(fishCount: number) {
-  return GOM_LEVELS.reduce((prev, curr) =>
-    fishCount >= curr.min ? curr : prev,
-  )
-}
 
 interface GomEvolutionSectionProps {
   fishCount: number
@@ -24,14 +19,33 @@ export default function GomEvolutionSection({
   const t = getWelcomeTheme(isDarkMode)
   const [openModal, setOpenModal] = useState(false)
 
-  const currentLevel = getGomLevel(fishCount)
-  const nextLevel =
-    GOM_LEVELS.find((l) => l.min > fishCount) ||
-    GOM_LEVELS[GOM_LEVELS.length - 1]
-  const progress =
-    nextLevel.min > fishCount
-      ? Math.min(100, Math.round((fishCount / nextLevel.min) * 100))
-      : 100
+  const { data: levelConfigs = [] } = useLevelConfigs()
+
+  // API 설정과 정적 이미지·설명을 합쳐서 enriched levels 생성
+  const levels = useMemo(() => {
+    const sorted = [...levelConfigs].sort((a, b) => a.level - b.level)
+    return sorted.map((cfg) => ({
+      level: cfg.level,
+      name:  cfg.levelName,
+      min:   cfg.minMileage,
+      image: GOM_LEVELS[cfg.level]?.image ?? GOM_LEVELS[0].image,
+      desc:  GOM_LEVELS[cfg.level]?.desc  ?? '',
+    }))
+  }, [levelConfigs])
+
+  // 로딩 중이면 정적 GOM_LEVELS 사용
+  const activeLevels = levels.length > 0
+    ? levels
+    : GOM_LEVELS.map((l, i) => ({ level: i, ...l }))
+
+  const currentLevel = activeLevels.reduce(
+    (prev, curr) => fishCount >= curr.min ? curr : prev,
+    activeLevels[0],
+  )
+  const nextLevel = activeLevels.find((l) => l.min > fishCount) ?? activeLevels[activeLevels.length - 1]
+  const progress = nextLevel.min > fishCount
+    ? Math.min(100, Math.round((fishCount / nextLevel.min) * 100))
+    : 100
 
   return (
     <Box
@@ -293,6 +307,7 @@ export default function GomEvolutionSection({
         onClose={() => setOpenModal(false)}
         currentLevelMin={currentLevel.min}
         fishCount={fishCount}
+        levels={activeLevels}
       />
     </Box>
   )

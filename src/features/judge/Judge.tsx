@@ -66,11 +66,11 @@ export default function Judge() {
     setPage(0)
   }
 
-  const handleApprove = (reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoroProfitability?: number, mileage?: number) => {
+  const handleApprove = (reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoroProfitability?: number, awardedPoints?: number) => {
     if (!selectedProposal) return
     const title = selectedProposal.title
     reviewIdea.mutate(
-      { status: 'approved', reason, scoreInnovation, scoreFeasibility, scoreProfitability: scoroProfitability, mileage },
+      { status: 'approved', reason, scoreInnovation, scoreFeasibility, scoreProfitability: scoroProfitability, awardedPoints },
       {
         onSuccess: () => {
           setSelectedProposal(null)
@@ -352,7 +352,8 @@ export default function Judge() {
       {isAdmin && (
         <ReviewerChangeModal
           open={reviewerChangeTarget !== null}
-          proposal={reviewerChangeTarget}
+          ideaId={reviewerChangeTarget?.id ?? null}
+          ideaTitle={reviewerChangeTarget?.title ?? ''}
           onClose={() => setReviewerChangeTarget(null)}
         />
       )}
