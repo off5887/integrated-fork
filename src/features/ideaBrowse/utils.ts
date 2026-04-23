@@ -5,7 +5,7 @@ import type { CategoryConfig, IdeaItem } from '@/api/types/ideaBrowse'
 export function extractKeywords(text: string): string[] {
   return text
     .toLowerCase()
-    .split(/[\s,.\-!?/()\[\]]+/)
+    .split(/[\s,.\-!?/()[\]]+/)
     .filter((w) => w.length >= 2)
 }
 

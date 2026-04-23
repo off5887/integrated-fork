@@ -136,7 +136,7 @@ export default function ExchangeRequestsManagement() {
   }
 
   const handleToggleRow = (id: number) => {
-    setSelectedIds((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+    setSelectedIds((prev) => { const next = new Set(prev); if (next.has(id)) { next.delete(id) } else { next.add(id) } return next })
   }
 
   const handleSingleApprove = (item: AdminExchangeItem) => { setConfirmTarget(item); setConfirmMode('single-approve') }
