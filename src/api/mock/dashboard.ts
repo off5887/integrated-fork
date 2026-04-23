@@ -1,7 +1,7 @@
 // src/api/mock/dashboard.ts
 // 대시보드 가상 데이터
 
-import type { KpiStat, RecentActivity, ApprovalStage, DepartmentData, PopularItem, MyGomgomi, RoleIdeaItem, RoleJudgeItem, RoleMileageRequest } from '@/api/types/dashboard'
+import type { KpiStat, RecentActivity, ApprovalStage, DepartmentData, PopularItem, MyGomgomi, RoleIdeaItem, RoleJudgeItem, RoleMileageRequest, DepartmentStat, ReviewerDashboardStats } from '@/api/types/dashboard'
 
 /** 일반사용자 KPI */
 export const KPI_STATS: KpiStat[] = [
@@ -21,10 +21,8 @@ const KPI_STATS_REVIEWER: KpiStat[] = [
 
 /** 관리자 KPI */
 const KPI_STATS_ADMIN: KpiStat[] = [
-  { label: '전체 아이디어', value: '150건',  icon: '💡', color: '#3b82f6' },
-  { label: '승인 완료',     value: '68건',   icon: '✅', color: '#10b981' },
-  { label: '이번 달 신규',  value: '23건',   icon: '🚀', color: '#f59e0b' },
-  { label: '전체 실행률',   value: '73.4%',  icon: '📊', color: '#8b5cf6' },
+  { label: '전체 아이디어', value: '150건', icon: '💡', color: '#3b82f6' },
+  { label: '승인 완료',     value: '68건',  icon: '✅', color: '#10b981' },
 ]
 
 export const KPI_STATS_BY_ROLE: Record<string, KpiStat[]> = {
@@ -136,6 +134,21 @@ export const PENDING_REVIEW_IDEAS: RoleJudgeItem[] = [
   { id: 4, title: '임직원 교통비 지원 확대',          proposer: '최재원', dueDate: '5일 후', urgent: false },
   { id: 5, title: '사내 피트니스센터 이용시간 연장',  proposer: '정다은', dueDate: '1주 후', urgent: false },
 ]
+
+export const DEPARTMENT_STATS: DepartmentStat[] = [
+  { department: '개발1팀',  count: 85 },
+  { department: '개발2팀',  count: 72 },
+  { department: '기획팀',   count: 68 },
+  { department: '디자인팀', count: 55 },
+  { department: '운영팀',   count: 49 },
+]
+
+export const REVIEWER_DASH_STATS: ReviewerDashboardStats = {
+  assigned:  5,
+  pending:   3,
+  completed: 8,
+  avgDays:   2.3,
+}
 
 export const MILEAGE_REQUESTS: RoleMileageRequest[] = [
   { id: 1, name: '홍길동', fish: 1200, cashAmount: 120000, requestDate: '방금 전' },

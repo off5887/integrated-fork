@@ -46,10 +46,19 @@ export const queryKeys = {
     comments:  (id: number) => ['ideas', 'comments', id]  as const,
     similar:   (id: number) => ['ideas', 'similar', id]   as const,
     executors: (id: number) => ['ideas', 'executors', id] as const,
+    stats:            () => ['ideas', 'stats'] as const,
+    departmentStats:  (size?: number) => size !== undefined ? ['ideas', 'departmentStats', size] as const : ['ideas', 'departmentStats'] as const,
+    reviewerDashStats: () => ['ideas', 'reviewerDashStats'] as const,
   },
   messages: {
     received: (page?: number) => page !== undefined ? ['messages', 'received', page] as const : ['messages', 'received'] as const,
     sent:     (page?: number) => page !== undefined ? ['messages', 'sent', page]     as const : ['messages', 'sent']     as const,
     detail:   (id: number)    => ['messages', 'detail', id] as const,
+  },
+  reviewerStats: {
+    list: () => ['reviewerStats', 'list'] as const,
+  },
+  levelConfigs: {
+    list: () => ['levelConfigs', 'list'] as const,
   },
 } as const

@@ -12,8 +12,30 @@ export type DashboardCardProps = {
 }
 
 
+/** GET /api/ideas/stats/departments?size=N 응답 항목 */
+export interface DepartmentStat {
+  department: string
+  count: number
+}
+
+/** GET /api/ideas/reviewer/stats 응답 */
+export interface ReviewerDashboardStats {
+  assigned:  number
+  pending:   number
+  completed: number
+  avgDays:   number
+}
+
+export interface IdeaStats {
+  totalIdeas: number      // 전체 제출 수
+  approvedIdeas: number   // 승인완료 수 (approved + in_progress + completed)
+  inProgressIdeas: number // 실행중 수
+  completedIdeas: number  // 실행완료 수
+  completionRate: number  // 실행완료율 (completedIdeas / totalIdeas × 100)
+}
+
 export type ExecutionCompletionRateProps = {
-  completionRate: number
+  stats: IdeaStats
 }
 
 // ─── 데이터 모델 ──────────────────────────────────────────────────────────────

@@ -14,6 +14,8 @@ import type { ApiResponse } from '@/api/types/auth'
 import type { IdeaApiItem, IdeaCommentsPage, IdeaCreateRequest, IdeaDetailExtras, IdeaExecutor, IdeaExecutorRequest, IdeaReviewRequest, MyIdeasPage } from '@/api/types/idea'
 import type { IdeaItem, IdeaStatus } from '@/api/types/ideaBrowse'
 import type { IdeaApprover, Proposal } from '@/api/types/judge'
+import type { DepartmentStat, IdeaStats, ReviewerDashboardStats } from '@/api/types/dashboard'
+import { DEPARTMENT_STATS, REVIEWER_DASH_STATS } from '@/api/mock/dashboard'
 import { getMockComments, mockIdeaDetailExtras, mockIdeaStatuses, mockMyIdeasPage } from '@/api/mock/idea'
 import { IDEAS } from '@/api/mock/ideaBrowse'
 import { judgeData, mockApproverMap } from '@/api/mock/judge'
@@ -46,6 +48,7 @@ export function toIdeaItem(raw: IdeaApiItem): IdeaItem {
     department:  raw.department  ?? '',
     deptCd:      raw.deptCd     ?? '',
     status:      API_STATUS_MAP[raw.status ?? ''] ?? '심사대기',
+    type:        raw.type ?? 'idea',
     submittedAt: ((raw.submitDate ?? raw.createdAt ?? '') as string).slice(0, 10),
     security:    raw.security === 'Y' ? 'private' : 'public',
     likes:       raw.likeCount    ?? 0,
@@ -168,15 +171,31 @@ export function useCreateIdea() {
 
 // ─── GET /api/ideas (목록) ────────────────────────────────────────────────────
 
-export function useIdeaList() {
+// 백엔드 status 값 → mock 한국어 상태값 매핑
+const STATUS_KO: Record<string, string> = {
+  pending:  '심사대기',
+  approved: '승인',
+  rejected: '반려',
+  running:  '실행중',
+  complete: '완료',
+}
+
+interface IdeaListParams {
+  status?: string
+  startDate?: string  // YYYY-MM-DD
+  endDate?: string    // YYYY-MM-DD
+}
+
+export function useIdeaList(params?: IdeaListParams) {
+  const { status, startDate, endDate } = params ?? {}
   return useQuery({
-    queryKey: queryKeys.ideas.list(),
+    queryKey: queryKeys.ideas.list(params ?? undefined),
     queryFn: () =>
       withDemoFallback<IdeaItem[]>(
-        IDEAS,
+        status ? IDEAS.filter((i) => i.status === (STATUS_KO[status] ?? status)) : IDEAS,
         async () => {
           const res = await api.get<ApiResponse<{ content: IdeaApiItem[]; totalElements: number }>>('/api/ideas', {
-            params: { size: 200 },
+            params: { size: 200, ...(status ? { status } : {}), ...(startDate ? { startDate } : {}), ...(endDate ? { endDate } : {}) },
           })
           return (res.data.data.content ?? []).map(toIdeaItem)
         },
@@ -198,15 +217,22 @@ export function useIdeaDetail(ideaId: number | null) {
           const res = await api.get<ApiResponse<IdeaApiItem>>(`/api/ideas/${ideaId}`)
           const d = res.data.data
           return {
-            viewCount:    d.viewCount    ?? 0,
-            likeCount:    d.likeCount    ?? 0,
-            commentCount: d.commentCount ?? 0,
-            isLiked:      d.isLiked      ?? false,
-            approverId:   d.approverId   ?? null,
-            approverName: d.approverName ?? null,
-            executors:    d.executors    ?? null,
-            coProposers:  d.coProposers  ?? [],
-            attachments:  d.attachments  ?? [],
+            viewCount:           d.viewCount           ?? 0,
+            likeCount:           d.likeCount           ?? 0,
+            commentCount:        d.commentCount        ?? 0,
+            isLiked:             d.isLiked             ?? false,
+            approverId:          d.approverId          ?? null,
+            approverName:        d.approverName        ?? null,
+            awardedPoints:       d.awardedPoints       ?? null,
+            ideaScore:           d.ideaScore           ?? null,
+            scoreInnovation:     d.scoreInnovation     ?? null,
+            scoreFeasibility:    d.scoreFeasibility    ?? null,
+            scoroProfitability:  d.scoreProfitability  ?? null,
+            reviewComment:       d.reviewComment       ?? null,
+            reviewedAt:          d.reviewedAt          ?? null,
+            executors:           d.executors           ?? null,
+            coProposers:         d.coProposers         ?? [],
+            attachments:         d.attachments         ?? [],
           }
         },
       ),
@@ -392,10 +418,8 @@ function toProposal(raw: IdeaApiItem): Proposal {
     withdraw_approved: '승인회수',
     withdraw_rejected: '반려회수',
   }
-  const proposers = [
-    ...(raw.author ? [raw.author] : raw.submittedBy ? [raw.submittedBy] : []),
-    ...(raw.coProposers ?? []).map((c) => c.name),
-  ]
+  const author = raw.author ?? raw.submittedBy ?? ''
+  const coProposers = (raw.coProposers ?? []).map((c) => c.name)
   return {
     id:           raw.ideaId,
     ideaType:     raw.type === 'completed' ? 'complete' : 'idea',
@@ -403,7 +427,8 @@ function toProposal(raw: IdeaApiItem): Proposal {
     categories:   raw.categoryName ? [raw.categoryName] : [],
     problem:      raw.problem,
     solution:     raw.description,
-    proposers,
+    author,
+    proposers:    coProposers,
     reviewer:     raw.approverName ?? '',
     security:     raw.security === 'Y' ? 'private' : 'public',
     startDate:    '',           // 신청서 상세에는 없음
@@ -426,7 +451,7 @@ export function useJudgeIdeas() {
         judgeData,
         async () => {
           const res = await api.get<ApiResponse<{ content: IdeaApiItem[] }>>('/api/ideas', {
-            params: { status: 'pending', size: 200 },
+            params: { size: 200 },
           })
           return (res.data.data.content ?? []).map(toProposal)
         },
@@ -463,6 +488,7 @@ export function useAssignApprover(ideaId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.ideas.judge() })
       queryClient.invalidateQueries({ queryKey: queryKeys.ideas.approver(ideaId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
     },
   })
 }
@@ -476,6 +502,8 @@ export function useReviewIdea(ideaId: number) {
       api.patch<ApiResponse<IdeaApiItem>>(`/api/ideas/${ideaId}/review`, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.ideas.judge() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.users.me() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.mileages.summary() })
     },
   })
 }
@@ -544,6 +572,73 @@ export function useUpdateExecutor(ideaId: number) {
       queryClient.invalidateQueries({ queryKey: queryKeys.ideas.executors(ideaId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.ideas.detail(ideaId) })
     },
+  })
+}
+
+// ─── GET /api/ideas/stats ────────────────────────────────────────────────────
+
+const mockIdeaStats: IdeaStats = (() => {
+  const total      = IDEAS.length
+  const approved   = IDEAS.filter((i) => ['승인', '실행중', '완료'].includes(i.status)).length
+  const inProgress = IDEAS.filter((i) => i.status === '실행중').length
+  const completed  = IDEAS.filter((i) => i.status === '완료').length
+  return {
+    totalIdeas:     total,
+    approvedIdeas:  approved,
+    inProgressIdeas: inProgress,
+    completedIdeas: completed,
+    completionRate: total > 0 ? Math.round((completed / total) * 1000) / 10 : 0,
+  }
+})()
+
+export function useIdeaStats() {
+  return useQuery({
+    queryKey: queryKeys.ideas.stats(),
+    queryFn: () =>
+      withDemoFallback<IdeaStats>(
+        mockIdeaStats,
+        async () => {
+          const res = await api.get<ApiResponse<IdeaStats>>('/api/ideas/stats')
+          return res.data.data
+        },
+      ),
+    staleTime: 0,
+  })
+}
+
+// ─── GET /api/ideas/stats/departments ────────────────────────────────────────
+
+export function useDepartmentStats(size = 5) {
+  return useQuery({
+    queryKey: queryKeys.ideas.departmentStats(size),
+    queryFn: () =>
+      withDemoFallback<DepartmentStat[]>(
+        DEPARTMENT_STATS,
+        async () => {
+          const res = await api.get<ApiResponse<DepartmentStat[]>>('/api/ideas/stats/departments', {
+            params: { size },
+          })
+          return res.data.data ?? []
+        },
+      ),
+    staleTime: 0,
+  })
+}
+
+// ─── GET /api/ideas/reviewer/stats ───────────────────────────────────────────
+
+export function useReviewerDashboardStats() {
+  return useQuery({
+    queryKey: queryKeys.ideas.reviewerDashStats(),
+    queryFn: () =>
+      withDemoFallback<ReviewerDashboardStats>(
+        REVIEWER_DASH_STATS,
+        async () => {
+          const res = await api.get<ApiResponse<ReviewerDashboardStats>>('/api/ideas/reviewer/stats')
+          return res.data.data
+        },
+      ),
+    staleTime: 0,
   })
 }
 
