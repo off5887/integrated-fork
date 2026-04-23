@@ -1,4 +1,4 @@
-name: CI
+name: CI / CD
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
     branches: [main, integrated-main]
 
 jobs:
+  # ── CI: 타입체크·린트·테스트 (GitHub 호스팅) ──────────────────────────────
   ci:
     runs-on: ubuntu-latest
 
@@ -30,3 +31,34 @@ jobs:
 
       - name: Test
         run: npm test
+
+  # ── CD: main 브랜치 push 시에만 사내 서버에 배포 ──────────────────────────
+  deploy:
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: self-hosted   # 사내 서버에 설치한 runner
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: ""   # 빈 값 = web.config 리라이트 사용
+
+      - name: Deploy to IIS
+        shell: powershell
+        run: |
+          $dest = "C:\inetpub\wwwroot\gomgom"
+          if (!(Test-Path $dest)) { New-Item -ItemType Directory -Path $dest }
+          Copy-Item -Path "dist\*" -Destination $dest -Recurse -Force
+          Write-Host "배포 완료: $dest"
