@@ -41,6 +41,7 @@ const baseIdea: IdeaItem = {
   id: 999,
   title: '테스트 아이디어',
   categories: [{ id: 2, label: '혁신' }],
+  type: 'idea' as const,
   problem: '문제 설명',
   solution: '해결 방안',
   author: '테스터',
