@@ -14,7 +14,7 @@ export default defineConfig({
       // /api/* → http://localhost:8080/api/*
       // 같은 오리진으로 프록시하면 CORS·쿠키 문제가 동시에 해결됩니다.
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8083',
         changeOrigin: true,
       },
     },
