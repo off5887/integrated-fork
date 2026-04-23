@@ -42,10 +42,12 @@ export default function BasicInfoSection({
   const { categories: CATEGORIES, isLoading: categoriesLoading } = useCategories()
   const { textPrimary, textSecondary, borderColor, categoryCardBg } = it
 
+  const MAX_CATEGORIES = 2
+
   const handleToggle = (id: string) => {
     if (categories.includes(id)) {
       setCategories(categories.filter((c) => c !== id))
-    } else {
+    } else if (categories.length < MAX_CATEGORIES) {
       setCategories([...categories, id])
     }
   }
@@ -162,7 +164,7 @@ export default function BasicInfoSection({
                 fontWeight: 600,
               }}
             >
-              필수 · 1개 이상
+              필수 · 최대 2개
             </Box>
             {categories.length > 0 && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -189,13 +191,15 @@ export default function BasicInfoSection({
               : null}
             {!categoriesLoading && CATEGORIES.map((cat) => {
               const isSelected = categories.includes(cat.id)
+              const isDisabled = !isSelected && categories.length >= MAX_CATEGORIES
               return (
                 <Box
                   key={cat.id}
                   onClick={() => handleToggle(cat.id)}
                   role="button"
-                  tabIndex={0}
+                  tabIndex={isDisabled ? -1 : 0}
                   aria-pressed={isSelected}
+                  aria-disabled={isDisabled}
                   aria-label={cat.label}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -211,25 +215,24 @@ export default function BasicInfoSection({
                     py: 1.5, px: 0.5,
                     borderRadius: 2.5,
                     border: `1.5px solid ${isSelected ? cat.border : borderColor}`,
-                    bgcolor: isSelected
-                      ? cat.bg
-                      : categoryCardBg,
-                    cursor: 'pointer',
+                    bgcolor: isSelected ? cat.bg : categoryCardBg,
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    opacity: isDisabled ? 0.38 : 1,
                     userSelect: 'none',
                     transition: 'all 0.18s ease',
                     outline: 'none',
                     boxShadow: isSelected
                       ? `0 2px 12px ${cat.bg}, inset 0 0 0 1px ${cat.border}`
-                      : isDarkMode
-                        ? 'none'
-                        : '0 1px 3px rgba(0,0,0,0.05)',
-                    '&:hover': {
-                      bgcolor: cat.bg,
-                      borderColor: cat.border,
-                      transform: 'translateY(-2px)',
-                      boxShadow: `0 6px 16px ${cat.bg}`,
-                    },
-                    '&:active': { transform: 'translateY(0px)' },
+                      : isDarkMode ? 'none' : '0 1px 3px rgba(0,0,0,0.05)',
+                    ...(!isDisabled && {
+                      '&:hover': {
+                        bgcolor: cat.bg,
+                        borderColor: cat.border,
+                        transform: 'translateY(-2px)',
+                        boxShadow: `0 6px 16px ${cat.bg}`,
+                      },
+                    }),
+                    '&:active': { transform: isDisabled ? 'none' : 'translateY(0px)' },
                     '&:focus-visible': {
                       outline: `2px solid ${cat.color}`,
                       outlineOffset: 2,

@@ -24,7 +24,10 @@ export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardPro
   const { categories } = useCategories()
   const { data: similarTitles = [] } = useSimilarIdeas(idea.id)
 
-  const cat = categories.find((c) => Number(c.id) === idea.categoryId) ?? CAT_FALLBACK
+  const cats = idea.categories.map(
+    (c) => categories.find((opt) => Number(opt.id) === c.id) ?? { ...CAT_FALLBACK, label: c.label }
+  )
+  const firstCat = cats[0] ?? CAT_FALLBACK
   const stat = IDEA_STATUS_CONFIG[idea.status]
   const isSimilar = similarTitles.length > 0
 
@@ -62,7 +65,7 @@ export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardPro
       }}
     >
       {/* 상단 카테고리 색상 스트립 */}
-      <Box sx={{ height: 3, background: isSimilar ? `linear-gradient(90deg, ${similar.gradientFrom}, ${similar.gradientTo})` : `linear-gradient(90deg, ${cat.color}, ${cat.color}88)` }} />
+      <Box sx={{ height: 3, background: isSimilar ? `linear-gradient(90deg, ${similar.gradientFrom}, ${similar.gradientTo})` : `linear-gradient(90deg, ${firstCat.color}, ${firstCat.color}88)` }} />
 
       {/* 유사 아이디어 배지 */}
       {isSimilar && (
@@ -126,19 +129,22 @@ export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardPro
               </Typography>
             </Box>
           )}
-          {/* 카테고리 */}
-          <Box
-            sx={{
-              display: 'inline-flex', alignItems: 'center', gap: 0.5,
-              px: 0.9, py: 0.3, borderRadius: 1.5,
-              bgcolor: cat.bg, border: `1px solid ${cat.border}`,
-            }}
-          >
-            <Box component="span" sx={{ fontSize: '0.75rem', lineHeight: 1 }}>{cat.emoji}</Box>
-            <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: cat.color, lineHeight: 1 }}>
-              {idea.category}
-            </Typography>
-          </Box>
+          {/* 카테고리 (최대 2개) */}
+          {cats.map((cat) => (
+            <Box
+              key={cat.id}
+              sx={{
+                display: 'inline-flex', alignItems: 'center', gap: 0.5,
+                px: 0.9, py: 0.3, borderRadius: 1.5,
+                bgcolor: cat.bg, border: `1px solid ${cat.border}`,
+              }}
+            >
+              <Box component="span" sx={{ fontSize: '0.75rem', lineHeight: 1 }}>{cat.emoji}</Box>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: cat.color, lineHeight: 1 }}>
+                {cat.label}
+              </Typography>
+            </Box>
+          ))}
           {/* 심사 상태 */}
           <Box
             sx={{

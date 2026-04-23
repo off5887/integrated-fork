@@ -82,8 +82,11 @@ export default function IdeaDetailDialog({
   const deleteAttachment = useDeleteAttachment(idea?.id ?? 0)
 
   if (!idea) return null
-  const cat = categories.find((c) => Number(c.id) === idea.categoryId)
-    ?? { emoji: '📁', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.35)', label: idea.category }
+  const cats = idea.categories.map(
+    (c) => categories.find((opt) => Number(opt.id) === c.id)
+      ?? { id: String(c.id), emoji: '📁', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.35)', label: c.label }
+  )
+  const firstCat = cats[0] ?? { emoji: '📁', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.35)', label: '', id: '0' }
   const stat = IDEA_STATUS_CONFIG[idea.status]
 
   // 심사자 변경 권한: 관리자 전체, 배정된 심사자 본인만
@@ -124,16 +127,18 @@ export default function IdeaDetailDialog({
       }}
     >
       {/* 상단 스트립 */}
-      <Box sx={{ height: 4, background: `linear-gradient(90deg, ${cat.color}, ${cat.color}88)` }} />
+      <Box sx={{ height: 4, background: `linear-gradient(90deg, ${firstCat.color}, ${firstCat.color}88)` }} />
 
       {/* 헤더 */}
       <Box sx={{ px: 3, pt: 2.5, pb: 2, display: 'flex', alignItems: 'flex-start', gap: 1.5, borderBottom: `1px solid ${borderColor}` }}>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, px: 1, py: 0.35, borderRadius: 1.5, bgcolor: cat.bg, border: `1px solid ${cat.border}` }}>
-              <Box component="span" sx={{ fontSize: '0.8rem' }}>{cat.emoji}</Box>
-              <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: cat.color }}>{idea.category}</Typography>
-            </Box>
+            {cats.map((cat) => (
+              <Box key={cat.id} sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, px: 1, py: 0.35, borderRadius: 1.5, bgcolor: cat.bg, border: `1px solid ${cat.border}` }}>
+                <Box component="span" sx={{ fontSize: '0.8rem' }}>{cat.emoji}</Box>
+                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: cat.color }}>{cat.label}</Typography>
+              </Box>
+            ))}
             <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1, py: 0.35, borderRadius: 1.5, bgcolor: stat.bg, border: `1px solid ${stat.border}` }}>
               <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: stat.color }}>{idea.status}</Typography>
             </Box>

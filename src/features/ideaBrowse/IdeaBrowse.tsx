@@ -104,7 +104,7 @@ export default function IdeaBrowse() {
 
     const filtered = ideas.filter((idea) => {
       if (showMyOnly && !myIdeaIds.has(idea.id)) return false
-      if (selectedCategory && String(idea.categoryId) !== selectedCategory) return false
+      if (selectedCategory && !idea.categories.some((c) => String(c.id) === selectedCategory)) return false
       if (selectedBizArea && idea.bizArea !== selectedBizArea) return false
       if (selectedDept && idea.department !== selectedDept) return false
       if (selectedStatus && idea.status !== selectedStatus) return false

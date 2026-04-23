@@ -6,8 +6,7 @@ export type SortKey = 'latest' | 'likes' | 'views' | 'comments'
 export interface IdeaItem {
   id: number
   title: string
-  categoryId: number   // API categoryId — 필터 매칭 기준
-  category: string     // 표시용 단축 라벨 (예: '절감', '혁신')
+  categories: { id: number; label: string }[]
   problem: string
   solution: string
   author: string       // 작성자 이름 (표시용)

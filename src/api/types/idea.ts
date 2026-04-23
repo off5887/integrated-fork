@@ -148,7 +148,7 @@ export interface IdeaCreateRequest {
   title: string
   problem: string
   description: string        // 해결 대안 (solution)
-  categoryId: number
+  categoryIds: number[]
   type?: 'idea' | 'completed'
   security?: 'N' | 'Y'
   coProposerIds?: string[]   // 공동제안자 사번 목록
@@ -162,8 +162,10 @@ export interface IdeaApiItem {
   title: string
   problem: string
   description: string
-  categoryId: number
-  categoryName: string
+  categories: { categoryId: number; categoryName: string }[]
+  /** @deprecated 단일 카테고리 하위호환 — 백엔드 마이그레이션 전 fallback */
+  categoryId?: number
+  categoryName?: string
   type: 'idea' | 'completed'
   status: 'pending' | 'approved' | 'rejected' | 'in_progress' | 'completed' | 'withdraw_approved' | 'withdraw_rejected'
   security: 'N' | 'Y'
@@ -176,6 +178,7 @@ export interface IdeaApiItem {
   submitDate: string
   createdAt: string
   updatedAt?: string
+  /** @deprecated categories[] 로 대체됨 */
   category?: { categoryId: number; categoryName: string }
   coProposers: { employeeId: string; name: string; rollNm: string }[]
   // 목록 및 단건 조회 공통 반환 필드

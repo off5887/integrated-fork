@@ -38,8 +38,11 @@ export function toIdeaItem(raw: IdeaApiItem): IdeaItem {
   return {
     id:          raw.ideaId,
     title:       raw.title       ?? '',
-    categoryId:  raw.categoryId  ?? 0,
-    category:    raw.categoryName ?? '',
+    categories: (
+      raw.categories?.length
+        ? raw.categories
+        : raw.categoryId ? [{ categoryId: raw.categoryId, categoryName: raw.categoryName ?? '' }] : []
+    ).map((c) => ({ id: c.categoryId, label: c.categoryName })),
     problem:     raw.problem     ?? '',
     solution:    raw.description ?? '',
     author:      raw.author      ?? raw.submittedBy ?? '',
@@ -148,8 +151,7 @@ export function useCreateIdea() {
           title: data.title,
           problem: data.problem,
           description: data.description,
-          categoryId: data.categoryId,
-          categoryName: '',
+          categories: data.categoryIds.map((id) => ({ categoryId: id, categoryName: '' })),
           type: data.type ?? 'idea',
           status: 'pending',
           security: data.security ?? 'N',
@@ -352,8 +354,7 @@ export function useUpdateIdea(ideaId: number) {
           title: data.title,
           problem: data.problem,
           description: data.description,
-          categoryId: data.categoryId,
-          categoryName: '',
+          categories: data.categoryIds.map((id) => ({ categoryId: id, categoryName: '' })),
           type: data.type ?? 'idea',
           status: 'pending',
           security: data.security ?? 'N',

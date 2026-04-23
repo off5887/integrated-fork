@@ -39,7 +39,9 @@ export default function NewIdea() {
   // ─── 폼 상태 ───────────────────────────────────────────────────────────────
   const [ideaType, setIdeaType] = useState<'idea' | 'complete'>('idea')
   const [title, setTitle] = useState(editIdea?.title ?? '')
-  const [categories, setCategories] = useState<string[]>(editIdea?.categoryId ? [editIdea.categoryId.toString()] : [])
+  const [categories, setCategories] = useState<string[]>(
+    editIdea?.categories?.map((c) => c.categoryId.toString()) ?? []
+  )
   const [problem, setProblem] = useState(editIdea?.problem ?? '')
   const [solution, setSolution] = useState(editIdea?.solution ?? '')
   const [reviewer, setReviewer] = useState<string[]>([])
@@ -142,7 +144,7 @@ export default function NewIdea() {
       title: title.trim(),
       problem: problem.trim(),
       description: solution.trim(),
-      categoryId: parseInt(categories[0], 10),
+      categoryIds: categories.map((c) => parseInt(c, 10)),
       type: (ideaType === 'complete' ? 'completed' : 'idea') as 'idea' | 'completed',
       security: (security === 'private' ? 'Y' : 'N') as 'N' | 'Y',
       coProposerIds: coProposerIds.length > 0 ? coProposerIds : undefined,
