@@ -18,9 +18,7 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useOrgTeams } from '@/api/queries/useOrg'
-import { useBulkAssignLeaders } from '@/api/queries/useSectionReviewers'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
-import { useSnackbar } from '@/context/SnackbarContext'
 import { usePageColors } from '@/theme/pageColors'
 import { useSettingsTheme } from '@/theme/settingsTheme'
 import useSectionReviewer from '../../hooks/useSectionReviewer'
@@ -45,9 +43,6 @@ export default function SectionReviewerManagement() {
   }, [rawIsMobile])
 
   const { data: orgTeams = [] } = useOrgTeams()
-  const { showSnackbar } = useSnackbar()
-  const bulkMutation = useBulkAssignLeaders()
-  const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false)
 
   const {
     reviewers, isLoading,
@@ -59,19 +54,6 @@ export default function SectionReviewerManagement() {
     handleDeptSelect, handleOrgSelect,
     handleSave, handleDelete,
   } = useSectionReviewer()
-
-  const handleBulkAssign = async () => {
-    setBulkConfirmOpen(false)
-    try {
-      const result = await bulkMutation.mutateAsync()
-      const msg = result.skipped > 0
-        ? `${result.assigned}명 배정 완료 (${result.skipped}건 건너뜀)`
-        : `${result.assigned}명의 팀장이 심사자로 배정되었습니다`
-      showSnackbar(msg, result.assigned > 0 ? 'success' : 'info')
-    } catch {
-      showSnackbar('팀장 일괄 배정 중 오류가 발생했습니다.', 'error')
-    }
-  }
 
   // 수정 모드: 부서 읽기전용 / 추가 모드: DeptPickerPanel
   const deptContent = editing ? (

@@ -10,7 +10,7 @@ const getStatus = (rate: number) =>
 
 export default function ExecutionCompletionRate({ stats }: ExecutionCompletionRateProps) {
   const dt = useDashboardTheme()
-  const { totalIdeas, approvedIdeas, inProgressIdeas, completedIdeas, completionRate } = stats
+  const { totalIdeas, approvedIdeas, inProgressIdeas, completionRate } = stats
   const status = getStatus(completionRate)
 
   const options: ApexOptions = {

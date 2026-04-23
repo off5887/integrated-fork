@@ -24,9 +24,10 @@ export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardPro
   const { categories } = useCategories()
   const { data: similarTitles = [] } = useSimilarIdeas(idea.id)
 
-  const cats = idea.categories.map(
-    (c) => categories.find((opt) => Number(opt.id) === c.id) ?? { ...CAT_FALLBACK, label: c.label }
-  )
+  const cats = idea.categories.map((c) => ({
+    ...(categories.find((opt) => Number(opt.id) === c.id) ?? { ...CAT_FALLBACK, label: c.label }),
+    id: String(c.id),
+  }))
   const firstCat = cats[0] ?? CAT_FALLBACK
   const stat = IDEA_STATUS_CONFIG[idea.status]
   const isSimilar = similarTitles.length > 0

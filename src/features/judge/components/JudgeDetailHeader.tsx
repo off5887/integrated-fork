@@ -6,14 +6,13 @@ import { usePageColors } from '@/theme/pageColors'
 import { useJudgeTheme } from '@/theme/judgeTheme'
 import { useCategories } from '@/api/queries/useCategories'
 import { statusConfig } from '../config/judgeStatusConfig'
-import type { StatusFilter } from '../config/judgeStatusConfig'
 
 interface Props {
   title: string
   onClose: () => void
   ideaType?: 'idea' | 'complete'
   categories?: string[]
-  status?: StatusFilter
+  status?: keyof typeof statusConfig
 }
 
 export default function JudgeDetailHeader({ title, onClose, ideaType, categories, status }: Props) {

@@ -28,7 +28,7 @@ interface ResultCardProps {
 export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCardProps) {
   const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
-  const cat = getCatConfig(idea.category)
+  const cat = getCatConfig(idea.categories[0]?.label ?? '')
   const stat = IDEA_STATUS_CONFIG[idea.status]
   const isHighSimilarity = score >= 4
 
@@ -86,7 +86,7 @@ export default function SimilarIdeaResultCard({ idea, score, onClick }: ResultCa
           <Typography
             sx={{ fontSize: '0.68rem', fontWeight: 700, color: cat.color, lineHeight: 1 }}
           >
-            {idea.category}
+            {idea.categories[0]?.label ?? ''}
           </Typography>
         </Box>
         <Box

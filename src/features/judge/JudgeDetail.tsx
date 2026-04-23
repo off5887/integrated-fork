@@ -218,7 +218,7 @@ export default function JudgeDetail({ proposal, onClose, onPrev, onNext, onAppro
         onClose={onClose}
         ideaType={proposal.ideaType}
         categories={proposal.categories}
-        status={proposal.status !== '전체' ? proposal.status as import('../config/judgeStatusConfig').StatusFilter : undefined}
+        status={proposal.status}
       />
 
       <DialogContent

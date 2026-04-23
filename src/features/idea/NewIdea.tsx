@@ -40,7 +40,7 @@ export default function NewIdea() {
   const [ideaType, setIdeaType] = useState<'idea' | 'complete'>('idea')
   const [title, setTitle] = useState(editIdea?.title ?? '')
   const [categories, setCategories] = useState<string[]>(
-    editIdea?.categories?.map((c) => c.categoryId.toString()) ?? []
+    editIdea?.categories?.map((c) => c.id.toString()) ?? []
   )
   const [problem, setProblem] = useState(editIdea?.problem ?? '')
   const [solution, setSolution] = useState(editIdea?.solution ?? '')

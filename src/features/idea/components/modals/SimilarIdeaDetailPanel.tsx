@@ -24,7 +24,7 @@ interface DetailPanelProps {
 export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProps) {
   const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
-  const cat = getCatConfig(idea.category)
+  const cat = getCatConfig(idea.categories[0]?.label ?? '')
   const stat = IDEA_STATUS_CONFIG[idea.status]
 
   return (
@@ -70,7 +70,7 @@ export default function SimilarIdeaDetailPanel({ idea, onBack }: DetailPanelProp
         >
           <Box component="span" sx={{ fontSize: '0.8rem' }}>{cat.emoji}</Box>
           <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: cat.color }}>
-            {idea.category}
+            {idea.categories[0]?.label ?? ''}
           </Typography>
         </Box>
         <Box
