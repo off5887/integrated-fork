@@ -21,8 +21,13 @@ function fmtDate(s: string) {
 export default function MessageListItem({ message, isActive, isSent, onClick }: MessageListItemProps) {
   const t = useMsgTheme()
 
-  const otherName = isSent ? message.receiverName : message.senderName
-  const isUnread  = !isSent && !message.isRead
+  const firstReceiver = message.receivers[0]
+  const receiverLabel = isSent
+    ? message.receivers.length > 1
+      ? `${firstReceiver?.name ?? ''} 외 ${message.receivers.length - 1}명`
+      : (firstReceiver?.name ?? '')
+    : message.senderName
+  const isUnread = !isSent && !message.isRead
 
   return (
     <Box
@@ -47,13 +52,13 @@ export default function MessageListItem({ message, isActive, isSent, onClick }: 
       }}
     >
       <Avatar sx={{ width: 34, height: 34, fontSize: '0.8rem', bgcolor: t.avatarBg, flexShrink: 0, mt: 0.25 }}>
-        {otherName[0]}
+        {receiverLabel[0]}
       </Avatar>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0.5 }}>
           <Typography sx={{ fontSize: '0.82rem', fontWeight: isUnread ? 700 : 500, color: t.textPrimary, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '60%' }}>
-            {otherName}
+            {receiverLabel}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
             {isUnread && (

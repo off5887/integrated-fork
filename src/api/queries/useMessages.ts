@@ -108,6 +108,45 @@ export function useDeleteMessage() {
   })
 }
 
+// ─── PATCH /api/messages/{messageId}/read ────────────────────────────────────
+
+export function useMarkMessageRead() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (messageId: number) =>
+      api.patch<ApiResponse<null>>(`/api/messages/${messageId}/read`).then((r) => r.data),
+    onMutate: async (messageId: number) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.messages.received() })
+      const snapshots = queryClient.getQueriesData<MessagesPage>({ queryKey: queryKeys.messages.received() })
+      queryClient.setQueriesData<MessagesPage>(
+        { queryKey: queryKeys.messages.received() },
+        (old) => {
+          if (!old) return old
+          return {
+            ...old,
+            content: old.content.map((m) =>
+              m.messageId === messageId
+                ? { ...m, isRead: true, readAt: new Date().toISOString() }
+                : m,
+            ),
+          }
+        },
+      )
+      return { snapshots }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.snapshots) {
+        for (const [key, data] of context.snapshots) {
+          queryClient.setQueryData(key, data)
+        }
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.messages.received() })
+    },
+  })
+}
+
 // ─── 읽지 않은 메시지 수 (받은 메시지 기준) ──────────────────────────────────
 
 export function useUnreadCount() {

@@ -1,14 +1,21 @@
 // src/api/types/message.ts
 
+export interface MessageReceiver {
+  id: string
+  name: string
+  isRead: boolean
+  readAt: string | null
+}
+
 /** GET /api/messages/received, /api/messages/sent, /api/messages/{id} 응답 단일 메시지 */
 export interface MessageApiItem {
   messageId: number
   senderId: string
   senderName: string
-  receiverId: string
-  receiverName: string
+  receivers: MessageReceiver[]
   title: string
   content: string
+  /** 수신자 기준: 현재 로그인 유저가 읽었는지 여부 */
   isRead: boolean
   readAt: string | null
   createdAt: string
@@ -27,7 +34,7 @@ export interface MessagesPage {
 
 /** POST /api/messages 요청 바디 */
 export interface MessageSendRequest {
-  receiverId: string
+  receiverIds: string[]
   title: string
   content: string
 }

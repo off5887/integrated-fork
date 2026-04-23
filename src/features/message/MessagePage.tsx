@@ -2,12 +2,13 @@
 import { useState } from 'react'
 import {
   Box, Typography, Tab, Tabs, Button, Pagination,
-  CircularProgress,
+  CircularProgress, IconButton, Popover, Divider,
 } from '@mui/material'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined'
 import EditNoteIcon from '@mui/icons-material/EditNote'
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { useMsgTheme, msgAccent } from '@/theme/messageTheme'
 import { useReceivedMessages, useSentMessages } from '@/api/queries/useMessages'
@@ -28,6 +29,7 @@ export default function MessagePage() {
   const [selected,       setSelected]       = useState<MessageApiItem | null>(null)
   const [composeOpen,    setComposeOpen]    = useState(false)
   const [replyReceiver,  setReplyReceiver]  = useState<{ id: string; name: string } | null>(null)
+  const [infoAnchor,     setInfoAnchor]     = useState<null | HTMLElement>(null)
 
   // 관리자 목록 (본인 제외) — GET /api/org 로 가져와 admin만 필터
   const adminReceivers = adminUserList
@@ -153,38 +155,99 @@ export default function MessagePage() {
               flexDirection: 'column',
             }}
           >
-            {/* 탭 */}
-            <Tabs
-              value={tab}
-              onChange={handleTabChange}
-              sx={{
-                borderBottom: `1px solid ${t.borderColor}`,
-                minHeight: 44,
-                '& .MuiTab-root': { minHeight: 44, fontSize: '0.82rem', fontWeight: 500, color: t.tabColor },
-                '& .Mui-selected': { color: t.tabActiveColor, fontWeight: 700 },
-                '& .MuiTabs-indicator': { bgcolor: msgAccent.primary },
+            {/* 탭 + 도움말 버튼 */}
+            <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${t.borderColor}` }}>
+              <Tabs
+                value={tab}
+                onChange={handleTabChange}
+                sx={{
+                  flex: 1,
+                  minHeight: 44,
+                  '& .MuiTab-root': { minHeight: 44, fontSize: '0.82rem', fontWeight: 500, color: t.tabColor },
+                  '& .Mui-selected': { color: t.tabActiveColor, fontWeight: 700 },
+                  '& .MuiTabs-indicator': { bgcolor: msgAccent.primary },
+                }}
+              >
+                <Tab
+                  icon={<MailOutlineIcon sx={{ fontSize: '1rem' }} />}
+                  iconPosition="start"
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      받은 쪽지
+                      {unreadCount > 0 && (
+                        <Box sx={{ bgcolor: msgAccent.primary, color: '#fff', borderRadius: '10px', px: 0.7, py: 0.1, fontSize: '0.65rem', fontWeight: 700, lineHeight: 1.4 }}>
+                          {unreadCount}
+                        </Box>
+                      )}
+                    </Box>
+                  }
+                />
+                <Tab
+                  icon={<SendOutlinedIcon sx={{ fontSize: '1rem' }} />}
+                  iconPosition="start"
+                  label="보낸 쪽지"
+                />
+              </Tabs>
+              <IconButton
+                size="small"
+                onClick={(e) => setInfoAnchor(e.currentTarget)}
+                sx={{ mr: 1, color: infoAnchor ? msgAccent.primary : t.textSecondary }}
+              >
+                <InfoOutlinedIcon sx={{ fontSize: '1.1rem' }} />
+              </IconButton>
+            </Box>
+
+            {/* 도움말 Popover */}
+            <Popover
+              open={!!infoAnchor}
+              anchorEl={infoAnchor}
+              onClose={() => setInfoAnchor(null)}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              slotProps={{
+                paper: {
+                  sx: {
+                    mt: 0.5,
+                    width: 272,
+                    bgcolor: t.sidebarBg,
+                    border: `1px solid ${t.borderColor}`,
+                    borderRadius: 2,
+                    boxShadow: t.cardShadow,
+                    overflow: 'hidden',
+                  },
+                },
               }}
             >
-              <Tab
-                icon={<MailOutlineIcon sx={{ fontSize: '1rem' }} />}
-                iconPosition="start"
-                label={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    받은 쪽지
-                    {unreadCount > 0 && (
-                      <Box sx={{ bgcolor: msgAccent.primary, color: '#fff', borderRadius: '10px', px: 0.7, py: 0.1, fontSize: '0.65rem', fontWeight: 700, lineHeight: 1.4 }}>
-                        {unreadCount}
+              <Box sx={{ height: 3, background: `linear-gradient(90deg, ${msgAccent.primary}, #818cf8)` }} />
+              <Box sx={{ p: 2 }}>
+                <Typography sx={{ fontSize: '0.82rem', fontWeight: 700, color: t.textPrimary, mb: 1.5 }}>
+                  쪽지 이용 안내
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                  {[
+                    { icon: '📬', label: '받은 쪽지', desc: '읽음 여부와 관계없이 언제든 삭제할 수 있어요.' },
+                    { icon: '📤', label: '보낸 쪽지', desc: '상대방이 읽기 전에만 수정·삭제할 수 있어요.' },
+                    { icon: '🔒', label: '읽은 후 제한', desc: '상대방이 이미 읽은 메시지는 수정·삭제가 불가해요.' },
+                  ].map((item) => (
+                    <Box key={item.label} sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}>
+                      <Box sx={{ fontSize: '1rem', lineHeight: 1.4, flexShrink: 0 }}>{item.icon}</Box>
+                      <Box>
+                        <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: t.textPrimary, lineHeight: 1.3 }}>
+                          {item.label}
+                        </Typography>
+                        <Typography sx={{ fontSize: '0.75rem', color: t.textSecondary, lineHeight: 1.5 }}>
+                          {item.desc}
+                        </Typography>
                       </Box>
-                    )}
-                  </Box>
-                }
-              />
-              <Tab
-                icon={<SendOutlinedIcon sx={{ fontSize: '1rem' }} />}
-                iconPosition="start"
-                label="보낸 쪽지"
-              />
-            </Tabs>
+                    </Box>
+                  ))}
+                </Box>
+                <Divider sx={{ borderColor: t.dividerColor, my: 1.5 }} />
+                <Typography sx={{ fontSize: '0.72rem', color: t.textSecondary }}>
+                  읽음 여부는 보낸 쪽지 상세에서 확인할 수 있어요.
+                </Typography>
+              </Box>
+            </Popover>
 
             {/* 목록 */}
             <Box sx={{ flex: 1, overflowY: 'auto' }}>
