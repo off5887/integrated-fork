@@ -55,10 +55,10 @@ jobs:
         env:
           VITE_API_BASE_URL: ""   # 빈 값 = web.config 리라이트 사용
 
-      - name: Deploy to IIS
+      - name: Deploy
         shell: powershell
         run: |
-          $dest = "C:\inetpub\wwwroot\gomgom"
+          $dest = "D:\gomgom_web"
           if (!(Test-Path $dest)) { New-Item -ItemType Directory -Path $dest }
           Copy-Item -Path "dist\*" -Destination $dest -Recurse -Force
           Write-Host "배포 완료: $dest"
