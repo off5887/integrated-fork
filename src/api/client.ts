@@ -1,7 +1,11 @@
 // src/api/client.ts
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios'
+import { handleSessionExpired } from '@/utils/sessionExpired'
+import { globalShowSnackbar } from '@/context/SnackbarContext'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+// VITE_API_BASE_URL이 빈 문자열('')이면 상대경로 → Vite 프록시 사용
+// 값이 없으면(undefined) 직접 연결 fallback
+const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 
 const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
   const axiosInstance = axios.create({
@@ -9,28 +13,40 @@ const createClient = (config?: AxiosRequestConfig): AxiosInstance => {
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true, // 필요하면 (쿠키/세션 사용할 때)
+    withCredentials: true,
     ...config,
   })
 
-  // 요청 인터셉터 (토큰 넣기 등 나중에 확장 가능)
-  axiosInstance.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem('accessToken')
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
+  // FormData 요청은 브라우저가 Content-Type + boundary를 자동 설정하도록 헤더 제거
+  axiosInstance.interceptors.request.use((config) => {
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    }
+    return config
+  })
 
-      return config
-    },
-    (error) => Promise.reject(error),
-  )
-
-  // 응답 인터셉터 (에러 핸들링 등)
+  // 응답 인터셉터
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-      // 401 → 로그아웃 처리, 500 → 알림 등 나중에 추가
+      const url: string = error.config?.url ?? ''
+      const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/logout')
+      // /users/me 401·403 은 useCurrentUserQuery 에서 직접 처리
+      const isMeEndpoint = url.includes('/users/me')
+
+      const status: number = error.response?.status
+      if (status === 401 && !isAuthEndpoint && !isMeEndpoint) {
+        handleSessionExpired(() => axiosInstance.post('/api/auth/logout'))
+      }
+      if (status === 403) {
+        globalShowSnackbar('접근 권한이 없습니다.', 'error')
+      }
+      if (status >= 500) {
+        console.error(
+          `[API ${status}] ${error.config?.method?.toUpperCase()} ${url}`,
+          error.response.data,
+        )
+      }
       return Promise.reject(error)
     },
   )

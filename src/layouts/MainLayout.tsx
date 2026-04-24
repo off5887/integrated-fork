@@ -2,10 +2,14 @@
 import { Box } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import Header from '@/components/common/nav/NavShell'
+import PasswordChangeDialog from '@/features/auth/components/PasswordChangeDialog'
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
 import { useThemeMode } from '@/context/ThemeContext'
+import ErrorBoundary from '@/components/common/routing/ErrorBoundary'
 
 export default function MainLayout() {
   const { isDarkMode } = useThemeMode()
+  const { user } = useCurrentUser()
 
   return (
     <Box
@@ -24,8 +28,12 @@ export default function MainLayout() {
           py: 0,
         }}
       >
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </Box>
+
+      <PasswordChangeDialog open={!!user?.mustChangePassword} />
     </Box>
   )
 }

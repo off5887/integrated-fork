@@ -55,12 +55,24 @@ const mileageLight = {
   disabledBtnBg: 'rgba(99,102,241,0.1)',
   disabledBtnColor: 'rgba(99,102,241,0.35)',
 
+  // ── 필터 카드 (ExchangeHistoryTable) ────────────────────────────────────────
+  filterCardBg:         '#fff',
+  filterCardShadow:     '0 1px 8px rgba(99,102,241,0.06)',
+  filterAllActiveBg:    'rgba(99,102,241,0.1)',
+  filterBtnHoverBg:     'rgba(0,0,0,0.04)',
+  countBadgeInactiveBg: 'rgba(0,0,0,0.07)',
+  resetBtnHoverBg:      'rgba(0,0,0,0.05)',
+
   // ── Primary 버튼 & 브랜드 색상 (light/dark 동일) ─────────────────────────
   primaryColor:           '#6366f1',
   primaryHoverBg:         '#4f46e5',
   primaryBtnColor:        '#fff',
   primaryBtnHoverShadow:  '0 4px 16px rgba(99,102,241,0.3)',
   accentGradient:         'linear-gradient(90deg, #6366f1, #8b5cf6)',
+  headerGradient:         'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+  headerIconGradient:     'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  headerIconShadow:       '0 4px 16px rgba(99,102,241,0.35)',
+  headerIconColor:        '#fff',
   modalIconBg:            '#6366f1',
   modalIconColor:         '#fff',
   inputFocusColor:        '#6366f1',
@@ -77,6 +89,9 @@ const mileageLight = {
   statusErrorColor:    '#ef4444',
   statusErrorBg:       '#ef444412',
   statusErrorBorder:   '#ef444428',
+
+  // ── 통계 배너 ──
+  statsBannerBg: 'rgba(248,250,252,0.9)',
 } as const
 
 const mileageDark = {
@@ -133,12 +148,24 @@ const mileageDark = {
   disabledBtnBg: 'rgba(99,102,241,0.15)',
   disabledBtnColor: 'rgba(255,255,255,0.25)',
 
+  // ── 필터 카드 (ExchangeHistoryTable) ────────────────────────────────────────
+  filterCardBg:         'rgba(15,23,42,0.6)',
+  filterCardShadow:     '0 2px 12px rgba(0,0,0,0.25)',
+  filterAllActiveBg:    'rgba(99,102,241,0.18)',
+  filterBtnHoverBg:     'rgba(255,255,255,0.05)',
+  countBadgeInactiveBg: 'rgba(255,255,255,0.1)',
+  resetBtnHoverBg:      'rgba(255,255,255,0.06)',
+
   // ── Primary 버튼 & 브랜드 색상 (light/dark 동일) ─────────────────────────
   primaryColor:           '#6366f1',
   primaryHoverBg:         '#4f46e5',
   primaryBtnColor:        '#fff',
   primaryBtnHoverShadow:  '0 4px 16px rgba(99,102,241,0.3)',
   accentGradient:         'linear-gradient(90deg, #6366f1, #8b5cf6)',
+  headerGradient:         'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+  headerIconGradient:     'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  headerIconShadow:       '0 4px 16px rgba(99,102,241,0.35)',
+  headerIconColor:        '#fff',
   modalIconBg:            '#6366f1',
   modalIconColor:         '#fff',
   inputFocusColor:        '#6366f1',
@@ -155,9 +182,18 @@ const mileageDark = {
   statusErrorColor:    '#ef4444',
   statusErrorBg:       '#ef444412',
   statusErrorBorder:   '#ef444428',
+
+  // ── 통계 배너 ──
+  statsBannerBg: 'rgba(15,23,42,0.5)',
 } as const
 
 export type MileageTheme = typeof mileageLight
 
 export const getMileageTheme = (isDarkMode: boolean): MileageTheme =>
   isDarkMode ? (mileageDark as unknown as MileageTheme) : mileageLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useMileageTheme(): MileageTheme {
+  const { isDarkMode } = useThemeMode()
+  return getMileageTheme(isDarkMode)
+}

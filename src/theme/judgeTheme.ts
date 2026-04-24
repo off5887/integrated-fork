@@ -95,6 +95,9 @@ const judgeLight = {
   attachmentBtnColor:    '#4338ca',
   attachmentBtnHoverBg:  'rgba(99,102,241,0.06)',
 
+  // ── 헤더 아이콘 박스 그림자 ──────────────────────────────────────────────
+  iconBoxShadow: '0 4px 16px rgba(99,102,241,0.35)',
+
   // ── StatCard ──────────────────────────────────────────────────────────────
   statCardInactiveBg:     '#ffffff',
   statCardInactiveBorder: 'rgba(203,213,225,0.5)',
@@ -154,7 +157,12 @@ const judgeLight = {
   closeBtnBorder: 'rgba(203,213,225,0.7)',
   closeBtnHoverBorder: 'rgba(148,163,184,0.5)',
 
+  // ── ExecutionPlanSection ─────────────────────────────────────────────────
+  outcomeBoxBg:     'rgba(16,185,129,0.05)',
+  outcomeBoxBorder: 'rgba(16,185,129,0.25)',
+
   // ── JudgeDecisionModal ───────────────────────────────────────────────────
+  rewardBoxBg:           'rgba(99,102,241,0.06)',
   decisionModalFooterBg: 'rgba(248,250,252,0.8)',
   decisionInputBg:       '#f8fafc',
   decisionCancelBorder:  'rgba(203,213,225,0.7)',
@@ -177,6 +185,13 @@ const judgeLight = {
   // ── 닫기 버튼 hover (JudgeDetailHeader) ──────────────────────────────────
   closeIconHoverBg: 'rgba(239,68,68,0.08)',
 } as const
+
+// ── Judge 내 결재 현황 StatCard 상태별 색상 (light/dark 동일) ────────────────
+export const JUDGE_STAT_CONFIG = [
+  { key: '심사대기', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)',    border: 'rgba(245,158,11,0.25)' },
+  { key: '승인',     color: '#10b981', bg: 'rgba(16,185,129,0.08)',    border: 'rgba(16,185,129,0.25)' },
+  { key: '반려',     color: '#ef4444', bg: 'rgba(239,68,68,0.08)',     border: 'rgba(239,68,68,0.25)'  },
+] as const
 
 const judgeDark = {
   accentGradient:          'linear-gradient(90deg, #6366f1, #8b5cf6)',
@@ -255,6 +270,8 @@ const judgeDark = {
   attachmentBtnColor:    '#a5b4fc',
   attachmentBtnHoverBg:  'rgba(99,102,241,0.1)',
 
+  iconBoxShadow: '0 4px 16px rgba(99,102,241,0.35)',
+
   statCardInactiveBg:     'rgba(22,30,46,0.6)',
   statCardInactiveBorder: 'rgba(148,163,184,0.1)',
   statCardActiveShadow:   '0 4px 16px rgba(0,0,0,0.3)',
@@ -306,6 +323,10 @@ const judgeDark = {
   closeBtnBorder: 'rgba(148,163,184,0.25)',
   closeBtnHoverBorder: 'rgba(148,163,184,0.4)',
 
+  outcomeBoxBg:     'rgba(16,185,129,0.06)',
+  outcomeBoxBorder: 'rgba(16,185,129,0.2)',
+
+  rewardBoxBg:           'rgba(99,102,241,0.08)',
   decisionModalFooterBg: 'rgba(15,23,42,0.3)',
   decisionInputBg:       'rgba(15,23,42,0.5)',
   decisionCancelBorder:  'rgba(148,163,184,0.25)',
@@ -328,3 +349,9 @@ const judgeDark = {
 export type JudgeTheme = typeof judgeLight
 export const getJudgeTheme = (isDarkMode: boolean): JudgeTheme =>
   isDarkMode ? (judgeDark as unknown as JudgeTheme) : judgeLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useJudgeTheme(): JudgeTheme {
+  const { isDarkMode } = useThemeMode()
+  return getJudgeTheme(isDarkMode)
+}

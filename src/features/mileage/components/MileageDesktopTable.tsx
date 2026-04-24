@@ -10,8 +10,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 import type { AwardItem } from '@/api/types/mileage'
 
 interface Props {
@@ -23,34 +22,13 @@ interface Props {
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-function StatusBadge({ status, style }: { status: string; style: { color: string; bg: string; border: string } }) {
-  return (
-    <Box
-      sx={{
-        display: 'inline-flex', alignItems: 'center',
-        px: 1.25, py: 0.35, borderRadius: '999px',
-        bgcolor: style.bg, border: `1px solid ${style.border}`,
-      }}
-    >
-      <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: style.color, mr: 0.75, flexShrink: 0 }} />
-      <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: style.color }}>{status}</Typography>
-    </Box>
-  )
-}
 
-const HEAD_COLS = ['번호', '지급일', '지급내역', '생선', '상태']
+const HEAD_COLS = ['번호', '지급일', '지급내역', '생선', '점수']
 
 export default function MileageDesktopTable({
   data, page, rowsPerPage, total, onPageChange, onRowsPerPageChange,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMileageTheme(isDarkMode)
-
-  const statusMap: Record<string, { color: string; bg: string; border: string }> = {
-    전환완료:   { color: t.statusSuccessColor, bg: t.statusSuccessBg, border: t.statusSuccessBorder },
-    전환요청중: { color: t.statusWarningColor, bg: t.statusWarningBg, border: t.statusWarningBorder },
-    default:   { color: t.statusErrorColor,   bg: t.statusErrorBg,   border: t.statusErrorBorder },
-  }
+  const t = useMileageTheme()
 
   return (
     <Card
@@ -68,6 +46,7 @@ export default function MileageDesktopTable({
             {HEAD_COLS.map((col) => (
               <TableCell
                 key={col}
+                scope="col"
                 sx={{
                   color: t.textSecondary, fontWeight: 600,
                   fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em',
@@ -112,7 +91,16 @@ export default function MileageDesktopTable({
                 </Typography>
               </TableCell>
               <TableCell>
-                <StatusBadge status={item.status} style={statusMap[item.status] ?? statusMap.default} />
+                {item.score != null ? (
+                  <Box sx={{ display: 'inline-flex', alignItems: 'baseline', gap: 0.4 }}>
+                    <Typography variant="body2" fontWeight={700} sx={{ color: t.primaryColor }}>
+                      {item.score}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: t.textSecondary, fontWeight: 500 }}>점</Typography>
+                  </Box>
+                ) : (
+                  <Typography variant="body2" sx={{ color: t.textSecondary }}>—</Typography>
+                )}
               </TableCell>
             </TableRow>
           ))}

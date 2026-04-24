@@ -1,7 +1,7 @@
 // src/api/queries/useLoginMutation.test.ts
 import { describe, it, expect } from 'vitest'
 import { AxiosError, AxiosHeaders } from 'axios'
-import { getLoginErrorMessage } from './useLoginMutation'
+import { getLoginErrorMessage } from './useAuth'
 
 function makeAxiosError(
   message: string,
@@ -38,7 +38,7 @@ describe('getLoginErrorMessage', () => {
 
   it('AxiosError에 message도 비어있으면 기본 서버 오류 메시지를 반환한다', () => {
     const err = new AxiosError()
-    expect(getLoginErrorMessage(err)).toBe('서버 오류가 발생했습니다')
+    expect(getLoginErrorMessage(err)).toBe('알 수 없는 오류가 발생했습니다')
   })
 
   it('일반 Error면 err.message를 반환한다', () => {

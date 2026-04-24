@@ -1,19 +1,21 @@
 // src/api/types/ideaBrowse.ts
 
-export type IdeaCategory = '절감' | '혁신' | '안전' | '복지' | '품질' | '환경' | '기타'
-export type IdeaStatus = '심사대기' | '심사중' | '승인' | '반려' | '실행중' | '완료'
+export type IdeaStatus = '심사대기' | '승인' | '반려' | '실행중' | '완료'
 export type SortKey = 'latest' | 'likes' | 'views' | 'comments'
 
 export interface IdeaItem {
   id: number
   title: string
-  category: IdeaCategory
+  categories: { id: number; label: string }[]
   problem: string
   solution: string
-  author: string
-  division: string
+  author: string       // 작성자 이름 (표시용)
+  submittedBy: string  // 작성자 사번 (본인 여부 판단용)
+  bizArea: string
   department: string
+  deptCd: string
   status: IdeaStatus
+  type: 'idea' | 'completed'
   submittedAt: string
   security: 'public' | 'private'
   likes: number
@@ -26,7 +28,7 @@ export interface IdeaItem {
 }
 
 export interface CategoryConfig {
-  id: IdeaCategory
+  id: string
   label: string
   emoji: string
   color: string

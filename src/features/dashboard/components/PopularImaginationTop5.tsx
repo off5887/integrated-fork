@@ -1,14 +1,16 @@
 // src/pages/Dashboard/components/PopularImaginationTop5.tsx
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
+import { useDashboardTheme, dashboardAccent } from '@/theme/dashboardTheme'
 import { POPULAR_ITEMS as ITEMS } from '@/api/mock/dashboard'
 
 const RANK_COLORS = dashboardAccent.rank
 
-export default function PopularImaginationTop5() {
-  const { isDarkMode } = useThemeMode()
-  const dt = getDashboardTheme(isDarkMode)
+interface Props {
+  onIdeaClick?: (ideaId: number) => void
+}
+
+export default function PopularImaginationTop5({ onIdeaClick }: Props) {
+  const dt = useDashboardTheme()
 
   return (
     <Box
@@ -44,10 +46,12 @@ export default function PopularImaginationTop5() {
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         {ITEMS.map((item, i) => (
           <Box
-            key={i}
+            key={item.ideaId}
             tabIndex={0}
-            role="listitem"
+            role="button"
             aria-label={`${i + 1}위: ${item.title} - 공감 ${item.likes}건`}
+            onClick={() => onIdeaClick?.(item.ideaId)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onIdeaClick?.(item.ideaId) }}
             sx={{
               display: 'flex',
               alignItems: 'center',

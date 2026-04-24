@@ -7,6 +7,7 @@ const settingsLight = {
 
   // ── 인풋 ────────────────────────────────────────────────────────────────────
   inputBg:              '#f8fafc',
+  inputTextColor:       '#0f172a',
   inputHoverBorder:     'rgba(99,102,241,0.3)',
 
   // ── 아코디언 ────────────────────────────────────────────────────────────────
@@ -57,6 +58,27 @@ const settingsLight = {
   reviewerItemBg:       '#ffffff',
   reviewerAvatarDefaultBg: 'rgba(241,245,249,0.9)',
 
+  // ── 테이블 / 카드 (ExchangeRequestsManagement) ──────────────────────────────
+  activeAllChipBg:      'rgba(0,0,0,0.08)',
+  subtleBg:             'rgba(0,0,0,0.02)',
+  subtlerBg:            'rgba(0,0,0,0.015)',
+  tableRowHoverBg:      'rgba(0,0,0,0.02)',
+  selectedRowBg:        'rgba(99,102,241,0.04)',
+  selectedCardBg:       'rgba(99,102,241,0.05)',
+  selectedCardBorder:   'rgba(99,102,241,0.3)',
+  bulkBarBorder:        'rgba(99,102,241,0.25)',
+  iconInactiveBg:       'rgba(99,102,241,0.07)',
+
+  // ── 카테고리 비활성 뱃지 ──────────────────────────────────────────────────────
+  inactiveCategoryBg: 'rgba(148,163,184,0.1)',
+
+  // ── 검색 입력 배경 (OrgPickerPanel) ───────────────────────────────────────────
+  searchInputBg: '#f8fafc',
+
+  // ── 날짜 피커 팝업 (MileageHistoryPanel) ─────────────────────────────────────
+  datePickerBg:     '#fff',
+  datePickerShadow: '0 8px 24px rgba(0,0,0,0.12)',
+
   // ── 상수 (dark / light 동일) ─────────────────────────────────────────────────
   primaryColor:           '#6366f1',
   primaryHoverBg:         '#4f46e5',
@@ -75,6 +97,7 @@ const settingsDark = {
 
   // ── 인풋 ────────────────────────────────────────────────────────────────────
   inputBg:              'rgba(15,23,42,0.5)',
+  inputTextColor:       '#e2e8f0',
   inputHoverBorder:     'rgba(99,102,241,0.35)',
 
   // ── 아코디언 ────────────────────────────────────────────────────────────────
@@ -125,6 +148,27 @@ const settingsDark = {
   reviewerItemBg:       'rgba(30,41,59,0.5)',
   reviewerAvatarDefaultBg: 'rgba(30,41,59,0.8)',
 
+  // ── 테이블 / 카드 (ExchangeRequestsManagement) ──────────────────────────────
+  activeAllChipBg:      'rgba(255,255,255,0.12)',
+  subtleBg:             'rgba(255,255,255,0.03)',
+  subtlerBg:            'rgba(255,255,255,0.02)',
+  tableRowHoverBg:      'rgba(255,255,255,0.04)',
+  selectedRowBg:        'rgba(99,102,241,0.08)',
+  selectedCardBg:       'rgba(99,102,241,0.1)',
+  selectedCardBorder:   'rgba(99,102,241,0.4)',
+  bulkBarBorder:        'rgba(99,102,241,0.3)',
+  iconInactiveBg:       'rgba(99,102,241,0.1)',
+
+  // ── 카테고리 비활성 뱃지 ──────────────────────────────────────────────────────
+  inactiveCategoryBg: 'rgba(148,163,184,0.12)',
+
+  // ── 검색 입력 배경 (OrgPickerPanel) ───────────────────────────────────────────
+  searchInputBg: 'rgba(255,255,255,0.04)',
+
+  // ── 날짜 피커 팝업 (MileageHistoryPanel) ─────────────────────────────────────
+  datePickerBg:     '#1e1e2e',
+  datePickerShadow: '0 8px 32px rgba(0,0,0,0.5)',
+
   // ── 상수 (dark / light 동일) ─────────────────────────────────────────────────
   primaryColor:           '#6366f1',
   primaryHoverBg:         '#4f46e5',
@@ -140,3 +184,9 @@ export type SettingsTheme = typeof settingsLight
 
 export const getSettingsTheme = (isDarkMode: boolean): SettingsTheme =>
   isDarkMode ? (settingsDark as unknown as SettingsTheme) : settingsLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useSettingsTheme(): SettingsTheme {
+  const { isDarkMode } = useThemeMode()
+  return getSettingsTheme(isDarkMode)
+}

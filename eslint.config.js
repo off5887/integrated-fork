@@ -36,6 +36,14 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'warn',
       // Context 파일은 Provider + hook을 같이 export하는 패턴 허용 (HMR 영향 없음)
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      // _ 접두사 미사용 변수/파라미터 허용 (의도적 미사용 표시)
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      // 다이얼로그 열기/닫기·필터 리셋 등 effect 내 setState는 유효한 패턴
+      'react-hooks/set-state-in-effect': 'off',
+      // 모듈 레벨 명령형 ref 할당 (SnackbarContext 패턴) 허용
+      'react-hooks/globals': 'off',
+      // 인라인 헬퍼 컴포넌트 — 향후 필요 시 분리
+      'react-hooks/static-components': 'off',
     },
   },
 ])

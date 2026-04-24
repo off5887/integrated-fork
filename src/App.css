@@ -1,3 +1,5 @@
+/* Pretendard 폰트 — @import는 파일 최상단에 위치해야 합니다 */
+@import url('https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css');
 
 /* ==========================================================================
    Modern CSS Reset + 다크모드 지원 (MUI 테마와 충돌 최소화)
@@ -36,9 +38,6 @@ body,
     color 0.4s ease;
 }
 
-/* Pretendard 폰트 */
-@import url('https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css');
-
 /* Scroll Snap */
 .snap-container {
   height: 100vh;
@@ -46,21 +45,6 @@ body,
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) transparent;
-}
-
-.snap-container::-webkit-scrollbar {
-  width: 6px;
-}
-.snap-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-.snap-container::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 10px;
-  border: 2px solid transparent;
-  background-clip: content-box;
 }
 
 /* 기본 요소 스타일 */
@@ -112,7 +96,8 @@ a {
   --primary-dark: #0284c7;
   --accent: #14b8a6;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --scrollbar-thumb: #94a3b8;
+  --scrollbar-thumb: rgba(99, 102, 241, 0.2);
+  --scrollbar-thumb-hover: rgba(99, 102, 241, 0.4);
 }
 
 .dark {
@@ -122,11 +107,32 @@ a {
   --text-secondary: #94a3b8;
   --glass-bg: rgba(30, 41, 59, 0.75);
   --glass-border: 1px solid rgba(148, 163, 184, 0.25);
-  --primary: #60a5fa; /* 로그인 다크모드와 더 잘 맞는 cyan 계열 */
+  --primary: #60a5fa;
   --primary-dark: #3b82f6;
   --accent: #2dd4bf;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
-  --scrollbar-thumb: #64748b; /* 다크모드에서 덜 밝게 */
+  --scrollbar-thumb: rgba(99, 102, 241, 0.25);
+  --scrollbar-thumb-hover: rgba(99, 102, 241, 0.5);
+}
+
+/* 전역 스크롤바 스타일 */
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 /* 배경만 CSS 변수로 적용 (텍스트 색상은 MUI에 맡김) */

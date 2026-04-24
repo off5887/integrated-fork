@@ -1,18 +1,18 @@
 // src/routes/Judge/components/ExecutionPlanSection.tsx
 import DescriptionIcon from '@mui/icons-material/Description'
+import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects'
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 
 interface Props {
   executionPlan: string
+  expectedOutcome?: string
 }
 
-export default function ExecutionPlanSection({ executionPlan }: Props) {
-  const { isDarkMode } = useThemeMode()
+export default function ExecutionPlanSection({ executionPlan, expectedOutcome }: Props) {
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   return (
     <Box>
@@ -32,29 +32,56 @@ export default function ExecutionPlanSection({ executionPlan }: Props) {
         </Typography>
       </Box>
 
-      <Box
-        sx={{
-          p: 3, borderRadius: 2.5,
-          bgcolor: theme.panelBg,
-          border: `1px solid ${theme.panelBorder}`,
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <DescriptionIcon sx={{ color: theme.primaryIconColor, fontSize: '1.1rem' }} />
-          <Typography variant="body2" fontWeight={600} sx={{ color: theme.solutionLabelColor }}>
-            실행 단계
-          </Typography>
-        </Box>
-        <Typography
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {/* 실행 내용 */}
+        <Box
           sx={{
-            lineHeight: 1.9,
-            fontSize: '0.9rem',
-            color: theme.textBody,
-            whiteSpace: 'pre-line',
+            p: 3, borderRadius: 2.5,
+            bgcolor: theme.panelBg,
+            border: `1px solid ${theme.panelBorder}`,
           }}
         >
-          {executionPlan}
-        </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+            <DescriptionIcon sx={{ color: theme.primaryIconColor, fontSize: '1.1rem' }} />
+            <Typography variant="body2" fontWeight={600} sx={{ color: theme.solutionLabelColor }}>
+              실행 내용
+            </Typography>
+          </Box>
+          {executionPlan ? (
+            <Typography
+              sx={{ lineHeight: 1.9, fontSize: '0.9rem', color: theme.textBody, whiteSpace: 'pre-line' }}
+            >
+              {executionPlan}
+            </Typography>
+          ) : (
+            <Typography variant="body2" sx={{ color: theme.textBody, opacity: 0.45, fontStyle: 'italic' }}>
+              실행 계획이 등록되지 않았습니다
+            </Typography>
+          )}
+        </Box>
+
+        {/* 기대 성과 */}
+        {expectedOutcome && (
+          <Box
+            sx={{
+              p: 3, borderRadius: 2.5,
+              bgcolor: theme.outcomeBoxBg,
+              border: `1px solid ${theme.outcomeBoxBorder}`,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <EmojiObjectsIcon sx={{ color: '#10b981', fontSize: '1.1rem' }} />
+              <Typography variant="body2" fontWeight={600} sx={{ color: '#10b981' }}>
+                기대 성과
+              </Typography>
+            </Box>
+            <Typography
+              sx={{ lineHeight: 1.9, fontSize: '0.9rem', color: theme.textBody, whiteSpace: 'pre-line' }}
+            >
+              {expectedOutcome}
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   )

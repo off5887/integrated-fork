@@ -1,7 +1,6 @@
 // src/routes/Mileage/MileageMobileCards.tsx
 import { Box, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getMileageTheme } from '@/theme/mileageTheme'
+import { useMileageTheme } from '@/theme/mileageTheme'
 import type { AwardItem } from '@/api/types/mileage'
 
 interface Props {
@@ -9,14 +8,7 @@ interface Props {
 }
 
 export default function MileageMobileCards({ data }: Props) {
-  const { isDarkMode } = useThemeMode()
-  const t = getMileageTheme(isDarkMode)
-
-  const statusMap: Record<string, { color: string; bg: string; border: string }> = {
-    전환완료:   { color: t.statusSuccessColor, bg: t.statusSuccessBg, border: t.statusSuccessBorder },
-    전환요청중: { color: t.statusWarningColor, bg: t.statusWarningBg, border: t.statusWarningBorder },
-    default:   { color: t.statusErrorColor,   bg: t.statusErrorBg,   border: t.statusErrorBorder },
-  }
+  const t = useMileageTheme()
 
   if (data.length === 0) {
     return (
@@ -29,8 +21,6 @@ export default function MileageMobileCards({ data }: Props) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {data.map((item) => {
-        const statusStyle = statusMap[item.status] ?? statusMap.default
-
         return (
           <Box
             key={item.id}
@@ -49,19 +39,21 @@ export default function MileageMobileCards({ data }: Props) {
                 #{item.id}
               </Typography>
 
-              {/* 상태 배지 */}
-              <Box
-                sx={{
-                  display: 'inline-flex', alignItems: 'center',
-                  px: 1.25, py: 0.35, borderRadius: '999px',
-                  bgcolor: statusStyle.bg, border: `1px solid ${statusStyle.border}`, gap: 0.75,
-                }}
-              >
-                <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: statusStyle.color, flexShrink: 0 }} />
-                <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: statusStyle.color }}>
-                  {item.status}
-                </Typography>
-              </Box>
+              {/* 점수 배지 */}
+              {item.score != null && (
+                <Box
+                  sx={{
+                    display: 'inline-flex', alignItems: 'baseline', gap: 0.4,
+                    px: 1.25, py: 0.35, borderRadius: '999px',
+                    bgcolor: `${t.primaryColor}14`, border: `1px solid ${t.primaryColor}40`,
+                  }}
+                >
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: t.primaryColor }}>
+                    {item.score}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.65rem', fontWeight: 500, color: t.primaryColor }}>점</Typography>
+                </Box>
+              )}
             </Box>
 
             {/* 구분선 */}

@@ -9,14 +9,15 @@ export const menuItems: MenuItem[] = [
   { iconName: 'AttachMoney',  text: '마일리지', path: '/rqMileage' },
   { iconName: 'RateReview',   text: '심사하기', path: '/judge',   roles: ['reviewer', 'admin'] },
   { iconName: 'BarChart',     text: '통계',     path: '/stats' },
-  {
-    iconName: 'Groups',
-    text: 'TF',
-    children: [
-      { iconName: 'Security', text: '용병 지원', path: '/mercenary-support' },
-      { iconName: 'GroupAdd', text: '용병 관리', path: '/mercenary-management' },
-    ],
-  },
+  { iconName: 'Mail',         text: '쪽지함',   path: '/messages' },
+  // {
+  //   iconName: 'Groups',
+  //   text: 'TF',
+  //   children: [
+  //     { iconName: 'Security', text: '용병 지원', path: '/mercenary-support' },
+  //     { iconName: 'GroupAdd', text: '용병 관리', path: '/mercenary-management' },
+  //   ],
+  // },
 ]
 
 export const settingsItem: SubMenuItem = {

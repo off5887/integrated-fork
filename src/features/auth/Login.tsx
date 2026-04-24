@@ -12,11 +12,12 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { getLoginErrorMessage, useLoginMutation } from '@/api/queries/useLoginMutation'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getLoginColors, type LoginColors } from '@/theme/loginTheme'
+import { useSearchParams } from 'react-router'
 import { DEMO_ACCOUNTS } from '@/api/mock/auth'
+import type { DemoAccount } from '@/api/types/auth'
+import { useThemeMode } from '@/context/ThemeContext'
+import { getLoginColors, ROLE_COLORS, type LoginColors } from '@/theme/loginTheme'
+import { useLogin } from '../auth/hooks/useLogin'
 
 // ─── LoginField ───────────────────────────────────────────────────────────────
 
@@ -77,7 +78,7 @@ function LoginLogo({ colors }: { colors: LoginColors }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 24px rgba(59,130,246,0.3)',
+          boxShadow: '0 8px 24px rgba(99,102,241,0.35)',
         }}
       >
         <Typography
@@ -112,18 +113,13 @@ function LoginLogo({ colors }: { colors: LoginColors }) {
 
 // ─── DemoHint ─────────────────────────────────────────────────────────────────
 
-const ROLE_COLOR: Record<string, string> = {
-  user:     '#3b82f6',
-  reviewer: '#8b5cf6',
-  admin:    '#10b981',
-}
-
 interface DemoHintProps {
+  accounts: DemoAccount[]
   colors: LoginColors
   onSelect: (id: string, password: string) => void
 }
 
-function DemoHint({ colors, onSelect }: DemoHintProps) {
+function DemoHint({ accounts, colors, onSelect }: DemoHintProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -178,7 +174,7 @@ function DemoHint({ colors, onSelect }: DemoHintProps) {
 
       <Collapse in={open}>
         <Box sx={{ px: 2, pb: 1.5, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-        {DEMO_ACCOUNTS.map((account) => (
+        {accounts.map((account) => (
           <Box
             key={account.id}
             onClick={() => onSelect(account.id, account.password)}
@@ -196,17 +192,17 @@ function DemoHint({ colors, onSelect }: DemoHintProps) {
               border: `1px solid transparent`,
               transition: 'all 0.15s',
               '&:hover': {
-                bgcolor: `${ROLE_COLOR[account.profile.role]}18`,
-                borderColor: `${ROLE_COLOR[account.profile.role]}40`,
+                bgcolor: `${ROLE_COLORS[account.profile.role]}18`,
+                borderColor: `${ROLE_COLORS[account.profile.role]}40`,
               },
-              '&:focus-visible': { outline: `2px solid ${ROLE_COLOR[account.profile.role]}` },
+              '&:focus-visible': { outline: `2px solid ${ROLE_COLORS[account.profile.role]}` },
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Box
                 sx={{
                   width: 8, height: 8, borderRadius: '50%',
-                  bgcolor: ROLE_COLOR[account.profile.role],
+                  bgcolor: ROLE_COLORS[account.profile.role],
                   flexShrink: 0,
                 }}
               />
@@ -242,19 +238,12 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
+  const [searchParams] = useSearchParams()
+  const sessionExpired = searchParams.get('reason') === 'session_expired'
+
   const { isDarkMode, toggleTheme } = useThemeMode()
   const colors = getLoginColors(isDarkMode)
-  const mutation = useLoginMutation()
-  const navigate = useNavigate()
-
-  const loginWithDemo = (id: string, pw: string) => {
-    const account = DEMO_ACCOUNTS.find((a) => a.id === id && a.password === pw)
-    if (!account) return false
-    localStorage.setItem('accessToken', `demo-token-${account.profile.role}`)
-    localStorage.setItem('userProfile', JSON.stringify(account.profile))
-    navigate('/dashboard')
-    return true
-  }
+  const { login, isPending } = useLogin()
 
   const handleDemoSelect = (id: string, pw: string) => {
     setEmployeeId(id)
@@ -264,23 +253,8 @@ export default function Login() {
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     setErrorMsg('')
-
-    if (loginWithDemo(employeeId, password)) return
-
-    try {
-      const data = await mutation.mutateAsync({ employeeId, password })
-      localStorage.setItem('accessToken', data.token)
-      localStorage.setItem('userProfile', JSON.stringify({
-        employeeId: data.employeeId,
-        name: data.name,
-        position: (data.position as string) ?? '',
-        department: (data.department as string) ?? '',
-        role: (data.role as string) ?? 'user',
-      }))
-      navigate('/dashboard')
-    } catch (err: unknown) {
-      setErrorMsg(getLoginErrorMessage(err))
-    }
+    const error = await login(employeeId, password)
+    if (error) setErrorMsg(error)
   }
 
   return (
@@ -344,7 +318,32 @@ export default function Login() {
         <CardContent sx={{ p: { xs: 4, sm: 6 }, pt: 8, pb: 6 }}>
           <LoginLogo colors={colors} />
 
-          <DemoHint colors={colors} onSelect={handleDemoSelect} />
+          <DemoHint accounts={DEMO_ACCOUNTS} colors={colors} onSelect={handleDemoSelect} />
+
+          {sessionExpired && (
+            <Box
+              sx={{
+                mb: 4,
+                p: 2.5,
+                borderRadius: 3,
+                bgcolor: colors.sessionBg,
+                border: `1px solid ${colors.sessionBorder}`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+              }}
+            >
+              <Typography sx={{ fontSize: '1.1rem', flexShrink: 0 }}>⏱️</Typography>
+              <Box>
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: colors.sessionTitle, lineHeight: 1.3 }}>
+                  세션이 만료되었습니다
+                </Typography>
+                <Typography sx={{ fontSize: '0.75rem', color: colors.sessionDesc, mt: 0.25 }}>
+                  보안을 위해 자동으로 로그아웃되었습니다. 다시 로그인해주세요.
+                </Typography>
+              </Box>
+            </Box>
+          )}
 
           {errorMsg && (
             <Box
@@ -386,23 +385,30 @@ export default function Login() {
               type="submit"
               variant="contained"
               disableElevation
-              disabled={mutation.isPending}
+              disabled={isPending}
               sx={{
                 py: 1.8,
                 borderRadius: 3,
-                fontWeight: 600,
+                fontWeight: 700,
                 textTransform: 'none',
                 fontSize: '1.05rem',
-                bgcolor: colors.btnBg,
+                background: colors.btnBg,
+                color: colors.btnColor,
+                boxShadow: colors.btnShadow,
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  bgcolor: colors.btnHover,
+                  background: colors.btnHover,
+                  boxShadow: colors.btnShadow,
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 10px 30px rgba(59,130,246,0.35)',
+                },
+                '&.Mui-disabled': {
+                  background: colors.btnBg,
+                  color: 'rgba(255,255,255,0.6)',
+                  opacity: 0.7,
                 },
               }}
             >
-              {mutation.isPending ? (
+              {isPending ? (
                 <>
                   <CircularProgress size={20} color="inherit" sx={{ mr: 1.5 }} />
                   로그인 중...

@@ -2,27 +2,38 @@
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
 import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { Avatar, Box, Tooltip, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
+import { useIdeaBrowseTheme, ideaAccent, IDEA_STATUS_CONFIG } from '@/theme/ideaBrowseTheme'
 import type { IdeaItem } from '@/api/types/ideaBrowse'
-import { fmtDate, getCatConfig } from '../utils'
+import { useCategories } from '@/api/queries/useCategories'
+import { useSimilarIdeas } from '@/api/queries/useIdeas'
+import { fmtDate } from '../utils'
 
 interface IdeaCardProps {
   idea: IdeaItem
-  similarTitles: string[]
-  showSimilar: boolean
+  showSimilarOnly: boolean
   onClick: () => void
 }
 
-export default function IdeaCard({ idea, similarTitles, showSimilar, onClick }: IdeaCardProps) {
-  const { isDarkMode } = useThemeMode()
-  const { textPrimary, textSecondary, borderColor, cardBg, similar, dividerColor, cardShadow, cardHoverShadow, avatarBg, similarCardShadow } = getIdeaTheme(isDarkMode)
+const CAT_FALLBACK = { emoji: '📁', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.35)', label: '' }
 
-  const cat = getCatConfig(idea.category)
+export default function IdeaCard({ idea, showSimilarOnly, onClick }: IdeaCardProps) {
+  const { textPrimary, textSecondary, borderColor, cardBg, similar, dividerColor, cardShadow, cardHoverShadow, avatarBg, similarCardShadow } = useIdeaBrowseTheme()
+  const { categories } = useCategories()
+  const { data: similarTitles = [] } = useSimilarIdeas(idea.id)
+
+  const cats = idea.categories.map((c) => ({
+    ...(categories.find((opt) => Number(opt.id) === c.id) ?? { ...CAT_FALLBACK, label: c.label }),
+    id: String(c.id),
+  }))
+  const firstCat = cats[0] ?? CAT_FALLBACK
   const stat = IDEA_STATUS_CONFIG[idea.status]
-  const isSimilar = showSimilar && similarTitles.length > 0
+  const isSimilar = similarTitles.length > 0
+
+  // showSimilarOnly 필터: 유사 아이디어가 없으면 카드를 렌더하지 않음
+  if (showSimilarOnly && !isSimilar) return null
 
   return (
     <Box
@@ -55,7 +66,7 @@ export default function IdeaCard({ idea, similarTitles, showSimilar, onClick }: 
       }}
     >
       {/* 상단 카테고리 색상 스트립 */}
-      <Box sx={{ height: 3, background: isSimilar ? `linear-gradient(90deg, ${similar.gradientFrom}, ${similar.gradientTo})` : `linear-gradient(90deg, ${cat.color}, ${cat.color}88)` }} />
+      <Box sx={{ height: 3, background: isSimilar ? `linear-gradient(90deg, ${similar.gradientFrom}, ${similar.gradientTo})` : `linear-gradient(90deg, ${firstCat.color}, ${firstCat.color}88)` }} />
 
       {/* 유사 아이디어 배지 */}
       {isSimilar && (
@@ -89,20 +100,53 @@ export default function IdeaCard({ idea, similarTitles, showSimilar, onClick }: 
       )}
 
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: { xs: 2, md: 2.5 }, gap: 1.75 }}>
-        {/* 카테고리 + 상태 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-          <Box
-            sx={{
-              display: 'inline-flex', alignItems: 'center', gap: 0.5,
-              px: 0.9, py: 0.3, borderRadius: 1.5,
-              bgcolor: cat.bg, border: `1px solid ${cat.border}`,
-            }}
-          >
-            <Box component="span" sx={{ fontSize: '0.75rem', lineHeight: 1 }}>{cat.emoji}</Box>
-            <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: cat.color, lineHeight: 1 }}>
-              {idea.category}
-            </Typography>
-          </Box>
+        {/* 구분 + 카테고리 + 상태 */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+          {/* 구분 chip — 항상 표시 */}
+          {idea.type === 'completed' ? (
+            <Box
+              sx={{
+                display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                px: 0.9, py: 0.3, borderRadius: 1.5,
+                bgcolor: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.35)',
+              }}
+            >
+              <Box component="span" sx={{ fontSize: '0.65rem', lineHeight: 1 }}>🏁</Box>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: '#0ea5e9', lineHeight: 1 }}>
+                실행완료
+              </Typography>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: 'inline-flex', alignItems: 'center', gap: 0.4,
+                px: 0.9, py: 0.3, borderRadius: 1.5,
+                bgcolor: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)',
+              }}
+            >
+              <Box component="span" sx={{ fontSize: '0.65rem', lineHeight: 1 }}>💡</Box>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: ideaAccent.primary, lineHeight: 1 }}>
+                아이디어
+              </Typography>
+            </Box>
+          )}
+          {/* 카테고리 (최대 2개) */}
+          {cats.map((cat) => (
+            <Box
+              key={cat.id}
+              sx={{
+                display: 'inline-flex', alignItems: 'center', gap: 0.5,
+                px: 0.9, py: 0.3, borderRadius: 1.5,
+                bgcolor: cat.bg, border: `1px solid ${cat.border}`,
+              }}
+            >
+              <Box component="span" sx={{ fontSize: '0.75rem', lineHeight: 1 }}>{cat.emoji}</Box>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: cat.color, lineHeight: 1 }}>
+                {cat.label}
+              </Typography>
+            </Box>
+          ))}
+          {/* 심사 상태 */}
           <Box
             sx={{
               display: 'inline-flex', alignItems: 'center',
@@ -172,6 +216,10 @@ export default function IdeaCard({ idea, similarTitles, showSimilar, onClick }: 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
               <ChatBubbleOutlineIcon sx={{ fontSize: '0.75rem', color: textSecondary }} />
               <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.comments}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
+              <VisibilityOutlinedIcon sx={{ fontSize: '0.75rem', color: textSecondary }} />
+              <Typography sx={{ fontSize: '0.72rem', color: textSecondary }}>{idea.views}</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
               <CalendarTodayIcon sx={{ fontSize: '0.72rem', color: textSecondary }} />

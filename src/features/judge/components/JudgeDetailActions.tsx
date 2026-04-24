@@ -6,49 +6,38 @@ import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import UndoIcon from '@mui/icons-material/Undo'
 import { Box, Button } from '@mui/material'
 import { useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme } from '@/theme/judgeTheme'
 import type { DecisionType, Proposal } from '@/api/types/judge'
 import JudgeDecisionModal from './JudgeDecisionModal'
 
 interface Props {
   proposalTitle: string
-  reviewStage: 1 | 2 | 3
   status: Proposal['status']
   isFirst: boolean
   isLast: boolean
   onClose: () => void
   onPrev: () => void
   onNext: () => void
-  onApprove: (reason: string, score?: number, mileage?: number) => void
+  onApprove: (reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoreProfitability?: number, awardedPoints?: number) => void
   onReject: (reason: string) => void
   onWithdrawApprove: (reason: string) => void
   onWithdrawReject: (reason: string) => void
 }
 
 export default function JudgeDetailActions({
-  proposalTitle,
-  reviewStage,
-  status,
-  isFirst,
-  isLast,
-  onClose,
-  onPrev,
-  onNext,
-  onApprove,
-  onReject,
-  onWithdrawApprove,
-  onWithdrawReject,
+  proposalTitle, status,
+  isFirst, isLast,
+  onClose, onPrev, onNext,
+  onApprove, onReject, onWithdrawApprove, onWithdrawReject,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
+  const theme = useJudgeTheme()
 
   const [decisionType, setDecisionType] = useState<DecisionType | null>(null)
 
-  const handleConfirm = (type: DecisionType, reason: string, score?: number, mileage?: number) => {
-    if (type === '승인') onApprove(reason, score, mileage)
+  const handleConfirm = (type: DecisionType, reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoreProfitability?: number, awardedPoints?: number) => {
+    if (type === '승인') onApprove(reason, scoreInnovation, scoreFeasibility, scoreProfitability, awardedPoints)
     else if (type === '반려') onReject(reason)
     else if (type === '승인회수') onWithdrawApprove(reason)
     else onWithdrawReject(reason)
@@ -247,7 +236,6 @@ export default function JudgeDetailActions({
         open={decisionType !== null}
         type={decisionType}
         proposalTitle={proposalTitle}
-        reviewStage={reviewStage}
         onClose={() => setDecisionType(null)}
         onConfirm={handleConfirm}
       />

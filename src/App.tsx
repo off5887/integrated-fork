@@ -1,11 +1,13 @@
 // src/App.tsx
 import { CssBaseline } from '@mui/material'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
+import { RouterProvider } from 'react-router'
 
 import { ThemeProvider } from './context/ThemeContext'
 import { SnackbarProvider } from './context/SnackbarContext'
+import { ReactQueryProvider } from './api/ReactQueryProvider'
 import { lightTheme } from './theme'
-import AppRoutes from './routes'
+import { router } from './routes'
 
 export default function App() {
   return (
@@ -13,7 +15,9 @@ export default function App() {
       <MuiThemeProvider theme={lightTheme}>
         <CssBaseline />
         <SnackbarProvider>
-          <AppRoutes />
+          <ReactQueryProvider>
+            <RouterProvider router={router} />
+          </ReactQueryProvider>
         </SnackbarProvider>
       </MuiThemeProvider>
     </ThemeProvider>

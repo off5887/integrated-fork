@@ -130,6 +130,35 @@ mutationKey: ['auth', 'login']  // 인라인 하드코딩
 queryKey: ['ideas', id]
 ```
 
+### API 연동 시 데모 모드 분기 — `withDemoFallback` 필수
+- 백엔드 API를 연동하는 **모든 `useQuery`의 `queryFn`** 은 반드시 `withDemoFallback`으로 감싼다.
+- 데모 계정(localStorage 기반)이면 mock 데이터를, 실제 API 계정이면 실제 API를 호출한다.
+- `useMutation`은 분기 불필요.
+- **`withDemoFallback`을 사용하는 쿼리는 반드시 `staleTime: 0`을 명시한다.**
+  - 전역 staleTime(현재 1분)으로 인해 데모 세션의 mock 데이터가 캐시에 남아 실제 API 계정에서도 재조회 없이 mock 데이터가 표시되는 버그가 발생한다.
+  - `staleTime: 0`이면 컴포넌트 마운트 시 항상 `queryFn`이 실행되어 `isDemoMode()` 결과가 최신 상태로 반영된다.
+
+```ts
+// ✅ 올바른 방식
+import { withDemoFallback } from '@/utils/demoMode'
+import { mockUsers } from '@/api/mock/settings'
+
+queryFn: () =>
+  withDemoFallback(
+    mockUsers,
+    async () => {
+      const res = await api.get<ApiResponse<UserApiBizArea[]>>('/api/users')
+      return flattenUsers(res.data.data)
+    },
+  ),
+
+// ❌ 잘못된 방식
+queryFn: async () => {
+  const res = await api.get('/api/users')  // 데모 계정에서도 실제 API 호출
+  return res.data.data
+}
+```
+
 ### 피처 전용 유틸 → `features/{피처}/utils.ts`
 - 피처 내에서만 사용하는 유틸 함수는 해당 피처 폴더의 `utils.ts`에 둔다.
 - 전역에서 재사용되는 유틸은 `src/utils/`에 둔다.
@@ -228,13 +257,30 @@ npm run test:watch  # 파일 변경 감지 모드
 
 ---
 
+## 브랜치 전략
+
+- **`integrated-main`**: 일상 작업 브랜치. CI 없이 자유롭게 커밋/푸시한다.
+- **`main`**: 배포 브랜치. 머지 시 CI(타입체크·린트·테스트) → CD(서버 자동배포) 실행.
+
+### main 머지 전 필수 확인 (CI 통과 보장)
+
+`integrated-main → main` PR을 올리기 전에 반드시 아래 세 명령을 순서대로 실행하고 모두 통과해야 한다.
+
+```bash
+npx tsc --noEmit   # 타입 에러 없음
+npm run lint        # ESLint 에러 없음 (warning은 허용)
+npm test            # 전체 테스트 통과
+```
+
+세 명령 중 하나라도 실패하면 수정 후 재확인한다. CI가 GitHub Actions에서 똑같이 실행되므로 로컬에서 통과하면 CI도 통과한다.
+
+---
+
 ## 커밋 규칙
 
 - 커밋 메시지 형식: `{스코프}: {변경 내용 요약}`
 - 예시: `ideaBrowse: prop drilling 제거 및 인라인 테마값 토큰화`
 - 작업 단위를 작게 유지하고 관련 파일을 함께 커밋한다.
-- 작업 완료 후 `npx tsc --noEmit`으로 타입 에러 없음을 확인한다.
-- 새 로직/유틸 추가 시 `npm test`로 기존 테스트가 깨지지 않는지 확인한 뒤 커밋한다.
 
 ---
 
@@ -246,6 +292,7 @@ npm run test:watch  # 파일 변경 감지 모드
 - [ ] Leaf 컴포넌트가 `isDarkMode`를 props로 받지 않고 직접 hook을 호출하는가?
 - [ ] 컴포넌트 파일이 500줄 이하인가?
 - [ ] 크로스 모듈 import에 `@/` alias를 사용하는가?
+- [ ] `useQuery`의 `queryFn`에 `withDemoFallback`을 사용하는가?
 - [ ] `npx tsc --noEmit` 통과 여부 확인했는가?
 - [ ] `npm test` 통과 여부 확인했는가?
 - [ ] `tsc -b && vite build` 통과 여부 확인했는가? (Vercel 배포 전 필수)

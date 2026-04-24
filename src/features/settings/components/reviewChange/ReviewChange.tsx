@@ -7,27 +7,68 @@ import {
 } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { useSnackbar } from '@/context/SnackbarContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
-import type { OrgMember } from '@/api/types/reviewer'
-import type { IdeaStatus, Idea } from '@/api/types/settings'
-import { mockIdeas } from '@/api/mock/settings'
+import { useSettingsTheme } from '@/theme/settingsTheme'
+import type { Idea, IdeaStatus } from '@/api/types/settings'
+import { useIdeaList } from '@/api/queries/useIdeas'
 import IdeaListPanel from './IdeaListPanel'
 import IdeaDetailPanel from './IdeaDetailPanel'
 
+/** IdeaItem → 설정용 Idea 변환 */
+function toIdea(item: {
+  id: number
+  title: string
+  author: string
+  department: string
+  deptCd: string
+  submittedAt: string
+  status: string
+}): Idea {
+  const STATUS_MAP: Record<string, IdeaStatus> = {
+    '심사대기': '심사대기',
+    '승인':     '승인',
+    '반려':     '반려',
+    '실행중':   '실행중',
+    '완료':     '완료',
+  }
+  return {
+    id: item.id,
+    title: item.title,
+    submitter: item.author,
+    department: item.department,
+    deptCd: item.deptCd,
+    submittedAt: item.submittedAt,
+    status: STATUS_MAP[item.status] ?? '심사대기',
+  }
+}
+
 // ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
+function toDateStr(date: Date) {
+  return date.toISOString().split('T')[0]
+}
+
+function defaultRange() {
+  const end = new Date()
+  const start = new Date()
+  start.setMonth(start.getMonth() - 1)
+  return { start: toDateStr(start), end: toDateStr(end) }
+}
+
 export default function ReviewChange() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
-  const { showSnackbar } = useSnackbar()
+  const st = useSettingsTheme()
 
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedIdeaId, setSelectedIdeaId] = useState<string | null>(null)
-  const [ideas, setIdeas] = useState<Idea[]>(mockIdeas)
-  const [changingLevel, setChangingLevel] = useState<1 | 2 | 3 | null>(null)
+  const [selectedIdeaId, setSelectedIdeaId] = useState<number | null>(null)
+  const [changingLevel, setChangingLevel] = useState<1 | null>(null)
+
+  const init = defaultRange()
+  const [startDate, setStartDate] = useState(init.start)
+  const [endDate, setEndDate] = useState(init.end)
+
+  const { data: ideaItems = [] } = useIdeaList({ status: 'pending', startDate, endDate })
+
+  const ideas: Idea[] = useMemo(() => ideaItems.map(toIdea), [ideaItems])
 
   const filteredIdeas = useMemo(() => {
     const q = searchTerm.trim().toLowerCase()
@@ -42,73 +83,19 @@ export default function ReviewChange() {
 
   const selectedIdea = ideas.find((i) => i.id === selectedIdeaId) ?? null
 
-  const handleStatusChange = (status: IdeaStatus) => {
-    if (!selectedIdeaId) return
-    setIdeas((prev) => prev.map((i) => (i.id === selectedIdeaId ? { ...i, status } : i)))
-  }
-
-  const handleReviewerChange = (level: 1 | 2 | 3, reviewer: OrgMember | null) => {
-    if (!selectedIdeaId) return
-    setIdeas((prev) =>
-      prev.map((i) => {
-        if (i.id !== selectedIdeaId) return i
-        return {
-          ...i,
-          reviewers: {
-            ...i.reviewers,
-            [`level${level}`]: reviewer,
-          },
-        }
-      }),
-    )
-    setChangingLevel(null)
-  }
-
-  const handleSave = () => {
-    showSnackbar('변경사항이 저장되었습니다.', 'success')
-  }
-
   return (
     <Box>
-      {/* 섹션 헤더 */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', sm: 'center' },
-          gap: 2,
-          mb: 4,
-          pb: 3,
-          borderBottom: `1px solid ${borderColor}`,
-        }}
-      >
+      <Box sx={{ mt: 5, mb: 3, pb: 3, borderBottom: `1px solid ${borderColor}` }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box
-            sx={{
-              width: 26,
-              height: 26,
-              borderRadius: '50%',
-              bgcolor: st.primaryColor,
-              color: st.primaryBtnColor,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
+          <Box sx={{ width: 26, height: 26, borderRadius: '50%', bgcolor: st.primaryColor, color: st.primaryBtnColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <SwapHorizIcon sx={{ fontSize: '0.9rem' }} />
           </Box>
           <Box>
-            <Typography
-              variant="subtitle1"
-              fontWeight={700}
-              sx={{ color: textPrimary, lineHeight: 1.3 }}
-            >
+            <Typography variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, lineHeight: 1.3 }}>
               아이디어별 심사자 변경
             </Typography>
             <Typography variant="caption" sx={{ color: textSecondary }}>
-              아이디어를 선택한 뒤 진행 상태와 각 차수의 심사자를 변경하세요
+              아이디어를 선택한 뒤 심사자를 변경하세요
             </Typography>
           </Box>
         </Box>
@@ -123,6 +110,10 @@ export default function ReviewChange() {
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
             onSelect={(id) => { setSelectedIdeaId(id); setChangingLevel(null) }}
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
           />
         </Grid>
 
@@ -143,27 +134,19 @@ export default function ReviewChange() {
                 p: 4,
               }}
             >
-              <EditNoteIcon
-                sx={{ fontSize: '2.8rem', color: textSecondary, opacity: 0.25 }}
-              />
-              <Typography
-                variant="body2"
-                sx={{ color: textSecondary, fontWeight: 600, opacity: 0.6 }}
-              >
+              <EditNoteIcon sx={{ fontSize: '2.8rem', color: textSecondary, opacity: 0.25 }} />
+              <Typography variant="body2" sx={{ color: textSecondary, fontWeight: 600, opacity: 0.6 }}>
                 왼쪽에서 아이디어를 선택하세요
               </Typography>
               <Typography variant="caption" sx={{ color: textSecondary, opacity: 0.45 }}>
-                선택한 아이디어의 진행 상태와 심사자를 변경할 수 있습니다
+                선택한 아이디어의 심사자를 변경할 수 있습니다
               </Typography>
             </Box>
           ) : (
             <IdeaDetailPanel
               idea={selectedIdea}
               changingLevel={changingLevel}
-              onStatusChange={handleStatusChange}
-              onReviewerChange={handleReviewerChange}
               onChangingLevel={setChangingLevel}
-              onSave={handleSave}
             />
           )}
         </Grid>

@@ -1,11 +1,22 @@
 // Dashboard에서 사용하는 ApexCharts는 jsdom에서 동작하지 않으므로 mock 처리
-import { vi, describe, it, expect } from 'vitest'
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 
 vi.mock('react-apexcharts', () => ({ default: () => null }))
 
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { render } from '@/tests/utils'
 import Dashboard from './Dashboard'
+import { DEMO_USER_PROFILE } from '@/api/mock/auth'
+import { DEMO_STORAGE_KEY } from '@/utils/demoMode'
+
+beforeEach(() => {
+  localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(DEMO_USER_PROFILE))
+})
+
+afterEach(() => {
+  localStorage.removeItem(DEMO_STORAGE_KEY)
+  vi.useRealTimers()
+})
 
 describe('Dashboard', () => {
   it('헤더 타이틀 "대시보드"가 렌더된다', () => {
@@ -13,26 +24,21 @@ describe('Dashboard', () => {
     expect(screen.getByText('대시보드')).toBeInTheDocument()
   })
 
-  it('"실시간 현황" 배지가 렌더된다', () => {
+  it('"● 실시간" 배지가 렌더된다', () => {
     render(<Dashboard />)
-    expect(screen.getByText('실시간 현황')).toBeInTheDocument()
+    expect(screen.getByText('● 실시간')).toBeInTheDocument()
   })
 
-  it('4개의 KPI 카드 레이블이 모두 렌더된다', () => {
+  it('기본(user) 역할의 KPI 카드 레이블이 렌더된다', () => {
     render(<Dashboard />)
-    expect(screen.getByText('전체 아이디어')).toBeInTheDocument()
+    expect(screen.getByText('내 아이디어')).toBeInTheDocument()
     expect(screen.getByText('승인 완료')).toBeInTheDocument()
-    expect(screen.getByText('이번 달 신규')).toBeInTheDocument()
-    expect(screen.getByText('전체 실행률')).toBeInTheDocument()
   })
 
-  it('KPI 카드 값(150건, 68건, 23건, 73.4%)이 렌더된다', () => {
+  it('기본 KPI 카드 값(5건, 2건)이 렌더된다', async () => {
     render(<Dashboard />)
-    // 같은 값이 여러 요소에서 렌더될 수 있으므로 getAllByText 사용
-    expect(screen.getAllByText('150건').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText('68건').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText('23건').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText('73.4%').length).toBeGreaterThanOrEqual(1)
+    expect((await screen.findAllByText('5건')).length).toBeGreaterThanOrEqual(1)
+    expect((await screen.findAllByText('2건')).length).toBeGreaterThanOrEqual(1)
   })
 
   it('"최근 활동" 섹션 제목이 렌더된다', () => {
@@ -55,9 +61,10 @@ describe('Dashboard', () => {
   })
 
   it('최근 활동 항목이 list role로 접근성을 지원한다', () => {
+    vi.useFakeTimers()
     render(<Dashboard />)
+    act(() => { vi.advanceTimersByTime(3000) })
     expect(screen.getByRole('list', { name: '최근 활동 목록' })).toBeInTheDocument()
-    // 다른 MUI List 컴포넌트의 li 요소도 포함될 수 있으므로 최소 4개 확인
     expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(4)
   })
 })

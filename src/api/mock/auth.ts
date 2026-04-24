@@ -1,12 +1,4 @@
-import type { UserProfile, UserRole } from '@/api/types/auth'
-
-export interface DemoAccount {
-  id: string
-  password: string
-  profile: UserProfile
-  roleLabel: string
-  description: string
-}
+import type { DemoAccount, UserProfile, UserRole } from '@/api/types/auth'
 
 export const DEMO_ACCOUNTS: DemoAccount[] = [
   {
@@ -17,9 +9,14 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     profile: {
       employeeId: 'demo',
       name: '홍길동',
+      email: 'demo@example.com',
       position: '대리',
       department: '개발팀',
+      businessSite: '서울사업소',
       role: 'user',
+      totalMileage: 1200,
+      gomLevel: 4,
+      levelName: '곰신',
     },
   },
   {
@@ -30,9 +27,14 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     profile: {
       employeeId: 'demo2',
       name: '김심사',
+      email: 'demo2@example.com',
       position: '과장',
       department: '기획팀',
+      businessSite: '서울사업소',
       role: 'reviewer',
+      totalMileage: 800,
+      gomLevel: 1,
+      levelName: '꼬마 곰곰이',
     },
   },
   {
@@ -43,9 +45,14 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     profile: {
       employeeId: 'demo3',
       name: '이관리',
+      email: 'demo3@example.com',
       position: '부장',
       department: '경영지원부문',
+      businessSite: '본사',
       role: 'admin',
+      totalMileage: 500,
+      gomLevel: 1,
+      levelName: '꼬마 곰곰이',
     },
   },
 ]
@@ -57,6 +64,7 @@ export function findDemoAccount(id: string, password: string): DemoAccount | und
 
 // 기존 호환용 (ideaBrowse.ts 등에서 DEMO_USER_PROFILE 참조)
 export const DEMO_USER_PROFILE: UserProfile = DEMO_ACCOUNTS[0].profile
+export const DEMO_REVIEWER_PROFILE: UserProfile = DEMO_ACCOUNTS[1].profile
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   user: '일반사용자',

@@ -1,181 +1,180 @@
 // src/features/idea/NewIdea.tsx
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import SaveIcon from '@mui/icons-material/Save'
 import SendIcon from '@mui/icons-material/Send'
-import {
-  Alert,
-  Box,
-  Button,
-  Snackbar,
-} from '@mui/material'
+import { Box, Button } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useThemeMode } from '@/context/ThemeContext'
+import { useNavigate, useLocation } from 'react-router-dom'
+import type { IdeaItem } from '@/api/types/ideaBrowse'
 import { useSnackbar } from '@/context/SnackbarContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
-import type { DraftData } from '@/api/types/idea'
+import { useIdeaTheme } from '@/theme/ideaTheme'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
 
-import BasicInfoSection from './components/BasicInfoSection'
-import FileUploadSection from './components/FileUploadSection'
-import ParticipantsSection from './components/ParticipantsSection'
-import ReviewerSelectModal from './components/ReviewerSelectModal'
-import SimilarIdeaSearchModal from './components/SimilarIdeaSearchModal'
+import { useIdeaDraft, DRAFT_KEY } from './hooks/useIdeaDraft'
+import { useCreateIdea, useDeleteAttachment, useIdeaDetail, useUpdateIdea } from '@/api/queries/useIdeas'
+import DraftSnackbar from './components/DraftSnackbar'
+import DraftRestoreBanner from './components/DraftRestoreBanner'
 import NewIdeaHeader from './components/NewIdeaHeader'
 import SimilarIdeaBanner from './components/SimilarIdeaBanner'
-import DraftRestoreBanner from './components/DraftRestoreBanner'
-import PlanSection from './components/PlanSection'
-
-const DRAFT_KEY = 'gomgom_new_idea_draft'
-const AUTO_SAVE_INTERVAL = 5 * 60 * 1000 // 5분
+import BasicInfoSection from './components/sections/BasicInfoSection'
+import FileUploadSection from './components/sections/FileUploadSection'
+import ParticipantsSection from './components/sections/ParticipantsSection'
+import PlanSection from './components/sections/PlanSection'
+import ReviewerSelectModal from './components/modals/ReviewerSelectModal'
+import CoProposerSelectModal from './components/modals/CoProposerSelectModal'
+import SimilarIdeaSearchModal from './components/modals/SimilarIdeaSearchModal'
 
 function SectionDivider() {
-  const { isDarkMode } = useThemeMode()
-  const { dividerBg } = getIdeaTheme(isDarkMode)
-  return (
-    <Box
-      sx={{
-        height: '1px',
-        bgcolor: dividerBg,
-        my: 5,
-      }}
-    />
-  )
-}
-
-function formatTime(date: Date) {
-  return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+  const { dividerBg } = useIdeaTheme()
+  return <Box sx={{ height: '1px', bgcolor: dividerBg, my: 5 }} />
 }
 
 export default function NewIdea() {
-  const { isDarkMode } = useThemeMode()
   const { showSnackbar } = useSnackbar()
   const navigate = useNavigate()
+  const location = useLocation()
+  const editIdea = (location.state as { editIdea?: IdeaItem } | null)?.editIdea ?? null
+  const isEditMode = editIdea !== null
 
   // ─── 폼 상태 ───────────────────────────────────────────────────────────────
-  const [title, setTitle] = useState('')
-  const [categories, setCategories] = useState<string[]>([])
-  const [problem, setProblem] = useState('')
-  const [solution, setSolution] = useState('')
+  const [ideaType, setIdeaType] = useState<'idea' | 'complete'>('idea')
+  const [title, setTitle] = useState(editIdea?.title ?? '')
+  const [categories, setCategories] = useState<string[]>(
+    editIdea?.categories?.map((c) => c.id.toString()) ?? []
+  )
+  const [problem, setProblem] = useState(editIdea?.problem ?? '')
+  const [solution, setSolution] = useState(editIdea?.solution ?? '')
   const [reviewer, setReviewer] = useState<string[]>([])
-  // const [coProposers, setCoProposers] = useState<string[]>([])
-  // const [startDate, setStartDate] = useState('')
-  // const [endDate, setEndDate] = useState('')
-  const [security, setSecurity] = useState<'public' | 'private'>('public')
+  const [reviewerIds, setReviewerIds] = useState<string[]>([])       // API 전송용 사번
+  const [coProposers, setCoProposers] = useState<string[]>([])       // UI 표시용 레이블
+  const [coProposerIds, setCoProposerIds] = useState<string[]>([])   // API 전송용 사번
+  const [security, setSecurity] = useState<'public' | 'private'>(editIdea?.security ?? 'public')
   const [plan, setPlan] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [expectedOutcome, setExpectedOutcome] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [filePreviews, setFilePreviews] = useState<string[]>([])
+  const filePreviewsRef = useRef<string[]>([])
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState({
+    title: false, problem: false, solution: false,
+    reviewer: false,
+    startDate: false, endDate: false,
+    plan: false, expectedOutcome: false,
+  })
 
   // ─── 모달 상태 ─────────────────────────────────────────────────────────────
   const [reviewerModalOpen, setReviewerModalOpen] = useState(false)
-  // const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
+  const [coProposerModalOpen, setCoProposerModalOpen] = useState(false)
   const [similarSearchOpen, setSimilarSearchOpen] = useState(false)
 
-  // ─── 자동저장 상태 ─────────────────────────────────────────────────────────
-  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
-  const [snackOpen, setSnackOpen] = useState(false)
-  const [snackMsg, setSnackMsg] = useState('')
-  const [savedDraft, setSavedDraft] = useState<DraftData | null>(() => {
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY)
-      if (!raw) return null
-      const draft: DraftData = JSON.parse(raw)
-      return draft.savedAt ? draft : null
-    } catch {
-      return null
-    }
-  })
+  // ─── 임시저장 ──────────────────────────────────────────────────────────────
+  const {
+    savedDraft, lastSavedAt, snackOpen, snackMsg, setSnackOpen,
+    handleManualSave, handleRestoreDraft, handleDiscardDraft, clearDraft,
+  } = useIdeaDraft(
+    { ideaType, title, categories, problem, solution, reviewer, coProposers, security, plan, startDate, endDate, expectedOutcome },
+    (draft) => {
+      setIdeaType(draft.ideaType ?? 'idea')
+      setTitle(draft.title ?? '')
+      setCategories(draft.categories ?? [])
+      setProblem(draft.problem ?? '')
+      setSolution(draft.solution ?? '')
+      setReviewer(draft.reviewer ?? [])
+      setCoProposers(draft.coProposers ?? [])
+      setSecurity(draft.security ?? 'public')
+      setPlan(draft.plan ?? '')
+      setStartDate(draft.startDate ?? '')
+      setEndDate(draft.endDate ?? '')
+      setExpectedOutcome(draft.expectedOutcome ?? '')
+    },
+  )
 
-  // 항상 최신 폼 값을 참조하기 위한 ref
-  const formRef = useRef({
-    title, categories, problem, solution,
-    reviewer, security, plan,
-    // coProposers, startDate, endDate,
-  })
+  // keep ref in sync so the unmount effect always sees the latest previews
+  filePreviewsRef.current = filePreviews
+  useEffect(() => () => { filePreviewsRef.current.forEach(URL.revokeObjectURL) }, [])
+
+  // ─── 미저장 경고 ──────────────────────────────────────────────────────────
+  const isDirty = !loading && !!(title.trim() || problem.trim() || solution.trim())
+  const { isBlocked, proceed, reset } = useUnsavedChanges(isDirty)
+
+  // ─── API 훅 ───────────────────────────────────────────────────────────────
+  const createIdea = useCreateIdea()
+  const updateIdea = useUpdateIdea(editIdea?.id ?? 0)
+  const deleteAttachment = useDeleteAttachment(editIdea?.id ?? 0)
+  const { data: editDetail } = useIdeaDetail(isEditMode ? (editIdea?.id ?? null) : null)
+  const existingAttachments = editDetail?.attachments ?? []
+
+  // 편집 모드: 기존 실행계획 pre-fill (최초 1회)
+  const executorPrefilled = useRef(false)
   useEffect(() => {
-    formRef.current = {
-      title, categories, problem, solution,
-      reviewer, security, plan,
-      // coProposers, startDate, endDate,
+    if (!isEditMode || executorPrefilled.current) return
+    const ex = editDetail?.executors?.[0]
+    if (!ex) return
+    executorPrefilled.current = true
+    setPlan(ex.content)
+    setStartDate(ex.startDate.slice(0, 10))
+    setEndDate((ex.endDate ?? ex.startDate).slice(0, 10))
+    setExpectedOutcome(ex.expectedResult)
+  }, [editDetail, isEditMode])
+
+  // ─── 제출 ─────────────────────────────────────────────────────────────────
+  const handleSubmit = async () => {
+    const errors = {
+      title:           !title.trim(),
+      problem:         !problem.trim(),
+      solution:        !solution.trim(),
+      reviewer:        reviewer.length === 0,
+      startDate:       !startDate,
+      endDate:         !endDate || (!!startDate && endDate < startDate),
+      plan:            !plan.trim(),
+      expectedOutcome: !expectedOutcome.trim(),
     }
-  }, [title, categories, problem, solution, reviewer, security, plan])
-
-  // ─── 5분 자동저장 인터벌 ─────────────────────────────────────────────────
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const f = formRef.current
-      // 제목이나 내용이 있을 때만 저장
-      const hasContent = f.title.trim() || f.problem.trim() || f.solution.trim() || f.plan.trim()
-      if (!hasContent) return
-      const draft: DraftData = { ...f, savedAt: new Date().toISOString() }
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
-      setLastSavedAt(new Date())
-      setSnackMsg('임시저장 완료')
-      setSnackOpen(true)
-    }, AUTO_SAVE_INTERVAL)
-    return () => clearInterval(timer)
-  }, [])
-
-  // ─── 수동 임시저장 ────────────────────────────────────────────────────────
-  const handleManualSave = () => {
-    const f = formRef.current
-    const draft: DraftData = { ...f, savedAt: new Date().toISOString() }
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
-    setLastSavedAt(new Date())
-    setSavedDraft(null) // 복원 배너 숨김
-    setSnackMsg('임시저장 완료')
-    setSnackOpen(true)
-  }
-
-  // ─── 임시저장 복원 ────────────────────────────────────────────────────────
-  const handleRestoreDraft = () => {
-    if (!savedDraft) return
-    setTitle(savedDraft.title ?? '')
-    setCategories(savedDraft.categories ?? [])
-    setProblem(savedDraft.problem ?? '')
-    setSolution(savedDraft.solution ?? '')
-    setReviewer(savedDraft.reviewer ?? [])
-    // setCoProposers(savedDraft.coProposers ?? [])
-    // setStartDate(savedDraft.startDate ?? '')
-    // setEndDate(savedDraft.endDate ?? '')
-    setSecurity(savedDraft.security ?? 'public')
-    setPlan(savedDraft.plan ?? '')
-    setSavedDraft(null)
-    setSnackMsg('임시저장 내용을 불러왔습니다')
-    setSnackOpen(true)
-  }
-
-  const handleDiscardDraft = () => {
-    localStorage.removeItem(DRAFT_KEY)
-    setSavedDraft(null)
-  }
-
-  // ─── 참여자 토글 ─────────────────────────────────────────────────────────
-  const handleToggleReviewer = (name: string) => {
-    setReviewer((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
-    )
-  }
-
-  // ─── 제출 ────────────────────────────────────────────────────────────────
-  const handleSubmit = () => {
-    if (!title.trim() || categories.length === 0 || !problem.trim() || !solution.trim()) {
+    const hasError = Object.values(errors).some(Boolean) || categories.length === 0
+    if (hasError) {
+      setFieldErrors(errors)
       showSnackbar('필수 항목을 모두 입력해주세요.', 'warning')
       return
     }
+    setFieldErrors({ title: false, problem: false, solution: false, reviewer: false, startDate: false, endDate: false, plan: false, expectedOutcome: false })
     setLoading(true)
-    setTimeout(() => {
-      localStorage.removeItem(DRAFT_KEY)
-      showSnackbar('제안이 등록되었습니다!', 'success')
+
+    const body = {
+      title: title.trim(),
+      problem: problem.trim(),
+      description: solution.trim(),
+      categoryIds: categories.map((c) => parseInt(c, 10)),
+      type: (ideaType === 'complete' ? 'completed' : 'idea') as 'idea' | 'completed',
+      security: (security === 'private' ? 'Y' : 'N') as 'N' | 'Y',
+      coProposerIds: coProposerIds.length > 0 ? coProposerIds : undefined,
+      approverId: reviewerIds[0] ?? undefined,
+      executors: [{
+        startDate: `${startDate}T00:00:00`,
+        endDate: `${endDate}T00:00:00`,
+        content: plan.trim(),
+        expectedResult: expectedOutcome.trim(),
+      }],
+    }
+
+    try {
+      if (isEditMode && editIdea) {
+        await updateIdea.mutateAsync({ data: body, files })
+      } else {
+        await createIdea.mutateAsync({ data: body, files })
+      }
+      clearDraft()
+      showSnackbar(isEditMode ? '아이디어가 수정되었습니다!' : '제안이 등록되었습니다!', 'success')
+      navigate('/ideaBrowse')
+    } catch {
+      showSnackbar('제출 중 오류가 발생했습니다. 다시 시도해주세요.', 'error')
+    } finally {
       setLoading(false)
-      navigate('/dashboard')
-    }, 1500)
+    }
   }
 
-  const handleBack = () => navigate(-1)
-
-  // ─── 스타일 ──────────────────────────────────────────────────────────────
-  const it = getIdeaTheme(isDarkMode)
+  // ─── 스타일 ───────────────────────────────────────────────────────────────
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   const inputSx = {
@@ -206,17 +205,15 @@ export default function NewIdea() {
       }}
     >
       <Box sx={{ maxWidth: 860, mx: 'auto' }}>
-        {/* ─── 페이지 헤더 ─────────────────────────────────────────────── */}
         <NewIdeaHeader
           lastSavedAt={lastSavedAt}
-          onBack={handleBack}
+          onBack={() => navigate(-1)}
           onManualSave={handleManualSave}
+          isEditMode={isEditMode}
         />
 
-        {/* ─── 유사 아이디어 검색 배너 ──────────────────────────────────── */}
         <SimilarIdeaBanner onOpenSearch={() => setSimilarSearchOpen(true)} />
 
-        {/* ─── 임시저장 복원 배너 ──────────────────────────────────────── */}
         {savedDraft && (
           <DraftRestoreBanner
             savedDraft={savedDraft}
@@ -225,7 +222,7 @@ export default function NewIdea() {
           />
         )}
 
-        {/* ─── 메인 폼 카드 ────────────────────────────────────────────── */}
+        {/* 메인 폼 카드 */}
         <Box
           sx={{
             borderRadius: 3,
@@ -235,52 +232,52 @@ export default function NewIdea() {
             overflow: 'hidden',
           }}
         >
-          <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+          <Box sx={{ height: 3, background: it.headerGradient }} />
 
           <Box sx={{ p: { xs: 3, sm: 5 } }}>
-            {/* 섹션 1: 기본 정보 (카테고리 포함) */}
             <BasicInfoSection
-              title={title}
-              setTitle={setTitle}
-              categories={categories}
-              setCategories={setCategories}
-              problem={problem}
-              setProblem={setProblem}
-              solution={solution}
-              setSolution={setSolution}
-              inputSx={inputSx}
-              labelSx={labelSx}
+              ideaType={ideaType} setIdeaType={setIdeaType}
+              title={title} setTitle={(v) => { setTitle(v); if (fieldErrors.title) setFieldErrors((p) => ({ ...p, title: false })) }}
+              categories={categories} setCategories={setCategories}
+              problem={problem} setProblem={(v) => { setProblem(v); if (fieldErrors.problem) setFieldErrors((p) => ({ ...p, problem: false })) }}
+              solution={solution} setSolution={(v) => { setSolution(v); if (fieldErrors.solution) setFieldErrors((p) => ({ ...p, solution: false })) }}
+              inputSx={inputSx} labelSx={labelSx}
+              fieldErrors={fieldErrors}
             />
-
             <SectionDivider />
 
-            {/* 섹션 2: 심사자 & 공개 범위 */}
             <ParticipantsSection
               reviewer={reviewer}
-              setReviewer={setReviewer}
-              security={security}
-              setSecurity={setSecurity}
+              setReviewer={(v) => { setReviewer(v); if (v.length > 0) setFieldErrors((p) => ({ ...p, reviewer: false })) }}
+              coProposers={coProposers} setCoProposers={setCoProposers}
+              security={security} setSecurity={setSecurity}
               onOpenReviewerModal={() => setReviewerModalOpen(true)}
+              onOpenCoProposerModal={() => setCoProposerModalOpen(true)}
+              reviewerError={fieldErrors.reviewer}
             />
-
             <SectionDivider />
 
-            {/* 섹션 3: 실행 계획 */}
-            <PlanSection plan={plan} setPlan={setPlan} />
-
+            <PlanSection
+              plan={plan}
+              setPlan={(v) => { setPlan(v); if (v.trim()) setFieldErrors((p) => ({ ...p, plan: false })) }}
+              startDate={startDate}
+              setStartDate={(v) => { setStartDate(v); if (v) setFieldErrors((p) => ({ ...p, startDate: false })) }}
+              endDate={endDate}
+              setEndDate={(v) => { setEndDate(v); if (v) setFieldErrors((p) => ({ ...p, endDate: false })) }}
+              expectedOutcome={expectedOutcome}
+              setExpectedOutcome={(v) => { setExpectedOutcome(v); if (v.trim()) setFieldErrors((p) => ({ ...p, expectedOutcome: false })) }}
+              fieldErrors={{ startDate: fieldErrors.startDate, endDate: fieldErrors.endDate, plan: fieldErrors.plan, expectedOutcome: fieldErrors.expectedOutcome }}
+            />
             <SectionDivider />
 
-            {/* 섹션 4: 첨부 파일 */}
             <FileUploadSection
               files={files}
               filePreviews={filePreviews}
-              onFilesChange={(newFilesFromChild) => {
-                const addedFiles = newFilesFromChild.slice(files.length)
-                const newPreviews = addedFiles.map((file) =>
-                  file.type.startsWith('image/') ? URL.createObjectURL(file) : '',
-                )
-                setFiles(newFilesFromChild)
-                setFilePreviews((prev) => [...prev, ...newPreviews])
+              onFilesChange={(newFiles) => {
+                const added = newFiles.slice(files.length)
+                const previews = added.map((f) => f.type.startsWith('image/') ? URL.createObjectURL(f) : '')
+                setFiles(newFiles)
+                setFilePreviews((prev) => [...prev, ...previews])
               }}
               onRemoveFile={(index) => {
                 if (filePreviews[index] && files[index]?.type.startsWith('image/')) {
@@ -289,59 +286,34 @@ export default function NewIdea() {
                 setFiles((prev) => prev.filter((_, i) => i !== index))
                 setFilePreviews((prev) => prev.filter((_, i) => i !== index))
               }}
+              existingAttachments={existingAttachments}
+              onDeleteExisting={(attachmentId) => deleteAttachment.mutate(attachmentId)}
             />
 
-            {/* ─── 하단 버튼 영역 ────────────────────────────────────── */}
-            <Box
-              sx={{
-                mt: 6,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: 2,
-              }}
-            >
-              {/* 임시저장 버튼 (왼쪽) */}
+            {/* 하단 버튼 */}
+            <Box sx={{ mt: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
               <Button
                 variant="outlined"
                 startIcon={<SaveIcon sx={{ fontSize: '1rem' }} />}
                 onClick={handleManualSave}
                 sx={{
-                  borderRadius: 2,
-                  px: 2.5,
-                  py: 1.1,
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                  textTransform: 'none',
-                  borderColor: isDarkMode ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.25)',
-                  color: isDarkMode ? '#a5b4fc' : '#6366f1',
-                  '&:hover': {
-                    bgcolor: isDarkMode ? 'rgba(99,102,241,0.08)' : 'rgba(99,102,241,0.05)',
-                    borderColor: '#6366f1',
-                  },
+                  borderRadius: 2, px: 2.5, py: 1.1, fontWeight: 600, fontSize: '0.875rem', textTransform: 'none',
+                  borderColor: it.accent.btnOutlineBorder,
+                  color: it.accent.textMuted,
+                  '&:hover': { bgcolor: it.accent.bg, borderColor: it.accent.color },
                 }}
               >
                 임시저장
               </Button>
 
-              {/* 취소 + 제출 (오른쪽) */}
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
                   variant="outlined"
-                  onClick={handleBack}
+                  onClick={() => navigate(-1)}
                   sx={{
-                    borderRadius: 2,
-                    px: 3,
-                    py: 1.25,
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    borderColor: borderColor,
-                    color: textSecondary,
-                    '&:hover': {
-                      borderColor: isDarkMode ? 'rgba(148,163,184,0.3)' : 'rgba(148,163,184,0.6)',
-                      bgcolor: 'transparent',
-                    },
+                    borderRadius: 2, px: 3, py: 1.25, fontWeight: 600, textTransform: 'none',
+                    borderColor: borderColor, color: textSecondary,
+                    '&:hover': { borderColor: it.cancelBtnHoverBorder, bgcolor: 'transparent' },
                   }}
                 >
                   취소
@@ -352,26 +324,14 @@ export default function NewIdea() {
                   onClick={handleSubmit}
                   startIcon={loading ? null : <SendIcon />}
                   sx={{
-                    borderRadius: 2,
-                    px: 4,
-                    py: 1.25,
-                    fontWeight: 700,
-                    textTransform: 'none',
-                    bgcolor: '#6366f1',
-                    boxShadow: 'none',
-                    color: '#fff',
-                    '&:hover': {
-                      bgcolor: '#4f46e5',
-                      boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
-                    },
-                    '&.Mui-disabled': {
-                      bgcolor: isDarkMode ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.3)',
-                      color: '#fff',
-                    },
+                    borderRadius: 2, px: 4, py: 1.25, fontWeight: 700, textTransform: 'none',
+                    bgcolor: it.accent.color, boxShadow: 'none', color: '#fff',
+                    '&:hover': { bgcolor: it.accent.hover, boxShadow: it.accent.btnHoverShadow },
+                    '&.Mui-disabled': { bgcolor: it.accent.btnDisabledBg, color: '#fff' },
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  {loading ? '등록 중...' : '상상 제안하기'}
+                  {loading ? (isEditMode ? '수정 중...' : '등록 중...') : (isEditMode ? '수정하기' : '상상 제안하기')}
                 </Button>
               </Box>
             </Box>
@@ -379,53 +339,59 @@ export default function NewIdea() {
         </Box>
       </Box>
 
-      {/* ─── 모달 ───────────────────────────────────────────────────────── */}
-      <SimilarIdeaSearchModal
-        open={similarSearchOpen}
-        onClose={() => setSimilarSearchOpen(false)}
-        initialQuery={title}
+      {/* 모달 */}
+      <SimilarIdeaSearchModal open={similarSearchOpen} onClose={() => setSimilarSearchOpen(false)} initialQuery={title} />
+      <CoProposerSelectModal
+        open={coProposerModalOpen}
+        onClose={() => setCoProposerModalOpen(false)}
+        selected={coProposers}
+        onToggle={(label, employeeId) => {
+          setCoProposers((prev) =>
+            prev.includes(label) ? prev.filter((n) => n !== label) : [...prev, label],
+          )
+          setCoProposerIds((prev) =>
+            prev.includes(employeeId) ? prev.filter((id) => id !== employeeId) : [...prev, employeeId],
+          )
+        }}
       />
       <ReviewerSelectModal
         open={reviewerModalOpen}
         onClose={() => setReviewerModalOpen(false)}
         selected={reviewer}
-        onToggle={handleToggleReviewer}
+        onToggle={(name, employeeId) => {
+          setReviewer((prev) => {
+            const next = prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
+            if (next.length > 0) setFieldErrors((p) => ({ ...p, reviewer: false }))
+            return next
+          })
+          setReviewerIds((prev) =>
+            prev.includes(employeeId) ? prev.filter((id) => id !== employeeId) : [...prev, employeeId],
+          )
+        }}
       />
 
-      {/* ─── 임시저장 스낵바 ─────────────────────────────────────────── */}
-      <Snackbar
+      {/* 미저장 경고 */}
+      <ConfirmDialog
+        open={isBlocked}
+        title="작성 중인 내용이 있어요"
+        message="페이지를 떠나면 작성 중인 내용이 사라질 수 있어요. 계속하시겠습니까?"
+        confirmLabel="떠나기"
+        cancelLabel="계속 작성"
+        variant="warning"
+        onConfirm={proceed}
+        onCancel={reset}
+      />
+
+      {/* 임시저장 스낵바 */}
+      <DraftSnackbar
         open={snackOpen}
-        autoHideDuration={3000}
+        message={snackMsg}
+        lastSavedAt={lastSavedAt}
         onClose={() => setSnackOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        sx={{ mb: { xs: 8, md: 2 } }}
-      >
-        <Alert
-          onClose={() => setSnackOpen(false)}
-          severity="success"
-          icon={<CheckCircleIcon fontSize="small" />}
-          sx={{
-            borderRadius: 2.5,
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            bgcolor: isDarkMode ? 'rgba(22,30,46,0.98)' : '#ffffff',
-            color: isDarkMode ? '#f1f5f9' : '#0f172a',
-            border: `1px solid ${isDarkMode ? 'rgba(16,185,129,0.3)' : 'rgba(16,185,129,0.25)'}`,
-            boxShadow: isDarkMode
-              ? '0 8px 32px rgba(0,0,0,0.5)'
-              : '0 8px 32px rgba(0,0,0,0.1)',
-            '& .MuiAlert-icon': { color: '#10b981' },
-            '& .MuiAlert-action': { color: isDarkMode ? '#94a3b8' : '#64748b' },
-          }}
-        >
-          {snackMsg}
-          {lastSavedAt && (
-            <Box component="span" sx={{ color: isDarkMode ? '#94a3b8' : '#64748b', ml: 0.5, fontWeight: 500 }}>
-              · {formatTime(lastSavedAt)}
-            </Box>
-          )}
-        </Alert>
-      </Snackbar>
+      />
     </Box>
   )
 }
+
+// DRAFT_KEY re-export for external use (e.g. submit clear)
+export { DRAFT_KEY }

@@ -62,6 +62,15 @@ const tfLight = {
   headerBg:     '#ffffff',
   headerBorder: '1px solid rgba(15,23,42,0.06)',
   headerColor:  '#0f172a',
+
+  // ── Primary 버튼 (지원하기 등, light/dark 동일) ──
+  primaryBtnBg:          '#6366f1',
+  primaryBtnHoverBg:     '#4f46e5',
+  primaryBtnColor:       '#fff',
+  primaryBtnHoverShadow: '0 6px 20px rgba(99,102,241,0.4)',
+
+  // ── 카드 상단 그라디언트 스트립 ──
+  headerGradient: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
 } as const
 
 const tfDark = {
@@ -125,6 +134,15 @@ const tfDark = {
   headerBg:     '#0f172a',
   headerBorder: '1px solid rgba(226,232,240,0.08)',
   headerColor:  '#e2e8f0',
+
+  // ── Primary 버튼 (지원하기 등, light/dark 동일) ──
+  primaryBtnBg:          '#6366f1',
+  primaryBtnHoverBg:     '#4f46e5',
+  primaryBtnColor:       '#fff',
+  primaryBtnHoverShadow: '0 6px 20px rgba(99,102,241,0.4)',
+
+  // ── 카드 상단 그라디언트 스트립 ──
+  headerGradient: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
 } as const
 
 export type TFTheme = typeof tfLight

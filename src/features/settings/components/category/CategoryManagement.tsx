@@ -3,23 +3,23 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import CategoryIcon from '@mui/icons-material/Category'
 import { Box, Button, Chip, Grid, IconButton, Tooltip, Typography } from '@mui/material'
-import { useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
+import { useState  } from 'react'
 import { usePageColors } from '@/theme/pageColors'
 import { useSnackbar } from '@/context/SnackbarContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
-import { CATEGORIES } from '@/api/mock/idea'
+import { useSettingsTheme } from '@/theme/settingsTheme'
+import { useAllCategories } from '@/api/queries/useCategories'
 import type { CategoryOption } from '@/api/types/idea'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import EmptyState from '@/components/ui/EmptyState'
 import CategoryFormDialog from './CategoryFormDialog'
 
 export default function CategoryManagement() {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, cardBg } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useSettingsTheme()
   const { showSnackbar } = useSnackbar()
 
-  const [categories, setCategories] = useState<CategoryOption[]>(CATEGORIES)
+  const { categories, addCategory, updateCategory, deleteCategory } = useAllCategories()
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<CategoryOption | null>(null)
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
@@ -34,24 +34,24 @@ export default function CategoryManagement() {
     setDialogOpen(true)
   }
 
-  const handleSave = (cat: CategoryOption) => {
+  const handleSave = async (cat: CategoryOption) => {
     if (editTarget) {
-      setCategories((prev) => prev.map((c) => (c.id === cat.id ? cat : c)))
+      await updateCategory(cat)
+      // active 토글이 활성→비활성으로 바뀐 경우 DELETE로 비활성화
+      if (editTarget.active && !cat.active) {
+        await deleteCategory(cat.id)
+      }
       showSnackbar('카테고리가 수정되었습니다', 'success')
     } else {
-      if (categories.some((c) => c.id === cat.id)) {
-        showSnackbar('이미 존재하는 카테고리 ID입니다', 'error')
-        return
-      }
-      setCategories((prev) => [...prev, cat])
+      await addCategory(cat)
       showSnackbar('카테고리가 추가되었습니다', 'success')
     }
     setDialogOpen(false)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!deleteTargetId) return
-    setCategories((prev) => prev.filter((c) => c.id !== deleteTargetId))
+    await deleteCategory(deleteTargetId)
     showSnackbar('카테고리가 삭제되었습니다', 'success')
     setDeleteTargetId(null)
   }
@@ -110,6 +110,14 @@ export default function CategoryManagement() {
       </Box>
 
       {/* 카테고리 카드 그리드 */}
+      {categories.length === 0 ? (
+        <EmptyState
+          emoji="🏷️"
+          title="등록된 카테고리가 없어요"
+          description="카테고리를 추가하면 아이디어를 분류할 수 있어요"
+          action={{ label: '카테고리 추가', onClick: handleAddOpen }}
+        />
+      ) : (
       <Grid container spacing={2}>
         {categories.map((cat) => (
           <Grid key={cat.id} size={{ xs: 12, sm: 6, md: 4 }}>
@@ -123,7 +131,8 @@ export default function CategoryManagement() {
                 borderRadius: 2.5,
                 border: `1px solid ${borderColor}`,
                 bgcolor: cardBg,
-                transition: 'border-color 0.15s',
+                opacity: cat.active === false ? 0.6 : 1,
+                transition: 'border-color 0.15s, opacity 0.15s',
                 '&:hover': { borderColor: cat.color },
               }}
             >
@@ -154,15 +163,17 @@ export default function CategoryManagement() {
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.25 }}>
                     <Chip
-                      label={cat.id}
+                      label={cat.active === false ? '비활성' : '활성'}
                       size="small"
                       sx={{
                         height: 18,
                         fontSize: '0.68rem',
-                        fontFamily: 'monospace',
-                        bgcolor: cat.bg,
-                        color: cat.color,
-                        border: `1px solid ${cat.border}`,
+                        fontWeight: 600,
+                        bgcolor: cat.active === false
+                          ? st.inactiveCategoryBg
+                          : cat.bg,
+                        color: cat.active === false ? '#94a3b8' : cat.color,
+                        border: `1px solid ${cat.active === false ? 'rgba(148,163,184,0.25)' : cat.border}`,
                       }}
                     />
                     <Box
@@ -172,6 +183,7 @@ export default function CategoryManagement() {
                         borderRadius: '50%',
                         bgcolor: cat.color,
                         flexShrink: 0,
+                        opacity: cat.active === false ? 0.35 : 1,
                       }}
                     />
                   </Box>
@@ -209,6 +221,7 @@ export default function CategoryManagement() {
           </Grid>
         ))}
       </Grid>
+      )}
 
       {/* 추가/수정 다이얼로그 */}
       <CategoryFormDialog
@@ -223,6 +236,8 @@ export default function CategoryManagement() {
         open={Boolean(deleteTargetId)}
         title="카테고리 삭제"
         message={`'${categories.find((c) => c.id === deleteTargetId)?.label ?? ''}' 카테고리를 삭제하시겠습니까?`}
+        confirmLabel="삭제"
+        variant="error"
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTargetId(null)}
       />

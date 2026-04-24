@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import { isAuthenticated } from '@/utils/auth'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import TopProgressBar from './TopProgressBar'
 import type { UserRole } from '@/api/types/auth'
 
 interface Props {
@@ -8,15 +8,11 @@ interface Props {
 }
 
 export default function ProtectedRoute({ roles }: Props) {
-  const user = useCurrentUser()
+  const { user, isLoading, role } = useCurrentUser()
 
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />
-  }
-
-  if (roles && user && !roles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />
-  }
+  if (isLoading) return <TopProgressBar />
+  if (!user) return <Navigate to="/login" replace />
+  if (roles && !roles.includes(role)) return <Navigate to="/dashboard" replace />
 
   return <Outlet />
 }

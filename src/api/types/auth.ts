@@ -1,13 +1,35 @@
 // src/api/types/auth.ts
 export type UserRole = 'user' | 'reviewer' | 'admin'
 
+export interface DemoAccount {
+  id: string
+  password: string
+  profile: UserProfile
+  roleLabel: string
+  description: string
+}
+
+/** UI 전반에서 사용하는 사용자 프로필 모델 */
 export interface UserProfile {
   employeeId: string
   name: string
-  position: string
-  department: string
-  role: UserRole
+  email: string
+  position: string      // rollNm (사용자 목록 API) — /me 응답엔 없어서 빈값 허용
+  department: string    // section (팀)
+  businessSite: string  // department (사업소)
+  role: UserRole        // isAdmin/isReviewer로 파생
+  totalMileage: number
+  gomLevel: number
+  levelName: string
   avatarUrl?: string
+  mustChangePassword?: boolean
+}
+
+/** 모든 API 응답의 공통 래퍼 */
+export interface ApiResponse<T> {
+  success: boolean
+  message: string | null
+  data: T
 }
 
 export interface LoginRequest {
@@ -15,17 +37,43 @@ export interface LoginRequest {
   password: string
 }
 
+/** /api/auth/login 응답의 data 필드 */
 export interface LoginResponse {
-  accessToken: string
-  // 백엔드가 실제로 주는 다른 필드가 있다면 여기에 명시적으로 추가
-  // 예시:
-  // refreshToken?: string;
-  // userId?: number;
-  // role?: string;
-  token: string
   employeeId: string
   name: string
+}
 
-  // 모르는 필드가 있을 수 있으니 unknown으로 열어둠 (any보다 안전)
-  [key: string]: unknown
+/** GET /api/users/me 응답의 data 필드 (원본 구조) */
+export interface UserMeResponse {
+  employeeId: string
+  name: string
+  email?: string
+  department?: string       // 사업소
+  section?: string          // 팀
+  rollNm?: string
+  isAdmin: boolean
+  isReviewer: boolean | null
+  totalMileage?: number
+  gomLevel?: number
+  levelName?: string
+  mustChangePassword?: boolean
+  createdAt?: string
+  lastSyncAt?: string
+}
+
+/** UserMeResponse → UserProfile 변환 */
+export function mapUserProfile(data: UserMeResponse): UserProfile {
+  return {
+    employeeId: data.employeeId,
+    name: data.name,
+    email: data.email ?? '',
+    position: data.rollNm ?? '',
+    department: data.section ?? '',
+    businessSite: data.department ?? '',
+    role: data.isAdmin ? 'admin' : data.isReviewer ? 'reviewer' : 'user',
+    totalMileage: data.totalMileage ?? 0,
+    gomLevel: data.gomLevel ?? 0,
+    levelName: data.levelName ?? '아기 곰곰이',
+    mustChangePassword: data.mustChangePassword ?? false,
+  }
 }

@@ -1,10 +1,10 @@
 // src/features/idea/components/NewIdeaHeader.tsx
+// 아이디어 등록 페이지 상단 헤더 (뒤로가기, 임시저장 버튼, 마지막 저장 시각 표시)
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import SaveIcon from '@mui/icons-material/Save'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getIdeaTheme } from '@/theme/ideaTheme'
+import { useIdeaTheme } from '@/theme/ideaTheme'
 
 function formatTime(date: Date) {
   return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
@@ -14,11 +14,11 @@ interface NewIdeaHeaderProps {
   lastSavedAt: Date | null
   onBack: () => void
   onManualSave: () => void
+  isEditMode?: boolean
 }
 
-export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave }: NewIdeaHeaderProps) {
-  const { isDarkMode } = useThemeMode()
-  const it = getIdeaTheme(isDarkMode)
+export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave, isEditMode }: NewIdeaHeaderProps) {
+  const it = useIdeaTheme()
   const { textPrimary, textSecondary, borderColor } = it
 
   return (
@@ -52,10 +52,10 @@ export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave }: New
           fontWeight={800}
           sx={{ color: textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
         >
-          새로운 상상 제안
+          {isEditMode ? '상상 수정' : '새로운 상상 제안'}
         </Typography>
         <Typography variant="caption" sx={{ color: textSecondary }}>
-          아이디어를 제안하고 함께 실현해보세요
+          {isEditMode ? '아이디어 내용을 수정해보세요' : '아이디어를 제안하고 함께 실현해보세요'}
         </Typography>
       </Box>
 
@@ -70,12 +70,12 @@ export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave }: New
               px: 1.25,
               py: 0.5,
               borderRadius: 1.5,
-              bgcolor: 'rgba(16,185,129,0.08)',
-              border: '1px solid rgba(16,185,129,0.25)',
+              bgcolor: it.success.bg,
+              border: `1px solid ${it.success.border}`,
             }}
           >
-            <CheckCircleIcon sx={{ fontSize: '0.8rem', color: '#10b981' }} />
-            <Typography sx={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 600, whiteSpace: 'nowrap' }}>
+            <CheckCircleIcon sx={{ fontSize: '0.8rem', color: it.success.color }} />
+            <Typography sx={{ fontSize: '0.72rem', color: it.success.color, fontWeight: 600, whiteSpace: 'nowrap' }}>
               {formatTime(lastSavedAt)} 임시저장
             </Typography>
           </Box>
@@ -92,8 +92,8 @@ export default function NewIdeaHeader({ lastSavedAt, onBack, onManualSave }: New
               height: 34,
               '&:hover': {
                 bgcolor: it.accent.bgStrong,
-                borderColor: '#6366f1',
-                color: '#6366f1',
+                borderColor: it.accent.color,
+                color: it.accent.color,
               },
             }}
           >

@@ -57,6 +57,12 @@ const ideaLight = {
   backdropBg: 'rgba(0,0,0,0.35)',
   similarListColor: '#92400e',
 
+  // ── 상세 다이얼로그 — 공동제안자/실행계획/첨부파일 ──
+  coProposerBg:     'rgba(99,102,241,0.06)',
+  coProposerBorder: 'rgba(99,102,241,0.18)',
+  executorBg:       'rgba(99,102,241,0.03)',
+  attachmentBg:     'rgba(0,0,0,0.02)',
+
   // ── 입력/셀렉트 배경 ──
   inputBg: '#f8fafc',
 
@@ -67,6 +73,17 @@ const ideaLight = {
   // ── 통계 박스 ──
   statsBg: 'rgba(99,102,241,0.05)',
   statsBorder: 'rgba(99,102,241,0.15)',
+
+  // ── 페이지네이션 ──
+  pageBtnBg:        '#ffffff',
+  pageBtnBorder:    'rgba(203,213,225,0.7)',
+  pageBtnColor:     '#475569',
+  pageBtnHoverBg:   'rgba(99,102,241,0.07)',
+  pageBtnHoverBorder:'rgba(99,102,241,0.3)',
+  pageActiveBg:     '#6366f1',
+  pageActiveColor:  '#ffffff',
+  pageActiveShadow: '0 4px 14px rgba(99,102,241,0.45)',
+  pageEllipsisColor:'#94a3b8',
 } as const
 
 const ideaDark = {
@@ -124,6 +141,12 @@ const ideaDark = {
   backdropBg: 'rgba(0,0,0,0.6)',
   similarListColor: '#fbbf24',
 
+  // ── 상세 다이얼로그 — 공동제안자/실행계획/첨부파일 ──
+  coProposerBg:     'rgba(99,102,241,0.1)',
+  coProposerBorder: 'rgba(99,102,241,0.25)',
+  executorBg:       'rgba(99,102,241,0.04)',
+  attachmentBg:     'rgba(255,255,255,0.03)',
+
   // ── 입력/셀렉트 배경 ──
   inputBg: 'rgba(15,23,42,0.5)',
 
@@ -134,6 +157,17 @@ const ideaDark = {
   // ── 통계 박스 ──
   statsBg: 'rgba(99,102,241,0.08)',
   statsBorder: 'rgba(99,102,241,0.2)',
+
+  // ── 페이지네이션 ──
+  pageBtnBg:        'rgba(30,41,59,0.9)',
+  pageBtnBorder:    'rgba(148,163,184,0.2)',
+  pageBtnColor:     '#94a3b8',
+  pageBtnHoverBg:   'rgba(99,102,241,0.15)',
+  pageBtnHoverBorder:'rgba(99,102,241,0.4)',
+  pageActiveBg:     '#6366f1',
+  pageActiveColor:  '#ffffff',
+  pageActiveShadow: '0 4px 14px rgba(99,102,241,0.5)',
+  pageEllipsisColor:'#475569',
 } as const
 
 // ── 공통 액센트 컬러 (라이트/다크 동일하게 사용) ──
@@ -145,13 +179,27 @@ export const ideaAccent = {
   danger: '#ef4444',
   violet: '#8b5cf6',
   purple: '#a78bfa',
+  headerIconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  headerIconShadow: '0 4px 16px rgba(99,102,241,0.35)',
+  headerIconColor: '#fff',
+  // ── IdeaFilters 인풋/셀렉트 공통 ──
+  accentHoverBorder:   'rgba(99,102,241,0.35)',
+  scrollbarThumb:      'rgba(99,102,241,0.25)',
+  myOnlyActiveBorder:  'rgba(16,185,129,0.45)',
 } as const
 
 export type IdeaBrowseTheme = typeof ideaLight
 
+
 /** isDarkMode 값을 넘기면 해당 테마 객체 전체를 반환합니다. */
 export const getIdeaTheme = (isDarkMode: boolean): IdeaBrowseTheme =>
   isDarkMode ? (ideaDark as unknown as IdeaBrowseTheme) : ideaLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useIdeaBrowseTheme(): IdeaBrowseTheme {
+  const { isDarkMode } = useThemeMode()
+  return getIdeaTheme(isDarkMode)
+}
 
 // ──────────────────────────────────────────────────────────────
 // 상태별 색상 설정 (기존 IDEA_STATUS_CONFIG 유지)
@@ -159,14 +207,9 @@ export const getIdeaTheme = (isDarkMode: boolean): IdeaBrowseTheme =>
 
 export const IDEA_STATUS_CONFIG: Record<IdeaStatus, { color: string; bg: string; border: string }> = {
   심사대기: {
-    color: '#f59e0b',
-    bg: 'rgba(245,158,11,0.08)',
-    border: 'rgba(245,158,11,0.3)',
-  },
-  심사중: {
-    color: '#6366f1',
-    bg: 'rgba(99,102,241,0.08)',
-    border: 'rgba(99,102,241,0.3)',
+    color: '#3b82f6',
+    bg: 'rgba(59,130,246,0.08)',
+    border: 'rgba(59,130,246,0.3)',
   },
   승인: {
     color: '#10b981',

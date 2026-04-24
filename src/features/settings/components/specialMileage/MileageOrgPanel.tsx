@@ -16,12 +16,83 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { memo, useDeferredValue, useMemo, useState } from 'react'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
-import { mockMileageMembers } from '@/api/mock/settings'
+import { useSettingsTheme } from '@/theme/settingsTheme'
+import { useUsers } from '@/api/queries/useUsers'
 import type { MileageMember } from '@/api/types/settings'
+
+interface MemberRowProps {
+  member: MileageMember
+  added: boolean
+  onAdd: (m: MileageMember) => void
+  st: ReturnType<typeof useSettingsTheme>
+  textPrimary: string
+  textSecondary: string
+  borderColor: string
+}
+
+const MemberRow = memo(function MemberRow({ member, added, onAdd, st, textPrimary, textSecondary, borderColor }: MemberRowProps) {
+  return (
+    <Box
+      onClick={() => !added && onAdd(member)}
+      sx={{
+        p: 1.1,
+        display: 'flex', alignItems: 'center', gap: 1.25,
+        cursor: added ? 'default' : 'pointer',
+        bgcolor: added ? st.chipBg : st.memberRowBg,
+        border: `1px solid ${added ? st.memberSelectedBorder : borderColor}`,
+        borderRadius: 1.5,
+        transition: 'all 0.15s ease',
+        opacity: added ? 0.65 : 1,
+        '&:hover': added ? {} : { bgcolor: st.memberRowHoverBg, borderColor: st.memberRowHoverBorder },
+      }}
+    >
+      <Avatar
+        sx={{
+          width: 28, height: 28, flexShrink: 0,
+          bgcolor: added ? st.avatarBg : st.avatarBgLight,
+          color: st.primaryColor,
+          fontSize: '0.7rem', fontWeight: 700,
+          border: `1px solid ${st.avatarBorder}`,
+        }}
+      >
+        {member.name[0]}
+      </Avatar>
+      <Box flex={1} minWidth={0}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+          <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textPrimary, lineHeight: 1.3 }}>
+            {member.name}
+          </Typography>
+          <Typography sx={{ fontSize: '0.63rem', color: textSecondary, fontFamily: 'monospace' }}>
+            {member.employeeNumber}
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 0.5, mt: 0.2, alignItems: 'center' }}>
+          <Chip
+            label={member.position}
+            size="small"
+            sx={{
+              height: 15, fontSize: '0.58rem', fontWeight: 700,
+              bgcolor: st.chipBg, color: st.primaryColor,
+              border: `1px solid ${st.avatarBorder}`,
+              '& .MuiChip-label': { px: 0.5 },
+            }}
+          />
+        </Box>
+      </Box>
+      {added ? (
+        <Chip
+          label="선택됨"
+          size="small"
+          sx={{ height: 16, fontSize: '0.58rem', fontWeight: 700, bgcolor: st.avatarBg, color: st.primaryColor, '& .MuiChip-label': { px: 0.5 } }}
+        />
+      ) : (
+        <AddIcon sx={{ fontSize: '0.95rem', color: textSecondary, opacity: 0.5, flexShrink: 0 }} />
+      )}
+    </Box>
+  )
+})
 
 interface Props {
   searchTerm: string
@@ -36,19 +107,35 @@ export default function MileageOrgPanel({
   onAdd,
   selectedIds,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor, headerBg } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useSettingsTheme()
+
+  const { data: users = [] } = useUsers()
+  const members: MileageMember[] = useMemo(
+    () => users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      position: u.position,
+      department: u.department,
+      division: u.businessSite,
+      employeeNumber: u.employeeNumber,
+    })),
+    [users],
+  )
+
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds])
 
   const isMobile = useMediaQuery('(max-width: 1199px)')
   const [orgPanelOpen, setOrgPanelOpen] = useState(false)
   const showOrgContent = !isMobile || orgPanelOpen
 
+  const deferredSearch = useDeferredValue(searchTerm)
+
   // 조직도 필터링 + 2단계 그룹핑 (부문 → 팀 → 사람)
   const grouped = useMemo(() => {
-    const q = searchTerm.trim().toLowerCase()
+    const q = deferredSearch.trim().toLowerCase()
     const filtered = q
-      ? mockMileageMembers.filter(
+      ? members.filter(
           (m) =>
             m.name.toLowerCase().includes(q) ||
             m.employeeNumber.toLowerCase().includes(q) ||
@@ -56,7 +143,7 @@ export default function MileageOrgPanel({
             m.division.toLowerCase().includes(q) ||
             m.position.toLowerCase().includes(q),
         )
-      : mockMileageMembers
+      : members
 
     // 부문 → 팀 → 사람 2단계 Map
     const divisionMap = new Map<string, Map<string, MileageMember[]>>()
@@ -72,9 +159,7 @@ export default function MileageOrgPanel({
       teams: Array.from(teamMap.entries()).map(([team, people]) => ({ team, people })),
       totalCount: filtered.filter((m) => m.division === division).length,
     }))
-  }, [searchTerm])
-
-  const isSelected = (id: string) => selectedIds.includes(id)
+  }, [members, deferredSearch])
 
   return (
     <Box
@@ -104,7 +189,7 @@ export default function MileageOrgPanel({
           조직도 인원
         </Typography>
         <Chip
-          label={`${mockMileageMembers.length}명`}
+          label={`${members.length}명`}
           size="small"
           sx={{
             ml: 'auto', height: 18, fontSize: '0.65rem', fontWeight: 700,
@@ -197,7 +282,6 @@ export default function MileageOrgPanel({
               /* 부문 아코디언 */
               <Accordion
                 key={division}
-                defaultExpanded
                 disableGutters
                 elevation={0}
                 sx={{
@@ -241,7 +325,6 @@ export default function MileageOrgPanel({
                       /* 팀 아코디언 */
                       <Accordion
                         key={team}
-                        defaultExpanded
                         disableGutters
                         elevation={0}
                         sx={{
@@ -258,10 +341,7 @@ export default function MileageOrgPanel({
                       >
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon sx={{ fontSize: '0.9rem', color: textSecondary }} />}
-                          sx={{
-                            bgcolor: st.accordionTeamBg,
-                            borderBottom: `1px solid ${borderColor}`,
-                          }}
+                          sx={{ bgcolor: st.accordionTeamBg, borderBottom: `1px solid ${borderColor}` }}
                         >
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                             <Typography variant="caption" fontWeight={700} sx={{ color: textSecondary, fontSize: '0.7rem' }}>
@@ -270,89 +350,24 @@ export default function MileageOrgPanel({
                             <Chip
                               label={`${people.length}`}
                               size="small"
-                              sx={{
-                                height: 14, fontSize: '0.58rem', fontWeight: 700,
-                                bgcolor: st.scrollbarThumb,
-                                color: textSecondary,
-                                '& .MuiChip-label': { px: 0.5 },
-                              }}
+                              sx={{ height: 14, fontSize: '0.58rem', fontWeight: 700, bgcolor: st.scrollbarThumb, color: textSecondary, '& .MuiChip-label': { px: 0.5 } }}
                             />
                           </Box>
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 0.75 }}>
                           <Box display="flex" flexDirection="column" gap={0.6}>
-                            {people.map((member) => {
-                              const added = isSelected(member.id)
-                              return (
-                                <Box
-                                  key={member.id}
-                                  onClick={() => !added && onAdd(member)}
-                                  sx={{
-                                    p: 1.1,
-                                    display: 'flex', alignItems: 'center', gap: 1.25,
-                                    cursor: added ? 'default' : 'pointer',
-                                    bgcolor: added ? st.chipBg : st.memberRowBg,
-                                    border: `1px solid ${added ? st.memberSelectedBorder : borderColor}`,
-                                    borderRadius: 1.5,
-                                    transition: 'all 0.15s ease',
-                                    opacity: added ? 0.65 : 1,
-                                    '&:hover': added ? {} : {
-                                      bgcolor: st.memberRowHoverBg,
-                                      borderColor: st.memberRowHoverBorder,
-                                    },
-                                  }}
-                                >
-                                  <Avatar
-                                    sx={{
-                                      width: 28, height: 28, flexShrink: 0,
-                                      bgcolor: added ? st.avatarBg : st.avatarBgLight,
-                                      color: st.primaryColor,
-                                      fontSize: '0.7rem', fontWeight: 700,
-                                      border: `1px solid ${st.avatarBorder}`,
-                                    }}
-                                  >
-                                    {member.name[0]}
-                                  </Avatar>
-                                  <Box flex={1} minWidth={0}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                                      <Typography sx={{ fontSize: '0.78rem', fontWeight: 700, color: textPrimary, lineHeight: 1.3 }}>
-                                        {member.name}
-                                      </Typography>
-                                      <Typography sx={{ fontSize: '0.63rem', color: textSecondary, fontFamily: 'monospace' }}>
-                                        {member.employeeNumber}
-                                      </Typography>
-                                    </Box>
-                                    <Box sx={{ display: 'flex', gap: 0.5, mt: 0.2, alignItems: 'center' }}>
-                                      <Chip
-                                        label={member.position}
-                                        size="small"
-                                        sx={{
-                                          height: 15, fontSize: '0.58rem', fontWeight: 700,
-                                          bgcolor: st.chipBg,
-                                          color: st.primaryColor,
-                                          border: `1px solid ${st.avatarBorder}`,
-                                          '& .MuiChip-label': { px: 0.5 },
-                                        }}
-                                      />
-                                    </Box>
-                                  </Box>
-                                  {added ? (
-                                    <Chip
-                                      label="선택됨"
-                                      size="small"
-                                      sx={{
-                                        height: 16, fontSize: '0.58rem', fontWeight: 700,
-                                        bgcolor: st.avatarBg,
-                                        color: st.primaryColor,
-                                        '& .MuiChip-label': { px: 0.5 },
-                                      }}
-                                    />
-                                  ) : (
-                                    <AddIcon sx={{ fontSize: '0.95rem', color: textSecondary, opacity: 0.5, flexShrink: 0 }} />
-                                  )}
-                                </Box>
-                              )
-                            })}
+                            {people.map((member) => (
+                              <MemberRow
+                                key={member.id}
+                                member={member}
+                                added={selectedSet.has(member.id)}
+                                onAdd={onAdd}
+                                st={st}
+                                textPrimary={textPrimary}
+                                textSecondary={textSecondary}
+                                borderColor={borderColor}
+                              />
+                            ))}
                           </Box>
                         </AccordionDetails>
                       </Accordion>

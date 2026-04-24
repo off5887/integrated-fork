@@ -1,16 +1,23 @@
 // src/routes/ideaBrowse/IdeaBrowse.tsx
-import { Box, Chip, Divider, SelectChangeEvent, Typography } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
-import { DEPT_BY_DIVISION, IDEAS } from '@/api/mock/ideaBrowse'
-import type { IdeaCategory, IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
+import AutoStoriesIcon from '@mui/icons-material/AutoStories'
+import { Box, Chip, SelectChangeEvent, Typography } from '@mui/material'
+import { useMemo, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useOrgUsersTree } from '@/api/queries/useUsers'
+import { useDeleteIdea, useIdeaList, useIdeaStatuses, useMyIdeas } from '@/api/queries/useIdeas'
+import { useCategories } from '@/api/queries/useCategories'
+import { useSnackbar } from '@/context/SnackbarContext'
+import type { IdeaItem, IdeaStatus, SortKey } from '@/api/types/ideaBrowse'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import { useThemeMode } from '@/context/ThemeContext'
+import PageHeader from '@/components/ui/PageHeader'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
-import { getIdeaTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
+import { useIdeaBrowseTheme, ideaAccent } from '@/theme/ideaBrowseTheme'
 import IdeaCard from './components/IdeaCard'
 import IdeaDetailDialog from './components/IdeaDetailDialog'
 import IdeaFilters from './components/IdeaFilters'
-import { getSimilarity } from './utils'
+
+const PAGE_SIZE = 20
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'latest',   label: '최신순'   },
@@ -20,52 +27,89 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 ]
 
 export default function IdeaBrowse() {
-  const { isDarkMode } = useThemeMode()
-  const user = useCurrentUser()
-  const { textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg, similar, statsBg, statsBorder, myOnlyActiveBg } = getIdeaTheme(isDarkMode)
+  const { employeeId } = useCurrentUser()
+  const { showSnackbar } = useSnackbar()
+  const [startDate, setStartDate] = useState('')
+  const [endDate,   setEndDate]   = useState('')
+  const { data: ideas = [], isLoading, isError } = useIdeaList(
+    startDate || endDate ? { startDate: startDate || undefined, endDate: endDate || undefined } : undefined,
+  )
+  const deleteIdea = useDeleteIdea()
+  const { data: orgTree } = useOrgUsersTree()
+  const { data: statusOptions = [] } = useIdeaStatuses()
+  const { categories: categoryOptions } = useCategories()
+  const { data: myIdeasPage } = useMyIdeas()
+  const myIdeaIds = useMemo(
+    () => new Set((myIdeasPage?.content ?? []).map((i) => i.ideaId)),
+    [myIdeasPage],
+  )
+  const {
+    textPrimary, textSecondary, borderColor, pageBg, filterBg, filterActiveBg,
+    similar, myOnlyActiveBg,
+    pageBtnBg, pageBtnBorder, pageBtnColor, pageBtnHoverBg, pageBtnHoverBorder,
+    pageActiveBg, pageActiveColor, pageActiveShadow, pageEllipsisColor,
+  } = useIdeaBrowseTheme()
 
   // ─── 필터 상태 ──────────────────────────────────────────────
   const [search,           setSearch]           = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<IdeaCategory | ''>('')
-  const [selectedDivision, setSelectedDivision] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')  // CategoryOption.id (categoryId string)
+  const [selectedBizArea,  setSelectedBizArea]  = useState('')
   const [selectedDept,     setSelectedDept]     = useState('')
   const [selectedStatus,   setSelectedStatus]   = useState<IdeaStatus | ''>('')
   const [sortBy,           setSortBy]           = useState<SortKey>('latest')
+  const [selectedType,     setSelectedType]     = useState<'idea' | 'completed' | ''>('')
   const [showSimilarOnly,  setShowSimilarOnly]  = useState(false)
   const [showMyOnly,       setShowMyOnly]       = useState(false)
+  const [page,             setPage]             = useState(1)
   const [selectedIdea,     setSelectedIdea]     = useState<IdeaItem | null>(null)
-  const [isLoading,        setIsLoading]        = useState(true)
+  const [deleteTarget,     setDeleteTarget]     = useState<IdeaItem | null>(null)
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800)
-    return () => clearTimeout(timer)
-  }, [])
+  const bizAreaOptions = useMemo(() => (orgTree ?? []).map((b) => b.bizAreaNm), [orgTree])
+  const deptByBizArea = useMemo(() => {
+    const map: Record<string, string[]> = {}
+    for (const b of (orgTree ?? [])) {
+      map[b.bizAreaNm] = b.teams.map((t) => t.deptNm)
+    }
+    return map
+  }, [orgTree])
+  const deptOptions = selectedBizArea ? (deptByBizArea[selectedBizArea] ?? []) : []
 
-  const deptOptions = selectedDivision ? (DEPT_BY_DIVISION[selectedDivision] ?? []) : []
+  const handleEdit = (idea: IdeaItem) => {
+    setSelectedIdea(null)
+    navigate('/newIdea', { state: { editIdea: idea } })
+  }
 
-  const handleDivisionChange = (e: SelectChangeEvent) => {
-    setSelectedDivision(e.target.value)
+  const handleDeleteConfirm = () => {
+    if (!deleteTarget) return
+    const target = deleteTarget
+    setDeleteTarget(null)
+    setSelectedIdea(null)
+    deleteIdea.mutate(target.id, {
+      onError: () => showSnackbar('아이디어 삭제에 실패했습니다.', 'error'),
+    })
+  }
+
+  const handleBizAreaChange = (e: SelectChangeEvent) => {
+    setSelectedBizArea(e.target.value)
     setSelectedDept('')
   }
 
-  // ─── 유사도 맵 (사전 계산) ──────────────────────────────────
-  const similarityMap = useMemo(() => {
-    const map = new Map<number, string[]>()
-    IDEAS.forEach((idea) => map.set(idea.id, getSimilarity(idea)))
-    return map
-  }, [])
+  // 필터·정렬이 바뀌면 1페이지로 리셋
+  useEffect(() => { setPage(1) }, [search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, selectedType, sortBy, showSimilarOnly, showMyOnly, startDate, endDate])
 
   // ─── 필터링 + 정렬 ──────────────────────────────────────────
   const filteredIdeas = useMemo(() => {
     const q = search.trim().toLowerCase()
 
-    const filtered = IDEAS.filter((idea) => {
-      if (showMyOnly && idea.author !== (user?.name ?? '')) return false
-      if (selectedCategory && idea.category !== selectedCategory) return false
-      if (selectedDivision && idea.division !== selectedDivision) return false
+    const filtered = ideas.filter((idea) => {
+      if (showMyOnly && !myIdeaIds.has(idea.id)) return false
+      if (selectedCategory && !idea.categories.some((c) => String(c.id) === selectedCategory)) return false
+      if (selectedBizArea && idea.bizArea !== selectedBizArea) return false
       if (selectedDept && idea.department !== selectedDept) return false
       if (selectedStatus && idea.status !== selectedStatus) return false
-      if (showSimilarOnly && (similarityMap.get(idea.id)?.length ?? 0) === 0) return false
+      if (selectedType && idea.type !== selectedType) return false
+      // showSimilarOnly 필터는 IdeaCard의 API 결과 기반으로 카드에서 처리
       if (q) {
         const text = `${idea.title} ${idea.problem} ${idea.solution} ${idea.author} ${idea.department}`.toLowerCase()
         if (!text.includes(q)) return false
@@ -82,26 +126,38 @@ export default function IdeaBrowse() {
         default:         return 0
       }
     })
-  }, [search, selectedCategory, selectedDivision, selectedDept, selectedStatus, sortBy, showSimilarOnly, showMyOnly, similarityMap])
+  }, [ideas, search, selectedCategory, selectedBizArea, selectedDept, selectedStatus, selectedType, sortBy, showMyOnly, myIdeaIds])
 
-  const similarCount = useMemo(
-    () => IDEAS.filter((i) => (similarityMap.get(i.id)?.length ?? 0) > 0).length,
-    [similarityMap],
+  const totalPages = Math.ceil(filteredIdeas.length / PAGE_SIZE)
+  const pagedIdeas = useMemo(
+    () => filteredIdeas.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filteredIdeas, page],
   )
 
   const myCount = useMemo(
-    () => IDEAS.filter((i) => i.author === (user?.name ?? '')).length,
-    [user?.name],
+    () => myIdeasPage?.totalElements ?? ideas.filter((i) => myIdeaIds.has(i.id)).length,
+    [myIdeasPage, ideas, myIdeaIds],
   )
 
-  const hasFilter = !!(search || selectedCategory || selectedDivision || selectedDept || selectedStatus || showSimilarOnly || showMyOnly)
+  const quickCounts = useMemo(() => ({
+    all:       ideas.length,
+    idea:      ideas.filter((i) => i.type === 'idea').length,
+    completed: ideas.filter((i) => i.type === 'completed').length,
+    approved:  ideas.filter((i) => i.status === '승인').length,
+    rejected:  ideas.filter((i) => i.status === '반려').length,
+  }), [ideas])
+
+  const hasFilter = !!(search || selectedCategory || selectedBizArea || selectedDept || selectedStatus || selectedType || showSimilarOnly || showMyOnly || startDate || endDate)
 
   const clearAll = () => {
     setSearch('')
     setSelectedCategory('')
-    setSelectedDivision('')
+    setSelectedBizArea('')
     setSelectedDept('')
     setSelectedStatus('')
+    setSelectedType('')
+    setStartDate('')
+    setEndDate('')
     setShowSimilarOnly(false)
     setShowMyOnly(false)
   }
@@ -111,7 +167,7 @@ export default function IdeaBrowse() {
       {/* ── 헤더 + 필터 ─────────────────────────────────────── */}
       <Box
         sx={{
-          px: { xs: 2, sm: 3, md: 4 }, pt: { xs: 3, md: 4 }, pb: 3,
+          px: { xs: 2, sm: 3, md: 4 }, pt: { xs: 4, md: 5 }, pb: { xs: 4, md: 4.5 },
           borderBottom: `1px solid ${borderColor}`,
           bgcolor: filterBg,
           backdropFilter: 'blur(12px)',
@@ -119,68 +175,41 @@ export default function IdeaBrowse() {
       >
         <Box sx={{ maxWidth: 1280, mx: 'auto' }}>
           {/* 타이틀 + 통계 */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2, mb: 2.5, flexWrap: 'wrap' }}>
-            <Box>
-              <Typography
-                variant="h5"
-                fontWeight={800}
-                sx={{
-                  background: `linear-gradient(135deg, ${ideaAccent.primary} 0%, ${ideaAccent.violet} 50%, ${ideaAccent.purple} 100%)`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.25,
-                  mb: 0.5,
-                }}
-              >
-                상상 보기
-              </Typography>
-              <Typography sx={{ fontSize: '0.88rem', color: textSecondary }}>
-                모든 아이디어를 탐색하고 내 아이디어와 유사한 건을 확인해 보세요
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex', alignItems: 'center', gap: 1.5,
-                px: 2, py: 1, borderRadius: 2,
-                bgcolor: statsBg,
-                border: `1px solid ${statsBorder}`,
-              }}
-            >
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.primary, lineHeight: 1 }}>{IDEAS.length}</Typography>
-                <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>전체</Typography>
-              </Box>
-              <Divider orientation="vertical" flexItem sx={{ borderColor }} />
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.success, lineHeight: 1 }}>{myCount}</Typography>
-                <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>내 상상</Typography>
-              </Box>
-              <Divider orientation="vertical" flexItem sx={{ borderColor }} />
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 800, color: ideaAccent.similar, lineHeight: 1 }}>{similarCount}</Typography>
-                <Typography sx={{ fontSize: '0.68rem', color: textSecondary, lineHeight: 1.3 }}>내 유사</Typography>
-              </Box>
-            </Box>
+          <Box sx={{ mb: 2.5 }}>
+            <PageHeader
+              icon={AutoStoriesIcon}
+              title="상상 보기"
+              subtitle="모든 아이디어를 탐색하고 내 아이디어와 유사한 건을 확인해 보세요"
+            />
           </Box>
 
           <IdeaFilters
             search={search}
             selectedCategory={selectedCategory}
-            selectedDivision={selectedDivision}
+            selectedBizArea={selectedBizArea}
             selectedDept={selectedDept}
             selectedStatus={selectedStatus}
+            selectedType={selectedType}
+            startDate={startDate}
+            endDate={endDate}
             showSimilarOnly={showSimilarOnly}
             showMyOnly={showMyOnly}
-            similarCount={similarCount}
+            similarCount={0}
             myCount={myCount}
+            quickCounts={quickCounts}
             hasFilter={hasFilter}
+            categoryOptions={categoryOptions}
+            bizAreaOptions={bizAreaOptions}
             deptOptions={deptOptions}
+            statusOptions={statusOptions}
             onSearchChange={setSearch}
             onCategoryChange={setSelectedCategory}
-            onDivisionChange={handleDivisionChange}
+            onBizAreaChange={handleBizAreaChange}
             onDeptChange={setSelectedDept}
             onStatusChange={setSelectedStatus}
+            onTypeChange={setSelectedType}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
             onSimilarToggle={() => setShowSimilarOnly((v) => !v)}
             onMyOnlyToggle={() => setShowMyOnly((v) => !v)}
             onClearAll={clearAll}
@@ -259,6 +288,14 @@ export default function IdeaBrowse() {
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
             <LoadingSpinner size={44} text="아이디어를 불러오는 중..." />
           </Box>
+        ) : isError ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 10, gap: 2 }}>
+            <Box sx={{ fontSize: '3rem', lineHeight: 1 }}>⚠️</Box>
+            <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: textPrimary }}>아이디어를 불러오지 못했습니다</Typography>
+            <Typography sx={{ fontSize: '0.85rem', color: textSecondary, textAlign: 'center', maxWidth: 300 }}>
+              네트워크 상태를 확인하거나 잠시 후 다시 시도해 주세요
+            </Typography>
+          </Box>
         ) : filteredIdeas.length === 0 ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 10, gap: 2 }}>
             <Box sx={{ fontSize: '3rem', lineHeight: 1 }}>🔍</Box>
@@ -286,23 +323,122 @@ export default function IdeaBrowse() {
             )}
           </Box>
         ) : (
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
-              gap: 2,
-            }}
-          >
-            {filteredIdeas.map((idea) => (
-              <IdeaCard
-                key={idea.id}
-                idea={idea}
-                similarTitles={similarityMap.get(idea.id) ?? []}
-                showSimilar={showSimilarOnly || true}
-                onClick={() => setSelectedIdea(idea)}
-              />
-            ))}
-          </Box>
+          <>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+                gap: 2,
+              }}
+            >
+              {pagedIdeas.map((idea) => (
+                <IdeaCard
+                  key={idea.id}
+                  idea={idea}
+                  showSimilarOnly={showSimilarOnly}
+                  onClick={() => setSelectedIdea(idea)}
+                />
+              ))}
+            </Box>
+            {totalPages > 1 && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.75, mt: 5, mb: 1 }}>
+                {/* 이전 버튼 */}
+                <Box
+                  onClick={() => { if (page > 1) { setPage(page - 1); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="이전 페이지"
+                  onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && page > 1) { setPage(page - 1); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                  sx={{
+                    width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    borderRadius: 2, border: `1px solid ${pageBtnBorder}`, bgcolor: pageBtnBg,
+                    color: page === 1 ? pageEllipsisColor : pageBtnColor,
+                    cursor: page === 1 ? 'default' : 'pointer',
+                    opacity: page === 1 ? 0.4 : 1,
+                    fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.15s', outline: 'none',
+                    '&:hover': page > 1 ? { bgcolor: pageBtnHoverBg, borderColor: pageBtnHoverBorder, color: ideaAccent.primary } : {},
+                    '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 },
+                  }}
+                >
+                  ‹
+                </Box>
+
+                {/* 페이지 번호 */}
+                {(() => {
+                  const items: (number | '…')[] = []
+                  if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) items.push(i)
+                  } else {
+                    items.push(1)
+                    if (page > 3) items.push('…')
+                    for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) items.push(i)
+                    if (page < totalPages - 2) items.push('…')
+                    items.push(totalPages)
+                  }
+                  return items.map((item, idx) =>
+                    item === '…' ? (
+                      <Box key={`ellipsis-${idx}`} sx={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pageEllipsisColor, fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+                        ···
+                      </Box>
+                    ) : (
+                      <Box
+                        key={item}
+                        onClick={() => { setPage(item); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${item}페이지`}
+                        aria-current={page === item ? 'page' : undefined}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setPage(item); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                        sx={{
+                          width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          borderRadius: 2, cursor: 'pointer', outline: 'none', transition: 'all 0.18s',
+                          fontSize: '0.83rem', fontWeight: page === item ? 700 : 500,
+                          ...(page === item
+                            ? {
+                                bgcolor: pageActiveBg,
+                                color: pageActiveColor,
+                                border: `1px solid ${pageActiveBg}`,
+                                boxShadow: pageActiveShadow,
+                                transform: 'translateY(-1px)',
+                              }
+                            : {
+                                bgcolor: pageBtnBg,
+                                color: pageBtnColor,
+                                border: `1px solid ${pageBtnBorder}`,
+                                '&:hover': { bgcolor: pageBtnHoverBg, borderColor: pageBtnHoverBorder, color: ideaAccent.primary },
+                              }),
+                          '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 },
+                        }}
+                      >
+                        {item}
+                      </Box>
+                    ),
+                  )
+                })()}
+
+                {/* 다음 버튼 */}
+                <Box
+                  onClick={() => { if (page < totalPages) { setPage(page + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="다음 페이지"
+                  onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && page < totalPages) { setPage(page + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) } }}
+                  sx={{
+                    width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    borderRadius: 2, border: `1px solid ${pageBtnBorder}`, bgcolor: pageBtnBg,
+                    color: page === totalPages ? pageEllipsisColor : pageBtnColor,
+                    cursor: page === totalPages ? 'default' : 'pointer',
+                    opacity: page === totalPages ? 0.4 : 1,
+                    fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.15s', outline: 'none',
+                    '&:hover': page < totalPages ? { bgcolor: pageBtnHoverBg, borderColor: pageBtnHoverBorder, color: ideaAccent.primary } : {},
+                    '&:focus-visible': { outline: `2px solid ${ideaAccent.primary}`, outlineOffset: 2 },
+                  }}
+                >
+                  ›
+                </Box>
+              </Box>
+            )}
+          </>
         )}
       </Box>
 
@@ -310,7 +446,21 @@ export default function IdeaBrowse() {
       <IdeaDetailDialog
         idea={selectedIdea}
         onClose={() => setSelectedIdea(null)}
-        similarTitles={selectedIdea ? (similarityMap.get(selectedIdea.id) ?? []) : []}
+        ideaId={selectedIdea?.id ?? null}
+        isOwner={selectedIdea?.submittedBy === employeeId}
+        onEdit={() => selectedIdea && handleEdit(selectedIdea)}
+        onDelete={() => selectedIdea && setDeleteTarget(selectedIdea)}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="아이디어 삭제"
+        message={`"${deleteTarget?.title}" 아이디어를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
+        confirmLabel="삭제"
+        cancelLabel="취소"
+        variant="error"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
       />
     </Box>
   )

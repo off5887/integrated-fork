@@ -1,17 +1,12 @@
 // src/routes/Welcome/GomEvolutionSection.tsx
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import { Box, Button, LinearProgress, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useThemeMode } from '@/context/ThemeContext'
 import { getWelcomeTheme } from '@/theme/welcomeTheme'
 import { GOM_LEVELS } from '@/api/mock/welcome'
+import { useLevelConfigs } from '@/api/queries/useLevelConfigs'
 import GomEvolutionModal from './GomEvolutionModal'
-
-function getGomLevel(fishCount: number) {
-  return GOM_LEVELS.reduce((prev, curr) =>
-    fishCount >= curr.min ? curr : prev,
-  )
-}
 
 interface GomEvolutionSectionProps {
   fishCount: number
@@ -24,14 +19,33 @@ export default function GomEvolutionSection({
   const t = getWelcomeTheme(isDarkMode)
   const [openModal, setOpenModal] = useState(false)
 
-  const currentLevel = getGomLevel(fishCount)
-  const nextLevel =
-    GOM_LEVELS.find((l) => l.min > fishCount) ||
-    GOM_LEVELS[GOM_LEVELS.length - 1]
-  const progress =
-    nextLevel.min > fishCount
-      ? Math.min(100, Math.round((fishCount / nextLevel.min) * 100))
-      : 100
+  const { data: levelConfigs = [] } = useLevelConfigs()
+
+  // API 설정과 정적 이미지·설명을 합쳐서 enriched levels 생성
+  const levels = useMemo(() => {
+    const sorted = [...levelConfigs].sort((a, b) => a.level - b.level)
+    return sorted.map((cfg) => ({
+      level: cfg.level,
+      name:  cfg.levelName,
+      min:   cfg.minMileage,
+      image: GOM_LEVELS[cfg.level]?.image ?? GOM_LEVELS[0].image,
+      desc:  GOM_LEVELS[cfg.level]?.desc  ?? '',
+    }))
+  }, [levelConfigs])
+
+  // 로딩 중이면 정적 GOM_LEVELS 사용
+  const activeLevels = levels.length > 0
+    ? levels
+    : GOM_LEVELS.map((l, i) => ({ level: i, ...l }))
+
+  const currentLevel = activeLevels.reduce(
+    (prev, curr) => fishCount >= curr.min ? curr : prev,
+    activeLevels[0],
+  )
+  const nextLevel = activeLevels.find((l) => l.min > fishCount) ?? activeLevels[activeLevels.length - 1]
+  const progress = nextLevel.min > fishCount
+    ? Math.min(100, Math.round((fishCount / nextLevel.min) * 100))
+    : 100
 
   return (
     <Box
@@ -97,7 +111,7 @@ export default function GomEvolutionSection({
         <Box
           sx={{
             height: 3,
-            background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)',
+            background: t.gradientStrip,
           }}
         />
 
@@ -112,7 +126,7 @@ export default function GomEvolutionSection({
                 letterSpacing: '-0.03em',
                 lineHeight: 1.1,
                 mb: 1,
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                background: t.gradientHeading,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
@@ -230,7 +244,7 @@ export default function GomEvolutionSection({
                 bgcolor: t.progressBg,
                 '& .MuiLinearProgress-bar': {
                   borderRadius: 9999,
-                  background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                  background: t.gradientBar,
                 },
               }}
             />
@@ -271,12 +285,12 @@ export default function GomEvolutionSection({
                 py: 1.25,
                 fontWeight: 700,
                 fontSize: '0.9rem',
-                bgcolor: '#6366f1',
-                color: '#fff',
-                boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+                bgcolor: t.primaryBtnBg,
+                color: t.primaryBtnColor,
+                boxShadow: t.btnShadow,
                 '&:hover': {
-                  bgcolor: '#4f46e5',
-                  boxShadow: '0 10px 28px rgba(99,102,241,0.5)',
+                  bgcolor: t.primaryBtnHoverBg,
+                  boxShadow: t.btnHoverShadow,
                   transform: 'translateY(-2px)',
                 },
                 transition: 'all 0.25s ease',
@@ -293,6 +307,7 @@ export default function GomEvolutionSection({
         onClose={() => setOpenModal(false)}
         currentLevelMin={currentLevel.min}
         fishCount={fishCount}
+        levels={activeLevels}
       />
     </Box>
   )

@@ -2,17 +2,20 @@
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
-import PendingActionsIcon from '@mui/icons-material/PendingActions'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import UndoIcon from '@mui/icons-material/Undo'
 import { Box, Chip, Typography } from '@mui/material'
-import { useEffect, useMemo, useState } from 'react'
-import { useThemeMode } from '@/context/ThemeContext'
+import { useMemo, useState } from 'react'
+import { useSnackbar } from '@/context/SnackbarContext'
 import { usePageColors } from '@/theme/pageColors'
-import { getJudgeTheme } from '@/theme/judgeTheme'
+import { useJudgeTheme, JUDGE_STAT_CONFIG } from '@/theme/judgeTheme'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
-import { judgeData } from '@/api/mock/judge'
-import { Proposal } from '@/api/types/judge'
+import type { Proposal } from '@/api/types/judge'
+import { useJudgeIdeas, useReviewIdea } from '@/api/queries/useIdeas'
 import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser'
+import PageHeader from '@/components/ui/PageHeader'
 import JudgeDetail from './JudgeDetail'
 import ReviewerChangeModal from './components/ReviewerChangeModal'
 import StatCard from './components/StatCard'
@@ -20,66 +23,38 @@ import JudgeTable from './components/JudgeTable'
 import { statusConfig, type StatusFilter } from './config/judgeStatusConfig'
 
 export default function Judge() {
-  const { isDarkMode } = useThemeMode()
+  const { showSnackbar } = useSnackbar()
   const colors = usePageColors()
-  const theme = getJudgeTheme(isDarkMode)
-  const user = useCurrentUser()
+  const theme = useJudgeTheme()
+  const { name: myName, isAdmin } = useCurrentUser()
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [proposals, setProposals] = useState<Proposal[]>(judgeData)
+  const { data: proposals = [], isLoading } = useJudgeIdeas()
+
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null)
+  const reviewIdea = useReviewIdea(selectedProposal?.id ?? 0)
   const [reviewerChangeTarget, setReviewerChangeTarget] = useState<Proposal | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('전체')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800)
-    return () => clearTimeout(timer)
-  }, [])
-
-  // 내 심사 목록:
-  // 1) 현재 내가 담당 심사자인 건 (심사대기/심사중/승인/반려)
-  // 2) 내 심사 단계를 이미 지났으나 후속 단계(2차·3차)가 아직 진행 중인 건 (심사중 추적)
-  const myName = user?.name ?? ''
-
+  // 관리자: 전체 표시 / 심사자: 본인 배정 건만
   const myProposals = useMemo(() => {
-    return proposals.filter((p) => {
-      if (p.reviewer === myName) return true
-      if (p.status === '심사중') {
-        const myStage =
-          p.reviewer1 === myName ? 1 :
-          p.reviewer2 === myName ? 2 :
-          p.reviewer3 === myName ? 3 : null
-        if (myStage !== null && p.reviewStage > myStage) return true
-      }
-      return false
-    })
-  }, [proposals, myName])
+    if (isAdmin) return proposals
+    return proposals.filter((p) => p.reviewer === myName)
+  }, [proposals, myName, isAdmin])
 
   const stats = useMemo(() => ({
-    // 심사대기: 아직 내가 심사 안 한 건 (status=심사대기 또는 status=심사중이지만 내가 현재 담당자)
-    심사대기: myProposals.filter(
-      (p) => p.status === '심사대기' || (p.status === '심사중' && p.reviewer === myName),
-    ).length,
-    // 심사중: 내가 이미 심사를 마치고 후속 단계가 진행 중인 건
-    심사중: myProposals.filter((p) => p.status === '심사중' && p.reviewer !== myName).length,
-    승인: myProposals.filter((p) => p.status === '승인').length,
-    반려: myProposals.filter((p) => p.status === '반려').length,
-  }), [myProposals, myName])
+    심사대기: myProposals.filter((p) => p.status === '심사대기').length,
+    승인:     myProposals.filter((p) => p.status === '승인').length,
+    반려:     myProposals.filter((p) => p.status === '반려').length,
+    승인회수: myProposals.filter((p) => p.status === '승인회수').length,
+    반려회수: myProposals.filter((p) => p.status === '반려회수').length,
+  }), [myProposals])
 
   const filteredProposals = useMemo(() => {
     if (statusFilter === '전체') return myProposals
-    if (statusFilter === '심사대기') {
-      return myProposals.filter(
-        (p) => p.status === '심사대기' || (p.status === '심사중' && p.reviewer === myName),
-      )
-    }
-    if (statusFilter === '심사중') {
-      return myProposals.filter((p) => p.status === '심사중' && p.reviewer !== myName)
-    }
     return myProposals.filter((p) => p.status === statusFilter)
-  }, [myProposals, statusFilter, myName])
+  }, [myProposals, statusFilter])
 
   const displayedData = filteredProposals.slice(
     page * rowsPerPage,
@@ -91,59 +66,64 @@ export default function Judge() {
     setPage(0)
   }
 
-  const handleReviewerChange = (proposalId: number, newReviewer: string) => {
-    setProposals((prev) =>
-      prev.map((p) =>
-        p.id === proposalId
-          ? { ...p, reviewer: newReviewer, transferredFrom: p.reviewer }
-          : p,
-      ),
+  const handleApprove = (reason: string, scoreInnovation?: number, scoreFeasibility?: number, scoroProfitability?: number, awardedPoints?: number) => {
+    if (!selectedProposal) return
+    const title = selectedProposal.title
+    reviewIdea.mutate(
+      { status: 'approved', reason, scoreInnovation, scoreFeasibility, scoreProfitability: scoroProfitability, awardedPoints },
+      {
+        onSuccess: () => {
+          setSelectedProposal(null)
+          showSnackbar(`'${title}' 제안이 승인되었습니다.`, 'success')
+        },
+        onError: () => showSnackbar('승인 처리 중 오류가 발생했습니다.', 'error'),
+      },
     )
   }
 
-  const handleApprove = (_reason: string, score?: number, mileage?: number) => {
+  const handleReject = (reason: string) => {
     if (!selectedProposal) return
-    setProposals((prev) =>
-      prev.map((p) =>
-        p.id === selectedProposal.id
-          ? {
-              ...p,
-              status: '승인' as const,
-              ...(score !== undefined && { score }),
-              ...(mileage !== undefined && { mileage }),
-            }
-          : p,
-      ),
+    const title = selectedProposal.title
+    reviewIdea.mutate(
+      { status: 'rejected', reason },
+      {
+        onSuccess: () => {
+          setSelectedProposal(null)
+          showSnackbar(`'${title}' 제안이 반려되었습니다.`, 'error')
+        },
+        onError: () => showSnackbar('반려 처리 중 오류가 발생했습니다.', 'error'),
+      },
     )
-    setSelectedProposal(null)
-    // TODO: API 연동 시 reason, score, mileage와 함께 서버로 전송
-  }
-
-  const handleReject = (_reason: string) => {
-    if (!selectedProposal) return
-    setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '반려' as const } : p)),
-    )
-    setSelectedProposal(null)
-    // TODO: API 연동 시 _reason과 함께 서버로 전송
   }
 
   const handleWithdrawApprove = (_reason: string) => {
     if (!selectedProposal) return
-    setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사중' as const } : p)),
+    const title = selectedProposal.title
+    reviewIdea.mutate(
+      { status: 'withdraw_approved' },
+      {
+        onSuccess: () => {
+          setSelectedProposal(null)
+          showSnackbar(`'${title}' 승인이 회수되었습니다.`, 'success')
+        },
+        onError: () => showSnackbar('승인 회수 중 오류가 발생했습니다.', 'error'),
+      },
     )
-    setSelectedProposal(null)
-    // TODO: API 연동 시 _reason과 함께 서버로 전송
   }
 
   const handleWithdrawReject = (_reason: string) => {
     if (!selectedProposal) return
-    setProposals((prev) =>
-      prev.map((p) => (p.id === selectedProposal.id ? { ...p, status: '심사중' as const } : p)),
+    const title = selectedProposal.title
+    reviewIdea.mutate(
+      { status: 'withdraw_rejected' },
+      {
+        onSuccess: () => {
+          setSelectedProposal(null)
+          showSnackbar(`'${title}' 반려가 회수되었습니다.`, 'success')
+        },
+        onError: () => showSnackbar('반려 회수 중 오류가 발생했습니다.', 'error'),
+      },
     )
-    setSelectedProposal(null)
-    // TODO: API 연동 시 _reason과 함께 서버로 전송
   }
 
   const selectedIndex = selectedProposal
@@ -173,90 +153,113 @@ export default function Judge() {
     >
       <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
         {/* 페이지 헤더 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-          <Box
-            sx={{
-              width: 44,
-              height: 44,
-              borderRadius: 2.5,
-              background: theme.accentGradientDiag,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 16px rgba(99,102,241,0.35)',
-            }}
-          >
-            <AssignmentTurnedInIcon sx={{ color: theme.primaryBtnColor, fontSize: '1.4rem' }} />
-          </Box>
-          <Box>
-            <Typography
-              variant="h5"
-              fontWeight={800}
-              sx={{ color: colors.textPrimary, letterSpacing: '-0.02em', lineHeight: 1.2 }}
-            >
-              심사하기
-            </Typography>
-            <Typography variant="caption" sx={{ color: colors.textSecondary }}>
-              제출된 제안을 검토하고 심사 결과를 입력하세요
-            </Typography>
-          </Box>
-          <Box sx={{ ml: 'auto' }}>
-            <Chip
-              label={`전체 ${myProposals.length}건`}
-              size="small"
-              sx={{
-                bgcolor: theme.totalChipBg,
-                color: theme.totalChipColor,
-                fontWeight: 700,
-                fontSize: '0.8rem',
-                border: `1px solid ${theme.totalChipBorder}`,
-              }}
-            />
-          </Box>
+        <Box sx={{ mb: { xs: 3.5, md: 5 }, pt: { xs: 0.5, md: 1 } }}>
+          <PageHeader
+            icon={AssignmentTurnedInIcon}
+            title="심사하기"
+            subtitle="제출된 제안을 검토하고 심사 결과를 입력하세요"
+            right={
+              <Chip
+                label={`전체 ${myProposals.length}건`}
+                size="small"
+                sx={{
+                  bgcolor: theme.totalChipBg,
+                  color: theme.totalChipColor,
+                  fontWeight: 700,
+                  fontSize: '0.78rem',
+                  border: `1px solid ${theme.totalChipBorder}`,
+                }}
+              />
+            }
+          />
         </Box>
 
+        {/* 관리자 전체 조회 안내 */}
+        {isAdmin && (
+          <Box
+            sx={{
+              display: 'flex', alignItems: 'center', gap: 1,
+              px: 2, py: 1.25, mb: 2.5, borderRadius: 2,
+              bgcolor: 'rgba(99,102,241,0.07)',
+              border: '1px solid rgba(99,102,241,0.2)',
+            }}
+          >
+            <InfoOutlinedIcon sx={{ fontSize: '1rem', color: theme.primaryIconColor, flexShrink: 0 }} />
+            <Typography variant="caption" sx={{ color: colors.textSecondary, lineHeight: 1.5 }}>
+              관리자 계정으로 접속 중입니다. 모든 심사자의 심사 대상 건이 표시됩니다.
+            </Typography>
+          </Box>
+        )}
+
         {/* 내 결재 현황 요약 */}
-        <Box sx={{ display: 'flex', gap: { xs: 1, sm: 1.5 }, mb: 3.5, flexWrap: 'wrap' }}>
-          <StatCard
-            label="심사대기"
-            count={stats.심사대기}
-            color="#f59e0b"
-            bg="rgba(245,158,11,0.08)"
-            border="rgba(245,158,11,0.25)"
-            icon={<HourglassEmptyIcon sx={{ fontSize: '1.1rem' }} />}
-            active={statusFilter === '심사대기'}
-            onClick={() => handleFilterChange(statusFilter === '심사대기' ? '전체' : '심사대기')}
-          />
-          <StatCard
-            label="심사중"
-            count={stats.심사중}
-            color="#6366f1"
-            bg="rgba(99,102,241,0.08)"
-            border="rgba(99,102,241,0.25)"
-            icon={<PendingActionsIcon sx={{ fontSize: '1.1rem' }} />}
-            active={statusFilter === '심사중'}
-            onClick={() => handleFilterChange(statusFilter === '심사중' ? '전체' : '심사중')}
-          />
-          <StatCard
-            label="승인"
-            count={stats.승인}
-            color="#10b981"
-            bg="rgba(16,185,129,0.08)"
-            border="rgba(16,185,129,0.25)"
-            icon={<CheckCircleOutlineIcon sx={{ fontSize: '1.1rem' }} />}
-            active={statusFilter === '승인'}
-            onClick={() => handleFilterChange(statusFilter === '승인' ? '전체' : '승인')}
-          />
-          <StatCard
-            label="반려"
-            count={stats.반려}
-            color="#ef4444"
-            bg="rgba(239,68,68,0.08)"
-            border="rgba(239,68,68,0.25)"
-            icon={<DoNotDisturbIcon sx={{ fontSize: '1.1rem' }} />}
-            active={statusFilter === '반려'}
-            onClick={() => handleFilterChange(statusFilter === '반려' ? '전체' : '반려')}
-          />
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(5, 1fr)' },
+            gap: { xs: 1, sm: 1.5 },
+            mb: { xs: 2.5, sm: 3.5 },
+          }}
+        >
+          {/* 전체 버튼 — 모바일에서 2칸 너비 */}
+          <Box sx={{ gridColumn: { xs: '1 / -1', sm: 'auto' } }}>
+            <StatCard
+              label="전체"
+              count={myProposals.length}
+              color={theme.primaryIconColor}
+              bg={theme.totalChipBg}
+              border={theme.totalChipBorder}
+              icon={<FormatListBulletedIcon sx={{ fontSize: '1.1rem' }} />}
+              active={statusFilter === '전체'}
+              onClick={() => handleFilterChange('전체')}
+            />
+          </Box>
+
+          {JUDGE_STAT_CONFIG.map(({ key, color, bg, border }) => {
+            const iconMap = {
+              심사대기: <HourglassEmptyIcon sx={{ fontSize: '1.1rem' }} />,
+              승인: <CheckCircleOutlineIcon sx={{ fontSize: '1.1rem' }} />,
+              반려: <DoNotDisturbIcon sx={{ fontSize: '1.1rem' }} />,
+            } as const
+            return (
+              <StatCard
+                key={key}
+                label={key}
+                count={stats[key]}
+                color={color}
+                bg={bg}
+                border={border}
+                icon={iconMap[key]}
+                active={statusFilter === key}
+                onClick={() => handleFilterChange(statusFilter === key ? '전체' : key)}
+              />
+            )
+          })}
+
+          {/* 승인회수·반려회수 카드 — 해당 건이 있을 때만 표시 */}
+          {stats.승인회수 > 0 && (
+            <StatCard
+              label="승인회수"
+              count={stats.승인회수}
+              color="#f97316"
+              bg="rgba(249,115,22,0.1)"
+              border="rgba(249,115,22,0.25)"
+              icon={<UndoIcon sx={{ fontSize: '1.1rem' }} />}
+              active={statusFilter === '승인회수'}
+              onClick={() => handleFilterChange(statusFilter === '승인회수' ? '전체' : '승인회수')}
+            />
+          )}
+          {stats.반려회수 > 0 && (
+            <StatCard
+              label="반려회수"
+              count={stats.반려회수}
+              color="#0d9488"
+              bg="rgba(13,148,136,0.1)"
+              border="rgba(13,148,136,0.25)"
+              icon={<UndoIcon sx={{ fontSize: '1.1rem' }} />}
+              active={statusFilter === '반려회수'}
+              onClick={() => handleFilterChange(statusFilter === '반려회수' ? '전체' : '반려회수')}
+            />
+          )}
         </Box>
 
         {/* 필터 안내 */}
@@ -317,6 +320,7 @@ export default function Judge() {
             filteredTotal={filteredProposals.length}
             page={page}
             rowsPerPage={rowsPerPage}
+            isAdmin={isAdmin}
             onRowClick={setSelectedProposal}
             onReviewerChangeClick={setReviewerChangeTarget}
             onPageChange={(_, newPage) => setPage(newPage)}
@@ -344,13 +348,15 @@ export default function Judge() {
         />
       )}
 
-      {/* 결재자 변경 모달 */}
-      <ReviewerChangeModal
-        open={reviewerChangeTarget !== null}
-        proposal={reviewerChangeTarget}
-        onClose={() => setReviewerChangeTarget(null)}
-        onConfirm={handleReviewerChange}
-      />
+      {/* 결재자 변경 모달 — admin 전용 */}
+      {isAdmin && (
+        <ReviewerChangeModal
+          open={reviewerChangeTarget !== null}
+          ideaId={reviewerChangeTarget?.id ?? null}
+          ideaTitle={reviewerChangeTarget?.title ?? ''}
+          onClose={() => setReviewerChangeTarget(null)}
+        />
+      )}
     </Box>
   )
 }

@@ -39,7 +39,7 @@ export default function TFIdeaCard({ idea, onApply }: Props) {
       }}
     >
       {/* 상단 그라디언트 스트립 */}
-      <Box sx={{ height: 3, background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa)' }} />
+      <Box sx={{ height: 3, background: tf.headerGradient }} />
 
       <Box
         sx={{
@@ -156,12 +156,12 @@ export default function TFIdeaCard({ idea, onApply }: Props) {
               py: 0.85,
               fontWeight: 700,
               fontSize: '0.82rem',
-              bgcolor: '#6366f1',
-              color: '#fff',
+              bgcolor: tf.primaryBtnBg,
+              color: tf.primaryBtnColor,
               boxShadow: 'none',
               '&:hover': {
-                bgcolor: '#4f46e5',
-                boxShadow: '0 6px 20px rgba(99,102,241,0.4)',
+                bgcolor: tf.primaryBtnHoverBg,
+                boxShadow: tf.primaryBtnHoverShadow,
               },
               transition: 'all 0.2s ease',
             }}

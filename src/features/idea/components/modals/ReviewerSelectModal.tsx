@@ -1,0 +1,272 @@
+// src/features/idea/components/modals/ReviewerSelectModal.tsx
+// 검토자 검색·선택 모달 (다중 선택, 선택된 목록 표시)
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import SearchIcon from '@mui/icons-material/Search'
+import {
+  Avatar,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+} from '@mui/material'
+import { useMemo, useState } from 'react'
+import { useMyDeptReviewers } from '@/api/queries/useSectionReviewers'
+import { useIdeaTheme } from '@/theme/ideaTheme'
+import { onKeyboardClick } from '@/utils/keyboardClick'
+
+interface Props {
+  open: boolean
+  onClose: () => void
+  selected: string[]
+  onToggle: (name: string, employeeId: string) => void
+}
+
+export default function ReviewerSelectModal({ open, onClose, selected, onToggle }: Props) {
+  const [search, setSearch] = useState('')
+
+  const it = useIdeaTheme()
+  const { textPrimary, textSecondary, borderColor } = it
+
+  const { data: reviewers = [], isLoading } = useMyDeptReviewers()
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    const active = reviewers.filter((r) => r.isActive)
+    if (!q) return active
+    return active.filter(
+      (r) =>
+        r.name.includes(q) ||
+        r.deptNm.includes(q) ||
+        r.rollNm.includes(q),
+    )
+  }, [search, reviewers])
+
+  const handleClose = () => {
+    setSearch('')
+    onClose()
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="xs"
+      fullWidth
+      aria-labelledby="reviewer-select-dialog-title"
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: 3,
+            bgcolor: it.modalBg,
+            border: `1px solid ${borderColor}`,
+            boxShadow: it.dialogShadow,
+            overflow: 'hidden',
+            m: { xs: 2, sm: 3 },
+          },
+        },
+        backdrop: {
+          sx: {
+            backdropFilter: 'blur(6px)',
+            backgroundColor: it.backdropBg,
+          },
+        },
+      }}
+    >
+      {/* 상단 그라디언트 스트립 */}
+      <Box sx={{ height: 3, background: it.modalHeaderGradient }} />
+
+      {/* 헤더 */}
+      <Box
+        sx={{
+          px: 2.5, pt: 2, pb: 1.75,
+          display: 'flex', alignItems: 'center', gap: 1.25,
+          borderBottom: `1px solid ${borderColor}`,
+        }}
+      >
+        <Box
+          sx={{
+            width: 32, height: 32, borderRadius: '50%',
+            bgcolor: it.accent.color, color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}
+        >
+          <PersonAddIcon sx={{ fontSize: '1rem' }} />
+        </Box>
+        <Box flex={1}>
+          <Typography id="reviewer-select-dialog-title" fontWeight={700} sx={{ color: textPrimary, fontSize: '0.95rem', lineHeight: 1.3 }}>
+            심사자 선택
+          </Typography>
+          {selected.length > 0 && (
+            <Typography variant="caption" sx={{ color: it.accent.textMuted, fontWeight: 600 }}>
+              {selected.length}명 선택됨
+            </Typography>
+          )}
+        </Box>
+        <IconButton size="small" onClick={handleClose} aria-label="닫기" sx={{ color: textSecondary, flexShrink: 0 }}>
+          <CloseIcon sx={{ fontSize: '1.1rem' }} />
+        </IconButton>
+      </Box>
+
+      <DialogContent sx={{ p: 2, pb: 0 }}>
+        {/* 검색 */}
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="이름, 부서, 직무로 검색"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: '1rem', color: textSecondary }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{
+            mb: 1.5,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              backgroundColor: it.searchInputBg,
+              fontSize: '0.875rem',
+              '& fieldset': { borderColor },
+              '&:hover fieldset': { borderColor: it.accent.borderHover },
+              '&.Mui-focused fieldset': { borderColor: it.accent.color },
+            },
+            '& .MuiInputBase-input': {
+              color: textPrimary,
+              WebkitTextFillColor: textPrimary,
+              '&::placeholder': { color: textSecondary, opacity: 1 },
+            },
+          }}
+        />
+
+        {/* 목록 */}
+        <Box
+          role="group"
+          aria-label="심사자 목록"
+          sx={{
+            display: 'flex', flexDirection: 'column', gap: 0.75,
+            maxHeight: 340, overflowY: 'auto', pr: 0.25, mb: 2,
+            '&::-webkit-scrollbar': { width: 4 },
+            '&::-webkit-scrollbar-track': { background: 'transparent' },
+            '&::-webkit-scrollbar-thumb': {
+              background: it.accent.border,
+              borderRadius: 9999,
+            },
+            scrollbarWidth: 'thin',
+            scrollbarColor: `${it.accent.border} transparent`,
+          }}
+        >
+          {isLoading ? (
+            <Box sx={{ py: 5, textAlign: 'center' }}>
+              <CircularProgress size={24} sx={{ color: it.accent.color }} />
+            </Box>
+          ) : filtered.length === 0 ? (
+            <Box sx={{ py: 5, textAlign: 'center' }}>
+              <Typography variant="caption" sx={{ color: textSecondary }}>
+                {reviewers.length === 0 ? '배정된 심사자가 없습니다' : '검색 결과가 없습니다'}
+              </Typography>
+            </Box>
+          ) : (
+            filtered.map((r) => {
+              const isSelected = selected.includes(r.name)
+              return (
+                <Box
+                  key={r.id}
+                  role="checkbox"
+                  aria-checked={isSelected}
+                  aria-label={`${r.name} ${r.deptNm} ${r.rollNm} ${isSelected ? '선택됨' : '선택 안됨'}`}
+                  tabIndex={0}
+                  onClick={() => onToggle(r.name, r.reviewerEmployeeId)}
+                  onKeyDown={onKeyboardClick(() => onToggle(r.name, r.reviewerEmployeeId))}
+                  sx={{
+                    display: 'flex', alignItems: 'center', gap: 1.25,
+                    p: 1.25, borderRadius: 1.5, cursor: 'pointer',
+                    outline: 'none',
+                    border: `1px solid ${isSelected ? it.accent.borderHover : borderColor}`,
+                    bgcolor: isSelected ? it.accent.bgSelected : it.listItemBg,
+                    transition: 'all 0.12s ease',
+                    '&:hover': { bgcolor: it.accent.bgHover, borderColor: it.accent.border },
+                    '&:focus-visible': { outline: `2px solid ${it.accent.border}`, outlineOffset: 2 },
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      width: 34, height: 34, flexShrink: 0,
+                      bgcolor: isSelected
+                        ? it.accent.bgAvatarSelected
+                        : it.avatarBg,
+                      color: isSelected
+                        ? it.accent.text
+                        : textSecondary,
+                      fontSize: '0.8rem', fontWeight: 700,
+                      border: `1px solid ${isSelected ? it.accent.border : borderColor}`,
+                    }}
+                  >
+                    {r.name[0]}
+                  </Avatar>
+
+                  <Box flex={1} minWidth={0}>
+                    <Typography
+                      sx={{
+                        fontSize: '0.83rem', fontWeight: isSelected ? 700 : 600,
+                        color: isSelected ? it.accent.text : textPrimary,
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {r.name}
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.72rem', color: textSecondary, fontFamily: 'monospace' }}>
+                      {r.deptNm} · {r.rollNm} ({r.reviewStage}차)
+                    </Typography>
+                  </Box>
+
+                  {isSelected && (
+                    <CheckIcon sx={{ fontSize: '1rem', color: it.accent.text, flexShrink: 0 }} />
+                  )}
+                </Box>
+              )
+            })
+          )}
+        </Box>
+      </DialogContent>
+
+      {/* 하단 버튼 */}
+      <Box
+        sx={{
+          px: 2.5, py: 2,
+          borderTop: `1px solid ${borderColor}`,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          bgcolor: it.modalFooterBg,
+        }}
+      >
+        <Typography variant="caption" sx={{ color: textSecondary }}>
+          {selected.length > 0 ? `${selected.length}명 선택됨` : '클릭하여 선택'}
+        </Typography>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={handleClose}
+          sx={{
+            borderRadius: 1.5, px: 3, py: 0.85,
+            fontWeight: 700, fontSize: '0.82rem',
+            textTransform: 'none', boxShadow: 'none',
+            bgcolor: it.accent.color, color: '#fff',
+            '&:hover': { bgcolor: it.accent.hover, boxShadow: it.accent.btnModalHoverShadow },
+          }}
+        >
+          완료
+        </Button>
+      </Box>
+    </Dialog>
+  )
+}

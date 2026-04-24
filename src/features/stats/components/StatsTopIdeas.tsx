@@ -50,7 +50,7 @@ export default function StatsTopIdeas({ t }: Props) {
 
           {TOP_IDEAS.map((item, i) => (
             <Box
-              key={i}
+              key={item.title}
               sx={{
                 display: 'flex',
                 alignItems: 'center',

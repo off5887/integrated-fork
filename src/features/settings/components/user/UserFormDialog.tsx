@@ -1,3 +1,4 @@
+import {} from 'react'
 import CloseIcon from '@mui/icons-material/Close'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import Visibility from '@mui/icons-material/Visibility'
@@ -17,9 +18,8 @@ import {
   Typography,
 } from '@mui/material'
 import { usePageColors } from '@/theme/pageColors'
-import { useThemeMode } from '@/context/ThemeContext'
-import { getSettingsTheme } from '@/theme/settingsTheme'
-import { mockDepartments } from '@/api/mock/settings'
+import { useSettingsTheme } from '@/theme/settingsTheme'
+import { useRollNm, useOrgTeams } from '@/api/queries/useOrg'
 import type { User } from '@/api/types/settings'
 
 interface Props {
@@ -43,9 +43,16 @@ export default function UserFormDialog({
   onFormChange,
   onTogglePassword,
 }: Props) {
-  const { isDarkMode } = useThemeMode()
   const { textPrimary, textSecondary, borderColor } = usePageColors()
-  const st = getSettingsTheme(isDarkMode)
+  const st = useSettingsTheme()
+
+  const { data: rollNmList = [] } = useRollNm()
+  const { data: orgTeams = [] } = useOrgTeams()
+
+  const bizAreas = orgTeams.map(b => b.bizAreaNm)
+  const filteredTeams = orgTeams
+    .find(b => b.bizAreaNm === formData.businessSite)
+    ?.teams.map(t => t.deptNm) ?? []
 
   const inputSx = {
     '& .MuiOutlinedInput-root': {
@@ -66,6 +73,7 @@ export default function UserFormDialog({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      aria-labelledby="user-form-dialog-title"
       slotProps={{
         paper: {
           sx: {
@@ -89,7 +97,7 @@ export default function UserFormDialog({
         >
           <ManageAccountsIcon sx={{ color: st.primaryBtnColor, fontSize: '1rem' }} />
         </Box>
-        <Typography variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, flex: 1 }}>
+        <Typography id="user-form-dialog-title" variant="subtitle1" fontWeight={700} sx={{ color: textPrimary, flex: 1 }}>
           {isEditing ? '사용자 수정' : '새 사용자 추가'}
         </Typography>
         <IconButton
@@ -117,10 +125,11 @@ export default function UserFormDialog({
           />
           <TextField
             label="사번"
-            fullWidth required size="small"
+            fullWidth required={!isEditing} size="small"
             value={formData.employeeNumber || ''}
             onChange={(e) => onFormChange({ ...formData, employeeNumber: e.target.value })}
             placeholder="예: DEV001"
+            disabled={isEditing}
             sx={{ ...inputSx, '& .MuiInputBase-input': { color: textPrimary, fontFamily: 'monospace' } }}
           />
           <TextField
@@ -130,54 +139,78 @@ export default function UserFormDialog({
             onChange={(e) => onFormChange({ ...formData, email: e.target.value })}
             sx={{ ...inputSx, '& .MuiInputBase-input': { color: textPrimary, fontFamily: 'monospace' } }}
           />
-          {!isEditing && (
-            <TextField
-              label="비밀번호"
-              fullWidth required size="small"
-              type={showPassword ? 'text' : 'password'}
-              value={formData.password || ''}
-              onChange={(e) => onFormChange({ ...formData, password: e.target.value })}
-              sx={inputSx}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={onTogglePassword}
-                        edge="end" size="small"
-                        sx={{ color: textSecondary }}
-                      >
-                        {showPassword
-                          ? <VisibilityOff sx={{ fontSize: '1rem' }} />
-                          : <Visibility sx={{ fontSize: '1rem' }} />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          )}
+          <TextField
+            label={isEditing ? '새 비밀번호 (선택)' : '비밀번호'}
+            fullWidth required={!isEditing} size="small"
+            type={showPassword ? 'text' : 'password'}
+            value={formData.password || ''}
+            onChange={(e) => onFormChange({ ...formData, password: e.target.value })}
+            helperText={isEditing ? '비워두면 기존 비밀번호가 유지됩니다' : undefined}
+            sx={inputSx}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={onTogglePassword}
+                      edge="end" size="small"
+                      sx={{ color: textSecondary }}
+                    >
+                      {showPassword
+                        ? <VisibilityOff sx={{ fontSize: '1rem' }} />
+                        : <Visibility sx={{ fontSize: '1rem' }} />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
           <FormControl fullWidth required size="small" sx={inputSx}>
             <InputLabel id="role-label">역할</InputLabel>
             <Select
               labelId="role-label" label="역할"
               value={formData.role || ''}
-              onChange={(e) => onFormChange({ ...formData, role: e.target.value })}
+              onChange={(e) => onFormChange({ ...formData, role: e.target.value as User['role'] })}
             >
-              {['사원', '팀장', '부장', '부문장', '임원'].map(r => (
-                <MenuItem key={r} value={r}>{r}</MenuItem>
+              <MenuItem value="user">일반사용자</MenuItem>
+              <MenuItem value="reviewer">심사자</MenuItem>
+              <MenuItem value="admin">관리자</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth required size="small" sx={inputSx}>
+            <InputLabel id="position-label">직급</InputLabel>
+            <Select
+              labelId="position-label" label="직급"
+              value={formData.position || ''}
+              onChange={(e) => onFormChange({ ...formData, position: e.target.value })}
+            >
+              {rollNmList.map(p => (
+                <MenuItem key={p} value={p}>{p}</MenuItem>
               ))}
             </Select>
           </FormControl>
           <FormControl fullWidth required size="small" sx={inputSx}>
-            <InputLabel id="department-label">부서</InputLabel>
+            <InputLabel id="bizarea-label">사업소</InputLabel>
             <Select
-              labelId="department-label" label="부서"
+              labelId="bizarea-label" label="사업소"
+              value={formData.businessSite || ''}
+              onChange={(e) => onFormChange({ ...formData, businessSite: e.target.value, department: '' })}
+            >
+              {bizAreas.map(b => (
+                <MenuItem key={b} value={b}>{b}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth required size="small" sx={inputSx}>
+            <InputLabel id="department-label">팀</InputLabel>
+            <Select
+              labelId="department-label" label="팀"
               value={formData.department || ''}
               onChange={(e) => onFormChange({ ...formData, department: e.target.value })}
+              disabled={!formData.businessSite}
             >
-              {mockDepartments.map(dept => (
-                <MenuItem key={dept} value={dept}>{dept}</MenuItem>
+              {filteredTeams.map(t => (
+                <MenuItem key={t} value={t}>{t}</MenuItem>
               ))}
             </Select>
           </FormControl>

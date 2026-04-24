@@ -36,6 +36,11 @@ const dashboardLight = {
   insightBg: 'rgba(99,102,241,0.05)',
   insightBorder: 'rgba(99,102,241,0.1)',
 
+  // ── 페이지 헤더 아이콘 박스 ──
+  headerIconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  headerIconShadow: '0 4px 16px rgba(99,102,241,0.3)',
+  headerIconColor: '#fff',
+
   // ── 실시간 뱃지 ──
   realtimeBadgeBg: 'rgba(59,130,246,0.08)',
   realtimeBadgeBorder: 'rgba(59,130,246,0.2)',
@@ -93,6 +98,11 @@ const dashboardDark = {
   insightBg: 'rgba(99,102,241,0.08)',
   insightBorder: 'rgba(99,102,241,0.15)',
 
+  // ── 페이지 헤더 아이콘 박스 ──
+  headerIconGradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+  headerIconShadow: '0 4px 16px rgba(99,102,241,0.45)',
+  headerIconColor: '#fff',
+
   // ── 실시간 뱃지 ──
   realtimeBadgeBg: 'rgba(59,130,246,0.12)',
   realtimeBadgeBorder: 'rgba(59,130,246,0.25)',
@@ -115,6 +125,13 @@ const dashboardDark = {
   },
 } as const
 
+// ── 전체 실행 완료율 상태 설정 (threshold 내림차순) ──
+export const COMPLETION_RATE_STATUS = [
+  { threshold: 80, label: '우수',     color: '#10b981', gradTo: '#34d399', bg: '#10b98118', border: '#10b98130' },
+  { threshold: 60, label: '보통',     color: '#f59e0b', gradTo: '#fcd34d', bg: '#f59e0b18', border: '#f59e0b30' },
+  { threshold: 0,  label: '개선 필요', color: '#ef4444', gradTo: '#f87171', bg: '#ef444418', border: '#ef444430' },
+] as const
+
 // ── 차트/랭킹용 액센트 컬러 (라이트/다크 동일) ──
 export const dashboardAccent = {
   indigo: '#6366f1',
@@ -134,3 +151,9 @@ export type DashboardTheme = typeof dashboardLight
 /** isDarkMode 값을 넘기면 해당 팔레트를 반환합니다. */
 export const getDashboardTheme = (isDarkMode: boolean): DashboardTheme =>
   isDarkMode ? (dashboardDark as unknown as DashboardTheme) : dashboardLight
+
+import { useThemeMode } from '@/context/ThemeContext'
+export function useDashboardTheme(): DashboardTheme {
+  const { isDarkMode } = useThemeMode()
+  return getDashboardTheme(isDarkMode)
+}
